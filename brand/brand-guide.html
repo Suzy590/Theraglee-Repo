@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Document Brand Guide — Theraglee</title>
+<link rel="icon" href="assets/favicon.png" sizes="48x48">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="theraglee.css">
+<style>
+  .sheet{max-width:1000px}
+  .swatches{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(148px,1fr))}
+  .sw{border:1px solid var(--hair);border-radius:var(--r-sm);overflow:hidden;background:var(--paper)}
+  .sw .chip{height:62px}
+  .sw .meta{padding:9px 11px}
+  .sw .nm{display:block;font-size:.82rem;font-weight:500;letter-spacing:-.01em}
+  .sw .hx{display:block;font-size:.72rem;color:var(--faint);font-variant-numeric:tabular-nums}
+  .spec{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  .demo{border:1px solid var(--hair);border-radius:var(--r);padding:20px;background:var(--paper)}
+  .demo > .lab{
+    display:block;font-size:.66rem;font-weight:600;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--faint);margin-bottom:14px;
+  }
+  .accents{display:grid;gap:10px}
+  .acc{
+    display:grid;grid-template-columns:130px 26px 1fr;gap:14px;align-items:center;
+    padding:11px 15px;border:1px solid var(--hair);border-radius:var(--r-sm);background:var(--paper);
+  }
+  .acc code{font-size:.8rem;color:var(--green-deep)}
+  .acc .dotc{width:22px;height:22px;border-radius:50%}
+  .acc .use{font-size:.85rem;color:var(--muted)}
+  .typerow{padding:14px 0;border-bottom:1px solid var(--hair)}
+  .typerow:last-child{border-bottom:0}
+  .typerow .tag{
+    display:block;font-size:.66rem;font-weight:600;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--faint);margin-bottom:6px;
+  }
+</style>
+</head>
+<body>
+<article class="sheet">
+
+  <header class="masthead">
+    <img class="logo" src="assets/logo.png" alt="Theraglee">
+    <span class="kind">a little lighter, every day</span>
+  </header>
+
+  <header class="cover">
+    <div class="rays" aria-hidden="true">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="12.38 -28.30 164.20 164.20">
+        <path d="M100 100L168.99 88.10A3.93 3.93 0 0 0 167.22 80.45Z"/>
+        <path d="M100 100L173.42 64.60A3.93 3.93 0 0 0 169.67 57.70Z"/>
+        <path d="M100 100L171.84 36.09A3.93 3.93 0 0 0 166.38 30.44Z"/>
+        <path d="M100 100L136.04 48.71A3.93 3.93 0 0 0 129.34 44.60Z"/>
+        <path d="M100 100L123.44 30.16A3.93 3.93 0 0 0 115.87 28.07Z"/>
+        <path d="M100 100L103.93 7.59A3.93 3.93 0 0 0 96.07 7.59Z"/>
+        <path d="M100 100L85.80 34.12A3.93 3.93 0 0 0 78.24 36.22Z"/>
+        <path d="M100 100L60.09 25.95A3.93 3.93 0 0 0 53.35 29.99Z"/>
+        <path d="M100 100L48.96 46.16A3.93 3.93 0 0 0 43.56 51.85Z"/>
+        <path d="M100 100L19.28 51.71A3.93 3.93 0 0 0 15.54 58.61Z"/>
+        <path d="M100 100L33.29 80.57A3.93 3.93 0 0 0 31.52 88.22Z"/>
+      </svg>
+    </div>
+    <span class="eyebrow">Brand Guide</span>
+    <h1 class="title">The document design system</h1>
+    <p class="standfirst">Six document families, one voice. Everything here is
+      already in <code>brand/theraglee.css</code> — this page is the reference.</p>
+  </header>
+
+  <section class="section">
+    <h2 class="sec">Palette</h2>
+    <p class="deck">Lifted verbatim from the live site's <code>assets/styles.css</code>,
+      so a printed worksheet and the web app are the same brand.</p>
+    <div class="swatches">
+      <div class="sw"><div class="chip" style="background:#187C1A"></div>
+        <div class="meta"><span class="nm">Green</span><span class="hx">#187C1A</span></div></div>
+      <div class="sw"><div class="chip" style="background:#0E5A10"></div>
+        <div class="meta"><span class="nm">Green deep</span><span class="hx">#0E5A10</span></div></div>
+      <div class="sw"><div class="chip" style="background:#8DC61D"></div>
+        <div class="meta"><span class="nm">Lime</span><span class="hx">#8DC61D</span></div></div>
+      <div class="sw"><div class="chip" style="background:#6AB21E"></div>
+        <div class="meta"><span class="nm">Lime 2</span><span class="hx">#6AB21E</span></div></div>
+      <div class="sw"><div class="chip" style="background:#C9DFA6"></div>
+        <div class="meta"><span class="nm">Mist</span><span class="hx">#C9DFA6</span></div></div>
+      <div class="sw"><div class="chip" style="background:#F0F7E2"></div>
+        <div class="meta"><span class="nm">Soft</span><span class="hx">#F0F7E2</span></div></div>
+      <div class="sw"><div class="chip" style="background:#FBF9F2"></div>
+        <div class="meta"><span class="nm">Cream</span><span class="hx">#FBF9F2</span></div></div>
+      <div class="sw"><div class="chip" style="background:#F3F0E4"></div>
+        <div class="meta"><span class="nm">Sand</span><span class="hx">#F3F0E4</span></div></div>
+      <div class="sw"><div class="chip" style="background:#E7E3D6"></div>
+        <div class="meta"><span class="nm">Hair</span><span class="hx">#E7E3D6</span></div></div>
+      <div class="sw"><div class="chip" style="background:#16241C"></div>
+        <div class="meta"><span class="nm">Ink</span><span class="hx">#16241C</span></div></div>
+      <div class="sw"><div class="chip" style="background:#5A6760"></div>
+        <div class="meta"><span class="nm">Muted</span><span class="hx">#5A6760</span></div></div>
+      <div class="sw"><div class="chip" style="background:#8B978E"></div>
+        <div class="meta"><span class="nm">Faint</span><span class="hx">#8B978E</span></div></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 class="sec">Typography</h2>
+    <div class="typerow">
+      <span class="tag">Title — Outfit 300, −0.035em</span>
+      <h1 class="title" style="margin:0">A little lighter, every morning</h1>
+    </div>
+    <div class="typerow">
+      <span class="tag">Standfirst — Instrument Serif italic, green</span>
+      <p class="standfirst" style="margin:0">The serif italic is the brand's speaking
+        voice. Use it once per document, near the top.</p>
+    </div>
+    <div class="typerow">
+      <span class="tag">Section heading — Outfit 500</span>
+      <h2 class="sec" style="margin:0">Your days</h2>
+    </div>
+    <div class="typerow">
+      <span class="tag">Body — Outfit 400, 1.62 line height</span>
+      <p style="margin:0;max-width:66ch;color:var(--ink-2)">Body copy sits at a 66-character
+        measure. Outfit's geometric roundness carries the warmth, so the writing
+        can stay plain — no exclamation marks needed.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 class="sec">Category accents</h2>
+    <p class="deck">Each document sets <code>data-doc</code> on <code>&lt;body&gt;</code>.
+      That single hook re-points <code>--accent</code>, <code>--accent-soft</code> and
+      <code>--accent-line</code>; every other rule is shared. This is what keeps six
+      document types looking related while still feeling distinct.</p>
+    <div class="accents">
+      <div class="acc"><code>challenge</code>
+        <span class="dotc" style="background:#6AB21E"></span>
+        <span class="use">Lime. Numbered day rail, tick boxes, streak language.</span></div>
+      <div class="acc"><code>article</code>
+        <span class="dotc" style="background:#187C1A"></span>
+        <span class="use">Green. Reading measure, serif lede, labelled callouts.</span></div>
+      <div class="acc"><code>checklist</code>
+        <span class="dotc" style="background:#187C1A"></span>
+        <span class="use">Green. Banded rows, action over explanation.</span></div>
+      <div class="acc"><code>journal</code>
+        <span class="dotc" style="background:#F3F0E4;border:1px solid var(--hair)"></span>
+        <span class="use">Sand. Serif prompts, ruled space, minimal chrome.</span></div>
+      <div class="acc"><code>quiz</code>
+        <span class="dotc" style="background:#187C1A"></span>
+        <span class="use">Green. Numbered questions, score pills, banded results.</span></div>
+      <div class="acc"><code>worksheet</code>
+        <span class="dotc" style="background:#F3F0E4;border:1px solid var(--hair)"></span>
+        <span class="use">Sand. Numbered sections, generous fill space, tables.</span></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 class="sec">Shared components</h2>
+    <div class="spec">
+      <div class="demo">
+        <span class="lab">Badges</span>
+        <div class="tags">
+          <span class="badge">Default</span>
+          <span class="badge grey">Grey</span>
+          <span class="badge warn">Warn</span>
+        </div>
+      </div>
+      <div class="demo">
+        <span class="lab">Eyebrow chip</span>
+        <span class="eyebrow" style="margin:0">30-Day Challenge</span>
+      </div>
+      <div class="demo">
+        <span class="lab">Note</span>
+        <div class="note">A tinted callout. Takes the document's accent.</div>
+      </div>
+      <div class="demo">
+        <span class="lab">Note · warn</span>
+        <div class="note warn">Used for the safety line on assessments.</div>
+      </div>
+      <div class="demo">
+        <span class="lab">Write-on lines</span>
+        <div class="lines" data-rows="3"></div>
+      </div>
+      <div class="demo">
+        <span class="lab">Tick box &amp; inline blank</span>
+        <p style="display:flex;align-items:center;gap:11px;margin:0 0 14px">
+          <span class="tickbox"></span> A tickable row</p>
+        <p style="margin:0">I feel <span class="blank"></span> today.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 class="sec">Table</h2>
+    <table class="grid">
+      <thead><tr><th>Day</th><th>Activity</th><th>Mood before</th><th>Mood after</th></tr></thead>
+      <tbody><tr><td></td><td></td><td></td><td></td></tr>
+      <tr><td></td><td></td><td></td><td></td></tr>
+      <tr><td></td><td></td><td></td><td></td></tr></tbody>
+    </table>
+  </section>
+
+  <section class="section">
+    <h2 class="sec">Rules of thumb</h2>
+    <div class="prose" style="max-width:none">
+      <ul>
+        <li><strong>The masthead never names the category.</strong> It carries the
+          brand line; the eyebrow chip below the title names the category.</li>
+        <li><strong>The eyebrow carries a fact, not just a name</strong> — <em>30-Day
+          Challenge</em>, <em>Article · 5 min read</em>. Don't repeat that fact in the
+          meta row underneath it.</li>
+        <li><strong>One serif moment per document.</strong> The standfirst, or the
+          journal prompt. More than that and it stops feeling like a voice.</li>
+        <li><strong>Every atomic unit survives a page break.</strong> Days, checklist
+          rows, questions, bands and fields all carry <code>break-inside:avoid</code>.</li>
+        <li><strong>Print strips the chrome, not the structure.</strong> The sheet
+          loses its border, shadow and radius; the rails, rules and boxes stay.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer class="colophon">
+    <p class="crisis">If you are in crisis, call or text 988 (Suicide &amp; Crisis
+      Lifeline, US) or your local emergency number. Theraglee is a wellbeing tool,
+      not a substitute for professional care.</p>
+    <span class="wordmark">theraglee</span>
+  </footer>
+
+</article>
+</body>
+</html>
