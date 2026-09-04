@@ -4,13 +4,16 @@ Live site: **https://theraglee.com** (also reachable at
 `https://theraglee-site.vercel.app`)
 
 Moving the domain off HostGator is written up step by step in
-[`docs/hosting-migration.md`](../docs/hosting-migration.md).
+[`hosting-migration.md`](hosting-migration.md).
+
+> This file used to live at `site/README.md`. It moved here because `site/` is
+> deployed verbatim — see "Everything in `site/` is public" below.
 
 ## The pieces
 
 | Piece | What it does | Where |
 |---|---|---|
-| Front end | Every page you see. Plain HTML/CSS/JavaScript — no build tools needed. | this folder |
+| Front end | Every page you see. Plain HTML/CSS/JavaScript — no build tools needed. | `site/` |
 | Database + logins | Members, therapists, all content, all progress. | Supabase project `oekqzuguruyqkafsqhos` |
 | Payments | Stripe Checkout + billing portal + webhook. | Supabase Edge Functions |
 | Hosting | Serves the site. | Vercel project `theraglee-site` |
@@ -59,27 +62,28 @@ link in the admin screen.
 
 ## Changing the site
 
-The readable source lives here. Vercel builds from the `site_files` table in
-Supabase, so publishing a change is two steps:
+The readable source is `site/`, and **a push to the default branch deploys it**.
+Vercel is linked to this GitHub repository with `site/` as the root directory,
+so editing a file and pushing is the whole process.
 
-1. Edit the files in this folder.
-2. Push them into `site_files`, then redeploy on Vercel.
+This replaced the old two-step flow, where the files were copied into the
+`site_files` table in Supabase and Vercel was redeployed by hand. `site_files`
+is no longer what gets served.
 
-Ask Claude to do this ("publish my site changes") — it handles both steps.
-Now that the project has a GitHub repository, this can be swapped for the
-normal Git → Vercel flow, where a push deploys automatically.
+### Everything in `site/` is public
 
-### Everything in this folder is public
+`site/` is deployed verbatim, so every file in it is readable by anyone — not
+just the HTML. This file used to be `site/README.md` and was served at
+`/README.md` with a `200`, which published the address that is auto-granted
+administrator and the SQL that lifts the AssignRemind gate.
 
-`site/` is uploaded to Vercel verbatim, so every file in it is readable by
-anyone — not just the HTML. This file used to be served at `/README.md` with a
-`200`, which published the address that is auto-granted administrator and the
-SQL that lifts the AssignRemind gate.
+**No `.md` file is ever published.** Documentation lives in `docs/`, which is
+outside the deployed directory and therefore cannot be served at all. That is
+the real guarantee; `site/.vercelignore` also excludes `*.md` as a backstop for
+anything dropped in later.
 
-**No `.md` file is ever published.** Documentation stays in the repository; only
-assets, pages and `vercel.json` go into `site_files`. (`vercel.json` has to
-ship — Vercel reads the redirects and headers from it — and holds nothing
-sensitive.)
+`vercel.json` is the one non-asset file that ships, because Vercel reads the
+redirects and headers from it. It holds nothing sensitive.
 
 ## Content
 

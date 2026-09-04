@@ -135,12 +135,18 @@ to pick the corrections up.
 
 ## The site itself (`site/`)
 
-`site/` mirrors the `site_files` table in Supabase, which is what Vercel serves.
-Keeping it in git gives the site a reviewable history — and is the first half of
-the "swap to the normal Git → Vercel flow" the site's own README asks for.
+`site/` is the live site. Vercel is linked to this repository with `site/` as
+its root directory, so **a push to the default branch deploys it** — the "swap
+to the normal Git → Vercel flow" that [`docs/site.md`](docs/site.md) had been
+asking for. The old route, copying files into the `site_files` table in Supabase
+and redeploying by hand, is retired.
 
-To publish, the contents of `site/` are pushed into `site_files` and Vercel is
-redeployed. Editing `site/` alone changes nothing that is live.
+Everything in `site/` is served verbatim and is therefore public. Documentation
+lives in [`docs/`](docs/), outside the deployed directory, so it cannot be
+served; `site/.vercelignore` excludes `*.md` as a backstop.
+
+Moving the domain from HostGator to Vercel is written up in
+[`docs/hosting-migration.md`](docs/hosting-migration.md).
 
 ### Member library: favourites, save for later, progress
 
