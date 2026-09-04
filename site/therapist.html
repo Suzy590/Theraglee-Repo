@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Therapist — Theraglee</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="assets/favicon.png" sizes="48x48">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  .hdr{display:flex;gap:26px;align-items:flex-start;flex-wrap:wrap}
+  .photo{flex:0 0 150px;height:150px;border-radius:24px;background:var(--soft);object-fit:cover;
+    display:grid;place-items:center;font-size:2.4rem;color:var(--green);font-weight:400}
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:9px 22px;font-size:.94rem}
+  .kv dt{color:var(--faint)}
+  .kv dd{margin:0;color:var(--ink-2)}
+  .verified{display:inline-flex;align-items:center;gap:6px;color:var(--green);
+    font-size:.82rem;font-weight:500}
+  .contact-box{background:var(--paper);border:1px solid var(--hair);border-radius:var(--r);
+    padding:22px;box-shadow:var(--shadow-1);position:sticky;top:96px}
+  .phone{font-size:1.4rem;font-weight:500;letter-spacing:-.02em;color:var(--ink);
+    display:block;margin:6px 0 2px}
+  .layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:34px;align-items:start}
+  @media(max-width:880px){.layout{grid-template-columns:1fr}.contact-box{position:static}}
+  .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+</style>
+</head>
+<body>
+<main class="section"><div class="wrap" id="root">
+  <div class="skeleton" style="height:260px"></div>
+</div></main>
+
+<script type="module">
+import { chrome, sb, esc, qs, access, toast, busy, modal, FN } from './assets/app.js';
+const a = await chrome({ active:'therapists.html' });
+const root = document.getElementById('root');
+const slug = qs('slug');
+
+const { data: t } = await sb.from('therapist_directory').select('*').eq('slug', slug).maybeSingle();
+
+if (!t) {
+  root.innerHTML = `<div class="empty">That profile is not available.
+    <a href="therapists.html">Back to the directory</a></div>`;
+} else {
+  document.title = `${t.first_name} ${t.last_name} — Theraglee`;
+  const log = (kind) => sb.from('therapist_events').insert(
+    { therapist_id: t.id, event_type: kind, actor_id: a.authenticated ? a.profile.id : null });
+  log('profile_view');
+
+  const initials = ((t.first_name?.[0]||'') + (t.last_name?.[0]||'')).toUpperCase();
+  const list = (arr) => (arr||[]).length ? arr.map(esc).join(', ') : '—';
+  const locs = (t.locations||[]).map(l => [l.address, l.city, l.state, l.zip].filter(Boolean).join(', '));
+
+  root.innerHTML = `
+    <a class="faint" href="therapists.html">← All therapists</a>
+    <div class="layout" style="margin-top:16px">
+      <div>
+        <div class="hdr">
+          ${t.photo_url ? `<img class="photo" src="${esc(t.photo_url)}" alt="">`
+                        : `<div class="photo">${initials}</div>`}
+          <div style="flex:1;min-width:240px">
+            <h1 style="margin:0;font-size:2rem">${esc(t.first_name)} ${esc(t.last_name)}${t.credentials?`, ${esc(t.credentials)}`:''}</h1>
+            <p class="verified" style="margin:6px 0 8px">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 6 9 17l-5-5"/></svg>
+              Licence verified with the state board</p>
+            <p class="faint" style="margin:0 0 12px">
+              ${t.delivery==='telehealth'?'Telehealth':t.delivery==='both'?'In person &amp; telehealth':'In person'}
+              ${(t.license_states||[]).length?' · Licensed in '+t.license_states.join(', '):''}</p>
+            <div class="chips">${(t.top_specialties||[]).map(s=>`<span class="badge">★ ${esc(s)}</span>`).join('')}</div>
+          </div>
+        </div>
+
+        ${t.bio?`<h2 style="margin-top:36px">About</h2>
+          <p class="muted" style="white-space:pre-wrap">${esc(t.bio)}</p>`:''}
+
+        <h2 style="margin-top:32px">Practice details</h2>
+        <dl class="kv">
+          <dt>Specialties</dt><dd>${list(t.specialties)}</dd>
+          <dt>Approaches</dt><dd>${list(t.treatment_modalities)}</dd>
+          <dt>Insurance</dt><dd>${list(t.insurances)}</dd>
+          <dt>Fees</dt><dd>${esc(t.fees||'—')}</dd>
+          <dt>Sees</dt><dd>${list(t.participants)}</dd>
+          <dt>Ages</dt><dd>${list(t.age_ranges)}</dd>
+          <dt>Languages</dt><dd>${list(t.languages)}</dd>
+          <dt>Education</dt><dd>${esc(t.education||'—')}</dd>
+          ${locs.length?`<dt>Locations</dt><dd>${locs.map(esc).join('<br>')}</dd>`:''}
+        </dl>
+      </div>
+
+      <aside class="contact-box">
+        <span class="label faint" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em">
+          Contact</span>
+        ${t.tracking_phone ? `
+          <a class="phone" href="tel:${esc(t.tracking_phone.replace(/[^0-9+]/g,''))}" id="call">
+            ${esc(t.tracking_phone)}</a>
+          <p class="faint" style="margin:0 0 14px">Connects you straight through</p>` : ''}
+        <div class="stack">
+          ${t.accepts_messages ? `<button class="btn block" id="email">Send a message</button>` : ''}
+          ${t.website ? `<button class="btn ghost block" id="site">Visit website</button>` : ''}
+          <button class="btn ghost block" id="share">Share this profile</button>
+        </div>
+        <p class="faint" style="margin:16px 0 0;font-size:.8rem">
+          Messages go through Theraglee, so their direct line and inbox stay private
+          until they choose to share them.</p>
+      </aside>
+    </div>`;
+
+  document.getElementById('call')?.addEventListener('click', () => log('call'));
+  document.getElementById('site')?.addEventListener('click', () => {
+    log('website_click');
+    const u = /^https?:/i.test(t.website) ? t.website : 'https://' + t.website;
+    window.open(u, '_blank', 'noopener');
+  });
+  document.getElementById('share')?.addEventListener('click', async () => {
+    log('share');
+    const url = location.href;
+    if (navigator.share) { try { await navigator.share({ title: document.title, url }); return; } catch {} }
+    await navigator.clipboard.writeText(url); toast('Link copied.','ok');
+  });
+
+  document.getElementById('email')?.addEventListener('click', () => {
+    const me = a.authenticated ? a.profile : null;
+    const back = modal(`
+      <h2 style="margin-bottom:4px">Message ${esc(t.first_name)}</h2>
+      <p class="muted" style="font-size:.92rem">They reply to you directly. Their email address
+        is never shared with anyone.</p>
+      <form id="cform" style="margin-top:18px">
+        <input class="hp" type="text" id="company" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <div class="field"><label for="cn">Your name *</label>
+          <input id="cn" required value="${esc(me?.full_name||'')}"></div>
+        <div class="field"><label for="ce">Your email *</label>
+          <input id="ce" type="email" required value="${esc(me?.email||'')}">
+          <div class="help">So they can reply to you.</div></div>
+        <div class="field"><label for="cp">Phone <span class="faint">(optional)</span></label>
+          <input id="cp" type="tel"></div>
+        <div class="field"><label for="ct">Best times to reach you <span class="faint">(optional)</span></label>
+          <input id="ct" placeholder="e.g. weekday evenings"></div>
+        <div class="field"><label for="cm">Your message *</label>
+          <textarea id="cm" required placeholder="What are you looking for help with? Anything you'd like them to know?"></textarea></div>
+        <div class="row" style="justify-content:flex-end">
+          <button type="button" class="btn ghost" id="cancel">Cancel</button>
+          <button type="submit" class="btn" id="send">Send message</button>
+        </div>
+      </form>`);
+
+    back.querySelector('#cancel').onclick = () => back.remove();
+    back.querySelector('#cform').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = back.querySelector('#send');
+      const V = id => back.querySelector('#'+id).value.trim();
+      if (V('cm').length < 10) return toast('Please write a little more.','err');
+      busy(btn, true, 'Sending…');
+      try {
+        const { data: { session } } = await sb.auth.getSession();
+        const res = await fetch(`${FN}/contact-therapist`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}),
+          },
+          body: JSON.stringify({
+            therapist_slug: slug, sender_name: V('cn'), sender_email: V('ce'),
+            sender_phone: V('cp'), preferred_times: V('ct'), message: V('cm'),
+            company: V('company'),
+          }),
+        });
+        const out = await res.json();
+        busy(btn, false);
+        if (!res.ok || out.error) return toast(out.message || 'Could not send that.','err');
+        back.querySelector('.modal').innerHTML = `
+          <div class="center">
+            <span class="badge">Message sent</span>
+            <h2 style="margin-top:14px">On its way to ${esc(t.first_name)}</h2>
+            <p class="muted">${esc(out.message||'')}</p>
+            <button class="btn" id="done">Close</button>
+          </div>`;
+        back.querySelector('#done').onclick = () => back.remove();
+      } catch {
+        busy(btn, false);
+        toast('Could not reach the messaging service.','err');
+      }
+    });
+  });
+}
+</script>
+</body>
+</html>

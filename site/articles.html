@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="assets/favicon.png" sizes="48x48">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="assets/styles.css">
+<title>Articles — Theraglee</title>
+<meta name="description" content="Evidence-informed articles on habits, thinking traps, resilience and everyday mental health.">
+</head>
+<body>
+<main class="section"><div class="wrap">
+  <h1>Articles</h1>
+  <p class="muted" style="max-width:56ch">Plain-language pieces on how this stuff actually works.</p>
+  <div class="grid g3" id="list" style="margin-top:28px">
+    <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+  </div>
+</div></main>
+<script type="module">
+import { chrome, sb, esc, tierName, unlockHref } from './assets/app.js';
+const a = await chrome({ active:'articles.html' });
+const { data } = await sb.from('content_catalog').select('*').eq('kind','article');
+document.getElementById('list').innerHTML = (data||[]).length
+  ? data.map(r=>{
+      const locked = r.min_level > a.level;
+      return `<a class="tile ${locked?'locked':''}" href="${locked?unlockHref(r.min_level,a.authenticated):'article.html?slug='+encodeURIComponent(r.slug)}">
+        <div class="row" style="justify-content:space-between;align-items:flex-start">
+          <h3>${esc(r.title)}</h3>
+          ${locked?`<span class="badge lock">${tierName(r.min_level)}</span>`:''}
+        </div>
+        <p class="meta" style="color:var(--muted)">${esc(String(r.description||'').slice(0,150))}</p>
+        ${(r.tags||[]).length?`<span class="meta">${r.tags.map(esc).join(' · ')}</span>`:''}
+      </a>`;
+    }).join('')
+  : '<div class="empty" style="grid-column:1/-1">No articles published yet.</div>';
+</script>
+</body>
+</html>

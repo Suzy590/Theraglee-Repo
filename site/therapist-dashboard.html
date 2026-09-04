@@ -1,0 +1,648 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Practice dashboard — Theraglee</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="assets/favicon.png" sizes="48x48">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  .tabs{display:flex;gap:2px;border-bottom:1px solid var(--hair);margin:24px 0 28px;overflow-x:auto}
+  .tabs button{border:0;background:none;font:inherit;font-size:.95rem;padding:12px 16px;cursor:pointer;
+    color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap;position:relative}
+  .tabs button.on{color:var(--green);border-bottom-color:var(--green);font-weight:500}
+  .tabs .dot{display:inline-block;min-width:18px;padding:0 5px;height:18px;line-height:18px;
+    border-radius:9px;background:var(--green);color:#fff;font-size:.7rem;margin-left:6px;
+    text-align:center;font-weight:600}
+  .stats{display:grid;gap:1px;background:var(--hair);border:1px solid var(--hair);
+    border-radius:var(--r);overflow:hidden;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+  .stat{background:var(--paper);padding:18px}
+  .stat .n{font-size:2rem;font-weight:300;letter-spacing:-.03em;line-height:1;color:var(--ink);
+    font-variant-numeric:tabular-nums}
+  .stat .l{font-size:.84rem;color:var(--muted);margin-top:6px}
+  .stat .d{font-size:.76rem;margin-top:6px;font-weight:500}
+  .up{color:var(--green)} .down{color:var(--warn)} .flat{color:var(--faint)}
+  .chart{display:flex;align-items:flex-end;gap:3px;height:130px;padding-top:12px}
+  .chart div{flex:1;min-height:2px;background:var(--mist);border-radius:3px 3px 0 0;position:relative}
+  .chart div.has{background:var(--lime)}
+  .msg{background:var(--paper);border:1px solid var(--hair);border-radius:var(--r);
+    padding:20px;margin-bottom:12px}
+  .msg.unread{border-color:var(--lime-2);background:linear-gradient(180deg,var(--soft),var(--paper) 40%)}
+  .msg .who{font-family:var(--sans);font-weight:600}
+  .res{background:var(--paper);border:1px solid var(--hair);border-radius:var(--r);padding:20px;
+    display:flex;flex-direction:column;gap:8px;cursor:pointer;transition:transform .3s,box-shadow .3s}
+  .res:hover{transform:translateY(-4px);box-shadow:var(--shadow-2)}
+  .soon{opacity:.62}
+</style>
+</head>
+<body>
+<main class="section"><div class="wrap" id="root">
+  <div class="skeleton" style="height:220px"></div>
+</div></main>
+
+<script type="module">
+import { chrome, sb, requireAuth, access, clearAccess, esc, toast, busy, fmtDate,
+         modal, openPortal, startCheckout, FN, qs } from './assets/app.js';
+import { SPECIALTIES, MODALITIES, INSURANCES, AGE_RANGES, PARTICIPANTS,
+         LANGUAGES, CREDENTIALS, STATES } from './assets/lists.js';
+await chrome();
+let a = await requireAuth();
+if (a) {
+const root = document.getElementById('root');
+
+if (a.profile.role !== 'therapist') {
+  root.innerHTML = `<div class="card pad-lg center">
+    <h2>This is a member account</h2>
+    <p class="muted">Therapist listings need a therapist account.</p>
+    <a class="btn" href="for-therapists.html">How therapist membership works</a></div>`;
+} else {
+
+let T = a.therapist || null;
+let tab = location.hash.replace('#','') || (T ? 'referrals' : 'profile');
+let unread = 0;
+
+const paid = ['active','trialing'].includes(a.profile.subscription_status);
+const liveListing = T?.verification === 'verified' && T?.published;
+
+/* ------------------------------------------------------------ shell */
+const TABS = [
+  ['referrals','Referrals'], ['messages','Messages'], ['members','Member requests'],
+  ['library','Resource library'], ['profile','My profile'], ['membership','Membership'],
+  ['assign','Assign Remind'],
+];
+
+function shell(body){
+  const status = !T ? 'No listing yet'
+    : T.verification === 'verified' ? (T.published ? 'Live in the directory' : 'Verified — not published')
+    : T.verification === 'rejected' ? 'Licence not verified' : 'Verification pending';
+  return `
+    <div class="spread">
+      <div><h1 style="margin:0">Practice dashboard</h1>
+        <p class="faint" style="margin:4px 0 0">${esc(a.profile.email||'')}</p></div>
+      <span class="badge ${T?.verification==='verified'?'':'grey'}">${status}</span>
+    </div>
+    <div class="tabs">${TABS.map(([k,l])=>
+      `<button data-tab="${k}" class="${tab===k?'on':''}">${l}${
+        k==='messages' && unread ? `<span class="dot">${unread}</span>` : ''}</button>`).join('')}</div>
+    <div id="body">${body}</div>`;
+}
+
+function render(body){
+  root.innerHTML = shell(body);
+  root.querySelectorAll('.tabs button').forEach(b => b.onclick = () => {
+    tab = b.dataset.tab; history.replaceState({},'','#'+tab); route();
+  });
+}
+
+function needsListing(){
+  render(`<div class="card pad-lg center">
+    <h2>Build your profile first</h2>
+    <p class="muted">Once your listing exists we can verify your licence and start
+      counting the referrals it brings in.</p>
+    <button class="btn lg" id="go">Start my profile</button></div>`);
+  document.getElementById('go').onclick = () => { tab='profile'; route(); };
+}
+
+/* -------------------------------------------------------- referrals */
+async function referrals(){
+  if (!T) return needsListing();
+  render('<div class="skeleton" style="height:160px"></div>');
+  const days = Number(sessionStorage.getItem('tg-range') || 30);
+  const { data, error } = await sb.rpc('therapist_stats', { p_days: days });
+  if (error || data?.error) {
+    return render(`<div class="notice err">${esc(error?.message || 'No listing found.')}</div>`);
+  }
+  unread = data.unread_messages || 0;
+
+  const c = data.current, p = data.previous;
+  const delta = (now, before) => {
+    if (!before) return now ? `<span class="d up">new</span>` : `<span class="d flat">—</span>`;
+    const pct = Math.round((now - before) / before * 100);
+    if (pct === 0) return `<span class="d flat">no change</span>`;
+    return `<span class="d ${pct>0?'up':'down'}">${pct>0?'+':''}${pct}% vs previous</span>`;
+  };
+  const card = (n, label, before) =>
+    `<div class="stat"><div class="n">${n}</div><div class="l">${label}</div>${delta(n, before)}</div>`;
+
+  const series = data.series || [];
+  const peak = Math.max(1, ...series.map(d => d.views + d.calls + d.messages));
+
+  render(`
+    <div class="spread" style="margin-bottom:18px">
+      <h2 style="margin:0">Referrals from Theraglee</h2>
+      <div class="chips" id="range">
+        ${[7,30,90,365].map(d=>`<button class="chip ${d===days?'on':''}" data-d="${d}">
+          ${d===365?'12 months':d+' days'}</button>`).join('')}
+      </div>
+    </div>
+
+    <div class="stats">
+      ${card(c.profile_views, 'Profile views', p.profile_views)}
+      ${card(c.call_taps, 'Phone calls', p.call_taps)}
+      ${card(c.messages, 'Messages received', p.messages)}
+      ${card(c.website_clicks, 'Website clicks', p.website_clicks)}
+      ${card(c.shares, 'Profile shares', p.shares)}
+    </div>
+
+    <h3 style="margin-top:34px">Day by day</h3>
+    <div class="card">
+      <div class="chart">${series.map(d=>{
+        const total = d.views + d.calls + d.messages;
+        return `<div class="${total?'has':''}" style="height:${Math.max(2,total/peak*100)}%"
+          title="${d.day}: ${d.views} views, ${d.calls} calls, ${d.messages} messages"></div>`;
+      }).join('')}</div>
+      <div class="spread" style="margin-top:12px">
+        <span class="faint">${series.length?fmtDate(series[0].day):''}</span>
+        <span class="faint">views, calls and messages combined</span>
+        <span class="faint">today</span>
+      </div>
+    </div>
+
+    ${!liveListing ? `<div class="notice warn" style="margin-top:22px">
+      Your profile is not live yet, so there is nothing to count.
+      ${T.verification!=='verified' ? 'We are verifying your licence.'
+        : !paid ? 'Start your membership to publish it.' : 'Publish it from My profile.'}
+    </div>` : `<div class="notice" style="margin-top:22px">
+      <strong>Phone calls</strong> counts people who tapped your Theraglee number.
+      ${c.verified_calls ? `${c.verified_calls} connected calls were confirmed by the phone network.`
+        : 'Once call forwarding is switched on, connected calls and their length appear here too.'}
+    </div>`}`);
+
+  document.querySelectorAll('#range .chip').forEach(b => b.onclick = () => {
+    sessionStorage.setItem('tg-range', b.dataset.d); referrals();
+  });
+}
+
+/* --------------------------------------------------------- messages */
+async function messages(){
+  if (!T) return needsListing();
+  render('<div class="skeleton" style="height:160px"></div>');
+  const { data } = await sb.from('therapist_messages').select('*')
+    .eq('therapist_id', T.id).order('created_at', { ascending:false }).limit(100);
+  const rows = data || [];
+  unread = rows.filter(m => !m.read_at).length;
+
+  render(`
+    <h2>Messages</h2>
+    <p class="muted">People who contacted you through your profile. Reply straight to their
+      email address — yours is never shown to them.</p>
+    ${rows.length ? rows.map(m=>`
+      <div class="msg ${m.read_at?'':'unread'}" data-id="${m.id}">
+        <div class="spread">
+          <span class="who">${esc(m.sender_name)}</span>
+          <span class="faint">${fmtDate(m.created_at)}</span>
+        </div>
+        <p class="faint" style="margin:4px 0 0">
+          <a href="mailto:${esc(m.sender_email)}">${esc(m.sender_email)}</a>
+          ${m.sender_phone?` · ${esc(m.sender_phone)}`:''}
+          ${m.preferred_times?` · best times: ${esc(m.preferred_times)}`:''}</p>
+        <p style="margin:12px 0 0;white-space:pre-wrap;color:var(--ink-2)">${esc(m.message)}</p>
+        <div class="row" style="margin-top:14px">
+          <a class="btn sm" href="mailto:${esc(m.sender_email)}?subject=${encodeURIComponent('Re: your message via Theraglee')}">Reply by email</a>
+          ${m.read_at ? '' : `<button class="btn sm ghost" data-read="${m.id}">Mark as read</button>`}
+          ${m.delivery === 'sent'
+            ? '<span class="faint">Emailed to you</span>'
+            : '<span class="faint">Shown here — email delivery not switched on yet</span>'}
+        </div>
+      </div>`).join('')
+    : '<div class="empty" style="margin-top:18px">No messages yet.</div>'}`);
+
+  document.querySelectorAll('[data-read]').forEach(b => b.onclick = async () => {
+    await sb.from('therapist_messages')
+      .update({ read_at: new Date().toISOString() }).eq('id', b.dataset.read);
+    messages();
+  });
+}
+
+/* ---------------------------------------------------------- members */
+async function members(){
+  if (!T) return needsListing();
+  render('<div class="skeleton" style="height:160px"></div>');
+  const { data, error } = await sb.from('member_discovery').select('*').limit(100);
+  if (error) return render(`<div class="notice err">${esc(error.message)}</div>`);
+  const rows = data || [];
+
+  render(`
+    <h2>Members open to being contacted</h2>
+    <p class="muted">Theraglee members who switched on “let therapists reach out”. You see their
+      name and what they are working on — never an email address, and never anything they
+      have written in their journal.</p>
+    ${!liveListing ? `<div class="notice warn">Your listing has to be live before you can
+      reach out.</div>` : ''}
+    ${rows.length ? `<div class="grid g3" style="margin-top:20px">${rows.map(m=>`
+      <div class="card">
+        <div class="spread"><strong>${esc(m.display_name)}</strong>
+          ${m.already_contacted?'<span class="badge grey">Contacted</span>':''}</div>
+        <div class="chips" style="margin:12px 0">${
+          (m.issues||[]).map(i=>`<span class="badge">${esc(i)}</span>`).join('')
+          || '<span class="faint">No topics listed</span>'}</div>
+        <p class="faint" style="margin:0">${m.zip?'Near '+esc(m.zip):'Area not shared'}
+          · joined ${fmtDate(m.created_at)}</p>
+        <button class="btn sm" style="margin-top:14px" data-reach="${m.id}"
+          ${(!liveListing || m.already_contacted)?'disabled':''}>
+          ${m.already_contacted?'Already contacted':'Reach out'}</button>
+      </div>`).join('')}</div>`
+    : `<div class="empty" style="margin-top:20px">No members have opted in yet.</div>`}`);
+
+  document.querySelectorAll('[data-reach]').forEach(b => b.onclick = () => {
+    const back = modal(`
+      <h2>Reach out</h2>
+      <p class="muted" style="font-size:.92rem">They see this in their Theraglee inbox along
+        with a link to your profile. Keep it short and warm.</p>
+      <div class="field"><label for="om">Your message</label>
+        <textarea id="om" placeholder="Hello — I work with anxiety and sleep, and I have space on Tuesdays…"></textarea></div>
+      <div class="row" style="justify-content:flex-end">
+        <button class="btn ghost" id="no">Cancel</button>
+        <button class="btn" id="yes">Send</button></div>`);
+    back.querySelector('#no').onclick = () => back.remove();
+    back.querySelector('#yes').onclick = async (e) => {
+      const msg = back.querySelector('#om').value.trim();
+      if (msg.length < 10) return toast('Please write a little more.','err');
+      busy(e.target, true, 'Sending…');
+      const { error } = await sb.from('therapist_outreach')
+        .insert({ therapist_id: T.id, member_id: b.dataset.reach, message: msg });
+      busy(e.target, false);
+      if (error) return toast(error.message,'err');
+      back.remove(); toast('Message sent.','ok'); members();
+    };
+  });
+}
+
+/* ---------------------------------------------------------- library */
+const KINDS = [['','Everything'],['worksheet','Worksheets'],['cbt','CBT'],['act','ACT'],
+               ['dbt','DBT'],['couples','Couples'],['kids','Kids'],['game','Games']];
+let libKind = '', libTerm = '';
+
+async function library(){
+  render('<div class="skeleton" style="height:160px"></div>');
+  const { data, error } = await sb.from('therapist_resources').select('*').order('title');
+
+  if (error || !data) {
+    return render(`<div class="card pad-lg center">
+      <h2>The library opens with your membership</h2>
+      <p class="muted">Verified therapists with an active membership get the full set of
+        worksheets and exercises.</p>
+      <a class="btn" href="pricing.html">See therapist membership</a></div>`);
+  }
+
+  const paint = () => {
+    const t = libTerm.trim().toLowerCase();
+    const list = data.filter(r =>
+      (!libKind || r.kind === libKind) &&
+      (!t || (r.title + ' ' + (r.summary||'') + ' ' + (r.tags||[]).join(' ')).toLowerCase().includes(t)));
+    document.getElementById('lib-count').textContent =
+      `${list.length} resource${list.length===1?'':'s'}`;
+    document.getElementById('lib-grid').innerHTML = list.length ? list.map(r=>`
+      <div class="res" data-slug="${esc(r.slug)}">
+        <div class="row" style="justify-content:space-between;align-items:flex-start">
+          <h3 style="margin:0;font-size:1.02rem">${esc(r.title)}</h3>
+          <span class="badge grey">${esc(KINDS.find(k=>k[0]===r.kind)?.[1] || r.kind)}</span>
+        </div>
+        <p class="muted" style="margin:0;font-size:.92rem">${esc(r.summary||'')}</p>
+        <span class="faint">${esc((r.audience||[]).join(', '))}${r.duration?' · '+esc(r.duration):''}</span>
+      </div>`).join('')
+      : '<div class="empty" style="grid-column:1/-1">Nothing matches that.</div>';
+
+    document.querySelectorAll('.res').forEach(el => el.onclick = () => {
+      const r = data.find(x => x.slug === el.dataset.slug);
+      const back = modal(`
+        <span class="badge grey">${esc(KINDS.find(k=>k[0]===r.kind)?.[1] || r.kind)}</span>
+        <h2 style="margin-top:12px">${esc(r.title)}</h2>
+        <p class="muted">${esc(r.summary||'')}</p>
+        <dl class="kv" style="display:grid;grid-template-columns:auto 1fr;gap:6px 18px;font-size:.9rem">
+          <dt class="faint">Use it for</dt><dd style="margin:0">${esc(r.goal||'—')}</dd>
+          <dt class="faint">Who with</dt><dd style="margin:0">${esc((r.audience||[]).join(', ')||'—')}</dd>
+          <dt class="faint">Time</dt><dd style="margin:0">${esc(r.duration||'—')}</dd>
+        </dl>
+        ${r.body_md?`<h3 style="margin-top:22px">Running it</h3>
+          <p class="muted" style="white-space:pre-wrap">${esc(r.body_md)}</p>`:''}
+        ${(r.fields||[]).length?`<h3 style="margin-top:22px">Client prompts</h3>
+          <ol style="color:var(--ink-2);padding-left:20px">${
+            r.fields.map(f=>`<li style="margin-bottom:6px">${esc(f.label)}</li>`).join('')}</ol>`:''}
+        <div class="row no-print" style="margin-top:20px;justify-content:flex-end">
+          <button class="btn ghost" onclick="window.print()">Print</button>
+          <button class="btn" id="close">Close</button>
+        </div>`);
+      back.querySelector('#close').onclick = () => back.remove();
+    });
+  };
+
+  render(`
+    <h2>Resource library</h2>
+    <p class="muted">Worksheets and exercises to use with clients, included with your membership.
+      They are adjuncts to your own clinical judgement, not protocols.</p>
+    <div class="card" style="margin:20px 0">
+      <div class="field" style="margin-bottom:12px">
+        <label for="lq">Search</label>
+        <input id="lq" placeholder="Try “exposure”, “values”, “anger”…">
+      </div>
+      <div class="chips" id="lib-kinds">${KINDS.map(([k,l])=>
+        `<button class="chip ${k===libKind?'on':''}" data-k="${k}">${l}</button>`).join('')}</div>
+    </div>
+    <p class="faint" id="lib-count"></p>
+    <div class="grid g3" id="lib-grid"></div>`);
+
+  document.getElementById('lq').addEventListener('input', e => { libTerm = e.target.value; paint(); });
+  document.querySelectorAll('#lib-kinds .chip').forEach(c => c.onclick = () => {
+    document.querySelectorAll('#lib-kinds .chip').forEach(x=>x.classList.remove('on'));
+    c.classList.add('on'); libKind = c.dataset.k; paint();
+  });
+  paint();
+}
+
+/* ----------------------------------------------------------- assign */
+async function assign(){
+  if (!paid) {
+    return render(`<div class="card pad-lg center">
+      <span class="badge lock">Therapist membership</span>
+      <h2 style="margin-top:14px">Assign Remind</h2>
+      <p class="muted" style="max-width:52ch;margin-inline:auto">Set homework between sessions,
+        let the reminders chase it, and see what came back before they next walk in.
+        Included with an active membership.</p>
+      <button class="btn lg" id="sub2">Start membership</button></div>`);
+  }
+  render('<div id="ar-host"><div class="skeleton" style="height:160px"></div></div>');
+  const { renderAssignRemind } = await import('./assets/assignremind.js');
+  await renderAssignRemind(document.getElementById('ar-host'), { siteOrigin: location.origin });
+}
+
+/* ---------------------------------------------------------- profile */
+function chipGroup(id, options, selected, max){
+  return `<div class="chips" id="${id}" data-max="${max||0}">${options.map(o=>{
+    const on = (selected||[]).includes(o);
+    return `<button type="button" class="chip ${on?'on':''}" data-v="${esc(o)}">${esc(o)}</button>`;
+  }).join('')}</div>`;
+}
+const chipVals = id => [...document.querySelectorAll(`#${id} .chip.on`)].map(c=>c.dataset.v);
+function wireChips(id){
+  const host = document.getElementById(id);
+  const max = Number(host.dataset.max || 0);
+  host.querySelectorAll('.chip').forEach(c => c.onclick = () => {
+    if (!c.classList.contains('on') && max && chipVals(id).length >= max)
+      return toast(`Choose up to ${max}.`,'err');
+    c.classList.toggle('on');
+  });
+}
+function locRow(l){
+  return `<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(110px,1fr)) auto;gap:10px;align-items:end;margin-bottom:10px" data-loc>
+    <div><label>Address</label><input class="l-address" value="${esc(l.address||'')}"></div>
+    <div><label>City</label><input class="l-city" value="${esc(l.city||'')}"></div>
+    <div><label>State</label><select class="l-state"><option value="">—</option>
+      ${STATES.map(s=>`<option value="${s[0]}" ${l.state===s[0]?'selected':''}>${s[0]}</option>`).join('')}</select></div>
+    <div><label>Zip</label><input class="l-zip" value="${esc(l.zip||'')}"></div>
+    <button type="button" class="btn ghost sm" onclick="this.closest('[data-loc]').remove()">Remove</button>
+  </div>`;
+}
+
+function profile(){
+  const t = T || {};
+  const locs = (t.locations && t.locations.length) ? t.locations : [{}];
+  render(`
+    <form id="pform">
+      ${t.verification === 'rejected' ? `<div class="notice err" style="margin-bottom:20px">
+        We could not confirm that licence as current and in good standing. Check the number,
+        state and licence type, then save to resubmit.</div>` : ''}
+      ${!t.id ? `<div class="notice" style="margin-bottom:20px">Nothing is public until your
+        licence is verified and you publish.</div>` : ''}
+
+      <h2>Who you are</h2>
+      <div class="grid g2">
+        <div class="field"><label for="fn">First name *</label><input id="fn" value="${esc(t.first_name||'')}" required></div>
+        <div class="field"><label for="ln">Last name *</label><input id="ln" value="${esc(t.last_name||'')}" required></div>
+      </div>
+      <div class="grid g2">
+        <div class="field"><label for="cred">Credentials</label><select id="cred">
+          <option value="">Select…</option>
+          ${CREDENTIALS.map(c=>`<option ${t.credentials===c?'selected':''}>${esc(c)}</option>`).join('')}</select></div>
+        <div class="field"><label for="gender">Gender</label><select id="gender">
+          <option value="">Prefer not to say</option>
+          ${['Female','Male','Non-binary'].map(g=>`<option ${t.gender===g?'selected':''}>${g}</option>`).join('')}</select></div>
+      </div>
+      <div class="field"><label for="bio">Short bio</label>
+        <textarea id="bio" placeholder="How you work, who you work with, what a first session is like.">${esc(t.bio||'')}</textarea></div>
+      <div class="field"><label for="photo">Profile photo URL</label>
+        <input id="photo" type="url" value="${esc(t.photo_url||'')}" placeholder="https://…"></div>
+
+      <hr class="hr">
+      <h2>Licence</h2>
+      <p class="muted" style="font-size:.92rem">We verify this against your state board before
+        your profile can go live, and re-check it before it expires.</p>
+      <div class="grid g2">
+        <div class="field"><label for="lic">Licence number *</label>
+          <input id="lic" value="${esc(t.license_number||'')}" required>
+          <div class="help">Never shown publicly.</div></div>
+        <div class="field"><label for="ltype">Licence type</label>
+          <select id="ltype"><option value="">Select…</option>
+          ${CREDENTIALS.map(c=>`<option ${t.license_type===c?'selected':''}>${esc(c)}</option>`).join('')}</select></div>
+      </div>
+      <div class="field"><label>Licensed in *</label>${chipGroup('states', STATES.map(s=>s[0]), t.license_states)}</div>
+
+      <hr class="hr">
+      <h2>Your practice</h2>
+      <div class="field"><label>Specialties</label>${chipGroup('spec', SPECIALTIES, t.specialties)}</div>
+      <div class="field"><label>Star your top three</label>${chipGroup('top', SPECIALTIES, t.top_specialties, 3)}</div>
+      <div class="field"><label>Approaches</label>${chipGroup('mods', MODALITIES, t.treatment_modalities)}</div>
+      <div class="field"><label>Insurance accepted</label>${chipGroup('ins', INSURANCES, t.insurances)}</div>
+      <div class="field"><label>Ages seen</label>${chipGroup('ages', AGE_RANGES, t.age_ranges)}</div>
+      <div class="field"><label>Who you see</label>${chipGroup('parts', PARTICIPANTS, t.participants)}</div>
+      <div class="field"><label>Languages</label>${chipGroup('langs', LANGUAGES, t.languages)}</div>
+      <div class="grid g2">
+        <div class="field"><label for="delivery">Sessions offered *</label><select id="delivery">
+          <option value="both" ${t.delivery==='both'?'selected':''}>In person and telehealth</option>
+          <option value="in_person" ${t.delivery==='in_person'?'selected':''}>In person only</option>
+          <option value="telehealth" ${t.delivery==='telehealth'?'selected':''}>Telehealth only</option></select></div>
+        <div class="field"><label for="fees">Fees</label>
+          <input id="fees" value="${esc(t.fees||'')}" placeholder="e.g. $150 per 50-minute session"></div>
+      </div>
+      <div class="field"><label for="edu">Education</label>
+        <input id="edu" value="${esc(t.education||'')}" placeholder="e.g. MA Clinical Psychology, NYU"></div>
+
+      <hr class="hr">
+      <h2>Locations</h2>
+      <div id="locs">${locs.map(locRow).join('')}</div>
+      <button type="button" class="btn ghost sm" id="addloc">Add another location</button>
+
+      <hr class="hr">
+      <h2>How people reach you</h2>
+      <div class="notice" style="margin-bottom:18px">
+        Your own number and inbox stay private. Theraglee shows a tracking number on your
+        profile and routes messages to the address below, which is how your referral counts
+        get measured.
+        ${t.proxy_phone ? `<br><br><strong>Your Theraglee number:</strong> ${esc(t.proxy_phone)}`
+          : '<br><br>Your tracking number is issued once your licence is verified.'}
+      </div>
+      <div class="grid g2">
+        <div class="field"><label for="cemail">Where should messages go? *</label>
+          <input id="cemail" type="email" value="${esc(t.contact_email||'')}" placeholder="you@practice.com">
+          <div class="help">Never shown to visitors.</div></div>
+        <div class="field"><label for="cphone">Your real phone</label>
+          <input id="cphone" type="tel" value="${esc(t.contact_phone||'')}">
+          <div class="help">Never shown. Used for call forwarding.</div></div>
+      </div>
+      <div class="field"><label for="web">Website</label>
+        <input id="web" type="url" value="${esc(t.website||'')}" placeholder="https://…"></div>
+
+      <div class="row" style="margin-top:24px">
+        <button class="btn lg" id="save" type="submit">${t.id ? 'Save changes' : 'Create my profile'}</button>
+        ${t.id && t.verification !== 'verified'
+          ? `<button type="button" class="btn ghost" id="verify">Check my licence now</button>` : ''}
+        ${t.id && t.verification === 'verified'
+          ? `<button type="button" class="btn ghost" id="pub">${t.published?'Unpublish':'Publish to directory'}</button>` : ''}
+        ${t.published ? `<a class="btn ghost" href="therapist.html?slug=${esc(t.slug)}">View public profile</a>` : ''}
+      </div>
+    </form>`);
+
+  ['states','spec','top','mods','ins','ages','parts','langs'].forEach(wireChips);
+  document.getElementById('addloc').onclick = () =>
+    document.getElementById('locs').insertAdjacentHTML('beforeend', locRow({}));
+  document.getElementById('pform').addEventListener('submit', save);
+  document.getElementById('verify')?.addEventListener('click', runVerification);
+  document.getElementById('pub')?.addEventListener('click', togglePublish);
+}
+
+async function save(e){
+  e.preventDefault();
+  const V = id => document.getElementById(id).value.trim();
+  if (!V('fn') || !V('ln')) return toast('First and last name are required.','err');
+  if (!V('lic')) return toast('Licence number is required.','err');
+  if (!chipVals('states').length) return toast('Select at least one state of licensure.','err');
+  if (!V('cemail')) return toast('Add the email where messages should go.','err');
+
+  const locations = [...document.querySelectorAll('[data-loc]')].map(r => ({
+    address: r.querySelector('.l-address').value.trim(),
+    city:    r.querySelector('.l-city').value.trim(),
+    state:   r.querySelector('.l-state').value,
+    zip:     r.querySelector('.l-zip').value.trim(),
+  })).filter(l => l.city || l.zip || l.address);
+
+  const payload = {
+    user_id: a.profile.id,
+    first_name: V('fn'), last_name: V('ln'),
+    credentials: V('cred') || null, gender: V('gender') || null,
+    bio: V('bio') || null, photo_url: V('photo') || null,
+    license_number: V('lic'), license_type: V('ltype') || null,
+    license_states: chipVals('states'),
+    specialties: chipVals('spec'), top_specialties: chipVals('top'),
+    treatment_modalities: chipVals('mods'), insurances: chipVals('ins'),
+    age_ranges: chipVals('ages'), participants: chipVals('parts'), languages: chipVals('langs'),
+    delivery: V('delivery'), fees: V('fees') || null, education: V('edu') || null,
+    locations,
+    contact_email: V('cemail'), contact_phone: V('cphone') || null,
+    website: V('web') || null,
+  };
+
+  const btn = document.getElementById('save');
+  busy(btn, true, 'Saving…');
+  const { data, error } = T?.id
+    ? await sb.from('therapist_profiles').update(payload).eq('id', T.id).select().single()
+    : await sb.from('therapist_profiles').insert(payload).select().single();
+  busy(btn, false);
+  if (error) return toast(error.message,'err');
+  const isNew = !T?.id;
+  T = data; clearAccess();
+  toast('Saved.','ok');
+  if (isNew) { await runVerification(); }
+  route();
+}
+
+async function runVerification(e){
+  const btn = e?.target;
+  busy(btn, true, 'Checking…');
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    const res = await fetch(`${FN}/verify-license`, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', Authorization: `Bearer ${session?.access_token??''}` },
+      body: JSON.stringify({ therapist_id: T.id }),
+    });
+    const out = await res.json();
+    busy(btn, false);
+    if (out.error) return toast(out.message || 'Could not run the check.','err');
+    toast(out.message, out.status === 'verified' ? 'ok' : '');
+    clearAccess(); a = await access(true); T = a.therapist || T;
+    route();
+  } catch { busy(btn, false); toast('Could not reach the verification service.','err'); }
+}
+
+async function togglePublish(e){
+  busy(e.target, true, '…');
+  const { data, error } = await sb.from('therapist_profiles')
+    .update({ published: !T.published }).eq('id', T.id).select().single();
+  busy(e.target, false);
+  if (error) return toast(error.message,'err');
+  const wanted = !T.published;
+  T = data;
+  if (wanted && !T.published) {
+    toast(!paid ? 'Publishing needs an active membership.'
+                : 'Publishing needs a verified licence.', 'err');
+  } else {
+    toast(T.published ? 'You are live in the directory.' : 'Unpublished.','ok');
+  }
+  route();
+}
+
+/* ------------------------------------------------------- membership */
+async function membership(){
+  render('<div class="skeleton" style="height:140px"></div>');
+  const { data: checks } = T
+    ? await sb.from('license_verifications').select('*')
+        .eq('therapist_id', T.id).order('checked_at', { ascending:false }).limit(5)
+    : { data: [] };
+  const p = a.profile;
+
+  render(`
+    <h2>Therapist membership</h2>
+    <div class="card" style="margin-top:16px">
+      <div class="spread">
+        <div><strong>Status</strong><br>
+          <span class="muted">${paid ? 'Active' : (p.subscription_status || 'Not subscribed')}</span></div>
+        ${p.current_period_end ? `<div><strong>${p.cancel_at_period_end?'Ends':'Renews'}</strong><br>
+          <span class="muted">${fmtDate(p.current_period_end)}</span></div>` : ''}
+        <div class="row">
+          ${paid ? `<button class="btn ghost" id="portal">Manage membership</button>`
+                 : `<button class="btn" id="sub">Start membership</button>`}
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:32px">Licence verification</h3>
+    ${(checks||[]).length ? `<div class="scroll-x"><table class="data">
+      <thead><tr><th>Checked</th><th>Result</th><th>How</th><th>Board</th><th>Expires</th></tr></thead>
+      <tbody>${checks.map(c=>`<tr>
+        <td class="faint">${fmtDate(c.checked_at)}</td>
+        <td><span class="badge ${c.status==='verified'?'':'grey'}">${esc(c.status)}</span></td>
+        <td>${c.method==='vendor'?'Automatic':'Reviewed by us'}</td>
+        <td>${esc(c.board_name||'—')}</td>
+        <td>${c.expires_on?fmtDate(c.expires_on):'—'}</td></tr>`).join('')}</tbody>
+    </table></div>` : '<div class="empty">No checks recorded yet.</div>'}
+    ${T?.license_expires_on ? `<p class="faint" style="margin-top:12px">
+      Licence on file expires ${fmtDate(T.license_expires_on)}. We re-check before then.</p>` : ''}
+
+    <div class="notice" style="margin-top:24px">
+      A listing appears in the directory only while the licence is verified and current
+      <em>and</em> the membership is active. If either lapses, the profile comes down
+      automatically.
+    </div>`);
+
+  document.getElementById('portal')?.addEventListener('click', e => openPortal(e.target));
+  document.getElementById('sub')?.addEventListener('click', e => startCheckout('therapist','monthly',e.target));
+}
+
+root.addEventListener('click', (e) => {
+  if (e.target.id === 'sub2') startCheckout('therapist','monthly', e.target);
+});
+
+/* ------------------------------------------------------------ route */
+function route(){
+  ({ referrals, messages, members, library, profile, membership, assign }[tab] || referrals)();
+}
+route();
+}
+}
+</script>
+</body>
+</html>

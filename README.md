@@ -130,3 +130,45 @@ fixed at the source.
 
 Re-exporting from Supabase after fixing them and re-running the build is enough
 to pick the corrections up.
+
+---
+
+## The site itself (`site/`)
+
+`site/` mirrors the `site_files` table in Supabase, which is what Vercel serves.
+Keeping it in git gives the site a reviewable history — and is the first half of
+the "swap to the normal Git → Vercel flow" the site's own README asks for.
+
+To publish, the contents of `site/` are pushed into `site_files` and Vercel is
+redeployed. Editing `site/` alone changes nothing that is live.
+
+### Member library: favourites, save for later, progress
+
+`site/assets/library.js` is the one place these three member behaviours live, so
+every activity page behaves the same way and the dashboard has a single source
+to read from.
+
+| Behaviour | Where it is stored |
+|---|---|
+| Favourite | `favorites` with `list = 'favorite'` |
+| Save for later | `favorites` with `list = 'later'` |
+| Started / completed | `item_progress (answered, total)` → generated `status` |
+
+`item_progress.status` is a **generated column** — `not_started` at zero answers,
+`completed` once `answered >= total`, `started` in between — so it can never
+disagree with the counts it is derived from.
+
+An activity counts as **started** at one answer and **completed** when every
+answer is in. Worksheets count filled fields (a table field counts once any cell
+is filled), quizzes count answered questions, checklists count ticked items.
+Articles have no questions, so they carry an explicit **Mark as read**.
+
+The favourite control is the **"ee" from the wordmark with its smile** —
+`brand/assets/favorite.svg`, traced from `logo.png` so the curves are the real
+letterforms rather than an approximation. It reads as a small face and stays
+legible down to 16px.
+
+Members see **Favourites**, **Saved for later** and **Picked up but not finished**
+on the dashboard, and can filter the library by the same views on Explore.
+
+Logic is covered by `tests/library-fixture/` — see its README.

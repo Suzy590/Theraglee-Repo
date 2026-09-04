@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Library — Theraglee</title>
+<meta name="description" content="Browse every quiz, worksheet, checklist, challenge and article on Theraglee.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="assets/favicon.png" sizes="48x48">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<main class="section">
+  <div class="wrap">
+    <h1>The library</h1>
+    <p class="muted" style="max-width:56ch">Everything on Theraglee in one place. Anything above your
+      membership stays visible — you'll just see what it takes to unlock it.</p>
+
+    <div class="card" style="margin:26px 0">
+      <div class="field" style="margin-bottom:14px">
+        <label for="q">Search</label>
+        <input id="q" type="text" placeholder="Try “anxiety”, “gratitude”, “sleep”…">
+      </div>
+      <div class="chips" id="types">
+        <button class="chip on" data-t="">Everything</button>
+        <button class="chip" data-t="quiz">Quizzes</button>
+        <button class="chip" data-t="worksheet">Worksheets</button>
+        <button class="chip" data-t="checklist">Checklists</button>
+        <button class="chip" data-t="challenge">Challenges</button>
+        <button class="chip" data-t="article">Articles</button>
+        <button class="chip" data-t="mandala">Mandalas</button>
+      </div>
+      <div class="chips" id="tiers" style="margin-top:12px">
+        <button class="chip on" data-l="">Any tier</button>
+        <button class="chip" data-l="unlocked">Available to me</button>
+      </div>
+      <!-- Member-only views; hidden for signed-out visitors. -->
+      <div class="chips hide" id="views" style="margin-top:12px">
+        <button class="chip" data-v="favorite">Favourites</button>
+        <button class="chip" data-v="later">Saved for later</button>
+        <button class="chip" data-v="started">In progress</button>
+        <button class="chip" data-v="completed">Completed</button>
+      </div>
+    </div>
+
+    <p class="faint" id="count"></p>
+    <div class="grid g3" id="results">
+      <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+    </div>
+  </div>
+</main>
+
+<script type="module">
+import { chrome, sb, access, esc, tierName, qs, unlockHref } from './assets/app.js';
+import { library, isFavorite, isLater, favButton, statusBadge,
+         bindLibrary, progressOf } from './assets/library.js';
+const a = await chrome({ active:'explore.html' });
+
+const HREF = {
+  quiz:      r => `quiz.html?slug=${encodeURIComponent(r.slug)}`,
+  worksheet: r => `worksheet.html?slug=${encodeURIComponent(r.slug)}`,
+  checklist: r => `checklist.html?slug=${encodeURIComponent(r.slug)}`,
+  challenge: r => `challenges.html?template=${encodeURIComponent(r.slug)}`,
+  article:   r => `article.html?slug=${encodeURIComponent(r.slug)}`,
+  mandala:   r => `mandalas.html?slug=${encodeURIComponent(r.slug)}`,
+};
+const LABEL = { quiz:'Quiz', worksheet:'Worksheet', checklist:'Checklist',
+                challenge:'Challenge', article:'Article', mandala:'Mandala' };
+
+const { data: rows, error } = await sb.from('content_catalog').select('*');
+const lib = await library();
+if (lib.authenticated) document.getElementById('views').classList.remove('hide');
+if (view) document.querySelector(`#views .chip[data-v="${view}"]`)?.classList.add('on');
+if (error) console.error(error);
+const all = rows || [];
+
+let type = qs('type','') , term = '', onlyMine = false, view = qs('view','');
+if (type) document.querySelectorAll('#types .chip').forEach(c =>
+  c.classList.toggle('on', c.dataset.t === type));
+
+function render(){
+  const t = term.trim().toLowerCase();
+  const list = all.filter(r =>
+    (!type || r.kind === type) &&
+    (!onlyMine || r.min_level <= a.level) &&
+    (!view ||
+      (view === 'favorite' && isFavorite(lib, r.kind, r.id)) ||
+      (view === 'later'    && isLater(lib, r.kind, r.id))    ||
+      (view === 'started'  && progressOf(lib, r.kind, r.id)?.status === 'started') ||
+      (view === 'completed'&& progressOf(lib, r.kind, r.id)?.status === 'completed')) &&
+    (!t || (r.title + ' ' + (r.description||'') + ' ' + (r.tags||[]).join(' ')).toLowerCase().includes(t))
+  ).sort((x,y) => x.min_level - y.min_level || x.title.localeCompare(y.title));
+
+  document.getElementById('count').textContent =
+    `${list.length} item${list.length===1?'':'s'}${type?` in ${LABEL[type].toLowerCase()}s`:''}`;
+
+  document.getElementById('results').innerHTML = list.length
+    ? list.map(r => {
+        const locked = r.min_level > a.level;
+        const href = locked ? unlockHref(r.min_level, a.authenticated) : HREF[r.kind](r);
+        const p = progressOf(lib, r.kind, r.id);
+        const pct = p && p.total ? Math.round(Math.min(1, p.answered / p.total) * 100) : 0;
+        return `<a class="tile ${locked?'locked':''}" href="${href}">
+          ${locked ? '' : favButton(r.kind, r.id, isFavorite(lib, r.kind, r.id), { size:20, label:false })}
+          <div class="row" style="justify-content:space-between;align-items:flex-start;gap:10px">
+            <h3>${esc(r.title)}</h3>
+            ${locked ? `<span class="badge lock">${tierName(r.min_level)}</span>` : ''}
+          </div>
+          ${r.description ? `<p class="meta" style="color:var(--muted)">${esc(String(r.description).slice(0,120))}${String(r.description).length>120?'…':''}</p>` : ''}
+          <span class="meta">${LABEL[r.kind]}${r.category && r.category!==LABEL[r.kind] ? ' · '+esc(r.category) : ''}</span>
+          <div class="row" style="gap:7px;margin-top:2px">
+            ${statusBadge(p)}${isLater(lib, r.kind, r.id) ? '<span class="badge grey">Saved for later</span>' : ''}
+          </div>
+          ${pct ? `<div class="prog"><i style="width:${pct}%"></i></div>` : ''}
+        </a>`;
+      }).join('')
+    : `<div class="empty" style="grid-column:1/-1">Nothing matches that yet. Try a different word.</div>`;
+}
+
+document.getElementById('q').addEventListener('input', e => { term = e.target.value; render(); });
+document.querySelectorAll('#types .chip').forEach(c => c.addEventListener('click', () => {
+  document.querySelectorAll('#types .chip').forEach(x=>x.classList.remove('on'));
+  c.classList.add('on'); type = c.dataset.t; render();
+}));
+document.querySelectorAll('#tiers .chip').forEach(c => c.addEventListener('click', () => {
+  document.querySelectorAll('#tiers .chip').forEach(x=>x.classList.remove('on'));
+  c.classList.add('on'); onlyMine = c.dataset.l === 'unlocked'; render();
+}));
+
+bindLibrary(document.getElementById('results'), () => render());
+
+document.querySelectorAll('#views .chip').forEach(c => c.addEventListener('click', () => {
+  const was = view === c.dataset.v;
+  document.querySelectorAll('#views .chip').forEach(x => x.classList.remove('on'));
+  view = was ? '' : c.dataset.v;
+  if (!was) c.classList.add('on');
+  render();
+}));
+
+render();
+</script>
+</body>
+</html>

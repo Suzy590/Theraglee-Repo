@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="assets/favicon.png" sizes="48x48">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="assets/styles.css">
+<title>Article — Theraglee</title>
+<style>
+  .prose{font-size:1.05rem;line-height:1.75;color:var(--ink-2)}
+  .prose p{margin:0 0 1.15em}
+  .prose h2,.prose h3{color:var(--ink);margin:1.8em 0 .5em}
+</style>
+</head>
+<body>
+<main class="section"><div class="wrap narrow" id="root">
+  <div class="skeleton" style="height:260px"></div>
+</div></main>
+<script type="module">
+import { chrome, sb, esc, qs, lockNotice, logActivity, fmtDate, toast } from './assets/app.js';
+import { library, isFavorite, isLater, favButton, laterButton, statusBadge,
+         bindLibrary, setProgress } from './assets/library.js';
+const a = await chrome({ active:'articles.html' });
+const root = document.getElementById('root');
+const slug = qs('slug');
+const { data: art } = await sb.from('articles').select('*').eq('slug', slug).maybeSingle();
+
+if (!art) {
+  const { data: cat } = await sb.from('content_catalog').select('*').eq('slug',slug).eq('kind','article').maybeSingle();
+  if (cat) { document.title = cat.title + ' — Theraglee'; lockNotice(root, cat.min_level, cat.title); }
+  else root.innerHTML = '<div class="empty">Article not found. <a href="articles.html">All articles</a></div>';
+} else {
+  document.title = art.title + ' — Theraglee';
+  logActivity('article', art.id, 'view', art.tags || []);
+  const lib = await library();
+  const read = lib.progress.get('article:'+art.id)?.status === 'completed';
+  const paras = String(art.body_md).split(/\n\n+/).map(p => {
+    const t = p.trim();
+    if (!t) return '';
+    if (t.length < 90 && !/[.?!]$/.test(t)) return `<h3>${esc(t)}</h3>`;
+    return `<p>${esc(t)}</p>`;
+  }).join('');
+  root.innerHTML = `
+    <a class="faint" href="articles.html">← All articles</a>
+    <h1 style="margin-top:12px">${esc(art.title)}</h1>
+    <p class="faint">${fmtDate(art.published_at)}${(art.tags||[]).length?' · '+art.tags.map(esc).join(' · '):''}</p>
+    <div class="row no-print" id="libbar" style="margin-top:14px">
+      ${favButton('article', art.id, isFavorite(lib,'article',art.id))}
+      ${laterButton('article', art.id, isLater(lib,'article',art.id))}
+      <span id="statuspill">${statusBadge(lib.progress.get('article:'+art.id))}</span>
+    </div>
+    <div class="prose" style="margin-top:26px">${paras}</div>
+    <div class="row no-print" style="margin-top:26px">
+      <button class="btn ghost${read ? ' on' : ''}" id="markread">${
+        read ? 'Read' : 'Mark as read'}</button>
+    </div>
+    <div class="notice warn" style="margin-top:34px">Educational only — not medical advice,
+      diagnosis or treatment. <a href="therapists.html">Find a licensed therapist</a> if you want support.</div>`;
+
+  bindLibrary(root);
+
+  // An article has no questions, so completion is the reader saying so.
+  document.getElementById('markread')?.addEventListener('click', async (e) => {
+    const done = e.currentTarget.textContent.trim() === 'Read';
+    const p = await setProgress('article', art.id, done ? 0 : 1, 1);
+    if (p === null) return toast('Sign in free to track what you have read.', 'err');
+    e.currentTarget.textContent = done ? 'Mark as read' : 'Read';
+    e.currentTarget.classList.toggle('on', !done);
+    document.getElementById('statuspill').innerHTML = statusBadge(p);
+  });
+}
+</script>
+</body>
+</html>

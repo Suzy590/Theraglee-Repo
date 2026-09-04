@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sign in — Theraglee</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="assets/favicon.png" sizes="48x48">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<main class="section">
+  <div class="wrap" style="max-width:470px">
+    <div class="center" style="margin-bottom:26px">
+      <h1 id="title" style="font-size:2rem">Welcome back</h1>
+      <p class="muted" id="sub">Sign in to pick up where you left off.</p>
+    </div>
+
+    <div class="card pad-lg">
+      <div id="alert"></div>
+      <form id="form" class="stack" novalidate>
+        <div class="field" id="name-field" style="display:none">
+          <label for="name">Your name</label>
+          <input id="name" type="text" autocomplete="name" placeholder="First and last name">
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" type="email" autocomplete="email" required placeholder="you@example.com">
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input id="password" type="password" autocomplete="current-password" required
+                 minlength="8" placeholder="At least 8 characters">
+          <div class="help" id="pw-help"></div>
+        </div>
+        <div class="field" id="role-field" style="display:none">
+          <label>I am joining as</label>
+          <div class="chips">
+            <button type="button" class="chip on" data-role="member">Someone looking for support</button>
+            <button type="button" class="chip" data-role="therapist">A licensed therapist</button>
+          </div>
+          <div class="help">Therapist accounts list a practice in the directory and are verified
+            against your state licensing board.</div>
+        </div>
+        <button class="btn lg block" id="submit" type="submit">Sign in</button>
+      </form>
+
+      <p class="center faint" style="margin:18px 0 0">
+        <a href="#" id="forgot">Forgot your password?</a>
+      </p>
+    </div>
+
+    <p class="center muted" style="margin-top:22px">
+      <span id="switch-copy">New here?</span>
+      <a href="#" id="switch">Create a free account</a>
+    </p>
+    <p class="center faint" style="margin-top:20px">
+      Registering is free and never asks for a card.
+    </p>
+  </div>
+</main>
+
+<script type="module">
+import { chrome, sb, clearAccess, toast, qs, busy, $, esc } from './assets/app.js';
+await chrome();
+
+let mode = qs('mode') === 'signup' ? 'signup' : 'signin';
+let role = 'member';
+const next = qs('next') || 'dashboard.html';
+
+// Already signed in? Go straight through.
+const { data: { session } } = await sb.auth.getSession();
+if (session) location.replace(next);
+
+if (qs('timeout')) {
+  $('#alert').innerHTML = `<div class="notice warn" style="margin-bottom:18px">
+    <strong>You were signed out after a spell of inactivity.</strong><br>
+    That keeps client information off an unattended screen. Sign in to pick up where you were.
+  </div>`;
+}
+
+function paint(){
+  const up = mode === 'signup';
+  $('#title').textContent = up ? 'Create your free account' : 'Welcome back';
+  $('#sub').textContent   = up ? 'No card, no cost. Takes about twenty seconds.'
+                               : 'Sign in to pick up where you left off.';
+  $('#submit').textContent = up ? 'Create account' : 'Sign in';
+  $('#name-field').style.display = up ? '' : 'none';
+  $('#role-field').style.display = up ? '' : 'none';
+  $('#pw-help').textContent = up ? 'At least 8 characters.' : '';
+  $('#password').autocomplete = up ? 'new-password' : 'current-password';
+  $('#switch-copy').textContent = up ? 'Already have an account?' : 'New here?';
+  $('#switch').textContent = up ? 'Sign in instead' : 'Create a free account';
+  history.replaceState({}, '', `login.html?mode=${mode}${qs('next')?'&next='+encodeURIComponent(qs('next')):''}`);
+}
+paint();
+
+$('#switch').addEventListener('click', e => { e.preventDefault(); mode = mode==='signup'?'signin':'signup'; paint(); });
+
+document.querySelectorAll('[data-role]').forEach(c => c.addEventListener('click', () => {
+  document.querySelectorAll('[data-role]').forEach(x => x.classList.remove('on'));
+  c.classList.add('on'); role = c.dataset.role;
+}));
+
+const alertBox = (msg, kind='err') => $('#alert').innerHTML =
+  `<div class="notice ${kind}" style="margin-bottom:18px">${msg}</div>`;
+
+$('#form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = $('#email').value.trim();
+  const password = $('#password').value;
+  const full_name = $('#name').value.trim();
+  $('#alert').innerHTML = '';
+
+  if (!email || !password) return alertBox('Please fill in your email and password.');
+  if (mode === 'signup' && password.length < 8)
+    return alertBox('Please choose a password of at least 8 characters.');
+
+  const btn = $('#submit');
+  busy(btn, true, mode==='signup' ? 'Creating…' : 'Signing in…');
+
+  if (mode === 'signup') {
+    const { data, error } = await sb.auth.signUp({
+      email, password,
+      options: { data: { full_name, role }, emailRedirectTo: location.origin + '/dashboard.html' },
+    });
+    busy(btn, false);
+    if (error) return alertBox(error.message);
+
+    // Supabase will not say outright that an address is taken, to stop people
+    // fishing for who has an account. It signals it by returning a user with no
+    // identities and sending no email. Without this check the page tells people
+    // to wait for a message that is never coming.
+    if (data.user && (data.user.identities?.length ?? 0) === 0) {
+      mode = 'signin'; paint();
+      $('#password').value = '';
+      return alertBox(
+        `<strong>You already have an account with ${esc(email)}.</strong><br>
+         Sign in below — or <a href="#" id="send-reset">send yourself a reset link</a>
+         if you have forgotten the password.`, 'warn');
+    }
+
+    if (!data.session) {
+      return alertBox(
+        `<strong>Check your email.</strong><br>
+         We have sent a confirmation link to ${esc(email)}. It can take a minute, and it
+         sometimes lands in spam. <a href="#" id="resend">Send it again</a>.`, 'warn');
+    }
+    clearAccess();
+    location.href = role === 'therapist' ? 'for-therapists.html?welcome=1' : next;
+  } else {
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+    busy(btn, false);
+    if (error) {
+      const m = error.message || '';
+      if (/email not confirmed/i.test(m)) {
+        return alertBox(
+          `<strong>This account still needs confirming.</strong><br>
+           Check your email for the link we sent to ${esc(email)}, or
+           <a href="#" id="resend">send it again</a>.`, 'warn');
+      }
+      if (/invalid login credentials/i.test(m)) {
+        return alertBox(
+          `<strong>That email and password do not match.</strong><br>
+           Try again, or <a href="#" id="send-reset">send yourself a reset link</a>.`);
+      }
+      return alertBox(m);
+    }
+    clearAccess();
+    location.href = next;
+  }
+});
+
+// Actions offered inside the message box above.
+$('#alert').addEventListener('click', async (e) => {
+  const email = $('#email').value.trim();
+
+  if (e.target.id === 'send-reset') {
+    e.preventDefault();
+    if (!email) return alertBox('Type your email above first.');
+    const { error } = await sb.auth.resetPasswordForEmail(email,
+      { redirectTo: location.origin + '/account.html' });
+    alertBox(error ? error.message
+      : `Reset link sent to ${esc(email)}. It can take a minute.`, error ? 'err' : 'warn');
+  }
+
+  if (e.target.id === 'resend') {
+    e.preventDefault();
+    const { error } = await sb.auth.resend({
+      type: 'signup', email,
+      options: { emailRedirectTo: location.origin + '/dashboard.html' },
+    });
+    alertBox(error ? error.message
+      : `Sent again to ${esc(email)}. Check your spam folder too.`, error ? 'err' : 'warn');
+  }
+});
+
+$('#forgot').addEventListener('click', async (e) => {
+  e.preventDefault();
+  const email = $('#email').value.trim();
+  if (!email) return alertBox('Type your email above first, then click again.');
+  const { error } = await sb.auth.resetPasswordForEmail(email, {
+    redirectTo: location.origin + '/account.html',
+  });
+  error ? alertBox(error.message) : alertBox('Password reset link sent. Check your email.', 'warn');
+});
+</script>
+</body>
+</html>

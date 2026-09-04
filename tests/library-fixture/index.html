@@ -1,0 +1,58 @@
+<link rel="stylesheet" href="assets/styles.css">
+<style>body{background:#FBF9F2;padding:24px;font-family:Outfit,system-ui}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(3,1fr);max-width:900px}
+.tile{background:#fff;border:1px solid #E7E3D6;border-radius:16px;padding:20px}
+h4{font:600 11px/1 Outfit;letter-spacing:.1em;text-transform:uppercase;color:#8B978E;margin:22px 0 10px}</style>
+<div id="root">
+  <h4>Catalog tiles — favourite in the corner</h4>
+  <div class="grid" id="tiles"></div>
+  <h4>Activity page bar</h4>
+  <div class="row" id="bar"></div>
+  <h4>Status badges</h4>
+  <div class="row" id="badges"></div>
+</div>
+<pre id="log" style="margin-top:22px;font:12px ui-monospace;color:#5A6760"></pre>
+<script type="module">
+import { library, favButton, laterButton, statusBadge, bindLibrary, setProgress,
+         countAnswers, isFavorite, isLater } from './assets/library.js';
+import { DB } from './assets/app.js';
+const lib = await library();
+document.getElementById('tiles').innerHTML = [
+  ['worksheet','w1','Thought Record'], ['quiz','q1','Adaptability Quiz'], ['checklist','c1','Daily Check-in'],
+].map(([k,id,t]) => `<div class="tile">${favButton(k,id,isFavorite(lib,k,id),{size:20,label:false})}<h3>${t}</h3><span class="meta">${k}</span></div>`).join('');
+document.getElementById('bar').innerHTML =
+  favButton('worksheet','w1',false) + ' ' + laterButton('worksheet','w1',false);
+document.getElementById('badges').innerHTML =
+  statusBadge({status:'started',answered:2,total:7}) + ' ' + statusBadge({status:'completed'}) + ' ' + statusBadge(null);
+bindLibrary(document.getElementById('root'));
+
+// --- assertions ---
+const log = [];
+const t = (n, c) => log.push((c ? 'PASS ' : 'FAIL ') + n);
+// virtual time does not advance setTimeout here; the stub is sync inside
+// promises, so flushing microtasks is enough to let the handlers settle.
+const flush = async () => { for (let i = 0; i < 20; i++) await Promise.resolve(); };
+try {
+t('countAnswers counts text + tables',
+  JSON.stringify(countAnswers({a:'hi',b:'  ',c:[['','x']]}, [{id:'a'},{id:'b'},{id:'c'},{id:'d'}])) === '{"answered":2,"total":4}');
+document.querySelector('[data-fav="worksheet:w1"]').click();
+await flush();
+t('favourite click writes a favorite row', DB.favorites.length === 1 && DB.favorites[0].list === 'favorite');
+t('favourite button turns on', document.querySelector('[data-fav="worksheet:w1"]').classList.contains('on'));
+document.querySelector('[data-fav="worksheet:w1"]').click();
+await flush();
+t('clicking again removes it', DB.favorites.length === 0);
+document.querySelector('[data-later="worksheet:w1"]').click();
+await flush();
+t('save-for-later writes list=later', DB.favorites.length === 1 && DB.favorites[0].list === 'later');
+t('later button relabels', document.querySelector('[data-later="worksheet:w1"]').textContent.trim() === 'Saved for later');
+const p1 = await setProgress('worksheet','w1',1,7);
+t('one answer => started', p1.status === 'started');
+const p2 = await setProgress('worksheet','w1',7,7);
+t('all answers => completed', p2.status === 'completed');
+t('badge renders count', statusBadge({status:'started',answered:2,total:7}).includes('2/7'));
+} catch (e) { log.push('THREW ' + (e && e.message)); }
+const summary = log.join(' | ') + ` || ${log.filter(l=>l.startsWith('PASS')).length}/${log.length} passed`;
+document.getElementById('log').textContent = summary;
+document.title = summary;
+</script>

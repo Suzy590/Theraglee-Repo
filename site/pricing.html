@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Membership plans — Theraglee</title>
+<meta name="description" content="Free, Basic and Premium memberships for members, plus a single flat listing membership for licensed therapists.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="assets/favicon.png" sizes="48x48">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  .plans{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));align-items:stretch}
+  .plan{background:var(--paper);border:1px solid var(--hair);border-radius:var(--r-lg);padding:26px;
+    display:flex;flex-direction:column;box-shadow:var(--shadow-1);position:relative}
+  .plan.featured{border-color:var(--lime-2);box-shadow:var(--shadow-2)}
+  .plan .flag{position:absolute;top:-11px;left:26px;background:var(--lime);color:var(--ink);
+    font-size:.72rem;font-weight:600;padding:3px 12px;border-radius:var(--r-pill)}
+  .price{font-size:2.5rem;font-weight:300;letter-spacing:-.03em;line-height:1;margin:12px 0 2px}
+  .price small{font-size:.95rem;color:var(--faint);font-weight:400;letter-spacing:0}
+  .plan ul{list-style:none;padding:0;margin:20px 0;flex:1}
+  .plan li{padding:7px 0 7px 26px;position:relative;font-size:.93rem;color:var(--ink-2)}
+  .plan li::before{content:"";position:absolute;left:2px;top:14px;width:13px;height:7px;
+    border-left:2px solid var(--lime-2);border-bottom:2px solid var(--lime-2);transform:rotate(-45deg)}
+  .plan li.no{color:var(--faint)}
+  .plan li.no::before{border-color:var(--hair)}
+  .toggle{display:inline-flex;background:var(--sand);border-radius:var(--r-pill);padding:4px;gap:4px}
+  .toggle button{border:0;background:transparent;font:inherit;font-size:.9rem;padding:7px 18px;
+    border-radius:var(--r-pill);cursor:pointer;color:var(--muted)}
+  .toggle button.on{background:var(--paper);color:var(--ink);box-shadow:var(--shadow-1);font-weight:500}
+  table.compare td,table.compare th{text-align:center}
+  table.compare td:first-child,table.compare th:first-child{text-align:left;min-width:230px}
+  .yes{color:var(--green);font-weight:600}
+  .no{color:var(--hair)}
+</style>
+</head>
+<body>
+<main>
+<section class="section">
+  <div class="wrap center" style="max-width:60ch;margin-bottom:36px">
+    <h1>Start free. Upgrade when it's useful.</h1>
+    <p class="muted">You can browse a lot of Theraglee without an account at all. Registering is
+      free and unlocks progress tracking — paid tiers add the deeper tools.</p>
+    <div class="toggle" id="cycle" role="group" aria-label="Billing period">
+      <button class="on" data-i="monthly">Monthly</button>
+      <button data-i="yearly">Yearly <span class="faint">· save ~17%</span></button>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="plans" id="plans"></div>
+    <p class="faint center" style="margin-top:22px" id="billing-note"></p>
+  </div>
+</section>
+
+<section class="section tight" style="background:var(--paper);border-block:1px solid var(--hair)">
+  <div class="wrap">
+    <h2 class="center">Feature by feature</h2>
+    <div class="scroll-x" style="margin-top:26px">
+      <table class="data compare">
+        <thead><tr><th>Feature</th><th>Visitor</th><th>Free</th><th>Basic</th><th>Premium</th></tr></thead>
+        <tbody id="compare"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="card pad-lg grid g2" style="align-items:center;gap:34px">
+      <div>
+        <span class="badge">For licensed professionals</span>
+        <h2 style="margin-top:14px">Therapist membership</h2>
+        <p class="muted">A separate, single-level membership — not a tier. List your practice,
+          get found by people already using the tools, and see exactly what the listing brings you.
+          Your licence is verified with your state board before the profile goes live.</p>
+        <ul class="muted" style="font-size:.93rem;padding-left:20px">
+          <li>Full profile: specialties, insurances, languages, locations, fees</li>
+          <li>Searchable by zip, insurance, specialty, telehealth and more</li>
+          <li>A Theraglee phone number, so your own line stays private</li>
+          <li>Messages routed to you without your email address being shown</li>
+          <li>Referral reporting: calls, messages, website clicks, shares and views</li>
+          <li>Reach out to members who asked to be contacted</li>
+          <li>A clinician library of worksheets and CBT, ACT, DBT, couples and kids exercises</li>
+          <li>Licence verified with your state board, and re-checked before it expires</li>
+        </ul>
+      </div>
+      <div class="center">
+        <div class="price" id="th-price">—</div>
+        <p class="faint" id="th-note"></p>
+        <a class="btn lg block" href="for-therapists.html">List your practice</a>
+        <p class="faint" style="margin-top:12px">Licence verification required. Cancel any time.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section tight">
+  <div class="wrap narrow">
+    <h2>Questions</h2>
+    <div class="stack">
+      <div class="card"><h3>Do I need a card to register?</h3>
+        <p class="muted" style="margin:0">No. The Free membership never asks for one.</p></div>
+      <div class="card"><h3>Can I cancel?</h3>
+        <p class="muted" style="margin:0">Any time, from your account page. You keep access until
+          the end of the period you already paid for.</p></div>
+      <div class="card"><h3>Is any of this therapy?</h3>
+        <p class="muted" style="margin:0">No. Theraglee is educational and supportive only, and
+          nothing here diagnoses or treats a condition. The directory is there when you want
+          licensed care.</p></div>
+      <div class="card"><h3>What happens to my journal and quiz history?</h3>
+        <p class="muted" style="margin:0">It stays yours and private to your account. Downgrading
+          never deletes it — it just locks the tools that created it until you upgrade again.</p></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<script type="module">
+import { chrome, sb, access, startCheckout, esc, qs, toast } from './assets/app.js';
+const a = await chrome({ active:'pricing.html' });
+
+const { data: cfgRows } = await sb.from('app_config').select('key,value');
+const cfg = Object.fromEntries((cfgRows||[]).map(r=>[r.key,r.value]));
+const live = cfg.stripe_enabled === 'true';
+const money = k => cfg['display_'+k] || '—';
+
+let cycle = 'monthly';
+
+const PLANS = [
+  { key:'visitor', name:'Visitor', price:()=>'Free', sub:'No account',
+    cta:{label:'Browse now', href:'therapists.html'},
+    feats:[['Browse the therapist directory',1],['Articles, quotes, tips, fun facts',1],
+           ['Affirmations',1],['Save favourites or progress',0],['Personalised daily content',0]] },
+  { key:'free', name:'Free', price:()=>'Free', sub:'Registered · no card',
+    cta:{label:'Join free', href:'login.html?mode=signup'},
+    feats:[['Everything a visitor can see',1],['Personalised daily content by AI',1],
+           ['Daily email digest',1],['7-day challenges',1],['374 journal prompts',1],
+           ['Checklists with progress',1],['Quizzes & worksheets',0]] },
+  { key:'basic', name:'Basic', featured:true, price:()=>'$'+money('basic_'+cycle), sub:'per '+(cycle==='monthly'?'month':'year'),
+    cta:{plan:'basic'},
+    feats:[['Everything in Free',1],['62 self-assessment quizzes',1],['17 interactive worksheets',1],
+           ['Design challenges up to 365 days',1],['Goal & mood tracking',0],['Printable mandalas',0]] },
+  { key:'premium', name:'Premium', price:()=>'$'+money('premium_'+cycle), sub:'per '+(cycle==='monthly'?'month':'year'),
+    cta:{plan:'premium'},
+    feats:[['Everything in Basic',1],['Goal setting & progress tracking',1],['Mood tracking & patterns',1],
+           ['Printable mandalas',1],['Mood-based music playlists',1],['Local resource map',1],
+           ['Personal therapist recommendations',1],['Optional therapist outreach',1]] },
+];
+
+const COMPARE = [
+  ['Therapist directory search', 0],
+  ['Articles, quotes, tips, fun facts', 0],
+  ['Mental health affirmations', 0],
+  ['Save favourites & track history', 1],
+  ['Daily content personalised to you', 1],
+  ['Daily email digest', 1],
+  ['Journal prompts & private journal', 1],
+  ['Checklists with saved progress', 1],
+  ['7-day challenges', 1],
+  ['Self-assessment quizzes (62)', 2],
+  ['Interactive worksheets (17)', 2],
+  ['Custom challenges up to 365 days', 2],
+  ['Goal setting & progress tracking', 3],
+  ['Mood tracking & patterns', 3],
+  ['Printable mandalas', 3],
+  ['Mood-based music playlists', 3],
+  ['Local mental health resource map', 3],
+  ['Personalised therapist recommendations', 3],
+  ['Let therapists reach out to you', 3],
+];
+
+function render(){
+  document.getElementById('plans').innerHTML = PLANS.map(p=>{
+    const mine = (a.level===0 && p.key==='visitor') ||
+                 (a.level===1 && p.key==='free') ||
+                 (a.level===2 && p.key==='basic') ||
+                 (a.level===3 && p.key==='premium');
+    const cta = p.cta.plan
+      ? (mine ? `<a class="btn ghost block" href="account.html">Your current plan</a>`
+              : `<button class="btn block ${p.featured?'':'ghost'}" data-plan="${p.cta.plan}">
+                   ${a.level >= (p.key==='basic'?2:3) ? 'Switch plan' : 'Choose '+p.name}</button>`)
+      : `<a class="btn ${p.featured?'':'ghost'} block" href="${p.cta.href}">${mine?'You are here':p.cta.label}</a>`;
+    return `<div class="plan ${p.featured?'featured':''}">
+      ${p.featured?'<span class="flag">Most popular</span>':''}
+      <h3>${p.name}</h3>
+      <div class="price">${p.price()}</div>
+      <small class="faint">${p.sub}</small>
+      <ul>${p.feats.map(([t,on])=>`<li class="${on?'':'no'}">${esc(t)}</li>`).join('')}</ul>
+      ${cta}</div>`;
+  }).join('');
+
+  document.querySelectorAll('[data-plan]').forEach(b=>b.addEventListener('click',()=>{
+    if(!live){ toast('Payments are not switched on yet — see the admin screen.','err'); return; }
+    startCheckout(b.dataset.plan, cycle, b);
+  }));
+
+  document.getElementById('th-price').innerHTML =
+    `$${money('therapist_'+cycle)}<small> / ${cycle==='monthly'?'month':'year'}</small>`;
+  document.getElementById('th-note').textContent =
+    cycle==='monthly' ? 'Billed monthly' : 'Billed once a year';
+  document.getElementById('billing-note').textContent = live
+    ? 'Secure payments by Stripe. Cancel any time from your account.'
+    : 'Payments are not switched on yet. Free and Registered Free memberships work now.';
+}
+
+document.querySelectorAll('#cycle button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('#cycle button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); cycle = b.dataset.i; render();
+}));
+
+document.getElementById('compare').innerHTML = COMPARE.map(([label,min])=>
+  `<tr><td>${esc(label)}</td>${[0,1,2,3].map(l=>
+    `<td class="${l>=min?'yes':'no'}">${l>=min?'✓':'—'}</td>`).join('')}</tr>`).join('');
+
+render();
+if (qs('checkout')==='cancelled') toast('Checkout cancelled — nothing was charged.');
+</script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="assets/favicon.png" sizes="48x48">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="assets/styles.css">
+<title>Quiz — Theraglee</title>
+<style>
+  .qcard{background:var(--paper);border:1px solid var(--hair);border-radius:var(--r);
+    padding:22px;margin-bottom:16px}
+  .qcard h3{font-size:1.05rem;margin-bottom:14px}
+  .opt{display:flex;gap:12px;align-items:flex-start;padding:11px 14px;border:1px solid var(--hair);
+    border-radius:var(--r-sm);margin-bottom:8px;cursor:pointer;transition:all .18s;background:var(--cream)}
+  .opt:hover{border-color:var(--lime-2);background:var(--soft)}
+  .opt input{margin-top:4px;accent-color:var(--green);flex:0 0 auto}
+  .opt.sel{background:var(--soft);border-color:var(--green)}
+  .result{background:var(--paper);border:2px solid var(--lime);border-radius:var(--r-lg);padding:34px;text-align:center}
+  .score{font-size:3.2rem;font-weight:300;letter-spacing:-.03em;line-height:1;color:var(--green)}
+</style>
+</head>
+<body>
+<main class="section"><div class="wrap narrow" id="root">
+  <div class="skeleton" style="height:220px"></div>
+</div></main>
+
+<script type="module">
+import { chrome, sb, access, esc, qs, lockNotice, toast, busy, logActivity } from './assets/app.js';
+import { library, isFavorite, isLater, favButton, laterButton, statusBadge,
+         bindLibrary, setProgress } from './assets/library.js';
+const a = await chrome({ active:'explore.html' });
+const root = document.getElementById('root');
+const slug = qs('slug');
+
+const { data: quiz } = await sb.from('quizzes').select('*').eq('slug', slug).maybeSingle();
+
+if (!quiz) {
+  const { data: cat } = await sb.from('content_catalog').select('*').eq('slug', slug).eq('kind','quiz').maybeSingle();
+  if (cat) { document.title = cat.title + ' — Theraglee'; lockNotice(root, cat.min_level, cat.title); }
+  else root.innerHTML = '<div class="empty">That quiz could not be found. <a href="explore.html">Back to the library</a></div>';
+} else {
+  document.title = quiz.title + ' — Theraglee';
+  const { data: questions } = await sb.from('quiz_questions')
+    .select('*').eq('quiz_id', quiz.id).order('position');
+  logActivity('quiz', quiz.id, 'view', quiz.tags || []);
+
+  const lib = await library();
+  const answers = {};
+  root.innerHTML = `
+    <a class="faint" href="explore.html?type=quiz">← All quizzes</a>
+    <h1 style="margin-top:12px">${esc(quiz.title)}</h1>
+    <p class="muted">${esc(quiz.description||'')}</p>
+    <div class="row no-print" id="libbar">
+      ${favButton('quiz', quiz.id, isFavorite(lib,'quiz',quiz.id))}
+      ${laterButton('quiz', quiz.id, isLater(lib,'quiz',quiz.id))}
+      <span id="statuspill">${statusBadge(lib.progress.get('quiz:'+quiz.id))}</span>
+    </div>
+    <div class="notice warn" style="margin:20px 0">This is a self-reflection tool, not a diagnosis.
+      It cannot identify any condition. If anything here worries you, please talk to a licensed professional.</div>
+    <form id="qform">${(questions||[]).map((q,i)=>`
+      <div class="qcard" data-q="${q.id}">
+        <h3>${i+1}. ${esc(q.prompt)}</h3>
+        ${(q.options||[]).map((o,j)=>`
+          <label class="opt"><input type="radio" name="q${q.id}" value="${o.value}">
+            <span>${esc(o.label)}</span></label>`).join('')}
+      </div>`).join('')}
+      <div class="row" style="justify-content:space-between;margin-top:8px">
+        <span class="faint" id="prog">0 of ${(questions||[]).length} answered</span>
+        <button class="btn lg" id="submit" type="submit" disabled>See my result</button>
+      </div>
+    </form>
+    <div id="out"></div>`;
+
+  bindLibrary(root);
+  const total = (questions||[]).length;
+  root.querySelectorAll('.opt input').forEach(inp => inp.addEventListener('change', () => {
+    const card = inp.closest('.qcard');
+    card.querySelectorAll('.opt').forEach(o=>o.classList.remove('sel'));
+    inp.closest('.opt').classList.add('sel');
+    answers[card.dataset.q] = Number(inp.value);
+    const n = Object.keys(answers).length;
+    document.getElementById('prog').textContent = `${n} of ${total} answered`;
+    document.getElementById('submit').disabled = n < total;
+
+    // First answer marks it started; submitting marks it completed.
+    setProgress('quiz', quiz.id, n, total).then(p => {
+      const pill = document.getElementById('statuspill');
+      if (pill && p) pill.innerHTML = statusBadge(p);
+    });
+  }));
+
+  document.getElementById('qform').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('submit');
+    busy(btn, true, 'Scoring…');
+    const { data, error } = await sb.rpc('submit_quiz', { p_quiz_id: quiz.id, p_answers: answers });
+    busy(btn, false);
+    if (error) return toast(error.message, 'err');
+    await setProgress('quiz', quiz.id, total, total);
+    document.getElementById('qform').style.display = 'none';
+    document.getElementById('out').innerHTML = `
+      <div class="result">
+        <div class="score">${data.score}<span class="faint" style="font-size:1.1rem"> / ${data.max_score}</span></div>
+        <h2 style="margin-top:12px">${esc(data.label||'Your result')}</h2>
+        <p class="muted">${esc(data.interpretation||'')}</p>
+        <div class="row" style="justify-content:center;margin-top:18px">
+          <a class="btn" href="explore.html?type=quiz">Try another quiz</a>
+          <a class="btn ghost" href="account.html#history">See your history</a>
+        </div>
+      </div>
+      <div class="notice warn" style="margin-top:18px">A score is a conversation starter, not a
+        diagnosis. If this raised something for you, <a href="therapists.html">find a therapist</a>.</div>`;
+    document.getElementById('out').scrollIntoView({ behavior:'smooth', block:'center' });
+  });
+}
+</script>
+</body>
+</html>

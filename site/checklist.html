@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="assets/favicon.png" sizes="48x48">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="assets/styles.css">
+<title>Checklist — Theraglee</title>
+<style>
+  .item{display:flex;gap:13px;align-items:flex-start;padding:14px 16px;border:1px solid var(--hair);
+    border-radius:var(--r-sm);margin-bottom:9px;cursor:pointer;background:var(--paper);transition:all .18s}
+  .item:hover{border-color:var(--lime-2)}
+  .item.done{background:var(--soft);border-color:var(--mist)}
+  .item.done span{text-decoration:line-through;color:var(--muted)}
+  .item input{margin-top:4px;accent-color:var(--green);width:18px;height:18px;flex:0 0 auto}
+</style>
+</head>
+<body>
+<main class="section"><div class="wrap narrow" id="root">
+  <div class="skeleton" style="height:220px"></div>
+</div></main>
+
+<script type="module">
+import { chrome, sb, esc, qs, lockNotice, toast, logActivity } from './assets/app.js';
+import { library, isFavorite, isLater, favButton, laterButton, statusBadge,
+         bindLibrary, setProgress } from './assets/library.js';
+const a = await chrome({ active:'explore.html' });
+const root = document.getElementById('root');
+const slug = qs('slug');
+const today = new Date().toISOString().slice(0,10);
+
+const { data: cl } = await sb.from('checklists').select('*').eq('slug', slug).maybeSingle();
+
+if (!cl) {
+  const { data: cat } = await sb.from('content_catalog').select('*').eq('slug', slug).eq('kind','checklist').maybeSingle();
+  if (cat) { document.title = cat.title + ' — Theraglee'; lockNotice(root, cat.min_level, cat.title); }
+  else root.innerHTML = '<div class="empty">That checklist could not be found. <a href="explore.html">Back to the library</a></div>';
+} else {
+  document.title = cl.title + ' — Theraglee';
+  logActivity('checklist', cl.id, 'view', cl.tags || []);
+
+  const lib = await library();
+
+  let checked = new Set();
+  if (a.authenticated) {
+    const { data } = await sb.from('checklist_progress').select('checked')
+      .eq('user_id', a.profile.id).eq('checklist_id', cl.id).eq('on_date', today).maybeSingle();
+    checked = new Set(data?.checked || []);
+  }
+  const items = cl.items || [];
+
+  function paint(){
+    const pct = items.length ? Math.round(checked.size/items.length*100) : 0;
+    root.innerHTML = `
+      <a class="faint no-print" href="explore.html?type=checklist">← All checklists</a>
+      <h1 style="margin-top:12px">${esc(cl.title)}</h1>
+      ${cl.description ? `<p class="muted">${esc(cl.description)}</p>` : ''}
+      <div class="row no-print" id="libbar" style="margin-top:12px">
+        ${favButton('checklist', cl.id, isFavorite(lib,'checklist',cl.id))}
+        ${laterButton('checklist', cl.id, isLater(lib,'checklist',cl.id))}
+        <span id="statuspill">${statusBadge(lib.progress.get('checklist:'+cl.id))}</span>
+      </div>
+      ${a.authenticated ? `<div class="bar" style="margin:18px 0 8px"><i style="width:${pct}%"></i></div>
+        <p class="faint">${checked.size} of ${items.length} today</p>`
+        : '<div class="notice warn no-print">Sign in free to keep your progress from day to day.</div>'}
+      <div style="margin-top:20px">${items.map((it,i)=>`
+        <label class="item ${checked.has(i)?'done':''}">
+          <input type="checkbox" data-i="${i}" ${checked.has(i)?'checked':''}>
+          <span>${esc(it)}</span></label>`).join('')}</div>
+      <div class="row no-print" style="margin-top:18px">
+        <button class="btn ghost" onclick="window.print()">Print</button>
+        ${a.authenticated?'<button class="btn ghost" id="reset">Clear today</button>':''}
+      </div>`;
+
+    root.querySelectorAll('.item input').forEach(c => c.addEventListener('change', async () => {
+      const i = Number(c.dataset.i);
+      c.checked ? checked.add(i) : checked.delete(i);
+      c.closest('.item').classList.toggle('done', c.checked);
+      const bar = root.querySelector('.bar>i');
+      if (bar) bar.style.width = Math.round(checked.size/items.length*100) + '%';
+      const lbl = root.querySelector('.bar + .faint');
+      if (lbl) lbl.textContent = `${checked.size} of ${items.length} today`;
+      if (!a.authenticated) return;
+      const { error } = await sb.from('checklist_progress').upsert(
+        { user_id: a.profile.id, checklist_id: cl.id, on_date: today, checked: [...checked] },
+        { onConflict: 'user_id,checklist_id,on_date' });
+      if (error) toast(error.message,'err');
+
+      const p = await setProgress('checklist', cl.id, checked.size, items.length);
+      const pill = document.getElementById('statuspill');
+      if (pill && p) pill.innerHTML = statusBadge(p);
+    }));
+    document.getElementById('reset')?.addEventListener('click', async () => {
+      checked = new Set();
+      await sb.from('checklist_progress').upsert(
+        { user_id: a.profile.id, checklist_id: cl.id, on_date: today, checked: [] },
+        { onConflict: 'user_id,checklist_id,on_date' });
+      await setProgress('checklist', cl.id, 0, items.length);
+      paint();
+    });
+  }
+  bindLibrary(root);
+  paint();
+}
+</script>
+</body>
+</html>

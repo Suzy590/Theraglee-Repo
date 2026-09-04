@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>My assignments</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="assets/favicon.png" sizes="48x48">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  body{background:var(--cream)}
+  .shell{max-width:680px;margin:0 auto;padding:0 20px}
+  .top{padding:34px 0 10px}
+  .from{font-size:.78rem;text-transform:uppercase;letter-spacing:.11em;color:var(--faint);
+    font-weight:600}
+  .ring{display:flex;gap:18px;align-items:center;background:var(--paper);border:1px solid var(--hair);
+    border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow-1);margin:18px 0 26px}
+  .ring .pct{font-size:2rem;font-weight:300;letter-spacing:-.03em;color:var(--green);line-height:1;
+    font-variant-numeric:tabular-nums}
+  .task{background:var(--paper);border:1px solid var(--hair);border-radius:var(--r);
+    padding:22px;margin-bottom:14px;box-shadow:var(--shadow-1)}
+  .task.done{background:linear-gradient(180deg,var(--soft),var(--paper) 45%);border-color:var(--mist)}
+  .task.late{border-color:#EFD9BC}
+  .task h3{margin:0 0 4px;font-size:1.1rem}
+  .task .when{font-size:.85rem;color:var(--faint)}
+  .task .desc{margin:12px 0 0;color:var(--ink-2);white-space:pre-wrap}
+  .acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+  .rate{display:flex;gap:8px;margin:10px 0}
+  .rate button{width:42px;height:42px;border-radius:12px;border:1px solid var(--hair);
+    background:var(--paper);font-size:1.15rem;cursor:pointer}
+  .rate button.on{background:var(--soft);border-color:var(--green)}
+  .reply{border-left:3px solid var(--mist);padding:4px 0 4px 14px;margin-top:12px}
+  .reply p{margin:4px 0 0;white-space:pre-wrap;color:var(--ink-2)}
+  .foot{text-align:center;padding:40px 0 60px;color:var(--faint);font-size:.85rem}
+  @media print{
+    .no-print{display:none !important}
+    body{background:#fff}
+    .task{box-shadow:none;break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+<main class="shell" id="root">
+  <div class="top"><div class="skeleton" style="height:120px"></div></div>
+</main>
+
+<script type="module">
+import { sb, esc, qs, toast, busy, modal, fmtDate, FN } from './assets/app.js';
+
+const root = document.getElementById('root');
+
+// The link carries the token in the URL fragment. Browsers never send a fragment
+// to the server, so it stays out of access logs and Referer headers — which
+// matters because this token is what grants access to health information.
+// It is read once, kept for the tab only, and wiped from the address bar.
+function claimToken() {
+  const fromHash = new URLSearchParams(location.hash.replace(/^#/, '')).get('t');
+  if (fromHash) {
+    try { sessionStorage.setItem('ar-token', fromHash); } catch {}
+    history.replaceState(null, '', location.pathname);
+    return fromHash;
+  }
+  // Older links used ?t= — accept them, then get them out of the address bar.
+  const fromQuery = qs('t');
+  if (fromQuery) {
+    try { sessionStorage.setItem('ar-token', fromQuery); } catch {}
+    history.replaceState(null, '', location.pathname);
+    return fromQuery;
+  }
+  try { return sessionStorage.getItem('ar-token'); } catch { return null; }
+}
+const token = claimToken();
+
+if (!token) {
+  root.innerHTML = `<div class="top"><div class="empty">
+    <p><strong>This page needs your personal link.</strong></p>
+    <p class="faint">Open the link from your email or text message.</p></div></div>`;
+} else {
+  await load();
+}
+
+async function load(){
+  const { data, error } = await sb.rpc('ar_portal', { p_token: token });
+  if (error || !data || data.error) {
+    root.innerHTML = `<div class="top"><div class="empty">
+      <p><strong>This link is not working.</strong></p>
+      <p class="faint">It may have been replaced with a newer one. Ask whoever sent it
+        for a fresh link.</p></div></div>`;
+    return;
+  }
+  paint(data);
+}
+
+function paint(d){
+  const c = d.client || {}, w = d.workspace || {}, st = d.stats || {};
+  const voc = w.vocabulary || { task:'assignment', tasks:'assignments' };
+  const list = d.assignments || [];
+  const open = list.filter(a => a.state !== 'completed');
+  const done = list.filter(a => a.state === 'completed');
+
+  document.title = `My ${voc.tasks} — ${w.name || 'Assign Remind'}`;
+
+  root.innerHTML = `
+    <div class="top">
+      <p class="from">From ${esc(w.name || 'your practitioner')}</p>
+      <h1 style="margin:6px 0 0;font-size:1.9rem">Hello${c.display_name ? ', ' + esc(c.display_name.split(' ')[0]) : ''}</h1>
+    </div>
+
+    <div class="ring">
+      <div><div class="pct">${st.rate != null ? st.rate + '%' : '—'}</div></div>
+      <div style="flex:1">
+        <strong>${st.completed || 0} of ${st.total || 0} done</strong>
+        <p class="faint" style="margin:2px 0 0">
+          ${open.length ? `${open.length} still to do` : 'All caught up — nice work.'}</p>
+      </div>
+      <button class="btn sm ghost no-print" id="prefs">Reminders</button>
+    </div>
+
+    ${open.length ? `<h2 style="font-size:1.15rem">To do</h2>
+      ${open.map(card).join('')}` : ''}
+
+    ${done.length ? `<h2 style="font-size:1.15rem;margin-top:32px">Done</h2>
+      ${done.map(card).join('')}` : ''}
+
+    ${!list.length ? `<div class="empty">Nothing set yet.</div>` : ''}
+
+    <div class="row no-print" style="justify-content:center;margin-top:28px">
+      <button class="btn ghost" onclick="window.print()">Print or save as PDF</button>
+    </div>
+
+    <div class="row no-print" style="justify-content:center;margin-top:10px">
+      <button class="btn ghost sm" id="signout-ar">Finish on this device</button>
+    </div>
+
+    <div class="foot">
+      <p>This page is private to you. Please do not forward the link.</p>
+      <p style="margin-top:14px">If you are in crisis, call or text
+        <a href="tel:988">988</a> in the US, or call 911 if you are in immediate danger.</p>
+    </div>`;
+
+  wire(d);
+}
+
+function card(a){
+  const late = a.overdue;
+  const done = a.state === 'completed';
+  return `<div class="task ${done?'done':''} ${late?'late':''}" data-id="${a.id}">
+    <div class="spread">
+      <h3>${esc(a.title)}</h3>
+      ${done ? '<span class="badge">Done</span>'
+             : late ? '<span class="badge lock">Overdue</span>'
+             : a.state === 'started' ? '<span class="badge grey">In progress</span>' : ''}
+    </div>
+    <div class="when">${a.due_on ? 'Due ' + fmtDate(a.due_on) : 'No due date'}${
+      done && a.completed_at ? ' · finished ' + fmtDate(a.completed_at) : ''}</div>
+    ${a.description ? `<p class="desc">${esc(a.description)}</p>` : ''}
+    ${a.resource ? `<div class="notice" style="margin-top:14px">
+      <strong>${esc(a.resource.title)}</strong>
+      ${a.resource.summary ? `<br>${esc(a.resource.summary)}` : ''}
+      ${(a.resource.fields||[]).length ? `<ol style="margin:10px 0 0;padding-left:18px">${
+        a.resource.fields.map(f=>`<li>${esc(f.label)}</li>`).join('')}</ol>` : ''}
+    </div>` : ''}
+    ${(a.attachments||[]).length ? `<div class="row" style="margin-top:12px">${
+      a.attachments.map(f=>`<button class="btn sm ghost no-print" data-file="${esc(f.storage_path)}"
+        data-assignment="${a.id}">${esc(f.filename)}</button>`).join('')}</div>` : ''}
+    ${(a.submissions||[]).length ? a.submissions.map(s=>`
+      <div class="reply"><span class="faint">${fmtDate(s.created_at)}${
+        s.rating ? ' · ' + '●'.repeat(s.rating) + '○'.repeat(5-s.rating) : ''}</span>
+        ${s.body ? `<p>${esc(s.body)}</p>` : ''}</div>`).join('') : ''}
+    <div class="acts no-print">
+      ${!done ? `
+        ${a.state !== 'started' ? `<button class="btn sm ghost" data-act="started" data-a="${a.id}">I've started</button>` : ''}
+        <button class="btn sm" data-act="completed" data-a="${a.id}">Mark done</button>` : `
+        <button class="btn sm ghost" data-act="reopen" data-a="${a.id}">Reopen</button>`}
+      <button class="btn sm ghost" data-reply="${a.id}">Send a note</button>
+      <button class="btn sm ghost" data-upload="${a.id}">Add a file</button>
+    </div>
+  </div>`;
+}
+
+function wire(d){
+  root.querySelectorAll('[data-act]').forEach(b => b.onclick = async () => {
+    busy(b, true, '…');
+    const { data, error } = await sb.rpc('ar_portal_action', {
+      p_token: token, p_assignment: b.dataset.a, p_action: b.dataset.act });
+    busy(b, false);
+    if (error || data?.error) return toast('Could not save that.','err');
+    if (b.dataset.act === 'completed') toast('Nice one.','ok');
+    load();
+  });
+
+  root.querySelectorAll('[data-reply]').forEach(b => b.onclick = () => replyBox(b.dataset.reply));
+
+  root.querySelectorAll('[data-file]').forEach(b => b.onclick = async () => {
+    busy(b, true, 'Opening…');
+    const res = await fetch(`${FN}/assignremind-files`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ token, action:'download',
+        assignment_id: b.dataset.assignment, path: b.dataset.file }),
+    });
+    const out = await res.json();
+    busy(b, false);
+    if (out.url) window.open(out.url, '_blank', 'noopener');
+    else toast(out.message || 'Could not open that file.','err');
+  });
+
+  root.querySelectorAll('[data-upload]').forEach(b => b.onclick = () => uploadBox(b.dataset.upload));
+
+  document.getElementById('prefs').onclick = () => prefsBox(d.client || {});
+  document.getElementById('signout-ar').onclick = () => {
+    try { sessionStorage.removeItem('ar-token'); } catch {}
+    root.innerHTML = `<div class="top"><div class="empty">
+      <p><strong>Closed on this device.</strong></p>
+      <p class="faint">Open your link again whenever you need it.</p></div></div>`;
+  };
+}
+
+function replyBox(assignmentId){
+  let rating = null;
+  const back = modal(`
+    <h2>Send a note</h2>
+    <p class="muted" style="font-size:.92rem">Whatever you'd like them to know before your
+      next session.</p>
+    <div class="field"><label>How did it feel?</label>
+      <div class="rate" id="rate">${[1,2,3,4,5].map(n=>
+        `<button type="button" data-r="${n}">${['😖','🙁','😐','🙂','😄'][n-1]}</button>`).join('')}</div></div>
+    <div class="field"><label for="rb">Your note</label>
+      <textarea id="rb" placeholder="It was harder than I expected on Tuesday…"></textarea></div>
+    <div class="row" style="justify-content:flex-end">
+      <button class="btn ghost" id="rc">Cancel</button>
+      <button class="btn" id="rs">Send</button></div>`);
+
+  back.querySelectorAll('#rate button').forEach(b => b.onclick = () => {
+    back.querySelectorAll('#rate button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); rating = Number(b.dataset.r);
+  });
+  back.querySelector('#rc').onclick = () => back.remove();
+  back.querySelector('#rs').onclick = async (e) => {
+    const body = back.querySelector('#rb').value.trim();
+    if (!body && !rating) return toast('Add a note or pick how it felt.','err');
+    busy(e.target, true, 'Sending…');
+    const { data, error } = await sb.rpc('ar_portal_submit', {
+      p_token: token, p_assignment: assignmentId, p_body: body || null, p_rating: rating });
+    busy(e.target, false);
+    if (error || data?.error) return toast('Could not send that.','err');
+    back.remove(); toast('Sent.','ok'); load();
+  };
+}
+
+function uploadBox(assignmentId){
+  const back = modal(`
+    <h2>Add a file</h2>
+    <p class="muted" style="font-size:.92rem">A photo of your worksheet, a document, a short
+      video. Up to 25 MB.</p>
+    <div class="field"><input type="file" id="uf"></div>
+    <div class="row" style="justify-content:flex-end">
+      <button class="btn ghost" id="uc">Cancel</button>
+      <button class="btn" id="us">Upload</button></div>`);
+
+  back.querySelector('#uc').onclick = () => back.remove();
+  back.querySelector('#us').onclick = async (e) => {
+    const file = back.querySelector('#uf').files?.[0];
+    if (!file) return toast('Choose a file first.','err');
+    if (file.size > 25*1024*1024) return toast('That file is over 25 MB.','err');
+
+    busy(e.target, true, 'Uploading…');
+    try {
+      const ask = await (await fetch(`${FN}/assignremind-files`, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ token, action:'request_upload', assignment_id: assignmentId,
+          filename: file.name, mime_type: file.type, size_bytes: file.size }),
+      })).json();
+      if (ask.error) { busy(e.target,false); return toast(ask.message || 'Could not upload that.','err'); }
+
+      const { error: upErr } = await sb.storage.from('assignremind')
+        .uploadToSignedUrl(ask.path, ask.upload_token, file);
+      if (upErr) { busy(e.target,false); return toast(upErr.message,'err'); }
+
+      await fetch(`${FN}/assignremind-files`, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ token, action:'confirm_upload', assignment_id: assignmentId,
+          path: ask.path, filename: file.name, mime_type: file.type, size_bytes: file.size }),
+      });
+      busy(e.target, false);
+      back.remove(); toast('Uploaded.','ok'); load();
+    } catch {
+      busy(e.target, false); toast('Upload failed.','err');
+    }
+  };
+}
+
+function prefsBox(c){
+  const back = modal(`
+    <h2>How you're reminded</h2>
+    <p class="muted" style="font-size:.92rem">You can change this whenever you like.</p>
+    <div class="chips" style="margin:16px 0">
+      <button type="button" class="chip ${c.prefers_email?'on':''}" id="pe"
+        ${c.has_email?'':'disabled style="opacity:.4"'}>Email${c.has_email?'':' (none on file)'}</button>
+      <button type="button" class="chip ${c.prefers_sms?'on':''}" id="ps"
+        ${c.has_phone?'':'disabled style="opacity:.4"'}>Text${c.has_phone?'':' (no number on file)'}</button>
+    </div>
+    <div class="row" style="justify-content:flex-end">
+      <button class="btn ghost" id="pc">Cancel</button>
+      <button class="btn" id="pv">Save</button></div>`);
+
+  back.querySelector('#pe').onclick = (e) => { if(!e.target.disabled) e.target.classList.toggle('on'); };
+  back.querySelector('#ps').onclick = (e) => { if(!e.target.disabled) e.target.classList.toggle('on'); };
+  back.querySelector('#pc').onclick = () => back.remove();
+  back.querySelector('#pv').onclick = async (e) => {
+    busy(e.target, true, 'Saving…');
+    await sb.rpc('ar_portal_prefs', {
+      p_token: token,
+      p_email: back.querySelector('#pe').classList.contains('on'),
+      p_sms:   back.querySelector('#ps').classList.contains('on'),
+    });
+    busy(e.target, false); back.remove(); toast('Saved.','ok'); load();
+  };
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="assets/favicon.png" sizes="48x48">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="assets/styles.css">
+<title>Worksheet — Theraglee</title>
+<style>
+  .wsec{margin-top:26px}
+  .wsec>h3{font-size:.78rem;text-transform:uppercase;letter-spacing:.09em;color:var(--faint);
+    font-weight:600;padding-bottom:8px;border-bottom:1px solid var(--hair);margin-bottom:16px}
+  .saved{font-size:.82rem;color:var(--green)}
+</style>
+</head>
+<body>
+<main class="section"><div class="wrap narrow" id="root">
+  <div class="skeleton" style="height:220px"></div>
+</div></main>
+
+<script type="module">
+import { chrome, sb, access, esc, qs, lockNotice, toast, logActivity } from './assets/app.js';
+import { library, isFavorite, isLater, favButton, laterButton, statusBadge,
+         bindLibrary, setProgress, countAnswers } from './assets/library.js';
+const a = await chrome({ active:'explore.html' });
+const root = document.getElementById('root');
+const slug = qs('slug');
+
+const { data: ws } = await sb.from('worksheets').select('*').eq('slug', slug).maybeSingle();
+
+if (!ws) {
+  const { data: cat } = await sb.from('content_catalog').select('*').eq('slug', slug).eq('kind','worksheet').maybeSingle();
+  if (cat) { document.title = cat.title + ' — Theraglee'; lockNotice(root, cat.min_level, cat.title); }
+  else root.innerHTML = '<div class="empty">That worksheet could not be found. <a href="explore.html">Back to the library</a></div>';
+} else {
+  document.title = ws.title + ' — Theraglee';
+  logActivity('worksheet', ws.id, 'view', ws.tags || []);
+
+  const lib = await library();
+
+  let saved = {};
+  if (a.authenticated) {
+    const { data } = await sb.from('worksheet_responses')
+      .select('answers').eq('user_id', a.profile.id).eq('worksheet_id', ws.id).maybeSingle();
+    saved = data?.answers || {};
+  }
+
+  const fields = ws.fields || [];
+  let html = '', section = null;
+  for (const f of fields) {
+    if (f.section && f.section !== section) { section = f.section; html += `<div class="wsec"><h3>${esc(section)}</h3></div>`; }
+    if (f.type === 'table') {
+      const cols = f.columns || [];
+      const rows = f.rows || 3;
+      const val = saved[f.id] || [];
+      html += `<div class="field"><label>${esc(f.label)}</label><div class="scroll-x">
+        <table class="data"><thead><tr>${cols.map(c=>`<th>${esc(c)}</th>`).join('')}</tr></thead>
+        <tbody>${Array.from({length:rows},(_,r)=>`<tr>${cols.map((c,ci)=>
+          `<td><input type="text" data-f="${f.id}" data-r="${r}" data-c="${ci}"
+             value="${esc(val?.[r]?.[ci]||'')}"></td>`).join('')}</tr>`).join('')}</tbody>
+        </table></div></div>`;
+    } else {
+      html += `<div class="field"><label for="${f.id}">${esc(f.label)}</label>
+        <textarea id="${f.id}" data-f="${f.id}">${esc(saved[f.id]||'')}</textarea></div>`;
+    }
+  }
+
+  root.innerHTML = `
+    <a class="faint no-print" href="explore.html?type=worksheet">← All worksheets</a>
+    <h1 style="margin-top:12px">${esc(ws.title)}</h1>
+    ${ws.description ? `<p class="muted">${esc(ws.description)}</p>` : ''}
+    <div class="row no-print" id="libbar" style="margin-top:14px">
+      ${favButton('worksheet', ws.id, isFavorite(lib,'worksheet',ws.id))}
+      ${laterButton('worksheet', ws.id, isLater(lib,'worksheet',ws.id))}
+      <span id="statuspill">${statusBadge(lib.progress.get('worksheet:'+ws.id))}</span>
+    </div>
+    ${a.authenticated ? '' : '<div class="notice warn no-print">Sign in to save what you write here, and to keep favourites.</div>'}
+    <form id="wform" style="margin-top:22px">${html}</form>
+    <div class="row no-print" style="margin-top:18px">
+      <button class="btn" id="save">Save</button>
+      <button class="btn ghost" onclick="window.print()">Print</button>
+      <span class="saved" id="status"></span>
+    </div>`;
+
+  function collect(){
+    const out = {};
+    root.querySelectorAll('textarea[data-f]').forEach(t => { if (t.value.trim()) out[t.dataset.f] = t.value; });
+    root.querySelectorAll('input[data-f]').forEach(i => {
+      const f = i.dataset.f, r = +i.dataset.r, c = +i.dataset.c;
+      (out[f] ||= []); (out[f][r] ||= []); out[f][r][c] = i.value;
+    });
+    return out;
+  }
+
+  let timer;
+  async function save(quiet){
+    if (!a.authenticated) { toast('Sign in to save your answers.','err'); return; }
+    const answers = collect();
+    const { error } = await sb.from('worksheet_responses').upsert(
+      { user_id: a.profile.id, worksheet_id: ws.id, answers },
+      { onConflict: 'user_id,worksheet_id' });
+    const s = document.getElementById('status');
+    if (error) { s.textContent = ''; toast(error.message,'err'); return; }
+    s.textContent = 'Saved ' + new Date().toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
+
+    // Started = at least one answer; completed = every field answered.
+    const { answered, total } = countAnswers(answers, fields);
+    const p = await setProgress('worksheet', ws.id, answered, total);
+    const pill = document.getElementById('statuspill');
+    if (pill && p) pill.innerHTML = statusBadge(p);
+
+    if (!quiet) toast('Saved.','ok');
+  }
+
+  bindLibrary(root);
+  document.getElementById('save').addEventListener('click', () => save(false));
+  root.addEventListener('input', () => {
+    if (!a.authenticated) return;
+    clearTimeout(timer);
+    document.getElementById('status').textContent = 'Saving…';
+    timer = setTimeout(() => save(true), 1200);
+  });
+}
+</script>
+</body>
+</html>

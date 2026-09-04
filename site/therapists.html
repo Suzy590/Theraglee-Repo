@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="assets/favicon.png" sizes="48x48">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="assets/styles.css">
+<title>Find a therapist — Theraglee</title>
+<meta name="description" content="Search licensed therapists by location, insurance, specialty, language and telehealth availability. Free to browse, no account needed.">
+<style>
+  .layout{display:grid;grid-template-columns:290px minmax(0,1fr);gap:30px;align-items:start}
+  @media(max-width:880px){.layout{grid-template-columns:1fr}
+    .filters{position:static!important}}
+  .filters{position:sticky;top:96px}
+  .tcard{display:flex;gap:16px;background:var(--paper);border:1px solid var(--hair);
+    border-radius:var(--r);padding:20px;margin-bottom:14px;box-shadow:var(--shadow-1);
+    transition:transform .3s cubic-bezier(.22,1,.36,1),box-shadow .3s}
+  .tcard:hover{transform:translateY(-3px);box-shadow:var(--shadow-2)}
+  .avatar{flex:0 0 74px;height:74px;border-radius:18px;background:var(--soft);object-fit:cover;
+    display:grid;place-items:center;font-size:1.4rem;color:var(--green);font-weight:500}
+  .tcard h3{margin:0 0 2px;font-size:1.08rem}
+</style>
+</head>
+<body>
+<main class="section">
+<div class="wrap">
+  <h1>Find a therapist</h1>
+  <p class="muted" style="max-width:58ch">Every listing is a licensed professional whose licence we
+    verified with their state board. Free to browse — you don't need an account.</p>
+
+  <div class="layout" style="margin-top:30px">
+    <aside class="filters">
+      <div class="card">
+        <div class="field"><label for="f-q">Name or keyword</label><input id="f-q" type="text" placeholder="Search"></div>
+        <div class="field"><label for="f-zip">Zip code</label><input id="f-zip" type="text" inputmode="numeric" placeholder="e.g. 90210"></div>
+        <div class="field"><label for="f-state">State</label><select id="f-state"><option value="">Any state</option></select></div>
+        <div class="field"><label for="f-spec">Specialty</label><select id="f-spec"><option value="">Any specialty</option></select></div>
+        <div class="field"><label for="f-ins">Insurance</label><select id="f-ins"><option value="">Any insurance</option></select></div>
+        <div class="field"><label for="f-lang">Language</label><select id="f-lang"><option value="">Any language</option></select></div>
+        <div class="field"><label for="f-gender">Gender</label><select id="f-gender">
+          <option value="">Any</option><option>Female</option><option>Male</option><option>Non-binary</option></select></div>
+        <div class="field"><label>Sessions</label><div class="chips" id="f-delivery">
+          <button class="chip on" data-d="">Either</button>
+          <button class="chip" data-d="in_person">In person</button>
+          <button class="chip" data-d="telehealth">Telehealth</button></div></div>
+        <button class="btn block" id="search">Search</button>
+        <button class="btn ghost block sm" id="clear" style="margin-top:8px">Clear filters</button>
+      </div>
+    </aside>
+
+    <div>
+      <p class="faint" id="count">Searching…</p>
+      <div id="results"><div class="skeleton" style="height:110px;margin-bottom:14px"></div>
+        <div class="skeleton" style="height:110px"></div></div>
+    </div>
+  </div>
+</div>
+</main>
+
+<script type="module">
+import { chrome, sb, esc, toast } from './assets/app.js';
+import { SPECIALTIES, INSURANCES, LANGUAGES, STATES } from './assets/lists.js';
+await chrome({ active:'therapists.html' });
+
+const fill = (id, items, val = x=>x, label = x=>x) => {
+  const el = document.getElementById(id);
+  items.forEach(i => { const o = document.createElement('option');
+    o.value = val(i); o.textContent = label(i); el.appendChild(o); });
+};
+fill('f-state', STATES, s=>s[0], s=>s[1]);
+fill('f-spec', SPECIALTIES);
+fill('f-ins', INSURANCES);
+fill('f-lang', LANGUAGES);
+
+let delivery = '';
+document.querySelectorAll('#f-delivery .chip').forEach(c => c.addEventListener('click', () => {
+  document.querySelectorAll('#f-delivery .chip').forEach(x=>x.classList.remove('on'));
+  c.classList.add('on'); delivery = c.dataset.d; run();
+}));
+
+const V = id => document.getElementById(id).value.trim();
+
+async function run(){
+  const res = document.getElementById('results');
+  res.innerHTML = '<div class="skeleton" style="height:110px"></div>';
+  const { data, error } = await sb.rpc('search_therapists', {
+    p_q: V('f-q') || null, p_zip: V('f-zip') || null, p_state: V('f-state') || null,
+    p_specialty: V('f-spec') || null, p_insurance: V('f-ins') || null,
+    p_gender: V('f-gender') || null, p_delivery: delivery || null,
+    p_language: V('f-lang') || null, p_limit: 40, p_offset: 0,
+  });
+  if (error) { res.innerHTML = '<div class="empty">Search failed.</div>'; return console.error(error); }
+
+  document.getElementById('count').textContent =
+    `${data.length} therapist${data.length===1?'':'s'}`;
+
+  res.innerHTML = data.length ? data.map(t => {
+    const initials = (t.first_name?.[0]||'') + (t.last_name?.[0]||'');
+    const loc = (t.locations||[])[0];
+    const spec = (t.top_specialties?.length ? t.top_specialties : t.specialties||[]).slice(0,3);
+    return `<a class="tcard" href="therapist.html?slug=${encodeURIComponent(t.slug)}">
+      ${t.photo_url ? `<img class="avatar" src="${esc(t.photo_url)}" alt="">`
+        : `<div class="avatar">${esc(initials.toUpperCase())}</div>`}
+      <div style="flex:1;min-width:0">
+        <h3>${esc(t.first_name)} ${esc(t.last_name)}${t.credentials?`, ${esc(t.credentials)}`:''}</h3>
+        <p class="faint" style="margin:0 0 6px">
+          ${loc ? esc([loc.city, loc.state].filter(Boolean).join(', ')) : (t.license_states||[]).join(', ')}
+          ${t.delivery === 'telehealth' ? ' · Telehealth' : t.delivery === 'both' ? ' · In person &amp; telehealth' : ' · In person'}
+        </p>
+        ${t.bio ? `<p class="muted" style="margin:0 0 8px;font-size:.93rem">${esc(String(t.bio).slice(0,150))}${t.bio.length>150?'…':''}</p>` : ''}
+        <div class="chips">${spec.map(s=>`<span class="badge grey">${esc(s)}</span>`).join('')}</div>
+      </div></a>`;
+  }).join('') : `<div class="empty">
+      <p style="margin:0 0 6px"><strong>No therapists match that yet.</strong></p>
+      <p class="faint" style="margin:0">Try widening your filters. New practices are added as they verify.</p>
+    </div>`;
+}
+
+document.getElementById('search').addEventListener('click', run);
+document.getElementById('clear').addEventListener('click', () => {
+  ['f-q','f-zip','f-state','f-spec','f-ins','f-lang','f-gender'].forEach(id => document.getElementById(id).value = '');
+  document.querySelectorAll('#f-delivery .chip').forEach((x,i)=>x.classList.toggle('on', i===0));
+  delivery = ''; run();
+});
+document.getElementById('f-q').addEventListener('keydown', e => { if (e.key==='Enter') run(); });
+['f-state','f-spec','f-ins','f-lang','f-gender'].forEach(id =>
+  document.getElementById(id).addEventListener('change', run));
+
+run();
+</script>
+</body>
+</html>

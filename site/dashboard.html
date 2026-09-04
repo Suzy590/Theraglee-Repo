@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Today — Theraglee</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="assets/favicon.png" sizes="48x48">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  .hero-line{font-family:var(--serif);font-style:italic;font-size:clamp(1.5rem,3.4vw,2.3rem);
+    line-height:1.3;color:var(--ink);margin:0}
+  .daily{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(258px,1fr))}
+  .daily .card{display:flex;flex-direction:column;gap:10px}
+  .daily .k{font-size:.74rem;text-transform:uppercase;letter-spacing:.09em;color:var(--faint);font-weight:600}
+  .daily p{margin:0;font-size:.98rem}
+  .mood{display:flex;gap:8px;flex-wrap:wrap}
+  .mood button{width:52px;height:52px;border-radius:14px;border:1px solid var(--hair);
+    background:var(--paper);font-size:1.4rem;cursor:pointer;transition:all .2s}
+  .mood button:hover{border-color:var(--lime-2);transform:translateY(-2px)}
+  .mood button.on{background:var(--soft);border-color:var(--green)}
+  .streak{font-size:2.2rem;font-weight:300;letter-spacing:-.03em;line-height:1}
+</style>
+</head>
+<body>
+<main class="section">
+  <div class="wrap">
+    <div class="spread" style="margin-bottom:8px">
+      <div>
+        <p class="faint" id="datestr" style="margin:0"></p>
+        <h1 style="margin:.1em 0 0" id="greet">Today</h1>
+      </div>
+      <span class="badge" id="tierbadge"></span>
+    </div>
+
+    <div class="card pad-lg" style="margin:26px 0" id="affirm-card">
+      <div class="skeleton" style="height:70px"></div>
+    </div>
+
+    <div class="daily" id="daily">
+      <div class="card"><div class="skeleton"></div></div>
+      <div class="card"><div class="skeleton"></div></div>
+      <div class="card"><div class="skeleton"></div></div>
+    </div>
+
+    <div class="grid g2" style="margin-top:26px;align-items:start">
+      <div class="card" id="mood-card">
+        <h3>How are you today?</h3>
+        <p class="faint" style="margin-top:-4px">One tap. Premium members see the pattern over time.</p>
+        <div class="mood" id="mood">
+          <button data-m="1" title="Rough">😞</button>
+          <button data-m="2" title="Low">🙁</button>
+          <button data-m="3" title="Okay">😐</button>
+          <button data-m="4" title="Good">🙂</button>
+          <button data-m="5" title="Great">😄</button>
+        </div>
+        <div id="mood-after" class="faint" style="margin-top:12px"></div>
+      </div>
+
+      <div class="card" id="streak-card">
+        <h3>Your week</h3>
+        <div class="row" style="gap:30px;margin-top:10px">
+          <div><div class="streak" id="n-entries">—</div><div class="faint">journal entries</div></div>
+          <div><div class="streak" id="n-active">—</div><div class="faint">active challenges</div></div>
+          <div><div class="streak" id="n-quiz">—</div><div class="faint">quizzes taken</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="challenges-live" style="margin-top:26px"></div>
+    <div id="library-live"></div>
+
+    <h2 style="margin-top:48px">Pick up something small</h2>
+    <div class="grid g4" id="quick"></div>
+
+    <div id="upsell" style="margin-top:34px"></div>
+  </div>
+</main>
+
+<script type="module">
+import { chrome, sb, access, requireAuth, esc, tierName, toast, fmtDate } from './assets/app.js';
+import { library, isFavorite, favButton, statusBadge, bindLibrary } from './assets/library.js';
+await chrome({ active:'dashboard.html' });
+const a = await requireAuth();
+if (a) {
+
+const p = a.profile || {};
+document.getElementById('datestr').textContent =
+  new Date().toLocaleDateString(undefined,{weekday:'long', month:'long', day:'numeric'});
+const first = (p.full_name || '').split(' ')[0];
+document.getElementById('greet').textContent = first ? `Hello, ${first}` : 'Today';
+document.getElementById('tierbadge').textContent = tierName(a.level) + ' membership';
+
+/* ---- daily content ---- */
+const kinds = ['affirmation','quote','tip','fun_fact','journal_prompt'];
+const picks = Object.fromEntries(await Promise.all(kinds.map(async k => {
+  const { data } = await sb.rpc('daily_pick', { p_kind: k });
+  return [k, data?.[0] || null];
+})));
+
+document.getElementById('affirm-card').innerHTML = picks.affirmation
+  ? `<span class="badge">Today's affirmation</span>
+     <p class="hero-line" style="margin-top:16px">${esc(picks.affirmation.body)}</p>`
+  : `<p class="muted">No affirmation available yet.</p>`;
+
+const cards = [];
+if (picks.quote) cards.push(`<div class="card"><span class="k">Quote</span>
+  <p style="font-family:var(--serif);font-style:italic;font-size:1.1rem">“${esc(picks.quote.body)}”</p>
+  <span class="faint">— ${esc(picks.quote.author||'Unknown')}</span></div>`);
+if (picks.tip) cards.push(`<div class="card"><span class="k">Tip</span><p>${esc(picks.tip.body)}</p></div>`);
+if (picks.fun_fact) cards.push(`<div class="card"><span class="k">Did you know</span><p>${esc(picks.fun_fact.body)}</p></div>`);
+if (picks.journal_prompt) cards.push(`<div class="card"><span class="k">Journal prompt</span>
+  <p>${esc(picks.journal_prompt.body)}</p>
+  <a class="btn sm" style="align-self:flex-start" href="journal.html?prompt=${picks.journal_prompt.id}">Write about this</a></div>`);
+document.getElementById('daily').innerHTML = cards.join('') ||
+  `<div class="empty">Daily content is being set up.</div>`;
+
+/* ---- mood ---- */
+const today = new Date().toISOString().slice(0,10);
+const { data: todayMood } = await sb.from('mood_logs').select('mood')
+  .eq('user_id', p.id).eq('logged_on', today).maybeSingle();
+if (todayMood) {
+  document.querySelector(`.mood [data-m="${todayMood.mood}"]`)?.classList.add('on');
+  document.getElementById('mood-after').textContent = 'Logged for today. Tap another to change it.';
+}
+document.querySelectorAll('.mood button').forEach(b => b.addEventListener('click', async () => {
+  const mood = Number(b.dataset.m);
+  const { error } = await sb.from('mood_logs')
+    .upsert({ user_id: p.id, logged_on: today, mood }, { onConflict: 'user_id,logged_on' });
+  if (error) return toast(error.message,'err');
+  document.querySelectorAll('.mood button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+  document.getElementById('mood-after').textContent = a.level >= 3
+    ? 'Saved. See your patterns on the Goals & tracking page.'
+    : 'Saved. Premium members can see how this trends over time.';
+}));
+
+/* ---- counts ---- */
+const [{ count: nJ }, { data: ch }, { count: nQ }] = await Promise.all([
+  sb.from('journal_entries').select('id', { count:'exact', head:true }).eq('user_id', p.id),
+  sb.from('user_challenges').select('id,title,total_days,started_on').eq('user_id', p.id).eq('archived', false),
+  sb.from('quiz_attempts').select('id', { count:'exact', head:true }).eq('user_id', p.id),
+]);
+document.getElementById('n-entries').textContent = nJ ?? 0;
+document.getElementById('n-active').textContent  = ch?.length ?? 0;
+document.getElementById('n-quiz').textContent    = nQ ?? 0;
+
+/* ---- live challenges ---- */
+if (ch?.length) {
+  const ids = ch.map(c=>c.id);
+  const { data: prog } = await sb.from('user_challenge_progress')
+    .select('user_challenge_id, day').in('user_challenge_id', ids);
+  const done = {};
+  (prog||[]).forEach(r => { (done[r.user_challenge_id] ||= new Set()).add(r.day); });
+  document.getElementById('challenges-live').innerHTML = `
+    <h2 style="margin-top:38px">Challenges in progress</h2>
+    <div class="grid g2">${ch.map(c=>{
+      const n = done[c.id]?.size || 0;
+      const pct = Math.round(n / c.total_days * 100);
+      return `<a class="tile" href="challenges.html?open=${c.id}">
+        <h3>${esc(c.title)}</h3>
+        <div class="bar"><i style="width:${pct}%"></i></div>
+        <span class="meta">${n} of ${c.total_days} days · started ${fmtDate(c.started_on)}</span></a>`;
+    }).join('')}</div>`;
+}
+
+/* ---- favourites, saved for later, in progress ---- */
+const HREF = {
+  quiz:      r => `quiz.html?slug=${encodeURIComponent(r.slug)}`,
+  worksheet: r => `worksheet.html?slug=${encodeURIComponent(r.slug)}`,
+  checklist: r => `checklist.html?slug=${encodeURIComponent(r.slug)}`,
+  challenge: r => `challenges.html?template=${encodeURIComponent(r.slug)}`,
+  article:   r => `article.html?slug=${encodeURIComponent(r.slug)}`,
+  mandala:   r => `mandalas.html?slug=${encodeURIComponent(r.slug)}`,
+};
+const KIND = { quiz:'Quiz', worksheet:'Worksheet', checklist:'Checklist',
+               challenge:'Challenge', article:'Article', mandala:'Mandala' };
+
+async function paintLibrary() {
+  const lib = await library(true);
+  const host = document.getElementById('library-live');
+  const wanted = new Set([...lib.favorite, ...lib.later,
+    ...[...lib.progress.values()].filter(p => p.status !== 'not_started')
+        .map(p => p.item_type + ':' + p.item_id)]);
+  if (!wanted.size) { host.innerHTML = ''; return; }
+
+  const { data: cat } = await sb.from('content_catalog').select('*');
+  const byKey = new Map((cat || []).map(r => [r.kind + ':' + r.id, r]));
+
+  const tile = (k) => {
+    const r = byKey.get(k);
+    if (!r) return '';                       // content removed since it was saved
+    const p = lib.progress.get(k);
+    const pct = p && p.total ? Math.round(Math.min(1, p.answered / p.total) * 100) : 0;
+    return `<a class="tile" href="${HREF[r.kind] ? HREF[r.kind](r) : '#'}">
+      ${favButton(r.kind, r.id, isFavorite(lib, r.kind, r.id), { size:20, label:false })}
+      <h3>${esc(r.title)}</h3>
+      <span class="meta">${KIND[r.kind] || r.kind}</span>
+      <div class="row" style="gap:7px;margin-top:2px">${statusBadge(p)}</div>
+      ${pct ? `<div class="prog"><i style="width:${pct}%"></i></div>` : ''}
+    </a>`;
+  };
+
+  const section = (title, keys, empty) => keys.length
+    ? `<h2 style="margin-top:44px">${title}</h2>
+       <div class="grid g3">${keys.map(tile).join('')}</div>`
+    : (empty ? `<h2 style="margin-top:44px">${title}</h2><div class="empty">${empty}</div>` : '');
+
+  const inProgress = [...lib.progress.values()]
+    .filter(p => p.status === 'started')
+    .map(p => p.item_type + ':' + p.item_id);
+
+  host.innerHTML =
+      section('Your favourites', [...lib.favorite],
+              'Nothing yet. Tap the <strong>ee</strong> on any activity to keep it here.')
+    + section('Saved for later', [...lib.later])
+    + section('Picked up but not finished', inProgress);
+}
+bindLibrary(document.getElementById('library-live'), () => paintLibrary());
+paintLibrary();
+
+/* ---- quick links ---- */
+const quick = [
+  ['Journal', 'journal.html', 1],
+  ['Checklists', 'explore.html?type=checklist', 1],
+  ['Challenges', 'challenges.html', 1],
+  ['Quizzes', 'explore.html?type=quiz', 2],
+  ['Worksheets', 'explore.html?type=worksheet', 2],
+  ['Goals & tracking', 'goals.html', 3],
+  ['Mandalas', 'mandalas.html', 3],
+  ['Find a therapist', 'therapists.html', 0],
+];
+document.getElementById('quick').innerHTML = quick.map(([label, href, need]) => {
+  const locked = a.level < need;
+  return `<a class="tile ${locked?'locked':''}" href="${locked?'pricing.html':href}">
+    <h3 style="font-size:.98rem">${esc(label)}</h3>
+    ${locked ? `<span class="badge lock">${tierName(need)}</span>` : '<span class="meta">Open</span>'}</a>`;
+}).join('');
+
+/* ---- upsell ---- */
+if (a.level < 3) {
+  const nextTier = a.level < 2 ? 'Basic' : 'Premium';
+  document.getElementById('upsell').innerHTML = `<div class="card pad-lg center">
+    <h3>There's more in ${nextTier}</h3>
+    <p class="muted">${a.level < 2
+      ? '62 quizzes, 17 worksheets, and challenges you design yourself — up to a full year.'
+      : 'Goal tracking, mood patterns, printable mandalas, playlists and the local resource map.'}</p>
+    <a class="btn" href="pricing.html">Compare memberships</a></div>`;
+}
+}
+</script>
+</body>
+</html>

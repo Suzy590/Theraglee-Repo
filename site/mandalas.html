@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Printable mandalas — Theraglee</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="assets/favicon.png" sizes="48x48">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  .m{background:#fff;border:1px solid var(--hair);border-radius:var(--r);padding:18px;
+    box-shadow:var(--shadow-1)}
+  .m h3{font-size:.98rem;margin:12px 0 0;text-align:center}
+  .sheet{display:none}
+  @media print{
+    .sheet{display:block;page-break-after:always;padding:6vh 8vw}
+    .sheet h2{text-align:center;font-weight:400;margin-bottom:4vh}
+    body>main>.wrap>*:not(.sheet){display:none}
+  }
+</style>
+</head>
+<body>
+<main class="section"><div class="wrap" id="root">
+  <div class="skeleton" style="height:200px"></div>
+</div></main>
+
+<script type="module">
+import { chrome, sb, esc, qs, lockNotice } from './assets/app.js';
+import { mandala } from './assets/mandala.js';
+const a = await chrome({ active:'explore.html' });
+const root = document.getElementById('root');
+
+const { data: rows } = await sb.from('mandalas').select('*').order('title');
+
+if (!rows || !rows.length) {
+  lockNotice(root, 3, 'Printable mandalas');
+} else {
+  const single = qs('slug');
+  const list = single ? rows.filter(r => r.slug === single) : rows;
+
+  root.innerHTML = `
+    <div class="no-print">
+      <h1>Printable mandalas</h1>
+      <p class="muted" style="max-width:56ch">Colouring is a quiet, low-effort way to settle a busy
+        head. Print one, or several — they come out clean on plain paper.</p>
+      <div class="row" style="margin:18px 0 26px">
+        <button class="btn" onclick="window.print()">Print ${single?'this one':'all'}</button>
+        ${single ? '<a class="btn ghost" href="mandalas.html">See all mandalas</a>' : ''}
+      </div>
+      <div class="grid g3">${list.map(m => `
+        <div class="m">${m.svg || mandala(m.seed || 1)}
+          <h3>${esc(m.title)}</h3>
+          <div class="center" style="margin-top:8px">
+            <a class="btn sm ghost" href="mandalas.html?slug=${encodeURIComponent(m.slug)}">Print just this</a>
+          </div></div>`).join('')}
+      </div>
+    </div>
+    ${list.map(m => `<div class="sheet"><h2>${esc(m.title)}</h2>
+      <div style="max-width:640px;margin:0 auto">${m.svg || mandala(m.seed || 1)}</div></div>`).join('')}`;
+}
+</script>
+</body>
+</html>

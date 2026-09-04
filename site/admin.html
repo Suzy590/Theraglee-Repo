@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — Theraglee</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="assets/favicon.png" sizes="48x48">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  .tabs{display:flex;gap:2px;border-bottom:1px solid var(--hair);margin:24px 0 28px;overflow-x:auto}
+  .tabs button{border:0;background:none;font:inherit;font-size:.95rem;padding:12px 16px;cursor:pointer;
+    color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap}
+  .tabs button.on{color:var(--green);border-bottom-color:var(--green);font-weight:500}
+  .kvrow{display:grid;grid-template-columns:230px 1fr;gap:12px;align-items:center;margin-bottom:10px}
+  code{background:var(--sand);padding:2px 6px;border-radius:5px;font-size:.86rem;
+    font-family:ui-monospace,Menlo,monospace}
+</style>
+</head>
+<body>
+<main class="section"><div class="wrap" id="root">
+  <div class="skeleton" style="height:200px"></div>
+</div></main>
+
+<script type="module">
+import { chrome, sb, requireAuth, esc, toast, busy, fmtDate, modal } from './assets/app.js';
+await chrome();
+const a = await requireAuth();
+if (a) {
+const root = document.getElementById('root');
+
+if (a.profile.role !== 'admin') {
+  root.innerHTML = `<div class="card pad-lg center"><h2>Not available</h2>
+    <p class="muted">This screen is for site administrators.</p>
+    <a class="btn ghost" href="dashboard.html">Back to your dashboard</a></div>`;
+} else {
+let tab = location.hash.replace('#','') || 'verify';
+
+const TABS = [['verify','Licence verification'],['numbers','Tracking numbers'],
+              ['billing','Stripe setup'],['content','Content']];
+
+function render(body){
+  root.innerHTML = `<h1>Admin</h1>
+    <div class="tabs">${TABS.map(([k,l])=>
+      `<button data-tab="${k}" class="${tab===k?'on':''}">${l}</button>`).join('')}</div>
+    <div id="body">${body}</div>`;
+  root.querySelectorAll('.tabs button').forEach(b => b.onclick = () => {
+    tab = b.dataset.tab; history.replaceState({},'','#'+tab); route();
+  });
+}
+
+/* ---------------------------------------------------------- verify */
+async function verify(){
+  render('<div class="skeleton" style="height:150px"></div>');
+  const [{ data: rows }, { data: boards }] = await Promise.all([
+    sb.rpc('admin_pending_therapists'),
+    sb.from('state_boards').select('*'),
+  ]);
+  const boardFor = (st) => (boards||[]).find(b => b.state === st && b.profession === 'behavioral_health');
+
+  const lookupUrl = (t) => {
+    const st = (t.license_states||[])[0] || '';
+    const b = boardFor(st);
+    return b?.verify_url
+      || `https://www.google.com/search?q=${encodeURIComponent(st + ' board behavioral health license verification ' + (t.license_type||''))}`;
+  };
+
+  render(`
+    <h2>Licence verification queue</h2>
+    <p class="muted" style="max-width:64ch">Confirm each licence against the state board before
+      approving. A listing cannot appear in the directory until it is verified <em>and</em> the
+      membership is active — so approving here does not publish anything on its own.</p>
+
+    ${(rows||[]).length ? (rows||[]).map(t=>{
+      const st = (t.license_states||[])[0] || '—';
+      const b = boardFor(st);
+      return `<div class="card" style="margin-top:14px">
+        <div class="spread">
+          <div>
+            <h3 style="margin:0">${esc(t.first_name)} ${esc(t.last_name)}${t.credentials?', '+esc(t.credentials):''}</h3>
+            <p class="faint" style="margin:4px 0">
+              Licence <code>${esc(t.license_number||'—')}</code>
+              ${t.license_type?`(${esc(t.license_type)})`:''}
+              in ${esc((t.license_states||[]).join(', ')||'—')}
+              · joined ${fmtDate(t.created_at)}</p>
+            <p class="faint" style="margin:0">
+              ${b ? esc(b.board_name) : `No board on file for ${esc(st)}`}
+              · <a href="${esc(lookupUrl(t))}" target="_blank" rel="noopener">Open the board lookup ↗</a></p>
+          </div>
+          <span class="badge ${t.verification==='verified'?'':'grey'}">
+            ${esc(t.verification)}${t.published?' · live':''}</span>
+        </div>
+        ${t.bio?`<p class="muted" style="font-size:.92rem;margin-top:10px">${esc(String(t.bio).slice(0,240))}</p>`:''}
+        <p class="faint" style="margin:8px 0">Private contact: ${esc(t.contact_email||'—')}
+          · ${esc(t.contact_phone||'—')}
+          ${t.website?` · <a href="${esc(t.website)}" target="_blank" rel="noopener">website ↗</a>`:''}</p>
+        <div class="row">
+          <button class="btn sm" data-ok="${t.id}">Record as verified</button>
+          <button class="btn sm danger" data-no="${t.id}">Reject</button>
+        </div>
+      </div>`;
+    }).join('') : '<div class="empty" style="margin-top:18px">No therapist profiles yet.</div>'}`);
+
+  document.querySelectorAll('[data-ok]').forEach(btn => btn.onclick = () => {
+    const t = rows.find(r => r.id === btn.dataset.ok);
+    const back = modal(`
+      <h2>Record a verified licence</h2>
+      <p class="muted" style="font-size:.92rem">Copy what the board actually shows. This is kept
+        as the audit record behind the “verified” badge on their profile.</p>
+      <div class="field"><label for="vn">Name exactly as the board shows it</label>
+        <input id="vn" value="${esc(t.first_name+' '+t.last_name)}"></div>
+      <div class="field"><label for="vs">Licence status on the board</label>
+        <input id="vs" placeholder="e.g. Clear" value="Clear"></div>
+      <div class="field"><label for="ve">Expiry date</label><input id="ve" type="date"></div>
+      <div class="field"><label style="display:flex;gap:10px;align-items:center">
+        <input type="checkbox" id="vd" style="width:18px;height:18px;accent-color:var(--green)">
+        <span>Disciplinary action on record</span></label></div>
+      <div class="field"><label for="vnote">Notes <span class="faint">(optional)</span></label>
+        <input id="vnote"></div>
+      <div class="row" style="justify-content:flex-end">
+        <button class="btn ghost" id="cancel">Cancel</button>
+        <button class="btn" id="confirm">Record as verified</button></div>`);
+    back.querySelector('#cancel').onclick = () => back.remove();
+    back.querySelector('#confirm').onclick = async (e) => {
+      const disc = back.querySelector('#vd').checked;
+      busy(e.target, true, 'Recording…');
+      const { error } = await sb.rpc('record_license_check', {
+        p_therapist_id: t.id,
+        p_status: disc ? 'needs_review' : 'verified',
+        p_method: 'manual',
+        p_licensee_name: back.querySelector('#vn').value.trim() || null,
+        p_license_status: back.querySelector('#vs').value.trim() || null,
+        p_expires_on: back.querySelector('#ve').value || null,
+        p_disciplinary: disc,
+        p_board_name: boardFor((t.license_states||[])[0])?.board_name || null,
+        p_source_url: lookupUrl(t),
+        p_notes: back.querySelector('#vnote').value.trim() || null,
+      });
+      busy(e.target, false);
+      if (error) return toast(error.message,'err');
+      back.remove();
+      toast(disc ? 'Flagged for review — discipline on record.' : 'Recorded as verified.','ok');
+      verify();
+    };
+  });
+
+  document.querySelectorAll('[data-no]').forEach(btn => btn.onclick = async () => {
+    const why = prompt('Why is this being rejected? (kept on the record)');
+    if (why === null) return;
+    const t = rows.find(r => r.id === btn.dataset.no);
+    const { error } = await sb.rpc('record_license_check', {
+      p_therapist_id: t.id, p_status: 'rejected', p_method: 'manual',
+      p_source_url: lookupUrl(t), p_notes: why || null,
+    });
+    error ? toast(error.message,'err') : (toast('Rejected.','ok'), verify());
+  });
+}
+
+/* --------------------------------------------------------- numbers */
+async function numbers(){
+  render('<div class="skeleton" style="height:150px"></div>');
+  const { data: rows } = await sb.rpc('admin_pending_therapists');
+  const verified = (rows||[]).filter(t => t.verification === 'verified');
+
+  render(`
+    <h2>Tracking numbers</h2>
+    <p class="muted" style="max-width:64ch">Each verified therapist gets a Theraglee number shown
+      on their profile instead of their own line. Calls to it forward to their real number, and
+      every call is counted on their dashboard.</p>
+
+    <div class="notice warn" style="margin:18px 0">
+      <strong>Not yet automatic.</strong> Buying and forwarding real numbers needs a telephony
+      account — Twilio is the usual choice, at roughly $1 a month per number plus a cent or so
+      a minute. Until that is connected you can paste in a forwarding number by hand here, and
+      the site will display and count it exactly the same way.
+    </div>
+
+    ${verified.length ? `<div class="scroll-x"><table class="data">
+      <thead><tr><th>Therapist</th><th>Forwards to</th><th>Theraglee number</th><th></th></tr></thead>
+      <tbody>${verified.map(t=>`<tr>
+        <td><strong>${esc(t.first_name)} ${esc(t.last_name)}</strong><br>
+          <span class="faint">${esc((t.license_states||[]).join(', '))}</span></td>
+        <td class="faint">${esc(t.contact_phone||'no number on file')}</td>
+        <td>${t.proxy_phone
+          ? `<code>${esc(t.proxy_phone)}</code>`
+          : '<span class="faint">not issued</span>'}</td>
+        <td><button class="btn sm ghost" data-num="${t.id}"
+          data-cur="${esc(t.proxy_phone||'')}">${t.proxy_phone?'Change':'Assign'}</button></td>
+      </tr>`).join('')}</tbody></table></div>`
+    : '<div class="empty">No verified listings yet.</div>'}`);
+
+  document.querySelectorAll('[data-num]').forEach(btn => btn.onclick = () => {
+    const back = modal(`
+      <h2>Assign a Theraglee number</h2>
+      <p class="muted" style="font-size:.92rem">This is what visitors see on the profile. Calls
+        to it should forward to the therapist's real number.</p>
+      <div class="field"><label for="np">Number to display</label>
+        <input id="np" placeholder="(555) 010-0199" value="${esc(btn.dataset.cur)}"></div>
+      <div class="row" style="justify-content:flex-end">
+        <button class="btn ghost" id="cancel">Cancel</button>
+        <button class="btn" id="save">Save</button></div>`);
+    back.querySelector('#cancel').onclick = () => back.remove();
+    back.querySelector('#save').onclick = async (e) => {
+      const v = back.querySelector('#np').value.trim();
+      busy(e.target, true, 'Saving…');
+      const { error } = await sb.from('therapist_profiles').update({
+        proxy_phone: v || null,
+        proxy_phone_provider: v ? 'manual' : null,
+        proxy_phone_assigned_at: v ? new Date().toISOString() : null,
+      }).eq('id', btn.dataset.num);
+      busy(e.target, false);
+      if (error) return toast(error.message,'err');
+      back.remove(); toast('Number saved.','ok'); numbers();
+    };
+  });
+}
+
+/* --------------------------------------------------------- billing */
+async function billing(){
+  const { data } = await sb.from('app_config').select('*');
+  const cfg = Object.fromEntries((data||[]).map(r=>[r.key,r.value]));
+  const row = (k,label,ph) => `<div class="kvrow">
+    <label for="${k}" style="margin:0">${label}</label>
+    <input id="${k}" value="${esc(cfg[k]||'')}" placeholder="${ph}"></div>`;
+
+  render(`
+    <h2>Stripe price IDs</h2>
+    <p class="muted">Create each product in Stripe, then paste its <strong>price ID</strong>
+      (starts with <code>price_</code>) here.</p>
+    ${row('price_basic_monthly','Basic — monthly','price_…')}
+    ${row('price_basic_yearly','Basic — yearly','price_…')}
+    ${row('price_premium_monthly','Premium — monthly','price_…')}
+    ${row('price_premium_yearly','Premium — yearly','price_…')}
+    ${row('price_therapist_monthly','Therapist — monthly','price_…')}
+    ${row('price_therapist_yearly','Therapist — yearly','price_…')}
+
+    <h2 style="margin-top:34px">Prices shown on the site</h2>
+    ${row('display_basic_monthly','Basic — monthly','9')}
+    ${row('display_basic_yearly','Basic — yearly','90')}
+    ${row('display_premium_monthly','Premium — monthly','19')}
+    ${row('display_premium_yearly','Premium — yearly','190')}
+    ${row('display_therapist_monthly','Therapist — monthly','29')}
+    ${row('display_therapist_yearly','Therapist — yearly','290')}
+
+    <h2 style="margin-top:34px">Go live</h2>
+    <label style="display:flex;gap:12px;align-items:center;padding:16px;
+      border:1px solid var(--hair);border-radius:var(--r-sm);background:var(--paper)">
+      <input type="checkbox" id="stripe_enabled" ${cfg.stripe_enabled==='true'?'checked':''}
+        style="width:20px;height:20px;accent-color:var(--green)">
+      <span><strong>Accept payments</strong><br>
+        <span class="muted">Turn on once the keys are set in Supabase and the price IDs are filled in.</span></span>
+    </label>
+
+    <div class="row" style="margin-top:24px">
+      <button class="btn" id="savecfg">Save settings</button>
+      <span class="faint" id="cfgstatus"></span>
+    </div>
+
+    <div class="notice warn" style="margin-top:26px">
+      <strong>Set outside this screen</strong>, under Supabase → Edge Functions → Secrets:
+      <code>STRIPE_SECRET_KEY</code>, <code>STRIPE_WEBHOOK_SECRET</code>, <code>SITE_URL</code>,
+      <code>RESEND_API_KEY</code> and <code>MAIL_FROM</code> for therapist messages, and
+      <code>LICENSE_VERIFY_URL</code> / <code>LICENSE_VERIFY_API_KEY</code> if you sign up with a
+      licence-verification service. Point a Stripe webhook at
+      <code>https://oekqzuguruyqkafsqhos.supabase.co/functions/v1/stripe-webhook</code>.
+    </div>`);
+
+  document.getElementById('savecfg').onclick = async (e) => {
+    busy(e.target, true, 'Saving…');
+    for (const i of document.querySelectorAll('.kvrow input')) {
+      await sb.rpc('admin_set_config', { p_key: i.id, p_value: i.value.trim() });
+    }
+    await sb.rpc('admin_set_config', { p_key:'stripe_enabled',
+      p_value: document.getElementById('stripe_enabled').checked ? 'true' : 'false' });
+    busy(e.target, false);
+    document.getElementById('cfgstatus').textContent = 'Saved ' + new Date().toLocaleTimeString();
+    toast('Settings saved.','ok');
+  };
+}
+
+/* --------------------------------------------------------- content */
+async function content(){
+  const tables = ['daily_content','articles','checklists','worksheets','quizzes',
+                  'challenge_templates','mandalas','therapist_resources','profiles',
+                  'therapist_profiles','therapist_messages'];
+  const counts = {};
+  for (const t of tables) {
+    const { count } = await sb.from(t).select('id', { count:'exact', head:true });
+    counts[t] = count ?? '—';
+  }
+  render(`<h2>What's in the library</h2>
+    <div class="grid g4" style="margin-top:18px">${Object.entries(counts).map(([k,v])=>
+      `<div class="card"><div style="font-size:1.8rem;font-weight:300;color:var(--green)">${v}</div>
+       <div class="faint">${esc(k.replace(/_/g,' '))}</div></div>`).join('')}</div>
+    <div class="notice" style="margin-top:24px">Content is edited in the Supabase table editor
+      for now. Ask and I'll build an in-site editor.</div>`);
+}
+
+function route(){ ({ verify, numbers, billing, content }[tab] || verify)(); }
+route();
+}
+}
+</script>
+</body>
+</html>

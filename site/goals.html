@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Goals &amp; tracking — Theraglee</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="assets/favicon.png" sizes="48x48">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--hair);margin:24px 0 28px;overflow-x:auto}
+  .tabs button{border:0;background:none;font:inherit;font-size:.95rem;padding:12px 18px;cursor:pointer;
+    color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap}
+  .tabs button.on{color:var(--green);border-bottom-color:var(--green);font-weight:500}
+  .week{display:flex;gap:6px}
+  .week span{flex:1;height:34px;border-radius:8px;background:var(--sand);display:grid;place-items:center;
+    font-size:.72rem;color:var(--faint)}
+  .week span.hit{background:var(--lime);color:var(--ink);font-weight:600}
+  .chart{display:flex;align-items:flex-end;gap:4px;height:150px;padding-top:10px}
+  .chart div{flex:1;background:var(--mist);border-radius:4px 4px 0 0;position:relative;min-height:3px}
+  .chart div[data-m="4"],.chart div[data-m="5"]{background:var(--lime)}
+  .chart div[data-m="1"],.chart div[data-m="2"]{background:#E3C9A8}
+  .mood-pick{display:flex;gap:8px;flex-wrap:wrap}
+  .mood-pick button{width:48px;height:48px;border-radius:12px;border:1px solid var(--hair);
+    background:var(--paper);font-size:1.3rem;cursor:pointer}
+  .mood-pick button.on{background:var(--soft);border-color:var(--green)}
+</style>
+</head>
+<body>
+<main class="section"><div class="wrap" id="root">
+  <div class="skeleton" style="height:220px"></div>
+</div></main>
+
+<script type="module">
+import { chrome, sb, requireAuth, esc, toast, busy, fmtDate, lockNotice, modal } from './assets/app.js';
+await chrome({ active:'dashboard.html' });
+const a = await requireAuth();
+if (a) {
+const root = document.getElementById('root');
+
+if (a.level < 3) {
+  lockNotice(root, 3, 'Goals, mood tracking, playlists and the resource map');
+} else {
+let tab = location.hash.replace('#','') || 'goals';
+
+const shell = (body) => `
+  <h1>Goals &amp; tracking</h1>
+  <p class="muted" style="max-width:56ch">The Premium tools: set what you're aiming for, watch your
+    mood over time, and find what's near you.</p>
+  <div class="tabs">${[['goals','Goals'],['mood','Mood'],['music','Playlists'],['map','Nearby help']]
+    .map(([k,l])=>`<button data-tab="${k}" class="${tab===k?'on':''}">${l}</button>`).join('')}</div>
+  <div id="body">${body}</div>`;
+
+/* ------------------------------------------------------------ goals */
+async function goalsView(){
+  const { data: goals } = await sb.from('goals').select('*')
+    .eq('user_id', a.profile.id).order('created_at', { ascending:false });
+  const ids = (goals||[]).map(g=>g.id);
+  let logs = [];
+  if (ids.length) {
+    const { data } = await sb.from('goal_logs').select('*').in('goal_id', ids);
+    logs = data || [];
+  }
+  const monday = new Date(); monday.setDate(monday.getDate() - ((monday.getDay()+6)%7));
+  const week = Array.from({length:7}, (_,i) => {
+    const d = new Date(monday); d.setDate(monday.getDate()+i);
+    return d.toISOString().slice(0,10);
+  });
+  const today = new Date().toISOString().slice(0,10);
+
+  document.getElementById('body').innerHTML = `
+    <div class="spread"><h2 style="margin:0">Your goals</h2>
+      <button class="btn" id="add">Add a goal</button></div>
+    ${(goals||[]).filter(g=>g.active).length ? `<div class="grid g2" style="margin-top:20px">
+      ${goals.filter(g=>g.active).map(g=>{
+        const mine = logs.filter(l=>l.goal_id===g.id).map(l=>l.logged_on);
+        const hits = week.filter(d=>mine.includes(d)).length;
+        return `<div class="card">
+          <div class="spread"><h3 style="margin:0">${esc(g.title)}</h3>
+            <span class="badge ${hits>=g.target_per_week?'':'grey'}">${hits}/${g.target_per_week} this week</span></div>
+          <div class="week" style="margin:14px 0">${week.map((d,i)=>
+            `<span class="${mine.includes(d)?'hit':''}">${'MTWTFSS'[i]}</span>`).join('')}</div>
+          <div class="row">
+            <button class="btn sm ${mine.includes(today)?'ghost':''}" data-log="${g.id}"
+              ${mine.includes(today)?'disabled':''}>${mine.includes(today)?'Logged today':'Log today'}</button>
+            <button class="btn sm ghost" data-archive="${g.id}">Archive</button>
+          </div></div>`;
+      }).join('')}</div>`
+      : `<div class="empty" style="margin-top:20px">No goals yet. Try something small and specific —
+         “walk 10 minutes”, “message one friend”.</div>`}`;
+
+  document.getElementById('add').onclick = () => {
+    const back = modal(`<h2>New goal</h2>
+      <div class="field"><label for="gt">What are you aiming for?</label>
+        <input id="gt" placeholder="e.g. Practise mindfulness"></div>
+      <div class="field"><label for="gn">How many times a week?</label>
+        <input id="gn" type="number" min="1" max="21" value="3"></div>
+      <div class="row" style="justify-content:flex-end">
+        <button class="btn ghost" id="no">Cancel</button><button class="btn" id="yes">Add goal</button></div>`);
+    back.querySelector('#no').onclick = () => back.remove();
+    back.querySelector('#yes').onclick = async (e) => {
+      const title = back.querySelector('#gt').value.trim();
+      if (!title) return toast('Give it a name.','err');
+      busy(e.target, true, 'Adding…');
+      const { error } = await sb.from('goals').insert({ user_id: a.profile.id, title,
+        target_per_week: Number(back.querySelector('#gn').value) || 3 });
+      busy(e.target, false);
+      if (error) return toast(error.message,'err');
+      back.remove(); goalsView();
+    };
+  };
+
+  document.querySelectorAll('[data-log]').forEach(b => b.onclick = async () => {
+    const { error } = await sb.from('goal_logs').insert({ goal_id: b.dataset.log, logged_on: today });
+    if (error) return toast(error.message,'err');
+    toast('Logged. Nice.','ok'); goalsView();
+  });
+  document.querySelectorAll('[data-archive]').forEach(b => b.onclick = async () => {
+    await sb.from('goals').update({ active:false }).eq('id', b.dataset.archive);
+    goalsView();
+  });
+}
+
+/* ------------------------------------------------------------- mood */
+async function moodView(){
+  const since = new Date(Date.now() - 29*86400000).toISOString().slice(0,10);
+  const { data: logs } = await sb.from('mood_logs').select('*')
+    .eq('user_id', a.profile.id).gte('logged_on', since).order('logged_on');
+  const byDate = Object.fromEntries((logs||[]).map(l=>[l.logged_on, l]));
+  const days = Array.from({length:30}, (_,i) => {
+    const d = new Date(Date.now() - (29-i)*86400000);
+    return d.toISOString().slice(0,10);
+  });
+  const vals = (logs||[]).map(l=>l.mood);
+  const avg = vals.length ? (vals.reduce((s,v)=>s+v,0)/vals.length) : null;
+  const today = new Date().toISOString().slice(0,10);
+  const now = byDate[today];
+
+  document.getElementById('body').innerHTML = `
+    <div class="card">
+      <h3>How are you today?</h3>
+      <div class="mood-pick" id="pick">${[1,2,3,4,5].map(m=>
+        `<button data-m="${m}" class="${now?.mood===m?'on':''}">${['😞','🙁','😐','🙂','😄'][m-1]}</button>`).join('')}</div>
+      <div class="field" style="margin-top:16px"><label for="note">A line about today (optional)</label>
+        <input id="note" value="${esc(now?.notes||'')}" placeholder="What shaped it?"></div>
+      <button class="btn sm" id="savenote">Save note</button>
+    </div>
+
+    <h2 style="margin-top:34px">Last 30 days</h2>
+    <div class="card">
+      <div class="chart">${days.map(d=>{
+        const m = byDate[d]?.mood;
+        return `<div data-m="${m||0}" title="${d}${m?' · '+m+'/5':''}"
+          style="height:${m ? (m/5*100) : 3}%"></div>`;
+      }).join('')}</div>
+      <div class="spread" style="margin-top:14px">
+        <span class="faint">${fmtDate(days[0])}</span>
+        <span class="faint">${avg ? 'Average '+avg.toFixed(1)+' / 5 across '+vals.length+' days' : 'No entries yet'}</span>
+        <span class="faint">Today</span>
+      </div>
+    </div>
+    ${(logs||[]).filter(l=>l.notes).length ? `<h2 style="margin-top:34px">Your notes</h2>
+      <div class="card">${logs.filter(l=>l.notes).reverse().map(l=>
+        `<p style="margin:0 0 10px"><span class="faint">${fmtDate(l.logged_on)}</span> — ${esc(l.notes)}</p>`).join('')}</div>` : ''}`;
+
+  document.querySelectorAll('#pick button').forEach(b => b.onclick = async () => {
+    const { error } = await sb.from('mood_logs').upsert(
+      { user_id: a.profile.id, logged_on: today, mood: Number(b.dataset.m) },
+      { onConflict: 'user_id,logged_on' });
+    if (error) return toast(error.message,'err');
+    moodView();
+  });
+  document.getElementById('savenote').onclick = async (e) => {
+    if (!now && !document.querySelector('#pick .on')) return toast('Pick a mood first.','err');
+    busy(e.target, true, 'Saving…');
+    await sb.from('mood_logs').upsert({ user_id: a.profile.id, logged_on: today,
+      mood: now?.mood || Number(document.querySelector('#pick .on').dataset.m),
+      notes: document.getElementById('note').value.trim() || null },
+      { onConflict: 'user_id,logged_on' });
+    busy(e.target, false); toast('Saved.','ok');
+  };
+}
+
+/* ----------------------------------------------------------- music */
+const MOODS = [
+  ['Low and heavy','Slow, warm, nothing demanding','calm acoustic comfort'],
+  ['Anxious','Steady tempo to settle the nervous system','ambient calm focus'],
+  ['Flat / unmotivated','A gentle lift, not a shove','feel good indie morning'],
+  ['Angry','Somewhere to put it','cathartic rock release'],
+  ['Restless','Something to move to','upbeat walking tempo'],
+  ['Okay, keeping it there','Easy company','mellow afternoon'],
+];
+function musicView(){
+  document.getElementById('body').innerHTML = `
+    <h2>Playlists by mood</h2>
+    <p class="muted">Pick where you are right now — these open in your own music app.</p>
+    <div class="grid g3" style="margin-top:20px">${MOODS.map(([name, blurb, q])=>`
+      <div class="card">
+        <h3>${esc(name)}</h3>
+        <p class="muted" style="font-size:.92rem">${esc(blurb)}</p>
+        <div class="row">
+          <a class="btn sm" target="_blank" rel="noopener"
+             href="https://open.spotify.com/search/${encodeURIComponent(q)}/playlists">Spotify</a>
+          <a class="btn sm ghost" target="_blank" rel="noopener"
+             href="https://music.apple.com/us/search?term=${encodeURIComponent(q)}">Apple Music</a>
+        </div></div>`).join('')}</div>
+    <div class="notice" style="margin-top:24px">These open a search in your own account, so nothing
+      about your listening comes back to Theraglee.</div>`;
+}
+
+/* ------------------------------------------------------------- map */
+function mapView(){
+  const zip = a.profile.zip || '';
+  document.getElementById('body').innerHTML = `
+    <h2>Mental health help near you</h2>
+    <p class="muted">Clinics, community centres and counselling services around your area.</p>
+    <div class="row" style="margin:16px 0">
+      <input id="where" placeholder="Zip code or town" value="${esc(zip)}" style="max-width:240px">
+      <button class="btn" id="go">Show the map</button>
+      <button class="btn ghost" id="here">Use my location</button>
+    </div>
+    <div id="mapbox"></div>
+    <h2 style="margin-top:34px">National resources</h2>
+    <div class="grid g2">
+      <div class="card"><h3>988 Suicide &amp; Crisis Lifeline</h3>
+        <p class="muted">Free, 24/7, confidential. Call or text <a href="tel:988">988</a>.</p></div>
+      <div class="card"><h3>SAMHSA treatment locator</h3>
+        <p class="muted">Federal directory of treatment facilities.
+          <a href="https://findtreatment.gov" target="_blank" rel="noopener">findtreatment.gov</a></p></div>
+      <div class="card"><h3>Crisis Text Line</h3>
+        <p class="muted">Text HOME to <a href="sms:741741">741741</a>.</p></div>
+      <div class="card"><h3>Find a therapist here</h3>
+        <p class="muted">Verified listings in the Theraglee directory.
+          <a href="therapists.html">Search the directory</a></p></div>
+    </div>`;
+
+  const show = (q) => {
+    document.getElementById('mapbox').innerHTML = `
+      <div class="card" style="padding:0;overflow:hidden">
+        <iframe title="Map" style="width:100%;height:420px;border:0"
+          src="https://www.openstreetmap.org/export/embed.html?bbox=-125,24,-66,50&layer=mapnik"></iframe>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <a class="btn sm" target="_blank" rel="noopener"
+          href="https://www.openstreetmap.org/search?query=${encodeURIComponent('mental health '+q)}">
+          Mental health services near ${esc(q)}</a>
+        <a class="btn sm ghost" target="_blank" rel="noopener"
+          href="https://findtreatment.gov/results?location=${encodeURIComponent(q)}">SAMHSA results</a>
+      </div>`;
+  };
+  document.getElementById('go').onclick = () => {
+    const q = document.getElementById('where').value.trim();
+    q ? show(q) : toast('Type a zip code or town first.','err');
+  };
+  document.getElementById('here').onclick = () => {
+    if (!navigator.geolocation) return toast('Your browser will not share a location.','err');
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        const { latitude:la, longitude:lo } = pos.coords;
+        document.getElementById('mapbox').innerHTML = `
+          <div class="card" style="padding:0;overflow:hidden">
+            <iframe title="Map" style="width:100%;height:420px;border:0"
+              src="https://www.openstreetmap.org/export/embed.html?bbox=${lo-0.15},${la-0.1},${lo+0.15},${la+0.1}&layer=mapnik&marker=${la},${lo}"></iframe>
+          </div>
+          <div class="row" style="margin-top:12px">
+            <a class="btn sm" target="_blank" rel="noopener"
+              href="https://www.openstreetmap.org/search?query=mental%20health#map=13/${la}/${lo}">
+              Services around this point</a></div>`;
+      },
+      () => toast('Could not get your location. Type a zip code instead.','err'));
+  };
+  if (zip) show(zip);
+}
+
+function render(){
+  root.innerHTML = shell('<div class="skeleton" style="height:120px"></div>');
+  root.querySelectorAll('.tabs button').forEach(b => b.onclick = () => {
+    tab = b.dataset.tab; history.replaceState({},'', '#'+tab); render();
+  });
+  ({ goals: goalsView, mood: moodView, music: musicView, map: mapView }[tab] || goalsView)();
+}
+render();
+}
+}
+</script>
+</body>
+</html>

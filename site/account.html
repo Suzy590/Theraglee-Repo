@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Your account — Theraglee</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="assets/favicon.png" sizes="48x48">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--hair);margin:24px 0 28px;overflow-x:auto}
+  .tabs button{border:0;background:none;font:inherit;font-size:.95rem;padding:12px 18px;cursor:pointer;
+    color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap}
+  .tabs button.on{color:var(--green);border-bottom-color:var(--green);font-weight:500}
+  .switch{display:flex;gap:14px;align-items:flex-start;padding:18px;border:1px solid var(--hair);
+    border-radius:var(--r-sm);background:var(--paper);margin-bottom:12px}
+  .switch input{width:20px;height:20px;accent-color:var(--green);margin-top:2px;flex:0 0 auto}
+</style>
+</head>
+<body>
+<main class="section"><div class="wrap" id="root">
+  <div class="skeleton" style="height:220px"></div>
+</div></main>
+
+<script type="module">
+import { chrome, sb, requireAuth, access, clearAccess, esc, toast, busy, qs,
+         fmtDate, tierName, openPortal, startCheckout, modal } from './assets/app.js';
+import { MEMBER_ISSUES } from './assets/lists.js';
+await chrome({ active:'account.html' });
+let a = await requireAuth();
+if (a) {
+const root = document.getElementById('root');
+let tab = location.hash.replace('#','') || 'membership';
+
+if (qs('checkout') === 'success') {
+  toast('Payment received — welcome aboard. It can take a moment to appear.', 'ok');
+  await new Promise(r => setTimeout(r, 2500));
+  clearAccess(); a = await access(true);
+  history.replaceState({}, '', 'account.html');
+}
+
+function shell(body){
+  return `
+    <div class="spread">
+      <div><h1 style="margin:0">Your account</h1>
+        <p class="faint" style="margin:4px 0 0">${esc(a.profile.email||'')}</p></div>
+      <span class="badge">${tierName(a.level)} membership</span>
+    </div>
+    <div class="tabs">
+      ${[['membership','Membership'],['profile','Profile'],['privacy','Privacy'],
+         ['inbox','Inbox'],['history','Your history']]
+        .map(([k,l])=>`<button data-tab="${k}" class="${tab===k?'on':''}">${l}</button>`).join('')}
+    </div>
+    <div id="body">${body}</div>`;
+}
+
+function membership(){
+  const p = a.profile;
+  const live = ['active','trialing'].includes(p.subscription_status);
+  return `
+    <div class="card pad-lg">
+      <div class="spread">
+        <div>
+          <h2 style="margin:0">${tierName(a.level)}</h2>
+          <p class="muted" style="margin:6px 0 0">
+            ${a.level === 1 ? 'Free forever. No card on file.'
+              : live ? (p.cancel_at_period_end
+                  ? `Ends on ${fmtDate(p.current_period_end)} — you keep access until then.`
+                  : `Renews on ${fmtDate(p.current_period_end)}.`)
+              : p.subscription_status === 'past_due' ? 'A payment did not go through.'
+              : 'No paid membership on this account.'}
+          </p>
+        </div>
+        <div class="row">
+          ${live ? `<button class="btn ghost" id="portal">Manage billing</button>` : ''}
+          ${a.level < 3 ? `<a class="btn" href="pricing.html">${a.level<2?'Upgrade':'Go Premium'}</a>` : ''}
+        </div>
+      </div>
+    </div>
+
+    <h2 style="margin-top:34px">What you have access to</h2>
+    <div class="grid g3">
+      ${[['Daily personalised content',1],['Journal & prompts',1],['Checklists',1],['7-day challenges',1],
+         ['62 quizzes',2],['17 worksheets',2],['365-day custom challenges',2],
+         ['Goal & mood tracking',3],['Printable mandalas',3],['Resource map & playlists',3]]
+        .map(([l,n])=>`<div class="card" style="padding:16px">
+          <div class="row" style="justify-content:space-between">
+            <span style="font-size:.94rem">${esc(l)}</span>
+            ${a.level>=n ? '<span class="badge">Included</span>'
+                         : `<span class="badge lock">${tierName(n)}</span>`}
+          </div></div>`).join('')}
+    </div>`;
+}
+
+function profile(){
+  const p = a.profile;
+  return `
+    <form id="pf" style="max-width:560px">
+      <div class="field"><label for="name">Your name</label>
+        <input id="name" value="${esc(p.full_name||'')}"></div>
+      <div class="field"><label for="zip">Zip code</label>
+        <input id="zip" value="${esc(p.zip||'')}" inputmode="numeric">
+        <div class="help">Used to find nearby therapists and resources. Never shown publicly.</div></div>
+      <div class="field"><label>What are you working on?</label>
+        <div class="chips" id="issues">${MEMBER_ISSUES.map(i=>
+          `<button type="button" class="chip ${(p.issues||[]).includes(i)?'on':''}" data-v="${esc(i)}">${esc(i)}</button>`).join('')}</div>
+        <div class="help">This shapes the daily content you see. If you switch on therapist
+          contact under Privacy, these topics are also what therapists see.</div></div>
+
+      <hr class="hr">
+      <h3>Daily email</h3>
+      <label class="switch"><input type="checkbox" id="demail" ${p.daily_email?'checked':''}>
+        <span><strong>Send me a morning email</strong><br>
+        <span class="muted">One short message a day. Unsubscribe any time.</span></span></label>
+      <div class="field"><label>What to include</label>
+        <div class="chips" id="kinds">${[['affirmation','Affirmation'],['quote','Quote'],
+          ['tip','Tip'],['fun_fact','Fun fact'],['journal_prompt','Journal prompt']].map(([k,l])=>
+          `<button type="button" class="chip ${(p.daily_email_kinds||[]).includes(k)?'on':''}" data-v="${k}">${l}</button>`).join('')}</div></div>
+
+      <button class="btn" id="savep" type="submit">Save changes</button>
+    </form>
+
+    <hr class="hr">
+    <h3>Password</h3>
+    <button class="btn ghost" id="pw">Send me a reset link</button>`;
+}
+
+function privacy(){
+  const p = a.profile;
+  const premium = a.level >= 3;
+  return `
+    <div style="max-width:640px">
+      <h2>Who can see you</h2>
+      <label class="switch" style="${premium?'':'opacity:.6'}">
+        <input type="checkbox" id="vis" ${p.visible_to_therapists?'checked':''} ${premium?'':'disabled'}>
+        <span><strong>Let therapists reach out to me</strong><br>
+        <span class="muted">Verified therapists with an active membership will see your
+        <strong>name</strong>, the topics you picked above, and your zip code — and can send you a
+        message here. They never see your email address, your journal, your quiz results, or
+        anything else you have written. Switch it off and you disappear from their view
+        entirely.</span>
+        ${premium?'':'<br><a href="pricing.html">This is a Premium feature</a>'}</span></label>
+
+      <div class="notice" style="margin-top:20px">
+        Your journal entries, quiz results, worksheets and mood logs are private to your account.
+        No therapist, and no other member, can read them.
+      </div>
+
+      <hr class="hr">
+      <h2>Your data</h2>
+      <p class="muted">Download everything this account holds, or close it for good.</p>
+      <div class="row">
+        <button class="btn ghost" id="export">Download my data</button>
+        <button class="btn danger" id="delete">Delete my account</button>
+      </div>
+    </div>`;
+}
+
+async function inbox(){
+  const { data } = await sb.from('therapist_outreach')
+    .select('*, therapist_profiles(first_name,last_name,credentials,slug)')
+    .eq('member_id', a.profile.id).order('created_at', { ascending:false });
+  const host = document.getElementById('body');
+  host.innerHTML = `
+    <h2>Messages from therapists</h2>
+    <p class="muted">Only therapists you allowed to contact you, under Privacy.</p>
+    ${(data||[]).length ? data.map(m=>{
+      const t = m.therapist_profiles || {};
+      return `<div class="card" style="margin-top:14px">
+        <div class="spread">
+          <strong>${esc(t.first_name||'')} ${esc(t.last_name||'')}${t.credentials?', '+esc(t.credentials):''}</strong>
+          <span class="faint">${fmtDate(m.created_at)}</span></div>
+        <p class="muted" style="margin:10px 0 0;white-space:pre-wrap">${esc(m.message)}</p>
+        ${t.slug?`<a class="btn sm ghost" style="margin-top:12px" href="therapist.html?slug=${esc(t.slug)}">View their profile</a>`:''}
+      </div>`;
+    }).join('') : '<div class="empty" style="margin-top:18px">No messages.</div>'}`;
+}
+
+async function history(){
+  const host = document.getElementById('body');
+  const [{ data: quizzes }, { count: nJ }, { data: sheets }] = await Promise.all([
+    sb.from('quiz_attempts').select('*, quizzes(title,slug)')
+      .eq('user_id', a.profile.id).order('created_at',{ascending:false}).limit(30),
+    sb.from('journal_entries').select('id',{count:'exact',head:true}).eq('user_id', a.profile.id),
+    sb.from('worksheet_responses').select('*, worksheets(title,slug)')
+      .eq('user_id', a.profile.id).order('updated_at',{ascending:false}).limit(30),
+  ]);
+  host.innerHTML = `
+    <h2>Quiz results</h2>
+    ${(quizzes||[]).length ? `<div class="scroll-x"><table class="data">
+      <thead><tr><th>Quiz</th><th>Score</th><th>Result</th><th>When</th></tr></thead>
+      <tbody>${quizzes.map(q=>`<tr>
+        <td><a href="quiz.html?slug=${esc(q.quizzes?.slug||'')}">${esc(q.quizzes?.title||'Quiz')}</a></td>
+        <td>${q.score}</td><td>${esc(q.band_label||'—')}</td>
+        <td class="faint">${fmtDate(q.created_at)}</td></tr>`).join('')}</tbody></table></div>`
+      : '<div class="empty">No quizzes taken yet.</div>'}
+
+    <h2 style="margin-top:34px">Worksheets in progress</h2>
+    ${(sheets||[]).length ? `<div class="grid g3">${sheets.map(s=>`
+      <a class="tile" href="worksheet.html?slug=${esc(s.worksheets?.slug||'')}">
+        <h3>${esc(s.worksheets?.title||'Worksheet')}</h3>
+        <span class="meta">Last edited ${fmtDate(s.updated_at)}</span></a>`).join('')}</div>`
+      : '<div class="empty">Nothing saved yet.</div>'}
+
+    <h2 style="margin-top:34px">Journal</h2>
+    <p class="muted">${nJ||0} entr${nJ===1?'y':'ies'} — <a href="journal.html">open your journal</a>.</p>`;
+}
+
+function chipVals(id){ return [...document.querySelectorAll(`#${id} .chip.on`)].map(c=>c.dataset.v); }
+function wireChips(id){ document.querySelectorAll(`#${id} .chip`).forEach(c =>
+  c.addEventListener('click', ()=>c.classList.toggle('on'))); }
+
+async function render(){
+  const map = { membership, profile, privacy };
+  root.innerHTML = shell(map[tab] ? map[tab]() : '<div class="skeleton" style="height:120px"></div>');
+  root.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => {
+    tab = b.dataset.tab; history.replaceState({},'', '#'+tab); render();
+  }));
+
+  if (tab === 'membership') document.getElementById('portal')?.addEventListener('click', e => openPortal(e.target));
+
+  if (tab === 'profile') {
+    wireChips('issues'); wireChips('kinds');
+    document.getElementById('pf').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('savep');
+      busy(btn, true, 'Saving…');
+      const { error } = await sb.from('profiles').update({
+        full_name: document.getElementById('name').value.trim() || null,
+        zip: document.getElementById('zip').value.trim() || null,
+        issues: chipVals('issues'),
+        daily_email: document.getElementById('demail').checked,
+        daily_email_kinds: chipVals('kinds'),
+        onboarded: true,
+      }).eq('id', a.profile.id);
+      busy(btn, false);
+      if (error) return toast(error.message,'err');
+      clearAccess(); a = await access(true);
+      toast('Saved.','ok');
+    });
+    document.getElementById('pw').addEventListener('click', async () => {
+      const { error } = await sb.auth.resetPasswordForEmail(a.profile.email,
+        { redirectTo: location.origin + '/account.html' });
+      error ? toast(error.message,'err') : toast('Reset link sent to your email.','ok');
+    });
+  }
+
+  if (tab === 'privacy') {
+    document.getElementById('vis')?.addEventListener('change', async (e) => {
+      const { error } = await sb.from('profiles')
+        .update({ visible_to_therapists: e.target.checked }).eq('id', a.profile.id);
+      if (error) { e.target.checked = !e.target.checked; return toast(error.message,'err'); }
+      clearAccess(); a = await access(true);
+      toast(e.target.checked ? 'Therapists can now reach out.' : 'You are hidden from therapists.','ok');
+    });
+    document.getElementById('export').addEventListener('click', async (e) => {
+      busy(e.target, true, 'Gathering…');
+      const uid = a.profile.id;
+      const [j,q,w,c,m,g] = await Promise.all([
+        sb.from('journal_entries').select('*').eq('user_id',uid),
+        sb.from('quiz_attempts').select('*').eq('user_id',uid),
+        sb.from('worksheet_responses').select('*').eq('user_id',uid),
+        sb.from('user_challenges').select('*').eq('user_id',uid),
+        sb.from('mood_logs').select('*').eq('user_id',uid),
+        sb.from('goals').select('*').eq('user_id',uid),
+      ]);
+      const blob = new Blob([JSON.stringify({
+        exported_at: new Date().toISOString(), profile: a.profile,
+        journal: j.data, quiz_attempts: q.data, worksheets: w.data,
+        challenges: c.data, mood_logs: m.data, goals: g.data,
+      }, null, 2)], { type:'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url; link.download = 'theraglee-my-data.json'; link.click();
+      URL.revokeObjectURL(url);
+      busy(e.target, false);
+    });
+    document.getElementById('delete').addEventListener('click', () => {
+      const back = modal(`<h2>Delete your account?</h2>
+        <p class="muted">This removes your journal, quiz results, worksheets, challenges and
+          tracking permanently. It cannot be undone.</p>
+        <p class="muted">Type <strong>DELETE</strong> to confirm.</p>
+        <input id="confirm" placeholder="DELETE">
+        <div class="row" style="justify-content:flex-end;margin-top:18px">
+          <button class="btn ghost" id="no">Keep my account</button>
+          <button class="btn danger" id="yes">Delete permanently</button></div>`);
+      back.querySelector('#no').onclick = () => back.remove();
+      back.querySelector('#yes').onclick = async () => {
+        if (back.querySelector('#confirm').value !== 'DELETE') return toast('Type DELETE to confirm.','err');
+        toast('Account deletion needs to be finished by an administrator — we have logged your request.','err');
+        back.remove();
+      };
+    });
+  }
+
+  if (tab === 'inbox')   inbox();
+  if (tab === 'history') history();
+}
+
+render();
+}
+</script>
+</body>
+</html>
