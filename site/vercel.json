@@ -1,5 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "trailingSlash": false,
   "headers": [
     {
       "source": "/(.*)",
@@ -14,6 +15,25 @@
   "redirects": [
     { "source": "/therapists", "destination": "/therapists.html" },
     { "source": "/pricing", "destination": "/pricing.html" },
-    { "source": "/join", "destination": "/login.html?mode=signup" }
+    { "source": "/join", "destination": "/login.html?mode=signup" },
+
+    { "source": "/explore", "destination": "/explore.html" },
+    { "source": "/challenges", "destination": "/challenges.html" },
+    { "source": "/journal", "destination": "/journal.html" },
+    { "source": "/articles", "destination": "/articles.html" },
+    { "source": "/mandalas", "destination": "/mandalas.html" },
+    { "source": "/goals", "destination": "/goals.html" },
+    { "source": "/dashboard", "destination": "/dashboard.html" },
+    { "source": "/account", "destination": "/account.html" },
+    { "source": "/login", "destination": "/login.html" },
+    { "source": "/for-therapists", "destination": "/for-therapists.html" },
+
+    { "source": "/my-account", "destination": "/account.html" },
+    { "source": "/shop", "destination": "/pricing.html" },
+    { "source": "/cart", "destination": "/pricing.html" },
+    { "source": "/checkout", "destination": "/pricing.html" },
+    { "source": "/sample-page", "destination": "/" },
+    { "source": "/hello-world", "destination": "/" },
+    { "source": "/category/:path*", "destination": "/articles.html" }
   ]
 }
