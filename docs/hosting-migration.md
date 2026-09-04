@@ -15,8 +15,8 @@ HostGator — the Sydney theme, WooCommerce with no products, and no content
 beyond WordPress's own default "Hello world!" post and "Sample Page". There is
 nothing on it to preserve, back up, or migrate.
 
-The real Theraglee app already runs on Vercel at `theraglee-site.vercel.app`.
-This migration only changes **which server the domain name points at**.
+The real Theraglee app already runs on Vercel. This migration only changes
+**which server the domain name points at**.
 
 | | Before | After |
 |---|---|---|
@@ -67,34 +67,37 @@ migration:
 
 ---
 
-## Step 0a — Deploy the staged changes
+## Step 0a — Publishing (this is now automatic)
 
-`site_files` has already been updated to match the repository exactly: the new
-`404.html`, the rewritten `vercel.json`, and the member-library feature
-(`assets/library.js` plus the seven pages that use it). Every row was verified
-byte-identical to `site/`. `README.md` has been **removed** from the table.
+The site is deployed by Vercel straight from this repository: the project is
+linked to `Suzy590/Theraglee-Repo` with **`site/` as the root directory**, so a
+push to the default branch deploys it. There is no longer a manual step.
 
-**None of that is live yet.** `site_files` is only the input; the site keeps
-serving the last deployment until a new one is made. So until you deploy:
+> **Prerequisite, done once:** the Vercel GitHub App must have access to
+> `Suzy590/Theraglee-Repo`. It is already installed on the account (that is how
+> `assignremind` deploys) but is scoped to selected repositories, so this one has
+> to be added at <https://github.com/apps/vercel> → *Configure* → **Suzy590** →
+> *Repository access*. Without it, linking fails with
+> `To link a GitHub repository, you need to install the GitHub integration first`.
 
-- the branded 404 page is not in use,
-- the legacy WordPress redirects are not in effect,
-- and `/README.md` is *still being served*.
+This replaced the old route, where files were copied into the `site_files` table
+in Supabase and Vercel was redeployed by hand. `site_files` is no longer what
+gets served, and the old `theraglee-site` project is superseded.
 
-Deploy before the cutover, so the domain lands on the finished site rather than
-changing twice.
+Already live as a result: the branded `404.html`, the legacy WordPress redirects
+in `vercel.json`, and the member-library feature (`assets/library.js` plus the
+seven pages that use it). `README.md` is gone from the deployed set — it now
+lives at `docs/site.md`, outside the deployed directory.
 
-> The exact trigger depends on how the project is wired — this session could not
-> reach the `theraglee-site` project to check (see "A note on access" below). If
-> the Vercel build reads `site_files` itself, **Deployments → Redeploy** in the
-> dashboard is enough. If instead the files are uploaded by a tool, ask Claude to
-> "publish my site changes" from a session that can see the project. Confirm
-> either way with:
->
-> ```bash
-> curl -sI https://theraglee-site.vercel.app/README.md   # want: 404, not 200
-> curl -s https://theraglee-site.vercel.app/no-such-page | grep -o '<title>.*</title>'
-> ```
+Verify any deploy against the project's production URL (`PROD` below — Vercel
+shows it on the project page; after step 3 it is just `https://theraglee.com`):
+
+```bash
+curl -sI "$PROD/README.md"    # want: 404, not 200 — the doc must not be served
+curl -s  "$PROD/no-such-page" | grep -o '<title>.*</title>'   # want: the branded 404
+curl -sI "$PROD/my-account"   | grep -i -E 'HTTP|location'    # want: 308 → /account.html
+curl -sI "$PROD/assets/library.js" | head -1                  # want: 200
+```
 
 ## Step 0 — Lower the TTL (do this a few hours ahead)
 
@@ -107,7 +110,8 @@ starting step 3, so the short TTL has propagated.
 
 ## Step 1 — Add the domain in Vercel
 
-In the Vercel dashboard → project **theraglee-site** → **Settings → Domains**:
+In the Vercel dashboard → project **theraglee-web** (the Git-linked one from
+step 0a, *not* the old `theraglee-site`) → **Settings → Domains**:
 
 1. Add `theraglee.com`.
 2. Add `www.theraglee.com`, and set it to **redirect to `theraglee.com`**.
@@ -276,38 +280,34 @@ step 7 until you're happy.
 
 ## A note on access
 
-Two steps in here can't be done from a Claude session and are marked as yours:
-adding the domain in the Vercel dashboard, and editing DNS at HostGator. There
-is no tool for either.
+Two steps in here still can't be done from a Claude session and are marked as
+yours: adding the domain in the Vercel dashboard, and editing DNS at HostGator.
+There is no tool for either.
 
-Separately, the Vercel account currently connected to Claude has one team
-("scanchol-7878's projects", Pro plan) containing **zero projects** — the
-`theraglee-site` project is under a different scope and is not visible or
-manageable from there. That is why step 0a can't say definitively how the
-project is wired, and why no deploy was attempted: pointing a deploy at a
-project name that isn't reachable creates a *new* project rather than updating
-the existing one.
-
-If you want Claude to manage the hosting directly in future, the fix is to move
-or recreate `theraglee-site` inside that Pro team and link it to this GitHub
-repository (root directory `site/`). That also replaces the manual
-`site_files` two-step with push-to-deploy, which is what `site/README.md` has
-wanted since the repo existed.
+Everything else is reachable. One wrinkle worth recording, because it cost time:
+the Vercel API resolves this account by the slug **`scanchol-7878`**. Querying by
+the team ID `team_cHW24er3QiSNFbZw2mOuaoga`, or by the team slug
+`scanchol-7878s-projects`, both return an empty project list — which reads
+exactly like an account with nothing in it. It is not. The projects are
+`theraglee-web` (git-linked, current), `theraglee-site` (the old unlinked
+upload-based project) and `theraglee` (a stale first attempt).
 
 ## A note on what gets published
 
 `site/` is uploaded verbatim to Vercel, so **every file in it is publicly
 readable** — including non-HTML ones.
 
-`site/README.md` was being served at `https://theraglee-site.vercel.app/README.md`
-with a `200`. It documents which email address is auto-granted administrator and
-the SQL that lifts the AssignRemind safety gate. It has been removed from
-`site_files`, and stops being served at the next deploy (step 0a).
+`site/README.md` was being served at `/README.md` with a `200`. It documents
+which email address is auto-granted administrator and the SQL that lifts the
+AssignRemind safety gate. It has been **moved to `docs/site.md`**, outside the
+deployed directory, so it can no longer be served at all.
 
-**The rule: no `.md` file is ever published.** Documentation belongs in the repo
-(`site/README.md`, `docs/`), never in the deployed file set. `vercel.json` is
-the one non-asset file that *must* ship, because Vercel reads the redirects and
-headers from it — its contents are not sensitive.
+**The rule: no `.md` file is ever published.** Documentation belongs in `docs/`,
+which is outside the deployed root and therefore unreachable — that is the real
+guarantee, not a filter. `site/.vercelignore` also excludes `*.md` as a backstop
+for anything dropped into `site/` later. `vercel.json` is the one non-asset file
+that *must* ship, because Vercel reads the redirects and headers from it — its
+contents are not sensitive.
 
 ### That does not make the content private
 
