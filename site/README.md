@@ -1,6 +1,10 @@
 # Theraglee — how the site is put together
 
-Live site: **https://theraglee-site.vercel.app**
+Live site: **https://theraglee.com** (also reachable at
+`https://theraglee-site.vercel.app`)
+
+Moving the domain off HostGator is written up step by step in
+[`docs/hosting-migration.md`](../docs/hosting-migration.md).
 
 ## The pieces
 
@@ -10,6 +14,7 @@ Live site: **https://theraglee-site.vercel.app**
 | Database + logins | Members, therapists, all content, all progress. | Supabase project `oekqzuguruyqkafsqhos` |
 | Payments | Stripe Checkout + billing portal + webhook. | Supabase Edge Functions |
 | Hosting | Serves the site. | Vercel project `theraglee-site` |
+| Domain | `theraglee.com`. | Registered at Network Solutions, served by Vercel |
 
 ## Membership tiers
 
@@ -61,8 +66,20 @@ Supabase, so publishing a change is two steps:
 2. Push them into `site_files`, then redeploy on Vercel.
 
 Ask Claude to do this ("publish my site changes") — it handles both steps.
-Once there is a GitHub account for the project, this can be swapped for the
+Now that the project has a GitHub repository, this can be swapped for the
 normal Git → Vercel flow, where a push deploys automatically.
+
+### Everything in this folder is public
+
+`site/` is uploaded to Vercel verbatim, so every file in it is readable by
+anyone — not just the HTML. This file used to be served at `/README.md` with a
+`200`, which published the address that is auto-granted administrator and the
+SQL that lifts the AssignRemind gate.
+
+**No `.md` file is ever published.** Documentation stays in the repository; only
+assets, pages and `vercel.json` go into `site_files`. (`vercel.json` has to
+ship — Vercel reads the redirects and headers from it — and holds nothing
+sensitive.)
 
 ## Content
 

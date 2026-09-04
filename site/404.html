@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Page not found — Theraglee</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="/assets/favicon.png" sizes="48x48">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="/assets/styles.css">
+<!-- This page is served for any unmatched path, at any depth, so every URL here
+     is absolute. It is also deliberately self-contained: no app.js, no Supabase
+     call, nothing that can itself fail. An error page has to render when other
+     things are already broken. -->
+<style>
+  .nf{padding:86px 0 40px;text-align:center}
+  .nf .num{font-family:var(--serif);font-size:clamp(4rem,13vw,7.5rem);line-height:1;
+    color:var(--mist);margin:0 0 6px;letter-spacing:-.03em}
+  .nf h1{font-size:clamp(1.7rem,4vw,2.5rem);font-weight:300;letter-spacing:-.03em;margin:0 0 .5em}
+  .nf p.lede{color:var(--muted);max-width:46ch;margin:0 auto 30px}
+  .nf .row{justify-content:center}
+  .where{max-width:620px;margin:54px auto 0;text-align:left;
+    background:var(--paper);border:1px solid var(--hair);border-radius:var(--r-lg);
+    padding:26px 30px;box-shadow:var(--shadow-1)}
+  .where h2{font-size:.78rem;text-transform:uppercase;letter-spacing:.1em;font-weight:600;
+    color:var(--faint);margin:0 0 14px}
+  .where ul{list-style:none;margin:0;padding:0;
+    display:grid;grid-template-columns:1fr 1fr;gap:2px 26px}
+  @media(max-width:560px){.where ul{grid-template-columns:1fr}}
+  .where a{display:block;padding:7px 0;color:var(--ink-2);font-size:.95rem}
+  .where a:hover{color:var(--green)}
+</style>
+</head>
+<body>
+
+<div class="crisis">In crisis? Call or text <a href="tel:988">988</a> (US Suicide &amp; Crisis Lifeline),
+  or text HOME to <a href="sms:741741">741741</a>. If you are in danger, call 911.</div>
+
+<header class="topbar"><div class="wrap"><nav class="nav">
+  <a class="brand" href="/index.html"><img src="/assets/logo.png" alt="Theraglee"></a>
+  <div class="links">
+    <a href="/explore.html">Explore</a>
+    <a href="/therapists.html">Therapists</a>
+    <a href="/pricing.html">Membership</a>
+    <a class="btn sm" href="/login.html?mode=signup">Join free</a>
+  </div>
+</nav></div></header>
+
+<main>
+  <section class="nf"><div class="wrap">
+    <p class="num">404</p>
+    <h1>We can&rsquo;t find that page.</h1>
+    <p class="lede">The link may be out of date, or the page may have moved. Nothing
+      you&rsquo;ve saved is affected &mdash; it&rsquo;s all still on your dashboard.</p>
+    <div class="row">
+      <a class="btn" href="/index.html">Go to the home page</a>
+      <a class="btn ghost" href="/explore.html">Browse the library</a>
+    </div>
+
+    <div class="where">
+      <h2>Or head straight to</h2>
+      <ul>
+        <li><a href="/dashboard.html">Today</a></li>
+        <li><a href="/challenges.html">Challenges</a></li>
+        <li><a href="/journal.html">Journal</a></li>
+        <li><a href="/articles.html">Articles</a></li>
+        <li><a href="/therapists.html">Find a therapist</a></li>
+        <li><a href="/for-therapists.html">List your practice</a></li>
+        <li><a href="/pricing.html">Plans &amp; pricing</a></li>
+        <li><a href="/account.html">Your account</a></li>
+      </ul>
+    </div>
+  </div></section>
+</main>
+
+<footer class="site"><div class="wrap">
+  <div class="legal">
+    <strong>Theraglee does not provide medical advice, diagnosis, or treatment.</strong>
+    Everything here is educational and supportive only, and is not a substitute for care from a
+    licensed professional. Quizzes and self-assessments cannot diagnose any condition.
+    If you are in crisis, call or text 988 in the US, or call 911 if you are in immediate danger.
+  </div>
+</div></footer>
+
+</body>
+</html>
