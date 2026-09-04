@@ -67,6 +67,35 @@ migration:
 
 ---
 
+## Step 0a — Deploy the staged changes
+
+`site_files` has already been updated to match the repository exactly: the new
+`404.html`, the rewritten `vercel.json`, and the member-library feature
+(`assets/library.js` plus the seven pages that use it). Every row was verified
+byte-identical to `site/`. `README.md` has been **removed** from the table.
+
+**None of that is live yet.** `site_files` is only the input; the site keeps
+serving the last deployment until a new one is made. So until you deploy:
+
+- the branded 404 page is not in use,
+- the legacy WordPress redirects are not in effect,
+- and `/README.md` is *still being served*.
+
+Deploy before the cutover, so the domain lands on the finished site rather than
+changing twice.
+
+> The exact trigger depends on how the project is wired — this session could not
+> reach the `theraglee-site` project to check (see "A note on access" below). If
+> the Vercel build reads `site_files` itself, **Deployments → Redeploy** in the
+> dashboard is enough. If instead the files are uploaded by a tool, ask Claude to
+> "publish my site changes" from a session that can see the project. Confirm
+> either way with:
+>
+> ```bash
+> curl -sI https://theraglee-site.vercel.app/README.md   # want: 404, not 200
+> curl -s https://theraglee-site.vercel.app/no-such-page | grep -o '<title>.*</title>'
+> ```
+
 ## Step 0 — Lower the TTL (do this a few hours ahead)
 
 In HostGator's cPanel → **Zone Editor** for theraglee.com, change the TTL on the
@@ -245,6 +274,26 @@ step 7 until you're happy.
 
 ---
 
+## A note on access
+
+Two steps in here can't be done from a Claude session and are marked as yours:
+adding the domain in the Vercel dashboard, and editing DNS at HostGator. There
+is no tool for either.
+
+Separately, the Vercel account currently connected to Claude has one team
+("scanchol-7878's projects", Pro plan) containing **zero projects** — the
+`theraglee-site` project is under a different scope and is not visible or
+manageable from there. That is why step 0a can't say definitively how the
+project is wired, and why no deploy was attempted: pointing a deploy at a
+project name that isn't reachable creates a *new* project rather than updating
+the existing one.
+
+If you want Claude to manage the hosting directly in future, the fix is to move
+or recreate `theraglee-site` inside that Pro team and link it to this GitHub
+repository (root directory `site/`). That also replaces the manual
+`site_files` two-step with push-to-deploy, which is what `site/README.md` has
+wanted since the repo existed.
+
 ## A note on what gets published
 
 `site/` is uploaded verbatim to Vercel, so **every file in it is publicly
@@ -252,10 +301,27 @@ readable** — including non-HTML ones.
 
 `site/README.md` was being served at `https://theraglee-site.vercel.app/README.md`
 with a `200`. It documents which email address is auto-granted administrator and
-the SQL that lifts the AssignRemind safety gate. It has been removed from the
-published file set as part of this migration.
+the SQL that lifts the AssignRemind safety gate. It has been removed from
+`site_files`, and stops being served at the next deploy (step 0a).
 
 **The rule: no `.md` file is ever published.** Documentation belongs in the repo
 (`site/README.md`, `docs/`), never in the deployed file set. `vercel.json` is
 the one non-asset file that *must* ship, because Vercel reads the redirects and
 headers from it — its contents are not sensitive.
+
+### That does not make the content private
+
+`github.com/Suzy590/Theraglee-Repo` is a **public repository**, so the same
+README — and this file — are readable by anyone regardless of what the site
+serves. Removing it from `site_files` stops the *website* publishing it; it does
+not retract it.
+
+Two things worth deciding separately from this migration:
+
+- **Make the repository private** if the intent was that it not be public.
+- **Reconsider the auto-admin rule itself.** Documentation being public is only
+  a problem because knowing the address is useful to an attacker — which means
+  the mechanism, not the documentation, is what is load-bearing. Granting
+  administrator to whoever signs in with a particular address is worth replacing
+  with an explicit role you set once on the account. Moving to a short, public,
+  memorable domain is exactly the moment this gets more attention, not less.
