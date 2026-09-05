@@ -42,7 +42,8 @@ Both are handled in the steps below — flagged here so they aren't skipped.
 
 2. **Supabase Auth has an allowlist of redirect URLs.** Until `theraglee.com`
    is on it, sign-up confirmations and password-reset links will keep sending
-   people to `theraglee-site.vercel.app`. This is step 5 and it is not optional.
+   people to whichever origin is on the list — not the new domain. This is step 5
+   and it is not optional.
 
 ---
 
@@ -73,7 +74,7 @@ The site is deployed by Vercel straight from this repository: the project is
 linked to `Suzy590/Theraglee-Repo` with **`site/` as the root directory**, so a
 push to the default branch deploys it. There is no longer a manual step.
 
-> **Prerequisite, done once:** the Vercel GitHub App must have access to
+> **Prerequisite, now done:** the Vercel GitHub App must have access to
 > `Suzy590/Theraglee-Repo`. It is already installed on the account (that is how
 > `assignremind` deploys) but is scoped to selected repositories, so this one has
 > to be added at <https://github.com/apps/vercel> → *Configure* → **Suzy590** →
@@ -89,15 +90,45 @@ in `vercel.json`, and the member-library feature (`assets/library.js` plus the
 seven pages that use it). `README.md` is gone from the deployed set — it now
 lives at `docs/site.md`, outside the deployed directory.
 
-Verify any deploy against the project's production URL (`PROD` below — Vercel
-shows it on the project page; after step 3 it is just `https://theraglee.com`):
+The project is **`theraglee-web`** (`prj_QmVDTmkjdf9dF6KRAhn3t9gsnQvg`), serving
+**https://theraglee-web.vercel.app**. Production branch is
+`claude/theraglee-template-design-utlypx`, root directory `site/`.
+
+Verify any deploy against that URL (after step 3 it is just
+`https://theraglee.com`):
 
 ```bash
-curl -sI "$PROD/README.md"    # want: 404, not 200 — the doc must not be served
-curl -s  "$PROD/no-such-page" | grep -o '<title>.*</title>'   # want: the branded 404
-curl -sI "$PROD/my-account"   | grep -i -E 'HTTP|location'    # want: 308 → /account.html
-curl -sI "$PROD/assets/library.js" | head -1                  # want: 200
+P=https://theraglee-web.vercel.app
+curl -sI "$P/README.md"                                    # want: 404, not 200
+curl -s  "$P/no-such-page" | grep -o '<title>.*</title>'   # want: the branded 404
+curl -sI "$P/my-account"   | grep -i -E 'HTTP|location'    # want: 308 → /account.html
+curl -sI "$P/assets/library.js" | head -1                  # want: 200
 ```
+
+All four passed on the first deploy (commit `2ac35bb`), along with every legacy
+WordPress redirect and the security headers. Every asset was confirmed
+byte-identical to the repository — which is the point of deploying from Git
+rather than re-uploading files.
+
+One bonus of the Git flow: `vercel.json` is now consumed as configuration
+instead of being served as a static file, so it returns `404` rather than the
+`200` it gave on the old upload-based project.
+
+### The old `theraglee-site` project is now stale — and still leaking
+
+`theraglee-site.vercel.app` still exists and still serves its **last upload**,
+which predates all of this. It still returns `200` for `/README.md`, so the
+admin-address doc is still public there even though it is fixed on
+`theraglee-web`.
+
+Retiring it is safe once `theraglee.com` points at `theraglee-web` (step 1–4).
+Either delete the project in the Vercel dashboard, or pause it
+(**Settings → Pause Project**), which makes it serve `503`. This was left for
+you rather than done automatically, because something may still be linking to
+that URL — the Supabase Auth allowlist did, until step 5.
+
+Note that removing it does not retract anything: the same content is in the
+public GitHub repository. See "That does not make the content private" below.
 
 ## Step 0 — Lower the TTL (do this a few hours ahead)
 
@@ -198,8 +229,10 @@ Configuration**:
 - **Site URL** → `https://theraglee.com`
 - **Redirect URLs** → add `https://theraglee.com/**`
 
-Keep `https://theraglee-site.vercel.app/**` in the redirect list until you are
-certain the new domain is working, then remove it.
+Add `https://theraglee-web.vercel.app/**` too, and keep it in the redirect list
+until you are certain the new domain is working. The stale
+`https://theraglee-site.vercel.app/**` entry can be dropped once that project is
+retired.
 
 Test by running an actual password reset and confirming the emailed link points
 at `theraglee.com`.
