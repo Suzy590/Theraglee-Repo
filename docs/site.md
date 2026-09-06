@@ -27,7 +27,7 @@ by editing the page. Every piece of content carries a `min_level`:
 | Level | Tier | Who |
 |---|---|---|
 | 0 | Visitor | No account. Browses therapists, articles, quotes, tips, fun facts, affirmations, and uses all 360 free discovery tools. |
-| 1 | Free | Registered, no card. Adds personalized daily content, journal, checklists, 7-day challenges, optional therapist outreach. |
+| 1 | Free | Registered, no card. Adds the progress dashboard with favorites, personalized daily content, the journal and its prompts, checklists with progress, 7-day challenges, articles by email every morning, and the switch that lets therapists reach out. |
 | 2 | Basic | Paid. Adds 62 quizzes, 17 worksheets, challenges up to 365 days. |
 | 3 | Premium | Paid. Adds goals, mood tracking, mandalas, playlists, resource map, personalized therapist recommendations. |
 
@@ -101,6 +101,71 @@ Two deliberate exceptions, both stored values rather than words on a page:
 - `.badge.grey` is still defined in both stylesheets as an alias of
   `.badge.gray`, so markup published before the switch still renders. New
   markup uses `.gray`.
+
+## What the Free membership includes, and where each piece lives
+
+The pricing card promises seven things to a registered member. None of them is
+gated by tier, so Basic and Premium have them too:
+
+| Promise | Where it lives | How access is decided |
+|---|---|---|
+| Dashboard to track your progress | `dashboard.html` — counts, challenges in progress, picked-up items | `requireAuth()`: any signed-in member |
+| Keep favorites in your dashboard | `favorites` table via `assets/library.js`; "Your favorites" on the dashboard | RLS `own rows` |
+| Tons of journal prompts | 374 `daily_content` rows of kind `journal_prompt`, `journal.html` | `min_level = 1` |
+| Articles sent to your inbox | the `daily-digest` Edge Function, below | `profiles.daily_email` |
+| 7-day mental health challenges | `challenge_templates` (the 7-day one is `min_level = 1`); Free can also design a 7-day one | `min_level` |
+| Checklists with progress tracked | 4 `checklists` at `min_level = 1`, `checklist_progress` + `item_progress` | `min_level`, RLS `own rows` |
+| Dashboard switch: let therapists reach out | `profiles.visible_to_therapists`, toggled on `dashboard.html` and `account.html` | `member_opted_in()` |
+
+## The morning email
+
+Every registered member can get a short email each morning: an article they
+have not been sent lately, plus whichever of the daily picks (affirmation,
+quote, tip, fun fact, journal prompt) they chose. It is **on by default for new
+accounts**, with an unsubscribe link in every email and a switch on the
+dashboard and on the account page. Members pick what goes in it under
+Account → Profile → Daily email.
+
+| Piece | Where |
+|---|---|
+| Sender | Edge Function `daily-digest` (source in `supabase/functions/daily-digest/`) |
+| Schedule | pg_cron job `daily-digest`, every day at 13:00 UTC (9 am Eastern) |
+| Rules | `supabase/migrations/20260906120000_daily_digest.sql` — `digest_recipients()`, `digest_article()`, `digest_sends` |
+| Scheduler key | `app_secrets.digest_key`, sent as the `x-digest-key` header. Readable only by the database and the service role. |
+
+How an article is chosen: one the member's level allows, never sent to them
+before if there is one, otherwise the one they were sent longest ago — and
+nothing from the last 30 days. When every article is too recent the email goes
+out without one, so a small library does not repeat itself daily. **There are
+two articles right now**; every article added to `articles` becomes another
+morning email.
+
+Nobody gets two emails in a day (`digest_sends` has a unique index on user and
+date), and a failed send is retried at most once more that day.
+
+The function needs these secrets on the Supabase project (Settings → Edge
+Functions → Secrets). Until `RESEND_API_KEY` is set, the scheduled run returns
+`email_not_configured` and sends nothing:
+
+| Secret | What it is |
+|---|---|
+| `RESEND_API_KEY` | Resend API key. The same one `contact-therapist` uses. |
+| `MAIL_FROM` | Optional. Defaults to `Theraglee <notifications@theraglee.com>`; the domain must be verified in Resend. |
+| `SITE_URL` | Optional. Defaults to `https://theraglee.com`; used for the links in the email. |
+
+To preview what a member would receive without sending, call the function with
+the key and `dry_run`:
+
+```bash
+KEY=$(psql "$DATABASE_URL" -Atc "select value from app_secrets where key='digest_key'")
+curl -s -X POST https://oekqzuguruyqkafsqhos.supabase.co/functions/v1/daily-digest \
+  -H "x-digest-key: $KEY" -H "Content-Type: application/json" \
+  -d '{"dry_run": true, "user_id": "<profile id>"}'
+```
+
+Drop `dry_run` to actually send to that one member (this ignores the
+once-a-day rule so you can test against your own inbox); drop `user_id` too and
+it does exactly what the scheduled run does.
 
 ## The 360 free discovery tools
 
