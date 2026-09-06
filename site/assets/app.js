@@ -280,8 +280,9 @@ function footer() {
       licensed professional. Quizzes and self-assessments cannot diagnose any condition.
       If you are in crisis, call or text 988 in the US, or call 911 if you are in immediate danger.
       <br><br>© ${new Date().getFullYear()} Theraglee.
-      <a href="#" style="display:inline">Privacy</a> ·
-      <a href="#" style="display:inline">Terms</a>
+      <a href="privacy.html" style="display:inline">Privacy</a> ·
+      <a href="terms.html" style="display:inline">Terms</a> ·
+      <a href="privacy.html#consumer-health-data" style="display:inline">Consumer health data privacy</a>
     </div></div>`;
   document.body.appendChild(f);
 }
