@@ -131,12 +131,19 @@ and its own webhook secrets; nothing in it is real money.
 
 ### 1. Apply the database migration
 
+> **Done on 2026-09-06.** The migration is applied to the live project; only
+> repeat this if you restore the database from an older backup.
+
 Open the Supabase Dashboard → **SQL Editor**, paste the whole of
 `supabase/migrations/20260906230000_stripe_tax_identity_connect.sql`, and run
 it. It only adds columns, tables and switches — nothing is removed. (Or ask the
 assistant to apply it for you.)
 
 ### 2. Deploy the six functions
+
+> **Done on 2026-09-06.** All six functions are deployed (checkout, portal and
+> webhook as version 2; identity, connect and session-checkout as version 1).
+> Repeat this whenever the code in `supabase/functions/` changes.
 
 With the Supabase CLI installed and signed in:
 
