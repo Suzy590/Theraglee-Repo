@@ -172,6 +172,12 @@ automatically. Then go to `/admin.html` for:
 - Stripe price IDs and the on/off switch for payments
 - content counts
 
+## Privacy Policy and Terms of Service
+
+`site/privacy.html` and `site/terms.html`, served at `/privacy` and `/terms`.
+How they are kept current, what they assert about the site, and what still
+needs filling in is written up in [`legal-pages.md`](legal-pages.md).
+
 ## Safety
 
 The crisis banner (988) is on every page, and every page carries the
