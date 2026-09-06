@@ -28,7 +28,7 @@ import { mount, loadState, saveState, clearState, progressOf, KIND_LABEL } from 
 const a = await chrome({ active: 'explore.html' });
 const root = document.getElementById('root');
 const slug = qs('slug');
-const lib = await library();
+let lib = await library();
 
 /* Local (browser-only) status for anyone, member or not. Members also get the
    database-backed status via library.js, which is what the dashboard shows. */
@@ -120,6 +120,15 @@ function paintIndex() {
   }));
   bindLibrary(document.getElementById('results'), () => render());
   render();
+
+  /* Coming back with the Back button often restores this page from the
+     browser's cache exactly as it was, so a tool finished in the meantime
+     would still show no badge. Re-read progress and repaint the list. */
+  window.addEventListener('pageshow', async (e) => {
+    if (!e.persisted) return;
+    if (lib.authenticated) lib = await library(true);
+    render();
+  });
 }
 
 /* ------------------------------------------------------------------- tool */
