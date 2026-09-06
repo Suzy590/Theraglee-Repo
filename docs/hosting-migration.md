@@ -8,6 +8,47 @@ order — the ordering is what keeps the site (and later, email) from breaking.
 
 ---
 
+## Status: done — 2026-09-06
+
+`theraglee.com` is live on Vercel. Verified on the domain itself: valid
+certificate, homepage `200`, `/README.md` `404`, `/assets/library.js` `200`, the
+branded 404 page, every legacy WordPress redirect, all security headers, and
+`www.theraglee.com` → `307` → the apex.
+
+**The route actually taken differed from the plan below.** The steps were
+written for record-level edits at HostGator (change the apex `A` and the `www`
+`CNAME`, keep HostGator as DNS host). Instead the **nameservers were moved
+wholesale to Vercel** at the registrar, matching how `assignremind.com` is set
+up. That is simpler, and it retires HostGator completely rather than leaving DNS
+behind there.
+
+Consequences of taking the nameserver route:
+
+- Steps **0, 2 and 3 below were not used.** They are kept as the rollback
+  procedure and as a record of the original DNS.
+- The `webmail`/`cpanel` trap never applied — the whole zone was replaced, so
+  those records are simply gone rather than mis-pointing.
+- Every old record is gone, including `MX`, `SPF` and `_dmarc`. Nothing was
+  using them, but they must be recreated in **Vercel's** DNS when email is set
+  up (step 8).
+
+One thing worth recording, because it caused a brief outage: the nameservers
+were changed **before** the domain was added in Vercel. Vercel's nameservers
+were then authoritative for a zone that did not exist yet, so the domain
+returned `SERVFAIL` until the domain was connected. Adding it fixed this within
+minutes. **Add the domain in Vercel first.**
+
+### Still outstanding
+
+| | |
+|---|---|
+| **Supabase Auth URLs** | Step 5 — not done. Site URL and the redirect allowlist still point at the old origin, so confirmation and password-reset emails link to the wrong host. Only bites once someone registers. |
+| **Cancel HostGator** | Nothing depends on it any more. |
+| **`SITE_URL` secret** | Step 6 — Stripe's fallback return URL. Low priority; Stripe is disabled and the browser sends the right origin. |
+| **Email** | Step 8, whenever wanted. |
+
+---
+
 ## What is actually being moved
 
 `theraglee.com` currently serves a **stock, empty WordPress install** on
@@ -22,7 +63,7 @@ The real Theraglee app already runs on Vercel. This migration only changes
 |---|---|---|
 | `theraglee.com` | HostGator (198.57.242.178) | Vercel |
 | Registrar | Network Solutions | Network Solutions — unchanged |
-| DNS host | HostGator nameservers | HostGator for now; move later (step 7) |
+| DNS host | HostGator nameservers | **Vercel** (`ns1`/`ns2.vercel-dns.com`) |
 | Email | Configured, never used | Unchanged now; set up properly in step 8 |
 | App code | — | No changes needed. Everything uses `location.origin` |
 
@@ -42,7 +83,8 @@ Both are handled in the steps below — flagged here so they aren't skipped.
 
 2. **Supabase Auth has an allowlist of redirect URLs.** Until `theraglee.com`
    is on it, sign-up confirmations and password-reset links will keep sending
-   people to `theraglee-site.vercel.app`. This is step 5 and it is not optional.
+   people to whichever origin is on the list — not the new domain. This is step 5
+   and it is not optional.
 
 ---
 
@@ -73,7 +115,7 @@ The site is deployed by Vercel straight from this repository: the project is
 linked to `Suzy590/Theraglee-Repo` with **`site/` as the root directory**, so a
 push to the default branch deploys it. There is no longer a manual step.
 
-> **Prerequisite, done once:** the Vercel GitHub App must have access to
+> **Prerequisite, now done:** the Vercel GitHub App must have access to
 > `Suzy590/Theraglee-Repo`. It is already installed on the account (that is how
 > `assignremind` deploys) but is scoped to selected repositories, so this one has
 > to be added at <https://github.com/apps/vercel> → *Configure* → **Suzy590** →
@@ -89,15 +131,50 @@ in `vercel.json`, and the member-library feature (`assets/library.js` plus the
 seven pages that use it). `README.md` is gone from the deployed set — it now
 lives at `docs/site.md`, outside the deployed directory.
 
-Verify any deploy against the project's production URL (`PROD` below — Vercel
-shows it on the project page; after step 3 it is just `https://theraglee.com`):
+The project is **`theraglee-web`** (`prj_QmVDTmkjdf9dF6KRAhn3t9gsnQvg`), serving
+**https://theraglee-web.vercel.app**. Production branch is
+`claude/theraglee-template-design-utlypx`, root directory `site/`.
+
+Verify any deploy against that URL (after step 3 it is just
+`https://theraglee.com`):
 
 ```bash
-curl -sI "$PROD/README.md"    # want: 404, not 200 — the doc must not be served
-curl -s  "$PROD/no-such-page" | grep -o '<title>.*</title>'   # want: the branded 404
-curl -sI "$PROD/my-account"   | grep -i -E 'HTTP|location'    # want: 308 → /account.html
-curl -sI "$PROD/assets/library.js" | head -1                  # want: 200
+P=https://theraglee-web.vercel.app
+curl -sI "$P/README.md"                                    # want: 404, not 200
+curl -s  "$P/no-such-page" | grep -o '<title>.*</title>'   # want: the branded 404
+curl -sI "$P/my-account"   | grep -i -E 'HTTP|location'    # want: 308 → /account.html
+curl -sI "$P/assets/library.js" | head -1                  # want: 200
 ```
+
+All four passed on the first deploy (commit `2ac35bb`), along with every legacy
+WordPress redirect and the security headers. Every asset was confirmed
+byte-identical to the repository — which is the point of deploying from Git
+rather than re-uploading files.
+
+One bonus of the Git flow: `vercel.json` is now consumed as configuration
+instead of being served as a static file, so it returns `404` rather than the
+`200` it gave on the old upload-based project.
+
+### The old `theraglee-site` project is paused
+
+`theraglee-site.vercel.app` served its last upload — including `/README.md` at
+`200` — until the domain cutover was confirmed. It is now **paused**, and every
+path on it returns `503`. That was the last place on the web serving that
+document.
+
+It is paused rather than deleted, deliberately: a `503` is easy to diagnose if
+something turns out to still link to that URL, whereas a deleted project is not.
+Unpausing is one action in the dashboard if it is ever needed.
+
+Removing it does not retract anything, though: the same content is in the public
+GitHub repository. See "That does not make the content private" below.
+
+## Steps 0–3 — the record-level route (not used)
+
+> These describe editing records while keeping HostGator as the DNS host. The
+> nameserver move made them unnecessary. They are kept as the rollback
+> procedure: pointing the nameservers back at `hgns1`/`hgns2.hostgator.com` and
+> restoring the table above returns the domain to its pre-migration state.
 
 ## Step 0 — Lower the TTL (do this a few hours ahead)
 
@@ -198,8 +275,10 @@ Configuration**:
 - **Site URL** → `https://theraglee.com`
 - **Redirect URLs** → add `https://theraglee.com/**`
 
-Keep `https://theraglee-site.vercel.app/**` in the redirect list until you are
-certain the new domain is working, then remove it.
+Add `https://theraglee-web.vercel.app/**` too, and keep it in the redirect list
+until you are certain the new domain is working. The stale
+`https://theraglee-site.vercel.app/**` entry can be dropped once that project is
+retired.
 
 Test by running an actual password reset and confirming the emailed link points
 at `theraglee.com`.
