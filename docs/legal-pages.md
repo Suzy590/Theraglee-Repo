@@ -49,8 +49,9 @@ fact; if any of these change, the policy must change in the same pull request.
 ## Review schedule
 
 Review both pages **at least every three months** and whenever a feature
-changes what the site collects. A scheduled Claude routine does the quarterly
-check and opens a pull request when something needs to change; the pull
+changes what the site collects. A scheduled Claude routine ("Theraglee legal
+pages monthly review", in the claude.ai Routines list) runs on the first of
+every month, checks the law and the site, and opens a pull request; the pull
 request still needs a person to read and merge it.
 
 What a review covers:
