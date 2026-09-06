@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Discover — Theraglee</title>
-<meta name="description" content="100 free interactive tools for noticing more about your own mental health: anxiety, worry, racing thoughts, low mood, relationships, sleep and more. No account needed.">
+<meta name="description" content="360 free interactive tools for noticing more about your own mental health: anxiety, worry, racing thoughts, low mood, relationships, sleep and more. No account needed.">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="alternate icon" href="assets/favicon.png" sizes="48x48">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
@@ -55,7 +55,7 @@ if (!slug) {
   const tool = TOOLS.find(t => t.slug === slug);
   if (!tool) {
     document.title = 'Not found — Theraglee';
-    root.innerHTML = '<div class="empty">That tool could not be found. <a href="discover.html">See all 100 tools</a></div>';
+    root.innerHTML = '<div class="empty">That tool could not be found. <a href="discover.html">See all 360 tools</a></div>';
   } else {
     paintTool(tool);
   }
@@ -63,14 +63,14 @@ if (!slug) {
 
 /* ------------------------------------------------------------------ index */
 function paintIndex() {
-  document.title = 'Discover — 100 free tools — Theraglee';
+  document.title = 'Discover — 360 free tools — Theraglee';
   let topic = qs('topic', ''), term = '';
   root.classList.remove('narrow');
   root.innerHTML = `
     <div class="d-hero">
       <span class="badge live">Free for everyone · no account needed</span>
       <h1 style="margin-top:14px">Discover more about <em class="script">how you work</em></h1>
-      <p class="muted" style="max-width:60ch">One hundred short, interactive tools for noticing your own patterns:
+      <p class="muted" style="max-width:60ch">Three hundred and sixty short, interactive tools for noticing your own patterns, twenty for each topic:
         anxiety, worry, racing thoughts, low mood, relationships, sleep, and more. Each one takes a few
         minutes. None of them diagnoses or treats anything; they help you see what is already there.</p>
       <p class="faint" style="max-width:60ch">${a.authenticated

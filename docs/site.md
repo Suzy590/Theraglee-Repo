@@ -26,7 +26,7 @@ by editing the page. Every piece of content carries a `min_level`:
 
 | Level | Tier | Who |
 |---|---|---|
-| 0 | Visitor | No account. Browses therapists, articles, quotes, tips, fun facts, affirmations, and uses all 100 free discovery tools. |
+| 0 | Visitor | No account. Browses therapists, articles, quotes, tips, fun facts, affirmations, and uses all 360 free discovery tools. |
 | 1 | Free | Registered, no card. Adds personalized daily content, journal, checklists, 7-day challenges, optional therapist outreach. |
 | 2 | Basic | Paid. Adds 62 quizzes, 17 worksheets, challenges up to 365 days. |
 | 3 | Premium | Paid. Adds goals, mood tracking, mandalas, playlists, resource map, personalized therapist recommendations. |
@@ -102,12 +102,12 @@ Two deliberate exceptions, both stored values rather than words on a page:
   `.badge.gray`, so markup published before the switch still renders. New
   markup uses `.gray`.
 
-## The 100 free discovery tools
+## The 360 free discovery tools
 
-`site/discover.html` hosts one hundred short, interactive self-discovery tools
+`site/discover.html` hosts three hundred and sixty short, interactive self-discovery tools, twenty per topic,
 that every visitor can use, signed in or not. They are the free, open front
 door to the library: reflections, sorters, dials, card picks, guided writing,
-breathing timers, seven-day logs, a feelings wheel, plan builders, perspective
+breathing timers, seven-day logs, feelings wheels, plan builders, perspective
 cards, two-by-two grids, rankings, point budgets and week maps, across eighteen
 topics (anxiety, worry, racing thoughts, low mood, stress and burnout, sleep,
 relationships, boundaries, self-esteem, emotions, anger, grief and change,
@@ -118,7 +118,7 @@ They deliberately live in the site rather than in the database:
 
 | File | What it holds |
 |---|---|
-| `site/assets/discover-tools.js` | The 100 tools as data. Each has a stable v5 UUID derived from its slug. |
+| `site/assets/discover-tools.js` | The 360 tools as data. Each has a stable v5 UUID derived from its slug. |
 | `site/assets/discover.js` | The engine: renders each of the 16 interaction kinds, keeps state, writes the closing reflection. No imports, so it can be tested without Supabase. |
 | `site/assets/discover.css` | Layout for the interaction kinds. |
 | `site/discover.html` | The index (search and topic filter) and the tool page (`?slug=`). |
@@ -131,7 +131,7 @@ What a visitor gets versus a member:
 
 | | Visitor | Registered member |
 |---|---|---|
-| Use all 100 tools | yes | yes |
+| Use all 360 tools | yes | yes |
 | Answers remembered | in this browser only (`localStorage`, key `tg.discover.<slug>`) | in this browser, plus Started / Completed in `item_progress` with `item_type = 'discover'` |
 | Favorite, save for later, save to my dashboard | the buttons are shown, and each one opens the free sign-up page (`login.html?mode=signup&why=save&next=…`), which returns to the tool afterwards | yes: favorites via `favorites`, "save to my dashboard" records the tool as started in `item_progress` |
 | Shows on the dashboard | no dashboard | yes: favorites, saved for later, picked up but not finished |

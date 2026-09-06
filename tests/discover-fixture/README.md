@@ -1,12 +1,12 @@
 # Discover fixture
 
-Checks the 100 free discovery tools in `site/assets/discover-tools.js` and the
+Checks the 360 free discovery tools in `site/assets/discover-tools.js` and the
 engine that renders them, `site/assets/discover.js`. Neither file touches
 Supabase, so nothing here needs a network or a signed-in member.
 
 Two layers:
 
-**1. Data check (Node, no browser).** Asserts there are exactly 100 tools, every
+**1. Data check (Node, no browser).** Asserts there are exactly 360 tools (at least 20 per topic), every
 slug, id and title is unique, ids are v5 UUIDs, every kind has the fields it
 needs, every topic has at least one tool, the copy uses US spelling, and the
 copy never uses diagnostic language (`diagnos…`, `disorder`, `symptom`,
@@ -30,7 +30,7 @@ Open `http://localhost:8899/tests/discover-fixture/`. Results render on the page
 and in `document.title`, so it also works headless:
 
 ```bash
-chromium --headless --virtual-time-budget=15000 --dump-dom \
+chromium --headless --virtual-time-budget=60000 --dump-dom \
   http://localhost:8899/tests/discover-fixture/ | grep -o '<title>[^<]*'
 ```
 
