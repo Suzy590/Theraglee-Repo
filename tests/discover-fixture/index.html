@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>discover fixture</title>
+<link rel="stylesheet" href="../../site/assets/styles.css">
+<link rel="stylesheet" href="../../site/assets/discover.css">
+<style>
+  body{padding:20px}
+  #log{white-space:pre-wrap;font:13px/1.5 ui-monospace,monospace;background:#fff;border:1px solid #ddd;padding:12px;margin-top:20px}
+  .pass{color:#0E5A10}.fail{color:#A32B2B;font-weight:600}
+  .stage{margin:12px 0;padding:12px;border:1px dashed #ccc;background:#fafafa}
+</style>
+</head>
+<body>
+<h1>Discover fixture</h1>
+<p>Mounts every tool in <code>site/assets/discover-tools.js</code> with the real engine, drives each one to a
+  finished reflection through the DOM, and asserts the result. See README.md for how to run it headless.</p>
+<div id="stages"></div>
+<div id="log"></div>
+
+<script type="module">
+import { TOOLS } from '../../site/assets/discover-tools.js';
+import { mount, progressOf, ready, saveState, loadState, clearState } from '../../site/assets/discover.js';
+
+const log = document.getElementById('log'), stages = document.getElementById('stages');
+let pass = 0, fail = 0;
+const failures = [];
+const ok = (cond, msg) => { if (cond) pass++; else { fail++; failures.push(msg); }
+  log.insertAdjacentHTML('beforeend', `<div class="${cond ? 'pass' : 'fail'}">${cond ? '✓' : '✗'} ${msg}</div>`); };
+const $ = (r, s) => r.querySelector(s), $$ = (r, s) => [...r.querySelectorAll(s)];
+const click = (el) => el.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+const input = (el, v) => { el.value = v; el.dispatchEvent(new Event('input', { bubbles: true })); };
+const KEEP = ['box-breathing', 'feelings-wheel', 'values-card-sort', 'support-circle-map', 'worry-sorter', 'life-areas-wheel'];
+
+/* Drive one tool from empty to finished using only the DOM. */
+function drive(tool, host) {
+  const k = tool.kind;
+  const rows = () => $$(host, '.d-body .d-item');
+  switch (k) {
+    case 'reflect':
+      rows().forEach((r, i) => click($$(r, 'button[data-v]')[i % 5])); break;
+    case 'sliders':
+      $$(host, '.d-dial input').forEach((inp, i) => input(inp, String((i * 3) % 11))); break;
+    case 'sort': case 'matrix': {
+      const add = $(host, '.d-add input');
+      if (add) { input(add, 'Something of my own'); click($(host, '.d-add button')); }
+      rows().forEach((r, i) => { const bs = $$(r, 'button[data-k]'); click(bs[i % bs.length]); }); break;
+    }
+    case 'pick': {
+      for (let n = 0; n < tool.max; n++) { const c = $$(host, '.d-card:not(.on):not(:disabled)')[0]; if (c) click(c); }
+      const up = $(host, '[data-up]:not(:disabled)'); if (up) click(up); break;
+    }
+    case 'prompts':
+      for (let i = 0; i < tool.steps.length; i++) { input($(host, '#d-ta'), `Answer ${i + 1}`); const nx = $(host, '[data-nav="1"]'); if (nx && !nx.disabled) click(nx); }
+      break;
+    case 'check':
+      $$(host, '.d-check input').forEach((c, i) => { if (i % 2 === 0) { c.checked = true; c.dispatchEvent(new Event('change', { bubbles: true })); } }); break;
+    case 'breathe':
+      // Timers do not advance headless; the fixture only checks the controls exist and that
+      // a saved cycle count makes the tool ready.
+      ok(!!$(host, '#d-go') && !!$(host, '#d-orb'), `${tool.slug}: breathe controls render`);
+      return 'manual';
+    case 'guide':
+      for (let i = 0; i < tool.steps.length; i++) { const t = $(host, '#d-gin'); if (t) input(t, 'noted'); click($(host, '[data-done]')); }
+      break;
+    case 'track': {
+      const trs = $$(host, 'tr[data-k]');
+      trs.slice(0, 3).forEach((tr, d) => tool.measures.forEach(m => click($(tr, `button[data-m="${m.key}"][data-v="${(d % 5) + 1}"]`)))); break;
+    }
+    case 'wheel':
+      click($$(host, 'button[data-c]')[1]); click($$(host, 'button[data-w]')[0]); click($$(host, 'button[data-w]')[2]);
+      click($$(host, 'button[data-b]')[0]); click($$(host, 'button[data-n]')[1]); break;
+    case 'build':
+      $$(host, '.d-group').forEach((g, i) => { click($$(g, 'button[data-o]')[0]); if (i === 0) { input($(g, '.d-add input'), 'My own thing'); click($(g, '.d-add button')); } }); break;
+    case 'flip':
+      for (let i = 0; i < tool.cards.length; i++) { click($(host, '#d-flipcard')); click($(host, i % 2 ? '[data-r="no"]' : '[data-r="yes"]')); }
+      break;
+    case 'rank':
+      click($$(host, '[data-down]')[0]); break;
+    case 'allocate': {
+      const inps = $$(host, '.d-dial input'); const each = Math.floor(100 / inps.length / 5) * 5;
+      inps.forEach(inp => input(inp, String(each)));
+      input(inps[0], String(each + (100 - each * inps.length))); break;
+    }
+    case 'heat': {
+      const cells = $$(host, '.d-cell[data-k]'); click(cells[0]); click(cells[3]); click(cells[3]); click(cells[7]); break;
+    }
+  }
+  return 'driven';
+}
+
+for (const tool of TOOLS) {
+  clearState(tool.slug);
+  const host = document.createElement('div');
+  host.className = 'stage'; host.dataset.slug = tool.slug;
+  if (KEEP.includes(tool.slug)) { host.insertAdjacentHTML('afterbegin', `<h3>${tool.title}</h3>`); stages.appendChild(host); }
+  const mountPoint = document.createElement('div'); host.appendChild(mountPoint);
+
+  let changes = 0, finished = false, state = {};
+  try {
+    const m = mount(mountPoint, tool, { state, onChange: (s) => { changes++; saveState(tool.slug, s); }, onFinish: () => { finished = true; } });
+    ok(!!$(mountPoint, '.d-body'), `${tool.slug} (${tool.kind}): renders`);
+    ok($(mountPoint, '[data-act="finish"]')?.disabled === !ready(tool, state), `${tool.slug}: finish button matches ready()`);
+
+    const mode = drive(tool, mountPoint);
+    if (mode === 'manual') { state.c = tool.cycles; m.rerender(); }
+    const p = progressOf(tool, state);
+    ok(changes > 0 || mode === 'manual', `${tool.slug}: interactions call onChange (${changes})`);
+    ok(p.answered > 0, `${tool.slug}: progress advanced (${p.answered}/${p.total})`);
+    ok(ready(tool, state), `${tool.slug}: ready after driving`);
+    ok(loadState(tool.slug).finished !== true, `${tool.slug}: not finished before the button`);
+
+    const btn = $(mountPoint, '[data-act="finish"]');
+    ok(btn && !btn.disabled, `${tool.slug}: finish button enabled`);
+    click(btn);
+    ok(finished && state.finished === true, `${tool.slug}: onFinish fired and state.finished set`);
+    ok(!!$(mountPoint, '.d-result h2'), `${tool.slug}: reflection rendered with a heading`);
+    ok(!!$(mountPoint, '.d-legal'), `${tool.slug}: not-a-diagnosis note present`);
+    ok(!!$(mountPoint, '[data-act="restart"]'), `${tool.slug}: start over available`);
+    const txt = mountPoint.textContent;
+    ok(!/undefined|NaN|\[object/.test(txt), `${tool.slug}: no undefined/NaN in output`);
+    if (tool.kind === 'prompts') ok(txt.includes('Answer 1'), `${tool.slug}: written answers echoed back`);
+    if ((tool.kind === 'sort' && tool.custom) || (tool.kind === 'matrix' && tool.custom !== false)) ok(txt.includes('Something of my own'), `${tool.slug}: custom item survives to the summary`);
+    if (tool.kind === 'build') ok(txt.includes('My own thing'), `${tool.slug}: custom option survives to the summary`);
+    if (tool.kind === 'wheel') ok(/I feel/.test(txt), `${tool.slug}: sentence built`);
+
+    // Start over wipes state and re-renders the interactive body.
+    click($(mountPoint, '[data-act="restart"]'));
+    ok(!state.finished && progressOf(tool, state).answered === 0 && !!$(mountPoint, '.d-body'), `${tool.slug}: start over clears state`);
+  } catch (e) {
+    ok(false, `${tool.slug}: threw ${e.message}`);
+    console.error(tool.slug, e);
+  }
+  if (!KEEP.includes(tool.slug)) host.remove();
+}
+
+// Escaping: user text must never become markup.
+{
+  const t = TOOLS.find(x => x.kind === 'sort' && x.custom);
+  const host = document.createElement('div'); document.body.appendChild(host);
+  const state = {};
+  mount(host, t, { state });
+  input($(host, '.d-add input'), '<img src=x onerror="window.__xss=1">'); click($(host, '.d-add button'));
+  $$(host, '.d-item').forEach(r => click($(r, 'button[data-k]')));
+  click($(host, '[data-act="finish"]'));
+  ok(!window.__xss && !host.querySelector('img'), 'user-entered text is escaped, not rendered as HTML');
+  host.remove();
+}
+
+const summary = `${pass} passed, ${fail} failed`;
+log.insertAdjacentHTML('afterbegin', `<div class="${fail ? 'fail' : 'pass'}" style="font-size:16px">${summary}</div>`);
+document.title = (fail ? 'FAIL ' : 'PASS ') + summary + (fail ? ' :: ' + failures.slice(0, 5).join(' | ') : '');
+</script>
+</body>
+</html>
