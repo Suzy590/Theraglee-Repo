@@ -1,4 +1,4 @@
-// Data checks for the 100 free discovery tools. Run from the repo root:
+// Data checks for the free discovery tools. Run from the repo root:
 //   node tests/discover-fixture/check.mjs
 // Fails (exit 1) if any tool is malformed or uses language the tools must avoid.
 import { TOOLS, TOPICS } from '../../site/assets/discover-tools.js';
@@ -7,7 +7,8 @@ import { KIND_LABEL, progressOf, ready, summaryOf } from '../../site/assets/disc
 const errors = [];
 const err = (t, msg) => errors.push(`${t.slug || '?'}: ${msg}`);
 
-if (TOOLS.length !== 100) errors.push(`expected 100 tools, found ${TOOLS.length}`);
+const EXPECTED_TOTAL = 360, MIN_PER_TOPIC = 20;
+if (TOOLS.length !== EXPECTED_TOTAL) errors.push(`expected ${EXPECTED_TOTAL} tools, found ${TOOLS.length}`);
 
 const slugs = new Set(), ids = new Set(), titles = new Set();
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-5[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
@@ -84,7 +85,7 @@ for (const t of TOOLS) {
 
 const perTopic = {};
 for (const t of TOOLS) perTopic[t.topic] = (perTopic[t.topic] || 0) + 1;
-for (const topic of TOPICS) if (!perTopic[topic]) errors.push(`topic ${topic} has no tools`);
+for (const topic of TOPICS) if ((perTopic[topic] || 0) < MIN_PER_TOPIC) errors.push(`topic ${topic} has ${perTopic[topic] || 0} tools; every topic needs at least ${MIN_PER_TOPIC}`);
 
 if (errors.length) { console.error(errors.join('\n')); console.error(`\n${errors.length} problem(s)`); process.exit(1); }
 console.log(`OK: ${TOOLS.length} tools, ${Object.keys(perTopic).length} topics, ${new Set(TOOLS.map(t => t.kind)).size} interaction kinds`);
