@@ -1,0 +1,25 @@
+# Supabase CLI configuration for the Theraglee project.
+#
+# The Stripe functions validate the caller's JWT in their own code (so they can
+# answer with friendly JSON), and the webhook is called by Stripe, which has no
+# Supabase JWT at all — so verify_jwt is off for each of them, matching how the
+# functions were first deployed.
+project_id = "oekqzuguruyqkafsqhos"
+
+[functions.stripe-checkout]
+verify_jwt = false
+
+[functions.stripe-portal]
+verify_jwt = false
+
+[functions.stripe-webhook]
+verify_jwt = false
+
+[functions.stripe-identity]
+verify_jwt = false
+
+[functions.stripe-connect]
+verify_jwt = false
+
+[functions.stripe-session-checkout]
+verify_jwt = false

@@ -15,7 +15,7 @@ Moving the domain off HostGator is written up step by step in
 |---|---|---|
 | Front end | Every page you see. Plain HTML/CSS/JavaScript — no build tools needed. | `site/` |
 | Database + logins | Members, therapists, all content, all progress. | Supabase project `oekqzuguruyqkafsqhos` |
-| Payments | Stripe Checkout + billing portal + webhook. | Supabase Edge Functions |
+| Payments | Stripe: Checkout, billing portal, Tax, Identity, Radar, Connect. See [`stripe.md`](stripe.md). | `supabase/functions/`, deployed as Supabase Edge Functions |
 | Hosting | Serves the site. | Vercel project `theraglee-site` |
 | Domain | `theraglee.com`. | Registered at Network Solutions, served by Vercel |
 
@@ -168,8 +168,9 @@ own writing when you have it.
 Sign in with **scanchol@hotmail.com** and you are made an administrator
 automatically. Then go to `/admin.html` for:
 
-- the therapist license verification queue
-- Stripe price IDs and the on/off switch for payments
+- the therapist license verification queue (with each therapist's ID-check state)
+- Stripe price IDs, the platform fee, and the on/off switches for payments,
+  sales tax, the identity requirement and session payments
 - content counts
 
 ## Safety
