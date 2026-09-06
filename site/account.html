@@ -83,7 +83,9 @@ function membership(){
 
     <h2 style="margin-top:34px">What you have access to</h2>
     <div class="grid g3">
-      ${[['Daily personalized content',1],['Journal & prompts',1],['Checklists',1],['7-day challenges',1],
+      ${[['Progress dashboard',1],['Favorites in your dashboard',1],['Journal & prompts',1],
+         ['Articles sent to your inbox',1],['7-day challenges',1],['Checklists with progress',1],
+         ['Therapist reach-out switch',1],['Daily personalized content',1],
          ['62 quizzes',2],['17 worksheets',2],['365-day custom challenges',2],
          ['Goal & mood tracking',3],['Printable mandalas',3],['Resource map & playlists',3]]
         .map(([l,n])=>`<div class="card" style="padding:16px">
@@ -114,9 +116,10 @@ function profile(){
       <h3>Daily email</h3>
       <label class="switch"><input type="checkbox" id="demail" ${p.daily_email?'checked':''}>
         <span><strong>Send me a morning email</strong><br>
-        <span class="muted">One short message a day. Unsubscribe any time.</span></span></label>
+        <span class="muted">An article you have not read yet, plus the picks below. One short message
+        a day, with an unsubscribe link in every one.</span></span></label>
       <div class="field"><label>What to include</label>
-        <div class="chips" id="kinds">${[['affirmation','Affirmation'],['quote','Quote'],
+        <div class="chips" id="kinds">${[['article','Article'],['affirmation','Affirmation'],['quote','Quote'],
           ['tip','Tip'],['fun_fact','Fun fact'],['journal_prompt','Journal prompt']].map(([k,l])=>
           `<button type="button" class="chip ${(p.daily_email_kinds||[]).includes(k)?'on':''}" data-v="${k}">${l}</button>`).join('')}</div></div>
 

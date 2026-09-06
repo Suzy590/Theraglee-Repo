@@ -23,6 +23,10 @@
   .mood button:hover{border-color:var(--lime-2);transform:translateY(-2px)}
   .mood button.on{background:var(--soft);border-color:var(--green)}
   .streak{font-size:2.2rem;font-weight:300;letter-spacing:-.03em;line-height:1}
+  .switch{display:flex;gap:14px;align-items:flex-start;padding:16px 18px;border:1px solid var(--hair);
+    border-radius:var(--r-sm);background:var(--paper)}
+  .switch input{width:20px;height:20px;accent-color:var(--green);margin-top:2px;flex:0 0 auto;cursor:pointer}
+  .switch .muted{font-size:.9rem}
 </style>
 </head>
 <body>
@@ -65,8 +69,28 @@
         <div class="row" style="gap:30px;margin-top:10px">
           <div><div class="streak" id="n-entries">—</div><div class="faint">journal entries</div></div>
           <div><div class="streak" id="n-active">—</div><div class="faint">active challenges</div></div>
+          <div><div class="streak" id="n-done">—</div><div class="faint">activities completed</div></div>
           <div><div class="streak" id="n-quiz">—</div><div class="faint">quizzes taken</div></div>
         </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:26px" id="settings-card">
+      <h3>Your switches</h3>
+      <p class="faint" style="margin-top:-4px">Both are yours to flip any time. Nothing else changes.</p>
+      <div class="grid g2" style="margin-top:14px">
+        <label class="switch">
+          <input type="checkbox" id="vis">
+          <span><strong>Let therapists reach out to me</strong><br>
+          <span class="muted">Verified therapists see your name, the topics on your profile and your zip
+          code, and can message your inbox here. Never your email, your journal, or anything you write.
+          Off means you are invisible to them.</span></span></label>
+        <label class="switch">
+          <input type="checkbox" id="demail">
+          <span><strong>Morning email with an article</strong><br>
+          <span class="muted">A mental health article you have not read yet, plus the daily picks you
+          choose, in your inbox each morning.
+          <a href="account.html#profile">Choose what's included</a>.</span></span></label>
       </div>
     </div>
 
@@ -139,15 +163,40 @@ document.querySelectorAll('.mood button').forEach(b => b.addEventListener('click
     : 'Saved. Premium members can see how this trends over time.';
 }));
 
+/* ---- switches: therapist reach-out and the morning email ---- */
+const DIGEST_KINDS = ['article','affirmation','tip','journal_prompt'];
+const vis = document.getElementById('vis'), demail = document.getElementById('demail');
+vis.checked = Boolean(p.visible_to_therapists);
+demail.checked = Boolean(p.daily_email);
+
+vis.addEventListener('change', async () => {
+  const { error } = await sb.from('profiles')
+    .update({ visible_to_therapists: vis.checked }).eq('id', p.id);
+  if (error) { vis.checked = !vis.checked; return toast(error.message, 'err'); }
+  p.visible_to_therapists = vis.checked;
+  toast(vis.checked ? 'Therapists can now reach out to you.' : 'You are hidden from therapists.', 'ok');
+});
+demail.addEventListener('change', async () => {
+  const patch = { daily_email: demail.checked };
+  // Switching on with nothing chosen yet means the default set, article included.
+  if (demail.checked && !(p.daily_email_kinds || []).length) patch.daily_email_kinds = DIGEST_KINDS;
+  const { error } = await sb.from('profiles').update(patch).eq('id', p.id);
+  if (error) { demail.checked = !demail.checked; return toast(error.message, 'err'); }
+  Object.assign(p, patch);
+  toast(demail.checked ? 'Morning email switched on.' : 'Morning email switched off.', 'ok');
+});
+
 /* ---- counts ---- */
-const [{ count: nJ }, { data: ch }, { count: nQ }] = await Promise.all([
+const [{ count: nJ }, { data: ch }, { count: nQ }, { count: nD }] = await Promise.all([
   sb.from('journal_entries').select('id', { count:'exact', head:true }).eq('user_id', p.id),
   sb.from('user_challenges').select('id,title,total_days,started_on').eq('user_id', p.id).eq('archived', false),
   sb.from('quiz_attempts').select('id', { count:'exact', head:true }).eq('user_id', p.id),
+  sb.from('item_progress').select('item_id', { count:'exact', head:true }).eq('user_id', p.id).eq('status', 'completed'),
 ]);
 document.getElementById('n-entries').textContent = nJ ?? 0;
 document.getElementById('n-active').textContent  = ch?.length ?? 0;
 document.getElementById('n-quiz').textContent    = nQ ?? 0;
+document.getElementById('n-done').textContent    = nD ?? 0;
 
 /* ---- live challenges ---- */
 if (ch?.length) {
