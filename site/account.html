@@ -130,19 +130,17 @@ function profile(){
 
 function privacy(){
   const p = a.profile;
-  const premium = a.level >= 3;
   return `
     <div style="max-width:640px">
       <h2>Who can see you</h2>
-      <label class="switch" style="${premium?'':'opacity:.6'}">
-        <input type="checkbox" id="vis" ${p.visible_to_therapists?'checked':''} ${premium?'':'disabled'}>
+      <label class="switch">
+        <input type="checkbox" id="vis" ${p.visible_to_therapists?'checked':''}>
         <span><strong>Let therapists reach out to me</strong><br>
         <span class="muted">Verified therapists with an active membership will see your
         <strong>name</strong>, the topics you picked above, and your zip code — and can send you a
         message here. They never see your email address, your journal, your quiz results, or
         anything else you have written. Switch it off and you disappear from their view
-        entirely.</span>
-        ${premium?'':'<br><a href="pricing.html">This is a Premium feature</a>'}</span></label>
+        entirely.</span></span></label>
 
       <div class="notice" style="margin-top:20px">
         Your journal entries, quiz results, worksheets and mood logs are private to your account.

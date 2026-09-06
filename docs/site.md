@@ -27,9 +27,9 @@ by editing the page. Every piece of content carries a `min_level`:
 | Level | Tier | Who |
 |---|---|---|
 | 0 | Visitor | No account. Browses therapists, articles, quotes, tips, fun facts, affirmations. |
-| 1 | Free | Registered, no card. Adds personalised daily content, journal, checklists, 7-day challenges. |
+| 1 | Free | Registered, no card. Adds personalised daily content, journal, checklists, 7-day challenges, optional therapist outreach. |
 | 2 | Basic | Paid. Adds 62 quizzes, 17 worksheets, challenges up to 365 days. |
-| 3 | Premium | Paid. Adds goals, mood tracking, mandalas, playlists, resource map, therapist outreach. |
+| 3 | Premium | Paid. Adds goals, mood tracking, mandalas, playlists, resource map, personalised therapist recommendations. |
 
 Therapist membership is separate and not tiered — one flat level, gated on
 licence verification *and* an active subscription. It includes:
@@ -38,7 +38,7 @@ licence verification *and* an active subscription. It includes:
 - a Theraglee tracking phone number, so the therapist's own line stays private
 - a contact form that routes messages without exposing their email address
 - referral reporting: calls, messages, website clicks, shares and profile views
-- the names and topics of members who opted in to being contacted
+- the names and topics of members who opted in to being contacted (any registered member can)
 - a 55-item clinician library (worksheets, CBT, ACT, DBT, couples, kids, games)
 - Assign Remind — built, but **held in preview here** (see below)
 
