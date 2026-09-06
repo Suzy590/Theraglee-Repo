@@ -138,7 +138,8 @@ const PLANS = [
     cta:{label:'Join free', href:'login.html?mode=signup'},
     feats:[['Everything a visitor can see',1],['Personalised daily content by AI',1],
            ['Daily email digest',1],['7-day challenges',1],['374 journal prompts',1],
-           ['Checklists with progress',1],['Quizzes & worksheets',0]] },
+           ['Checklists with progress',1],['Optional therapist outreach',1],
+           ['Quizzes & worksheets',0]] },
   { key:'basic', name:'Basic', featured:true, price:()=>'$'+money('basic_'+cycle), sub:'per '+(cycle==='monthly'?'month':'year'),
     cta:{plan:'basic'},
     feats:[['Everything in Free',1],['62 self-assessment quizzes',1],['17 interactive worksheets',1],
@@ -147,7 +148,7 @@ const PLANS = [
     cta:{plan:'premium'},
     feats:[['Everything in Basic',1],['Goal setting & progress tracking',1],['Mood tracking & patterns',1],
            ['Printable mandalas',1],['Mood-based music playlists',1],['Local resource map',1],
-           ['Personal therapist recommendations',1],['Optional therapist outreach',1]] },
+           ['Personal therapist recommendations',1]] },
 ];
 
 const COMPARE = [
@@ -160,6 +161,7 @@ const COMPARE = [
   ['Journal prompts & private journal', 1],
   ['Checklists with saved progress', 1],
   ['7-day challenges', 1],
+  ['Let therapists reach out to you', 1],
   ['Self-assessment quizzes (62)', 2],
   ['Interactive worksheets (17)', 2],
   ['Custom challenges up to 365 days', 2],
@@ -169,7 +171,6 @@ const COMPARE = [
   ['Mood-based music playlists', 3],
   ['Local mental health resource map', 3],
   ['Personalised therapist recommendations', 3],
-  ['Let therapists reach out to you', 3],
 ];
 
 function render(){
