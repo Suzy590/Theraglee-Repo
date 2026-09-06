@@ -108,7 +108,7 @@ def rays(cls: str = "rays") -> str:
 
 def level_badge(min_level) -> str:
     label = {0: "Free", 1: "Member", 2: "Premium"}.get(min_level)
-    return f'<span class="badge grey">{e(label)}</span>' if label else ""
+    return f'<span class="badge gray">{e(label)}</span>' if label else ""
 
 
 def tag_badges(tags) -> str:

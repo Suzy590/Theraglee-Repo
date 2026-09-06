@@ -153,7 +153,7 @@ function card(a){
       <h3>${esc(a.title)}</h3>
       ${done ? '<span class="badge">Done</span>'
              : late ? '<span class="badge lock">Overdue</span>'
-             : a.state === 'started' ? '<span class="badge grey">In progress</span>' : ''}
+             : a.state === 'started' ? '<span class="badge gray">In progress</span>' : ''}
     </div>
     <div class="when">${a.due_on ? 'Due ' + fmtDate(a.due_on) : 'No due date'}${
       done && a.completed_at ? ' · finished ' + fmtDate(a.completed_at) : ''}</div>

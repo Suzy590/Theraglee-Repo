@@ -27,12 +27,12 @@ by editing the page. Every piece of content carries a `min_level`:
 | Level | Tier | Who |
 |---|---|---|
 | 0 | Visitor | No account. Browses therapists, articles, quotes, tips, fun facts, affirmations. |
-| 1 | Free | Registered, no card. Adds personalised daily content, journal, checklists, 7-day challenges, optional therapist outreach. |
+| 1 | Free | Registered, no card. Adds personalized daily content, journal, checklists, 7-day challenges, optional therapist outreach. |
 | 2 | Basic | Paid. Adds 62 quizzes, 17 worksheets, challenges up to 365 days. |
-| 3 | Premium | Paid. Adds goals, mood tracking, mandalas, playlists, resource map, personalised therapist recommendations. |
+| 3 | Premium | Paid. Adds goals, mood tracking, mandalas, playlists, resource map, personalized therapist recommendations. |
 
 Therapist membership is separate and not tiered — one flat level, gated on
-licence verification *and* an active subscription. It includes:
+license verification *and* an active subscription. It includes:
 
 - a verified, searchable listing
 - a Theraglee tracking phone number, so the therapist's own line stays private
@@ -42,19 +42,19 @@ licence verification *and* an active subscription. It includes:
 - a 55-item clinician library (worksheets, CBT, ACT, DBT, couples, kids, games)
 - Assign Remind — built, but **held in preview here** (see below)
 
-If either the licence or the membership lapses, the listing comes down on its own
+If either the license or the membership lapses, the listing comes down on its own
 and the library and member list close, while the therapist keeps their own inbox
 and their referral history.
 
-### Licence verification
+### License verification
 
-There is no national API for behavioural-health licences — each state runs its own
+There is no national API for behavioral-health licenses — each state runs its own
 board, and most publish only a human web lookup. `verify-license` therefore has
 three routes, in order: a primary-source-verification vendor (fully automatic,
 needs `LICENSE_VERIFY_URL` and `LICENSE_VERIFY_API_KEY`); a state endpoint where
 one exists; otherwise an administrator confirms against the board's own lookup.
 Every check, whichever route, is written to `license_verifications` as the audit
-record behind the badge, and licences are re-checked before they expire.
+record behind the badge, and licenses are re-checked before they expire.
 
 `state_boards` holds the lookup URL per state. Only California is filled in so
 far — confirmed rather than guessed. Any state left blank falls back to a search
@@ -85,6 +85,23 @@ anything dropped in later.
 `vercel.json` is the one non-asset file that ships, because Vercel reads the
 redirects and headers from it. It holds nothing sensitive.
 
+### Write in US English
+
+Theraglee is a US site — members are matched to therapists by state board, and
+the directory lists TRICARE and Medicare. Copy, UI labels, code comments and
+class names all use US spelling: *color*, *behavior*, *license*, *favorite*,
+*counseling*, *personalized*, *judgment*, *center*, *canceled*, *gray*,
+*labeled*, *program*, *practice*.
+
+Two deliberate exceptions, both stored values rather than words on a page:
+
+- `ar_assignments.state` is `'cancelled'`, with a `cancelled_at` column, and
+  Stripe returns `?checkout=cancelled`. Those strings are a data contract and
+  keep the old spelling; only the labels a member reads were changed.
+- `.badge.grey` is still defined in both stylesheets as an alias of
+  `.badge.gray`, so markup published before the switch still renders. New
+  markup uses `.gray`.
+
 ## Content
 
 All of it was imported from the Word documents in the parent folder:
@@ -108,7 +125,7 @@ own writing when you have it.
 Sign in with **scanchol@hotmail.com** and you are made an administrator
 automatically. Then go to `/admin.html` for:
 
-- the therapist licence verification queue
+- the therapist license verification queue
 - Stripe price IDs and the on/off switch for payments
 - content counts
 

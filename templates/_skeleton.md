@@ -4,7 +4,7 @@ Every template in this folder is the same five blocks in the same order. Only
 the middle block changes between categories — that is the whole design system.
 
 ```html
-<body data-doc="…">      1. Sets the accent colour for the whole document.
+<body data-doc="…">      1. Sets the accent color for the whole document.
   <article class="sheet">
     <header class="masthead">   2. Logo left, brand line right.
     <header class="cover">      3. Eyebrow chip, title, standfirst, meta row.
@@ -37,7 +37,7 @@ meta row underneath.
 
 | Class | What it is |
 |---|---|
-| `.badge` / `.badge.grey` / `.badge.warn` | Small pill for tags, counts, tiers |
+| `.badge` / `.badge.gray` / `.badge.warn` | Small pill for tags, counts, tiers |
 | `.section` + `h2.sec` | A titled block with a rule running off the heading |
 | `.note` / `.note.warn` | Tinted callout box |
 | `.lines[data-rows="n"]` | Ruled write-on area, 1–8 rows |

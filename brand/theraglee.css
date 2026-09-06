@@ -15,7 +15,7 @@
         "journal" | "quiz" | "worksheet"]
      7. Print
 
-   Category personality is expressed only through accent colour, ornament and
+   Category personality is expressed only through accent color, ornament and
    the one component unique to that category. Everything else is shared, which
    is what keeps six document types looking like one family.
    ========================================================================== */
@@ -81,7 +81,7 @@ p:last-child{margin-bottom:0}
   position:relative;
   overflow:hidden;
 }
-/* Hairline of brand colour along the top edge of every sheet. */
+/* Hairline of brand color along the top edge of every sheet. */
 .sheet::before{
   content:"";position:absolute;inset:0 0 auto 0;height:5px;
   background:linear-gradient(90deg,var(--green) 0%,var(--lime-2) 45%,var(--lime) 70%,var(--mist) 100%);
@@ -156,6 +156,10 @@ h1.title{
   font-size:.73rem;font-weight:500;letter-spacing:.01em;white-space:nowrap;
   background:var(--soft);color:var(--green-deep);border:1px solid var(--mist);
 }
+.badge.gray{background:var(--sand);color:var(--muted);border-color:var(--hair)}
+
+/* `.grey` is the old spelling of this class, kept so markup published
+   before the switch to US spelling still renders. Use `.gray`. */
 .badge.grey{background:var(--sand);color:var(--muted);border-color:var(--hair)}
 .badge.warn{background:#FDF4E7;color:var(--warn);border-color:#F0DCC0}
 

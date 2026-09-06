@@ -75,7 +75,7 @@
         <h2 style="margin-top:14px">Therapist membership</h2>
         <p class="muted">A separate, single-level membership — not a tier. List your practice,
           get found by people already using the tools, and see exactly what the listing brings you.
-          Your licence is verified with your state board before the profile goes live.</p>
+          Your license is verified with your state board before the profile goes live.</p>
         <ul class="muted" style="font-size:.93rem;padding-left:20px">
           <li>Full profile: specialties, insurances, languages, locations, fees</li>
           <li>Searchable by zip, insurance, specialty, telehealth and more</li>
@@ -84,14 +84,14 @@
           <li>Referral reporting: calls, messages, website clicks, shares and views</li>
           <li>Reach out to members who asked to be contacted</li>
           <li>A clinician library of worksheets and CBT, ACT, DBT, couples and kids exercises</li>
-          <li>Licence verified with your state board, and re-checked before it expires</li>
+          <li>License verified with your state board, and re-checked before it expires</li>
         </ul>
       </div>
       <div class="center">
         <div class="price" id="th-price">—</div>
         <p class="faint" id="th-note"></p>
         <a class="btn lg block" href="for-therapists.html">List your practice</a>
-        <p class="faint" style="margin-top:12px">Licence verification required. Cancel any time.</p>
+        <p class="faint" style="margin-top:12px">License verification required. Cancel any time.</p>
       </div>
     </div>
   </div>
@@ -133,10 +133,10 @@ const PLANS = [
   { key:'visitor', name:'Visitor', price:()=>'Free', sub:'No account',
     cta:{label:'Browse now', href:'therapists.html'},
     feats:[['Browse the therapist directory',1],['Articles, quotes, tips, fun facts',1],
-           ['Affirmations',1],['Save favourites or progress',0],['Personalised daily content',0]] },
+           ['Affirmations',1],['Save favorites or progress',0],['Personalized daily content',0]] },
   { key:'free', name:'Free', price:()=>'Free', sub:'Registered · no card',
     cta:{label:'Join free', href:'login.html?mode=signup'},
-    feats:[['Everything a visitor can see',1],['Personalised daily content by AI',1],
+    feats:[['Everything a visitor can see',1],['Personalized daily content by AI',1],
            ['Daily email digest',1],['7-day challenges',1],['374 journal prompts',1],
            ['Checklists with progress',1],['Optional therapist outreach',1],
            ['Quizzes & worksheets',0]] },
@@ -155,8 +155,8 @@ const COMPARE = [
   ['Therapist directory search', 0],
   ['Articles, quotes, tips, fun facts', 0],
   ['Mental health affirmations', 0],
-  ['Save favourites & track history', 1],
-  ['Daily content personalised to you', 1],
+  ['Save favorites & track history', 1],
+  ['Daily content personalized to you', 1],
   ['Daily email digest', 1],
   ['Journal prompts & private journal', 1],
   ['Checklists with saved progress', 1],
@@ -170,7 +170,7 @@ const COMPARE = [
   ['Printable mandalas', 3],
   ['Mood-based music playlists', 3],
   ['Local mental health resource map', 3],
-  ['Personalised therapist recommendations', 3],
+  ['Personalized therapist recommendations', 3],
 ];
 
 function render(){
@@ -217,7 +217,7 @@ document.getElementById('compare').innerHTML = COMPARE.map(([label,min])=>
     `<td class="${l>=min?'yes':'no'}">${l>=min?'✓':'—'}</td>`).join('')}</tr>`).join('');
 
 render();
-if (qs('checkout')==='cancelled') toast('Checkout cancelled — nothing was charged.');
+if (qs('checkout')==='cancelled') toast('Checkout canceled — nothing was charged.');
 </script>
 </body>
 </html>

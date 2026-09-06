@@ -78,12 +78,12 @@ const TABS = [
 function shell(body){
   const status = !T ? 'No listing yet'
     : T.verification === 'verified' ? (T.published ? 'Live in the directory' : 'Verified — not published')
-    : T.verification === 'rejected' ? 'Licence not verified' : 'Verification pending';
+    : T.verification === 'rejected' ? 'License not verified' : 'Verification pending';
   return `
     <div class="spread">
       <div><h1 style="margin:0">Practice dashboard</h1>
         <p class="faint" style="margin:4px 0 0">${esc(a.profile.email||'')}</p></div>
-      <span class="badge ${T?.verification==='verified'?'':'grey'}">${status}</span>
+      <span class="badge ${T?.verification==='verified'?'':'gray'}">${status}</span>
     </div>
     <div class="tabs">${TABS.map(([k,l])=>
       `<button data-tab="${k}" class="${tab===k?'on':''}">${l}${
@@ -101,7 +101,7 @@ function render(body){
 function needsListing(){
   render(`<div class="card pad-lg center">
     <h2>Build your profile first</h2>
-    <p class="muted">Once your listing exists we can verify your licence and start
+    <p class="muted">Once your listing exists we can verify your license and start
       counting the referrals it brings in.</p>
     <button class="btn lg" id="go">Start my profile</button></div>`);
   document.getElementById('go').onclick = () => { tab='profile'; route(); };
@@ -164,7 +164,7 @@ async function referrals(){
 
     ${!liveListing ? `<div class="notice warn" style="margin-top:22px">
       Your profile is not live yet, so there is nothing to count.
-      ${T.verification!=='verified' ? 'We are verifying your licence.'
+      ${T.verification!=='verified' ? 'We are verifying your license.'
         : !paid ? 'Start your membership to publish it.' : 'Publish it from My profile.'}
     </div>` : `<div class="notice" style="margin-top:22px">
       <strong>Phone calls</strong> counts people who tapped your Theraglee number.
@@ -236,7 +236,7 @@ async function members(){
     ${rows.length ? `<div class="grid g3" style="margin-top:20px">${rows.map(m=>`
       <div class="card">
         <div class="spread"><strong>${esc(m.display_name)}</strong>
-          ${m.already_contacted?'<span class="badge grey">Contacted</span>':''}</div>
+          ${m.already_contacted?'<span class="badge gray">Contacted</span>':''}</div>
         <div class="chips" style="margin:12px 0">${
           (m.issues||[]).map(i=>`<span class="badge">${esc(i)}</span>`).join('')
           || '<span class="faint">No topics listed</span>'}</div>
@@ -300,7 +300,7 @@ async function library(){
       <div class="res" data-slug="${esc(r.slug)}">
         <div class="row" style="justify-content:space-between;align-items:flex-start">
           <h3 style="margin:0;font-size:1.02rem">${esc(r.title)}</h3>
-          <span class="badge grey">${esc(KINDS.find(k=>k[0]===r.kind)?.[1] || r.kind)}</span>
+          <span class="badge gray">${esc(KINDS.find(k=>k[0]===r.kind)?.[1] || r.kind)}</span>
         </div>
         <p class="muted" style="margin:0;font-size:.92rem">${esc(r.summary||'')}</p>
         <span class="faint">${esc((r.audience||[]).join(', '))}${r.duration?' · '+esc(r.duration):''}</span>
@@ -310,7 +310,7 @@ async function library(){
     document.querySelectorAll('.res').forEach(el => el.onclick = () => {
       const r = data.find(x => x.slug === el.dataset.slug);
       const back = modal(`
-        <span class="badge grey">${esc(KINDS.find(k=>k[0]===r.kind)?.[1] || r.kind)}</span>
+        <span class="badge gray">${esc(KINDS.find(k=>k[0]===r.kind)?.[1] || r.kind)}</span>
         <h2 style="margin-top:12px">${esc(r.title)}</h2>
         <p class="muted">${esc(r.summary||'')}</p>
         <dl class="kv" style="display:grid;grid-template-columns:auto 1fr;gap:6px 18px;font-size:.9rem">
@@ -334,7 +334,7 @@ async function library(){
   render(`
     <h2>Resource library</h2>
     <p class="muted">Worksheets and exercises to use with clients, included with your membership.
-      They are adjuncts to your own clinical judgement, not protocols.</p>
+      They are adjuncts to your own clinical judgment, not protocols.</p>
     <div class="card" style="margin:20px 0">
       <div class="field" style="margin-bottom:12px">
         <label for="lq">Search</label>
@@ -404,10 +404,10 @@ function profile(){
   render(`
     <form id="pform">
       ${t.verification === 'rejected' ? `<div class="notice err" style="margin-bottom:20px">
-        We could not confirm that licence as current and in good standing. Check the number,
-        state and licence type, then save to resubmit.</div>` : ''}
+        We could not confirm that license as current and in good standing. Check the number,
+        state and license type, then save to resubmit.</div>` : ''}
       ${!t.id ? `<div class="notice" style="margin-bottom:20px">Nothing is public until your
-        licence is verified and you publish.</div>` : ''}
+        license is verified and you publish.</div>` : ''}
 
       <h2>Who you are</h2>
       <div class="grid g2">
@@ -428,14 +428,14 @@ function profile(){
         <input id="photo" type="url" value="${esc(t.photo_url||'')}" placeholder="https://…"></div>
 
       <hr class="hr">
-      <h2>Licence</h2>
+      <h2>License</h2>
       <p class="muted" style="font-size:.92rem">We verify this against your state board before
         your profile can go live, and re-check it before it expires.</p>
       <div class="grid g2">
-        <div class="field"><label for="lic">Licence number *</label>
+        <div class="field"><label for="lic">License number *</label>
           <input id="lic" value="${esc(t.license_number||'')}" required>
           <div class="help">Never shown publicly.</div></div>
-        <div class="field"><label for="ltype">Licence type</label>
+        <div class="field"><label for="ltype">License type</label>
           <select id="ltype"><option value="">Select…</option>
           ${CREDENTIALS.map(c=>`<option ${t.license_type===c?'selected':''}>${esc(c)}</option>`).join('')}</select></div>
       </div>
@@ -473,7 +473,7 @@ function profile(){
         profile and routes messages to the address below, which is how your referral counts
         get measured.
         ${t.proxy_phone ? `<br><br><strong>Your Theraglee number:</strong> ${esc(t.proxy_phone)}`
-          : '<br><br>Your tracking number is issued once your licence is verified.'}
+          : '<br><br>Your tracking number is issued once your license is verified.'}
       </div>
       <div class="grid g2">
         <div class="field"><label for="cemail">Where should messages go? *</label>
@@ -489,7 +489,7 @@ function profile(){
       <div class="row" style="margin-top:24px">
         <button class="btn lg" id="save" type="submit">${t.id ? 'Save changes' : 'Create my profile'}</button>
         ${t.id && t.verification !== 'verified'
-          ? `<button type="button" class="btn ghost" id="verify">Check my licence now</button>` : ''}
+          ? `<button type="button" class="btn ghost" id="verify">Check my license now</button>` : ''}
         ${t.id && t.verification === 'verified'
           ? `<button type="button" class="btn ghost" id="pub">${t.published?'Unpublish':'Publish to directory'}</button>` : ''}
         ${t.published ? `<a class="btn ghost" href="therapist.html?slug=${esc(t.slug)}">View public profile</a>` : ''}
@@ -508,7 +508,7 @@ async function save(e){
   e.preventDefault();
   const V = id => document.getElementById(id).value.trim();
   if (!V('fn') || !V('ln')) return toast('First and last name are required.','err');
-  if (!V('lic')) return toast('Licence number is required.','err');
+  if (!V('lic')) return toast('License number is required.','err');
   if (!chipVals('states').length) return toast('Select at least one state of licensure.','err');
   if (!V('cemail')) return toast('Add the email where messages should go.','err');
 
@@ -578,7 +578,7 @@ async function togglePublish(e){
   T = data;
   if (wanted && !T.published) {
     toast(!paid ? 'Publishing needs an active membership.'
-                : 'Publishing needs a verified licence.', 'err');
+                : 'Publishing needs a verified license.', 'err');
   } else {
     toast(T.published ? 'You are live in the directory.' : 'Unpublished.','ok');
   }
@@ -609,21 +609,21 @@ async function membership(){
       </div>
     </div>
 
-    <h3 style="margin-top:32px">Licence verification</h3>
+    <h3 style="margin-top:32px">License verification</h3>
     ${(checks||[]).length ? `<div class="scroll-x"><table class="data">
       <thead><tr><th>Checked</th><th>Result</th><th>How</th><th>Board</th><th>Expires</th></tr></thead>
       <tbody>${checks.map(c=>`<tr>
         <td class="faint">${fmtDate(c.checked_at)}</td>
-        <td><span class="badge ${c.status==='verified'?'':'grey'}">${esc(c.status)}</span></td>
+        <td><span class="badge ${c.status==='verified'?'':'gray'}">${esc(c.status)}</span></td>
         <td>${c.method==='vendor'?'Automatic':'Reviewed by us'}</td>
         <td>${esc(c.board_name||'—')}</td>
         <td>${c.expires_on?fmtDate(c.expires_on):'—'}</td></tr>`).join('')}</tbody>
     </table></div>` : '<div class="empty">No checks recorded yet.</div>'}
     ${T?.license_expires_on ? `<p class="faint" style="margin-top:12px">
-      Licence on file expires ${fmtDate(T.license_expires_on)}. We re-check before then.</p>` : ''}
+      License on file expires ${fmtDate(T.license_expires_on)}. We re-check before then.</p>` : ''}
 
     <div class="notice" style="margin-top:24px">
-      A listing appears in the directory only while the licence is verified and current
+      A listing appears in the directory only while the license is verified and current
       <em>and</em> the membership is active. If either lapses, the profile comes down
       automatically.
     </div>`);

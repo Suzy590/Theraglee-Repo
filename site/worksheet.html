@@ -78,7 +78,7 @@ if (!ws) {
       ${laterButton('worksheet', ws.id, isLater(lib,'worksheet',ws.id))}
       <span id="statuspill">${statusBadge(lib.progress.get('worksheet:'+ws.id))}</span>
     </div>
-    ${a.authenticated ? '' : '<div class="notice warn no-print">Sign in to save what you write here, and to keep favourites.</div>'}
+    ${a.authenticated ? '' : '<div class="notice warn no-print">Sign in to save what you write here, and to keep favorites.</div>'}
     <form id="wform" style="margin-top:22px">${html}</form>
     <div class="row no-print" style="margin-top:18px">
       <button class="btn" id="save">Save</button>

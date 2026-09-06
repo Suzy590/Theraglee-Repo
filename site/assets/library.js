@@ -1,11 +1,11 @@
 /* =============================================================================
-   Theraglee — member library: favourites, save for later, and progress.
+   Theraglee — member library: favorites, save for later, and progress.
    -----------------------------------------------------------------------------
    Every activity page (worksheet, quiz, checklist, challenge, article, journal)
-   uses this module so the three member-facing behaviours behave identically
+   uses this module so the three member-facing behaviors behave identically
    everywhere and the dashboard has one place to read from.
 
-     favourite       marks an activity with the Theraglee "ee" smile
+     favorite       marks an activity with the Theraglee "ee" smile
      save for later  a separate list, for "not now, but don't lose it"
      progress        started (>=1 answer) / completed (all answers)
 
@@ -21,7 +21,7 @@
 
 import { sb, access, toast } from './app.js';
 
-/* The favourite mark: the "ee" from the Theraglee wordmark with its smile,
+/* The favorite mark: the "ee" from the Theraglee wordmark with its smile,
    traced from the logo so the curves are the real letterforms. */
 export const FAV_ICON =
   '<svg class="ee" viewBox="0 0 108.00 102.86" fill="currentColor" fill-rule="evenodd" aria-hidden="true">'
@@ -32,7 +32,7 @@ const key = (kind, id) => kind + ':' + id;
 
 let _lib = null;
 
-/** The signed-in member's favourites, saved items and progress. Cached. */
+/** The signed-in member's favorites, saved items and progress. Cached. */
 export async function library(force = false) {
   if (_lib && !force) return _lib;
   const a = await access();
@@ -65,7 +65,7 @@ export const progressOf = (lib, kind, id) => lib.progress.get(key(kind, id)) || 
 export async function toggleList(kind, id, list = 'favorite') {
   const lib = await library();
   if (!lib.authenticated) {
-    toast('Sign in free to keep favourites.', 'err');
+    toast('Sign in free to keep favorites.', 'err');
     return null;
   }
   const set = list === 'later' ? lib.later : lib.favorite;
@@ -122,13 +122,13 @@ export function countAnswers(answers, fields) {
 
 /* --------------------------------------------------------------- controls -- */
 
-/** The favourite toggle. `size` is the icon height in px. */
+/** The favorite toggle. `size` is the icon height in px. */
 export function favButton(kind, id, on, { size = 22, label = true } = {}) {
   return `<button type="button" class="ee-btn${on ? ' on' : ''}" data-fav="${kind}:${id}"
     style="--ee:${size}px" aria-pressed="${on ? 'true' : 'false'}"
-    aria-label="${on ? 'Remove from favourites' : 'Add to favourites'}"
-    title="${on ? 'In your favourites' : 'Add to favourites'}">${FAV_ICON}${
-      label ? `<span class="ee-lbl">${on ? 'Favourited' : 'Favourite'}</span>` : ''}</button>`;
+    aria-label="${on ? 'Remove from favorites' : 'Add to favorites'}"
+    title="${on ? 'In your favorites' : 'Add to favorites'}">${FAV_ICON}${
+      label ? `<span class="ee-lbl">${on ? 'Favorited' : 'Favorite'}</span>` : ''}</button>`;
 }
 
 /** The save-for-later toggle. */
@@ -143,7 +143,7 @@ export function statusBadge(p) {
   if (!p || p.status === 'not_started') return '';
   if (p.status === 'completed') return '<span class="badge done">Completed</span>';
   const of = p.total ? ` ${p.answered}/${p.total}` : '';
-  return `<span class="badge grey">In progress${of}</span>`;
+  return `<span class="badge gray">In progress${of}</span>`;
 }
 
 /**
@@ -168,10 +168,10 @@ export function bindLibrary(root = document, onChange = null) {
     el.classList.toggle('on', on);
     el.setAttribute('aria-pressed', on ? 'true' : 'false');
     if (fav) {
-      el.setAttribute('aria-label', on ? 'Remove from favourites' : 'Add to favourites');
-      el.setAttribute('title', on ? 'In your favourites' : 'Add to favourites');
+      el.setAttribute('aria-label', on ? 'Remove from favorites' : 'Add to favorites');
+      el.setAttribute('title', on ? 'In your favorites' : 'Add to favorites');
       const lbl = el.querySelector('.ee-lbl');
-      if (lbl) lbl.textContent = on ? 'Favourited' : 'Favourite';
+      if (lbl) lbl.textContent = on ? 'Favorited' : 'Favorite';
       if (on) { el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); }
     } else {
       el.textContent = on ? 'Saved for later' : 'Save for later';

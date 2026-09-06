@@ -3,8 +3,8 @@
 
 export const SPECIALTIES = [
   'ADHD','Addiction','Anger management','Anxiety','Autism','Bipolar disorder','Body image',
-  'Borderline personality','Burnout','Career counselling','Chronic illness','Chronic pain',
-  'Codependency','Coping skills','Couples counselling','Depression','Disordered eating',
+  'Borderline personality','Burnout','Career counseling','Chronic illness','Chronic pain',
+  'Codependency','Coping skills','Couples counseling','Depression','Disordered eating',
   'Divorce','Domestic violence','Family conflict','Grief and loss','Infertility','Insomnia',
   'Life transitions','LGBTQ+ issues','Men\'s issues','Military and veterans','Mood disorders',
   'Obsessive-compulsive (OCD)','Panic attacks','Parenting','Perinatal and postpartum',
@@ -15,11 +15,11 @@ export const SPECIALTIES = [
 ];
 
 export const MODALITIES = [
-  'Acceptance and Commitment (ACT)','Art therapy','Attachment-based','Cognitive Behavioural (CBT)',
-  'Compassion Focused','Culturally sensitive','Dialectical Behaviour (DBT)','EMDR',
+  'Acceptance and Commitment (ACT)','Art therapy','Attachment-based','Cognitive Behavioral (CBT)',
+  'Compassion Focused','Culturally sensitive','Dialectical Behavior (DBT)','EMDR',
   'Emotionally Focused','Existential','Exposure and Response Prevention (ERP)','Family systems',
   'Gestalt','Humanistic','Internal Family Systems (IFS)','Interpersonal','Mindfulness-based (MBCT)',
-  'Motivational interviewing','Narrative','Person-centred','Play therapy','Psychoanalytic',
+  'Motivational interviewing','Narrative','Person-centered','Play therapy','Psychoanalytic',
   'Psychodynamic','Solution-focused','Somatic','Strength-based','Trauma-focused',
 ];
 

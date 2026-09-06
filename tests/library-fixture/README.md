@@ -1,6 +1,6 @@
 # Library fixture
 
-Exercises `site/assets/library.js` (favourites, save for later, progress) against
+Exercises `site/assets/library.js` (favorites, save for later, progress) against
 an in-memory stub of `app.js`, so the logic can be checked without Supabase and
 without a signed-in member.
 

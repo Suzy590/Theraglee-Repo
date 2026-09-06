@@ -50,7 +50,7 @@ three accent variables, and one component unique to that category does the rest.
 | `data-doc` | Signature component | Feel |
 |---|---|---|
 | `challenge` | Numbered day rail with a connecting line | A journey you return to |
-| `article` | Reading measure, serif lede, labelled callouts | Editorial |
+| `article` | Reading measure, serif lede, labeled callouts | Editorial |
 | `checklist` | Banded rows, action over explanation | Crisp, scannable |
 | `journal` | Serif prompts over ruled space | Quiet, spacious |
 | `quiz` | Scored options, tally box, banded results | Structured |
@@ -148,15 +148,15 @@ served; `site/.vercelignore` excludes `*.md` as a backstop.
 Moving the domain from HostGator to Vercel is written up in
 [`docs/hosting-migration.md`](docs/hosting-migration.md).
 
-### Member library: favourites, save for later, progress
+### Member library: favorites, save for later, progress
 
-`site/assets/library.js` is the one place these three member behaviours live, so
+`site/assets/library.js` is the one place these three member behaviors live, so
 every activity page behaves the same way and the dashboard has a single source
 to read from.
 
-| Behaviour | Where it is stored |
+| Behavior | Where it is stored |
 |---|---|
-| Favourite | `favorites` with `list = 'favorite'` |
+| Favorite | `favorites` with `list = 'favorite'` |
 | Save for later | `favorites` with `list = 'later'` |
 | Started / completed | `item_progress (answered, total)` → generated `status` |
 
@@ -169,12 +169,12 @@ answer is in. Worksheets count filled fields (a table field counts once any cell
 is filled), quizzes count answered questions, checklists count ticked items.
 Articles have no questions, so they carry an explicit **Mark as read**.
 
-The favourite control is the **"ee" from the wordmark with its smile** —
+The favorite control is the **"ee" from the wordmark with its smile** —
 `brand/assets/favorite.svg`, traced from `logo.png` so the curves are the real
 letterforms rather than an approximation. It reads as a small face and stays
 legible down to 16px.
 
-Members see **Favourites**, **Saved for later** and **Picked up but not finished**
+Members see **Favorites**, **Saved for later** and **Picked up but not finished**
 on the dashboard, and can filter the library by the same views on Explore.
 
 Logic is covered by `tests/library-fixture/` — see its README.
