@@ -72,7 +72,7 @@ export function progressOf(tool, state = {}) {
     case 'pick':     return { answered: Math.min((s.p || []).length, t.max), total: t.max };
     case 'prompts':  return { answered: t.steps.filter((_, i) => (s.t?.[i] || '').trim()).length,
                               total: t.steps.length };
-    case 'check':    return { answered: Object.keys(s.k || {}).length ? 1 : 0, total: 1 };
+    case 'check':    return { answered: Object.keys(s.k || {}).length, total: t.items.length };
     case 'breathe':  return { answered: Math.min(s.c || 0, t.cycles), total: t.cycles };
     case 'guide':    return { answered: (s.done || []).length, total: t.steps.length };
     case 'track':    return { answered: Math.min(Object.keys(s.d || {}).length, 7), total: 7 };
@@ -176,7 +176,7 @@ function footText(tool, p, state) {
     case 'pick':     return `${p.answered} of ${tool.max} chosen`;
     case 'breathe':  return `${Math.min(state.c || 0, tool.cycles)} of ${tool.cycles} rounds`;
     case 'track':    return `${p.answered} of 7 days logged`;
-    case 'check':    return '';
+    case 'check':    return `${p.answered} ticked`;
     case 'rank':     return state.moved ? 'Order changed' : 'Move items until the order feels right';
     case 'allocate': return `${total(state)} of 100 points placed`;
     case 'heat':     return `${Object.keys(state.g || {}).length} time${Object.keys(state.g || {}).length === 1 ? '' : 's'} marked`;

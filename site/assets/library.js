@@ -61,11 +61,18 @@ export const progressOf = (lib, kind, id) => lib.progress.get(key(kind, id)) || 
 
 /* ------------------------------------------------------------------ lists -- */
 
+/** Where a signed-out visitor goes when they try to keep something: the free
+    sign-up page, which comes back to the page they were on. */
+export function signupHref(why = 'save') {
+  const here = location.pathname.split('/').pop() + location.search;
+  return `login.html?mode=signup&why=${encodeURIComponent(why)}&next=${encodeURIComponent(here)}`;
+}
+
 /** Add or remove an activity from a list. Returns the new on/off state. */
 export async function toggleList(kind, id, list = 'favorite') {
   const lib = await library();
   if (!lib.authenticated) {
-    toast('Sign in free to keep favorites.', 'err');
+    location.href = signupHref('save');
     return null;
   }
   const set = list === 'later' ? lib.later : lib.favorite;
