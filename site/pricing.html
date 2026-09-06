@@ -41,8 +41,9 @@
 <section class="section">
   <div class="wrap center" style="max-width:60ch;margin-bottom:36px">
     <h1>Start free. Upgrade when it's useful.</h1>
-    <p class="muted">You can browse a lot of Theraglee without an account at all. Registering is
-      free and unlocks progress tracking — paid tiers add the deeper tools.</p>
+    <p class="muted">You can browse a lot of Theraglee without an account at all, including all
+      <a href="discover.html">100 free discovery tools</a>. Registering is free and unlocks
+      progress tracking — paid tiers add the deeper tools.</p>
     <div class="toggle" id="cycle" role="group" aria-label="Billing period">
       <button class="on" data-i="monthly">Monthly</button>
       <button data-i="yearly">Yearly <span class="faint">· save ~17%</span></button>
@@ -131,9 +132,10 @@ let cycle = 'monthly';
 
 const PLANS = [
   { key:'visitor', name:'Visitor', price:()=>'Free', sub:'No account',
-    cta:{label:'Browse now', href:'therapists.html'},
-    feats:[['Browse the therapist directory',1],['Articles, quotes, tips, fun facts',1],
-           ['Affirmations',1],['Save favorites or progress',0],['Personalized daily content',0]] },
+    cta:{label:'Try the free tools', href:'discover.html'},
+    feats:[['100 free discovery tools',1],['Browse the therapist directory',1],
+           ['Articles, quotes, tips, fun facts',1],['Affirmations',1],
+           ['Save favorites or progress',0],['Personalized daily content',0]] },
   { key:'free', name:'Free', price:()=>'Free', sub:'Registered · no card',
     cta:{label:'Join free', href:'login.html?mode=signup'},
     feats:[['Everything a visitor can see',1],['Personalized daily content by AI',1],
@@ -152,6 +154,7 @@ const PLANS = [
 ];
 
 const COMPARE = [
+  ['100 free discovery tools', 0],
   ['Therapist directory search', 0],
   ['Articles, quotes, tips, fun facts', 0],
   ['Mental health affirmations', 0],
