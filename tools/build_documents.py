@@ -66,9 +66,6 @@ EXPORT_NOTES = [
      "is corrupted (`What's a piece of advice you` followed by CJK characters), "
      "the other is an editorial note (`March (31 prompts, up to #90): Emphasized "
      "growth and learning.`). 372 prompts were rendered."),
-    ("worksheets", "below-ive-created-a-detailed-description-of-how-to-structure-each-of-t",
-     "Its 54 fields duplicate the fields of ten other worksheets — it looks like "
-     "an import that merged them all into one row rather than a real worksheet."),
     ("worksheets", "managing-depressive-symptoms-a-self-reflection-worksheet",
      "Only 2 fields survive (`Instructions` and `Final Reflection`); the body of "
      "the worksheet appears to have been lost on import."),
