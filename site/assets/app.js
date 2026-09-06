@@ -266,7 +266,7 @@ function footer() {
         <a href="explore.html">Library</a><a href="challenges.html">Challenges</a>
         <a href="journal.html">Journal</a><a href="articles.html">Articles</a></div>
       <div><h4>Membership</h4>
-        <a href="pricing.html">Plans &amp; pricing</a><a href="login.html?mode=signup">Join free</a>
+        <a href="pricing.html">Membership plans</a><a href="login.html?mode=signup">Join free</a>
         <a href="account.html">Your account</a></div>
       <div><h4>Therapists</h4>
         <a href="therapists.html">Find a therapist</a><a href="for-therapists.html">List your practice</a>
