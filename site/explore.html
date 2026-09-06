@@ -73,11 +73,11 @@ const LABEL = { quiz:'Quiz', worksheet:'Worksheet', checklist:'Checklist',
 const { data: rows, error } = await sb.from('content_catalog').select('*');
 const lib = await library();
 if (lib.authenticated) document.getElementById('views').classList.remove('hide');
-if (view) document.querySelector(`#views .chip[data-v="${view}"]`)?.classList.add('on');
 if (error) console.error(error);
 const all = rows || [];
 
 let type = qs('type','') , term = '', onlyMine = false, view = qs('view','');
+if (view) document.querySelector(`#views .chip[data-v="${view}"]`)?.classList.add('on');
 if (type) document.querySelectorAll('#types .chip').forEach(c =>
   c.classList.toggle('on', c.dataset.t === type));
 
