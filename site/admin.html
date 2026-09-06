@@ -40,7 +40,7 @@ if (a.profile.role !== 'admin') {
 } else {
 let tab = location.hash.replace('#','') || 'verify';
 
-const TABS = [['verify','Licence verification'],['numbers','Tracking numbers'],
+const TABS = [['verify','License verification'],['numbers','Tracking numbers'],
               ['billing','Stripe setup'],['content','Content']];
 
 function render(body){
@@ -70,8 +70,8 @@ async function verify(){
   };
 
   render(`
-    <h2>Licence verification queue</h2>
-    <p class="muted" style="max-width:64ch">Confirm each licence against the state board before
+    <h2>License verification queue</h2>
+    <p class="muted" style="max-width:64ch">Confirm each license against the state board before
       approving. A listing cannot appear in the directory until it is verified <em>and</em> the
       membership is active — so approving here does not publish anything on its own.</p>
 
@@ -83,7 +83,7 @@ async function verify(){
           <div>
             <h3 style="margin:0">${esc(t.first_name)} ${esc(t.last_name)}${t.credentials?', '+esc(t.credentials):''}</h3>
             <p class="faint" style="margin:4px 0">
-              Licence <code>${esc(t.license_number||'—')}</code>
+              License <code>${esc(t.license_number||'—')}</code>
               ${t.license_type?`(${esc(t.license_type)})`:''}
               in ${esc((t.license_states||[]).join(', ')||'—')}
               · joined ${fmtDate(t.created_at)}</p>
@@ -91,7 +91,7 @@ async function verify(){
               ${b ? esc(b.board_name) : `No board on file for ${esc(st)}`}
               · <a href="${esc(lookupUrl(t))}" target="_blank" rel="noopener">Open the board lookup ↗</a></p>
           </div>
-          <span class="badge ${t.verification==='verified'?'':'grey'}">
+          <span class="badge ${t.verification==='verified'?'':'gray'}">
             ${esc(t.verification)}${t.published?' · live':''}</span>
         </div>
         ${t.bio?`<p class="muted" style="font-size:.92rem;margin-top:10px">${esc(String(t.bio).slice(0,240))}</p>`:''}
@@ -108,12 +108,12 @@ async function verify(){
   document.querySelectorAll('[data-ok]').forEach(btn => btn.onclick = () => {
     const t = rows.find(r => r.id === btn.dataset.ok);
     const back = modal(`
-      <h2>Record a verified licence</h2>
+      <h2>Record a verified license</h2>
       <p class="muted" style="font-size:.92rem">Copy what the board actually shows. This is kept
         as the audit record behind the “verified” badge on their profile.</p>
       <div class="field"><label for="vn">Name exactly as the board shows it</label>
         <input id="vn" value="${esc(t.first_name+' '+t.last_name)}"></div>
-      <div class="field"><label for="vs">Licence status on the board</label>
+      <div class="field"><label for="vs">License status on the board</label>
         <input id="vs" placeholder="e.g. Clear" value="Clear"></div>
       <div class="field"><label for="ve">Expiry date</label><input id="ve" type="date"></div>
       <div class="field"><label style="display:flex;gap:10px;align-items:center">
@@ -265,7 +265,7 @@ async function billing(){
       <code>STRIPE_SECRET_KEY</code>, <code>STRIPE_WEBHOOK_SECRET</code>, <code>SITE_URL</code>,
       <code>RESEND_API_KEY</code> and <code>MAIL_FROM</code> for therapist messages, and
       <code>LICENSE_VERIFY_URL</code> / <code>LICENSE_VERIFY_API_KEY</code> if you sign up with a
-      licence-verification service. Point a Stripe webhook at
+      license-verification service. Point a Stripe webhook at
       <code>https://oekqzuguruyqkafsqhos.supabase.co/functions/v1/stripe-webhook</code>.
     </div>`);
 

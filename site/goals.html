@@ -80,7 +80,7 @@ async function goalsView(){
         const hits = week.filter(d=>mine.includes(d)).length;
         return `<div class="card">
           <div class="spread"><h3 style="margin:0">${esc(g.title)}</h3>
-            <span class="badge ${hits>=g.target_per_week?'':'grey'}">${hits}/${g.target_per_week} this week</span></div>
+            <span class="badge ${hits>=g.target_per_week?'':'gray'}">${hits}/${g.target_per_week} this week</span></div>
           <div class="week" style="margin:14px 0">${week.map((d,i)=>
             `<span class="${mine.includes(d)?'hit':''}">${'MTWTFSS'[i]}</span>`).join('')}</div>
           <div class="row">
@@ -95,7 +95,7 @@ async function goalsView(){
   document.getElementById('add').onclick = () => {
     const back = modal(`<h2>New goal</h2>
       <div class="field"><label for="gt">What are you aiming for?</label>
-        <input id="gt" placeholder="e.g. Practise mindfulness"></div>
+        <input id="gt" placeholder="e.g. Practice mindfulness"></div>
       <div class="field"><label for="gn">How many times a week?</label>
         <input id="gn" type="number" min="1" max="21" value="3"></div>
       <div class="row" style="justify-content:flex-end">
@@ -216,7 +216,7 @@ function mapView(){
   const zip = a.profile.zip || '';
   document.getElementById('body').innerHTML = `
     <h2>Mental health help near you</h2>
-    <p class="muted">Clinics, community centres and counselling services around your area.</p>
+    <p class="muted">Clinics, community centers and counseling services around your area.</p>
     <div class="row" style="margin:16px 0">
       <input id="where" placeholder="Zip code or town" value="${esc(zip)}" style="max-width:240px">
       <button class="btn" id="go">Show the map</button>

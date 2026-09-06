@@ -29,7 +29,7 @@
 <main class="section">
 <div class="wrap">
   <h1>Find a therapist</h1>
-  <p class="muted" style="max-width:58ch">Every listing is a licensed professional whose licence we
+  <p class="muted" style="max-width:58ch">Every listing is a licensed professional whose license we
     verified with their state board. Free to browse — you don't need an account.</p>
 
   <div class="layout" style="margin-top:30px">
@@ -112,7 +112,7 @@ async function run(){
           ${t.delivery === 'telehealth' ? ' · Telehealth' : t.delivery === 'both' ? ' · In person &amp; telehealth' : ' · In person'}
         </p>
         ${t.bio ? `<p class="muted" style="margin:0 0 8px;font-size:.93rem">${esc(String(t.bio).slice(0,150))}${t.bio.length>150?'…':''}</p>` : ''}
-        <div class="chips">${spec.map(s=>`<span class="badge grey">${esc(s)}</span>`).join('')}</div>
+        <div class="chips">${spec.map(s=>`<span class="badge gray">${esc(s)}</span>`).join('')}</div>
       </div></a>`;
   }).join('') : `<div class="empty">
       <p style="margin:0 0 6px"><strong>No therapists match that yet.</strong></p>

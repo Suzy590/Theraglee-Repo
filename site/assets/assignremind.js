@@ -9,7 +9,7 @@ import { sb, esc, toast, busy, modal, fmtDate, FN } from './app.js';
 
 const STATE_LABEL = {
   sent: 'Sent', received: 'Received', started: 'In progress',
-  completed: 'Completed', cancelled: 'Cancelled',
+  completed: 'Completed', cancelled: 'Canceled',
 };
 
 let ws = null;       // the workspace row
@@ -34,7 +34,7 @@ export async function renderAssignRemind(host, { siteOrigin }) {
           <p class="muted" style="margin:4px 0 0">Set homework between sessions, and let the
             reminders do the chasing.</p>
         </div>
-        <span class="badge grey">Opening shortly</span>
+        <span class="badge gray">Opening shortly</span>
       </div>
 
       <div class="card pad-lg" style="margin-top:22px">
@@ -156,7 +156,7 @@ function rowHtml(r) {
           ${r.submissions ? ` · ${r.submissions} repl${r.submissions===1?'y':'ies'}` : ''}
         </p>
       </div>
-      <span class="badge ${r.state==='completed'?'':(r.overdue?'lock':'grey')}">
+      <span class="badge ${r.state==='completed'?'':(r.overdue?'lock':'gray')}">
         ${r.overdue && r.state!=='completed' ? 'Overdue' : STATE_LABEL[r.state] || r.state}</span>
     </div>
   </div>`;
@@ -180,7 +180,7 @@ async function openAssignment(id, host, siteOrigin) {
 
   const subs = (a.submissions || []).sort((x,y)=> new Date(y.created_at)-new Date(x.created_at));
   const back = modal(`
-    <span class="badge grey">${STATE_LABEL[a.state] || a.state}</span>
+    <span class="badge gray">${STATE_LABEL[a.state] || a.state}</span>
     <h2 style="margin-top:12px">${esc(a.title)}</h2>
     <p class="faint">${esc(a.client?.display_name || '')}${a.due_on?` · due ${fmtDate(a.due_on)}`:''}</p>
     ${a.description?`<p class="muted" style="white-space:pre-wrap">${esc(a.description)}</p>`:''}
@@ -211,12 +211,12 @@ async function openAssignment(id, host, siteOrigin) {
     toast('Link copied.','ok');
   };
   back.querySelector('#cancel-a')?.addEventListener('click', async (e) => {
-    busy(e.target, true, 'Cancelling…');
+    busy(e.target, true, 'Canceling…');
     const { error } = await sb.from('ar_assignments')
       .update({ state:'cancelled', cancelled_at: new Date().toISOString() }).eq('id', a.id);
     busy(e.target, false);
     if (error) return toast(error.message,'err');
-    back.remove(); toast('Cancelled — reminders stopped.','ok');
+    back.remove(); toast('Canceled — reminders stopped.','ok');
     renderAssignRemind(host, { siteOrigin });
   });
 }
@@ -349,7 +349,7 @@ function peopleView(clients, siteOrigin) {
         <div class="spread">
           <strong>${esc(c.display_name)}</strong>
           ${c.overdue ? `<span class="badge lock">${c.overdue} overdue</span>`
-            : c.active ? `<span class="badge grey">${c.active} open</span>`
+            : c.active ? `<span class="badge gray">${c.active} open</span>`
             : '<span class="badge">up to date</span>'}
         </div>
         <p class="faint" style="margin:6px 0">

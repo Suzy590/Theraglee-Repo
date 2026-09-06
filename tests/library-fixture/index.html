@@ -4,7 +4,7 @@
 .tile{background:#fff;border:1px solid #E7E3D6;border-radius:16px;padding:20px}
 h4{font:600 11px/1 Outfit;letter-spacing:.1em;text-transform:uppercase;color:#8B978E;margin:22px 0 10px}</style>
 <div id="root">
-  <h4>Catalog tiles — favourite in the corner</h4>
+  <h4>Catalog tiles — favorite in the corner</h4>
   <div class="grid" id="tiles"></div>
   <h4>Activity page bar</h4>
   <div class="row" id="bar"></div>
@@ -37,8 +37,8 @@ t('countAnswers counts text + tables',
   JSON.stringify(countAnswers({a:'hi',b:'  ',c:[['','x']]}, [{id:'a'},{id:'b'},{id:'c'},{id:'d'}])) === '{"answered":2,"total":4}');
 document.querySelector('[data-fav="worksheet:w1"]').click();
 await flush();
-t('favourite click writes a favorite row', DB.favorites.length === 1 && DB.favorites[0].list === 'favorite');
-t('favourite button turns on', document.querySelector('[data-fav="worksheet:w1"]').classList.contains('on'));
+t('favorite click writes a favorite row', DB.favorites.length === 1 && DB.favorites[0].list === 'favorite');
+t('favorite button turns on', document.querySelector('[data-fav="worksheet:w1"]').classList.contains('on'));
 document.querySelector('[data-fav="worksheet:w1"]').click();
 await flush();
 t('clicking again removes it', DB.favorites.length === 0);

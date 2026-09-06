@@ -220,7 +220,7 @@ The Stripe webhook endpoint is a Supabase function URL and is **not** affected.
 
 Only once steps 4–6 are confirmed working, and you have given it a few days.
 
-HostGator is currently providing your **DNS**, so cancelling the account while
+HostGator is currently providing your **DNS**, so canceling the account while
 the nameservers still point there takes the domain offline. Move DNS first:
 
 **Option A — Vercel DNS (simplest, if Vercel keeps this domain).** Vercel will
@@ -246,7 +246,7 @@ Nothing currently sends or receives on this domain — the MX record points at
 HostGator's shared mail server, but no mailbox has been used. So there is no
 email cutover risk in this migration, and no rush.
 
-When you do want it, pick a host **before** cancelling HostGator so there is no
+When you do want it, pick a host **before** canceling HostGator so there is no
 gap. Reasonable options:
 
 | Option | Cost | Good for |

@@ -39,7 +39,7 @@
       </div>
       <!-- Member-only views; hidden for signed-out visitors. -->
       <div class="chips hide" id="views" style="margin-top:12px">
-        <button class="chip" data-v="favorite">Favourites</button>
+        <button class="chip" data-v="favorite">Favorites</button>
         <button class="chip" data-v="later">Saved for later</button>
         <button class="chip" data-v="started">In progress</button>
         <button class="chip" data-v="completed">Completed</button>
@@ -112,7 +112,7 @@ function render(){
           ${r.description ? `<p class="meta" style="color:var(--muted)">${esc(String(r.description).slice(0,120))}${String(r.description).length>120?'…':''}</p>` : ''}
           <span class="meta">${LABEL[r.kind]}${r.category && r.category!==LABEL[r.kind] ? ' · '+esc(r.category) : ''}</span>
           <div class="row" style="gap:7px;margin-top:2px">
-            ${statusBadge(p)}${isLater(lib, r.kind, r.id) ? '<span class="badge grey">Saved for later</span>' : ''}
+            ${statusBadge(p)}${isLater(lib, r.kind, r.id) ? '<span class="badge gray">Saved for later</span>' : ''}
           </div>
           ${pct ? `<div class="prog"><i style="width:${pct}%"></i></div>` : ''}
         </a>`;

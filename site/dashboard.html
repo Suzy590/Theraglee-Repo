@@ -167,7 +167,7 @@ if (ch?.length) {
     }).join('')}</div>`;
 }
 
-/* ---- favourites, saved for later, in progress ---- */
+/* ---- favorites, saved for later, in progress ---- */
 const HREF = {
   quiz:      r => `quiz.html?slug=${encodeURIComponent(r.slug)}`,
   worksheet: r => `worksheet.html?slug=${encodeURIComponent(r.slug)}`,
@@ -214,7 +214,7 @@ async function paintLibrary() {
     .map(p => p.item_type + ':' + p.item_id);
 
   host.innerHTML =
-      section('Your favourites', [...lib.favorite],
+      section('Your favorites', [...lib.favorite],
               'Nothing yet. Tap the <strong>ee</strong> on any activity to keep it here.')
     + section('Saved for later', [...lib.later])
     + section('Picked up but not finished', inProgress);
