@@ -57,6 +57,9 @@ em.script{font-family:var(--serif);font-style:italic;font-weight:400;color:var(-
 .nav .links a{font-size:.95rem;color:var(--ink);letter-spacing:-.01em;transition:opacity .2s}
 .nav .links a:hover{opacity:.6}
 .nav .links a.active{color:var(--green);font-weight:500}
+/* .nav .links a sets the ink link color, which outranks .btn's own white text.
+   Put it back for solid buttons in the header; ghost and lime keep their ink. */
+.nav .links a.btn:not(.ghost):not(.lime){color:#fff}
 .burger{display:none;background:none;border:0;cursor:pointer;padding:8px;color:var(--ink)}
 @media(max-width:900px){
   .nav .links{position:absolute;top:100%;left:0;right:0;flex-direction:column;align-items:stretch;
