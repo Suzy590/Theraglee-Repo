@@ -133,7 +133,7 @@ What a visitor gets versus a member:
 |---|---|---|
 | Use all 100 tools | yes | yes |
 | Answers remembered | in this browser only (`localStorage`, key `tg.discover.<slug>`) | in this browser, plus Started / Completed in `item_progress` with `item_type = 'discover'` |
-| Favorite, save for later | no (the controls are not shown) | yes, via `favorites`, same as any other activity |
+| Favorite, save for later, save to my dashboard | the buttons are shown, and each one opens the free sign-up page (`login.html?mode=signup&why=save&next=…`), which returns to the tool afterwards | yes: favorites via `favorites`, "save to my dashboard" records the tool as started in `item_progress` |
 | Shows on the dashboard | no dashboard | yes: favorites, saved for later, picked up but not finished |
 
 None of the tools diagnoses, screens for, or treats anything. Every result is

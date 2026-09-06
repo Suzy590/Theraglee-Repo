@@ -19,9 +19,9 @@
 </div></main>
 
 <script type="module">
-import { chrome, esc, qs, logActivity } from './assets/app.js';
+import { chrome, esc, qs, logActivity, toast } from './assets/app.js';
 import { library, isFavorite, isLater, favButton, laterButton, statusBadge,
-         bindLibrary, setProgress, progressOf as memberProgress } from './assets/library.js';
+         bindLibrary, setProgress, signupHref, progressOf as memberProgress } from './assets/library.js';
 import { TOOLS, TOPICS } from './assets/discover-tools.js';
 import { mount, loadState, saveState, clearState, progressOf, KIND_LABEL } from './assets/discover.js';
 
@@ -40,6 +40,14 @@ function localStatus(tool) {
 }
 const localBadge = (st) => st === 'completed' ? '<span class="badge done">Completed</span>'
   : st === 'started' ? '<span class="badge gray">In progress</span>' : '';
+
+/* Already on the member's dashboard: started or completed there. */
+const onDashboard = (tool) => {
+  const p = lib.authenticated ? memberProgress(lib, 'discover', tool.id) : null;
+  return !!p && p.status !== 'not_started';
+};
+const dashboardButton = (on) => `<button type="button" class="btn ghost sm later-btn${on ? ' on' : ''}"
+  data-dash="1" aria-pressed="${on ? 'true' : 'false'}" ${on ? 'disabled' : ''}>${on ? 'On your dashboard' : 'Save to my dashboard'}</button>`;
 
 if (!slug) {
   paintIndex();
@@ -95,7 +103,7 @@ function paintIndex() {
       const p = lib.authenticated ? memberProgress(lib, 'discover', r.id) : null;
       const badge = p ? statusBadge(p) : localBadge(localStatus(r));
       return `<a class="tile" href="discover.html?slug=${encodeURIComponent(r.slug)}">
-        ${lib.authenticated ? favButton('discover', r.id, isFavorite(lib, 'discover', r.id), { size: 20, label: false }) : ''}
+        ${favButton('discover', r.id, isFavorite(lib, 'discover', r.id), { size: 20, label: false })}
         <h3>${esc(r.title)}</h3>
         <p class="meta" style="color:var(--muted)">${esc(r.description.slice(0, 120))}${r.description.length > 120 ? '…' : ''}</p>
         <span class="meta">${esc(KIND_LABEL[r.kind])} · ${esc(r.topic)} · ${r.minutes} min</span>
@@ -131,11 +139,12 @@ function paintTool(tool) {
     <h1 style="margin-top:12px">${esc(tool.title)}</h1>
     <p class="muted">${esc(tool.description)}</p>
     <div class="row no-print" id="libbar" style="margin-top:14px">
-      ${lib.authenticated ? favButton('discover', tool.id, isFavorite(lib, 'discover', tool.id)) : ''}
-      ${lib.authenticated ? laterButton('discover', tool.id, isLater(lib, 'discover', tool.id)) : ''}
+      ${favButton('discover', tool.id, isFavorite(lib, 'discover', tool.id))}
+      ${laterButton('discover', tool.id, isLater(lib, 'discover', tool.id))}
+      ${dashboardButton(onDashboard(tool))}
       <span id="statuspill">${lib.authenticated ? statusBadge(memberProgress(lib, 'discover', tool.id)) : ''}</span>
     </div>
-    ${lib.authenticated ? '' : '<div class="notice no-print" style="margin-top:14px">Your answers stay in this browser. <a href="login.html?mode=signup">Join free</a> to favorite this tool, save it for later, or have it appear on your dashboard when you finish.</div>'}
+    ${lib.authenticated ? '' : `<div class="notice no-print" style="margin-top:14px">Your answers stay in this browser. Favorite this tool, save it for later, or save it to a dashboard by <a href="${signupHref('save')}">creating a free account</a>. No card, no cost.</div>`}
     <div class="notice warn no-print" style="margin:16px 0 22px">A self-reflection tool, not a diagnosis. It cannot identify any condition.
       If anything here worries you, please talk with a licensed professional.</div>
     <div id="tool"></div>
@@ -144,6 +153,26 @@ function paintTool(tool) {
         <h3>${esc(r.title)}</h3><span class="meta">${esc(KIND_LABEL[r.kind])} · ${r.minutes} min</span></a>`).join('')}</div></div>` : ''}`;
 
   bindLibrary(root);
+
+  /* "Save to my dashboard": for a member, record the tool as picked up so it
+     sits under "Picked up but not finished" on the dashboard until they finish
+     it. For a visitor, the button (like favorite and save for later) goes to
+     the free sign-up page and comes back here afterwards. */
+  root.querySelector('[data-dash]').addEventListener('click', async (e) => {
+    e.preventDefault();
+    if (!lib.authenticated) { location.href = signupHref('save'); return; }
+    const btn = e.currentTarget;
+    btn.disabled = true;
+    const p = progressOf(tool, loadState(tool.slug));
+    const answered = Math.min(Math.max(1, p.answered), Math.max(1, p.total - 1));
+    const row = await setProgress('discover', tool.id, answered, p.total);
+    btn.disabled = false;
+    if (!row) return;
+    btn.outerHTML = dashboardButton(true);
+    const pill = document.getElementById('statuspill');
+    if (pill) pill.innerHTML = statusBadge(row);
+    toast('Saved to your dashboard.', 'ok');
+  });
 
   /* Persist: always to this browser; for members, also to item_progress so the
      dashboard can show Started / Completed alongside quizzes and worksheets. */

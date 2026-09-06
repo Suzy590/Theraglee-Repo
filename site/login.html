@@ -75,6 +75,14 @@ const next = qs('next') || 'dashboard.html';
 const { data: { session } } = await sb.auth.getSession();
 if (session) location.replace(next);
 
+if (qs('why') === 'save' && mode === 'signup') {
+  $('#alert').innerHTML = `<div class="notice" style="margin-bottom:18px">
+    <strong>Create a free account to keep that tool.</strong><br>
+    Favorites, save for later and your dashboard are part of the free membership.
+    No card, no cost, and you will be sent straight back to where you were.
+  </div>`;
+}
+
 if (qs('timeout')) {
   $('#alert').innerHTML = `<div class="notice warn" style="margin-bottom:18px">
     <strong>You were signed out after a spell of inactivity.</strong><br>
@@ -94,7 +102,7 @@ function paint(){
   $('#password').autocomplete = up ? 'new-password' : 'current-password';
   $('#switch-copy').textContent = up ? 'Already have an account?' : 'New here?';
   $('#switch').textContent = up ? 'Sign in instead' : 'Create a free account';
-  history.replaceState({}, '', `login.html?mode=${mode}${qs('next')?'&next='+encodeURIComponent(qs('next')):''}`);
+  history.replaceState({}, '', `login.html?mode=${mode}${qs('why')?'&why='+encodeURIComponent(qs('why')):''}${qs('next')?'&next='+encodeURIComponent(qs('next')):''}`);
 }
 paint();
 
