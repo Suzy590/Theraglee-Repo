@@ -8,6 +8,47 @@ order — the ordering is what keeps the site (and later, email) from breaking.
 
 ---
 
+## Status: done — 2026-09-06
+
+`theraglee.com` is live on Vercel. Verified on the domain itself: valid
+certificate, homepage `200`, `/README.md` `404`, `/assets/library.js` `200`, the
+branded 404 page, every legacy WordPress redirect, all security headers, and
+`www.theraglee.com` → `307` → the apex.
+
+**The route actually taken differed from the plan below.** The steps were
+written for record-level edits at HostGator (change the apex `A` and the `www`
+`CNAME`, keep HostGator as DNS host). Instead the **nameservers were moved
+wholesale to Vercel** at the registrar, matching how `assignremind.com` is set
+up. That is simpler, and it retires HostGator completely rather than leaving DNS
+behind there.
+
+Consequences of taking the nameserver route:
+
+- Steps **0, 2 and 3 below were not used.** They are kept as the rollback
+  procedure and as a record of the original DNS.
+- The `webmail`/`cpanel` trap never applied — the whole zone was replaced, so
+  those records are simply gone rather than mis-pointing.
+- Every old record is gone, including `MX`, `SPF` and `_dmarc`. Nothing was
+  using them, but they must be recreated in **Vercel's** DNS when email is set
+  up (step 8).
+
+One thing worth recording, because it caused a brief outage: the nameservers
+were changed **before** the domain was added in Vercel. Vercel's nameservers
+were then authoritative for a zone that did not exist yet, so the domain
+returned `SERVFAIL` until the domain was connected. Adding it fixed this within
+minutes. **Add the domain in Vercel first.**
+
+### Still outstanding
+
+| | |
+|---|---|
+| **Supabase Auth URLs** | Step 5 — not done. Site URL and the redirect allowlist still point at the old origin, so confirmation and password-reset emails link to the wrong host. Only bites once someone registers. |
+| **Cancel HostGator** | Nothing depends on it any more. |
+| **`SITE_URL` secret** | Step 6 — Stripe's fallback return URL. Low priority; Stripe is disabled and the browser sends the right origin. |
+| **Email** | Step 8, whenever wanted. |
+
+---
+
 ## What is actually being moved
 
 `theraglee.com` currently serves a **stock, empty WordPress install** on
@@ -22,7 +63,7 @@ The real Theraglee app already runs on Vercel. This migration only changes
 |---|---|---|
 | `theraglee.com` | HostGator (198.57.242.178) | Vercel |
 | Registrar | Network Solutions | Network Solutions — unchanged |
-| DNS host | HostGator nameservers | HostGator for now; move later (step 7) |
+| DNS host | HostGator nameservers | **Vercel** (`ns1`/`ns2.vercel-dns.com`) |
 | Email | Configured, never used | Unchanged now; set up properly in step 8 |
 | App code | — | No changes needed. Everything uses `location.origin` |
 
@@ -114,21 +155,26 @@ One bonus of the Git flow: `vercel.json` is now consumed as configuration
 instead of being served as a static file, so it returns `404` rather than the
 `200` it gave on the old upload-based project.
 
-### The old `theraglee-site` project is now stale — and still leaking
+### The old `theraglee-site` project is paused
 
-`theraglee-site.vercel.app` still exists and still serves its **last upload**,
-which predates all of this. It still returns `200` for `/README.md`, so the
-admin-address doc is still public there even though it is fixed on
-`theraglee-web`.
+`theraglee-site.vercel.app` served its last upload — including `/README.md` at
+`200` — until the domain cutover was confirmed. It is now **paused**, and every
+path on it returns `503`. That was the last place on the web serving that
+document.
 
-Retiring it is safe once `theraglee.com` points at `theraglee-web` (step 1–4).
-Either delete the project in the Vercel dashboard, or pause it
-(**Settings → Pause Project**), which makes it serve `503`. This was left for
-you rather than done automatically, because something may still be linking to
-that URL — the Supabase Auth allowlist did, until step 5.
+It is paused rather than deleted, deliberately: a `503` is easy to diagnose if
+something turns out to still link to that URL, whereas a deleted project is not.
+Unpausing is one action in the dashboard if it is ever needed.
 
-Note that removing it does not retract anything: the same content is in the
-public GitHub repository. See "That does not make the content private" below.
+Removing it does not retract anything, though: the same content is in the public
+GitHub repository. See "That does not make the content private" below.
+
+## Steps 0–3 — the record-level route (not used)
+
+> These describe editing records while keeping HostGator as the DNS host. The
+> nameserver move made them unnecessary. They are kept as the rollback
+> procedure: pointing the nameservers back at `hgns1`/`hgns2.hostgator.com` and
+> restoring the table above returns the domain to its pre-migration state.
 
 ## Step 0 — Lower the TTL (do this a few hours ahead)
 
