@@ -1,0 +1,25 @@
+<!doctype html>
+<!-- Preview any tool without Supabase: preview.html?slugs=box-breathing,feelings-wheel
+     Add &finished=<slug>&state=<json> to render a tool's closing reflection. -->
+<html lang="en"><head><meta charset="utf-8"><title>discover preview</title>
+<link rel="stylesheet" href="../../site/assets/styles.css">
+<link rel="stylesheet" href="../../site/assets/discover.css">
+<style>.stage{margin:0 0 40px;padding:0 0 30px;border-bottom:2px dashed #ccc}</style></head>
+<body><main class="section"><div class="wrap narrow" id="root"></div></main>
+<script type="module">
+import { TOOLS } from '../../site/assets/discover-tools.js';
+import { mount, KIND_LABEL } from '../../site/assets/discover.js';
+const q = new URLSearchParams(location.search);
+const slugs = (q.get('slugs') || '').split(',').filter(Boolean);
+const root = document.getElementById('root');
+for (const slug of slugs) {
+  const tool = TOOLS.find(t => t.slug === slug);
+  const st = document.createElement('div'); st.className = 'stage';
+  st.innerHTML = `<div class="row" style="gap:8px"><span class="badge">${KIND_LABEL[tool.kind]}</span><span class="badge gray">${tool.minutes} min</span><span class="badge gray">Free for everyone</span></div>
+    <h1 style="margin-top:12px">${tool.title}</h1><p class="muted">${tool.description}</p>
+    <div class="notice warn" style="margin:16px 0 22px">A self-reflection tool, not a diagnosis. It cannot identify any condition. If anything here worries you, please talk with a licensed professional.</div><div class="t"></div>`;
+  root.appendChild(st);
+  const state = q.get('finished') === slug ? JSON.parse(q.get('state') || '{}') : {};
+  mount(st.querySelector('.t'), tool, { state });
+}
+</script></body></html>

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Library — Theraglee</title>
-<meta name="description" content="Browse every quiz, worksheet, checklist, challenge and article on Theraglee.">
+<meta name="description" content="Browse every free discovery tool, quiz, worksheet, checklist, challenge and article on Theraglee.">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="alternate icon" href="assets/favicon.png" sizes="48x48">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
@@ -26,6 +26,7 @@
       </div>
       <div class="chips" id="types">
         <button class="chip on" data-t="">Everything</button>
+        <button class="chip" data-t="discover">Free discovery tools</button>
         <button class="chip" data-t="quiz">Quizzes</button>
         <button class="chip" data-t="worksheet">Worksheets</button>
         <button class="chip" data-t="checklist">Checklists</button>
@@ -57,9 +58,11 @@
 import { chrome, sb, access, esc, tierName, qs, unlockHref } from './assets/app.js';
 import { library, isFavorite, isLater, favButton, statusBadge,
          bindLibrary, progressOf } from './assets/library.js';
+import { TOOLS } from './assets/discover-tools.js';
 const a = await chrome({ active:'explore.html' });
 
 const HREF = {
+  discover:  r => `discover.html?slug=${encodeURIComponent(r.slug)}`,
   quiz:      r => `quiz.html?slug=${encodeURIComponent(r.slug)}`,
   worksheet: r => `worksheet.html?slug=${encodeURIComponent(r.slug)}`,
   checklist: r => `checklist.html?slug=${encodeURIComponent(r.slug)}`,
@@ -67,19 +70,27 @@ const HREF = {
   article:   r => `article.html?slug=${encodeURIComponent(r.slug)}`,
   mandala:   r => `mandalas.html?slug=${encodeURIComponent(r.slug)}`,
 };
-const LABEL = { quiz:'Quiz', worksheet:'Worksheet', checklist:'Checklist',
+const LABEL = { discover:'Discovery tool', quiz:'Quiz', worksheet:'Worksheet', checklist:'Checklist',
                 challenge:'Challenge', article:'Article', mandala:'Mandala' };
+
+// The 100 discovery tools live in the site itself (assets/discover-tools.js),
+// not in the database, so they are free for every visitor. They are shaped like
+// catalog rows here so the filters, favorites and progress treat them the same.
+const discoverRows = TOOLS.map(t => ({
+  kind: 'discover', id: t.id, slug: t.slug, title: t.title, description: t.description,
+  category: t.topic, tags: t.tags, min_level: 0,
+}));
 
 const { data: rows, error } = await sb.from('content_catalog').select('*');
 const lib = await library();
 if (lib.authenticated) document.getElementById('views').classList.remove('hide');
-if (view) document.querySelector(`#views .chip[data-v="${view}"]`)?.classList.add('on');
 if (error) console.error(error);
-const all = rows || [];
+const all = [...discoverRows, ...(rows || [])];
 
 let type = qs('type','') , term = '', onlyMine = false, view = qs('view','');
 if (type) document.querySelectorAll('#types .chip').forEach(c =>
   c.classList.toggle('on', c.dataset.t === type));
+if (view) document.querySelector(`#views .chip[data-v="${view}"]`)?.classList.add('on');
 
 function render(){
   const t = term.trim().toLowerCase();

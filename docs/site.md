@@ -26,7 +26,7 @@ by editing the page. Every piece of content carries a `min_level`:
 
 | Level | Tier | Who |
 |---|---|---|
-| 0 | Visitor | No account. Browses therapists, articles, quotes, tips, fun facts, affirmations. |
+| 0 | Visitor | No account. Browses therapists, articles, quotes, tips, fun facts, affirmations, and uses all 100 free discovery tools. |
 | 1 | Free | Registered, no card. Adds personalized daily content, journal, checklists, 7-day challenges, optional therapist outreach. |
 | 2 | Basic | Paid. Adds 62 quizzes, 17 worksheets, challenges up to 365 days. |
 | 3 | Premium | Paid. Adds goals, mood tracking, mandalas, playlists, resource map, personalized therapist recommendations. |
@@ -101,6 +101,49 @@ Two deliberate exceptions, both stored values rather than words on a page:
 - `.badge.grey` is still defined in both stylesheets as an alias of
   `.badge.gray`, so markup published before the switch still renders. New
   markup uses `.gray`.
+
+## The 100 free discovery tools
+
+`site/discover.html` hosts one hundred short, interactive self-discovery tools
+that every visitor can use, signed in or not. They are the free, open front
+door to the library: reflections, sorters, dials, card picks, guided writing,
+breathing timers, seven-day logs, a feelings wheel, plan builders, perspective
+cards, two-by-two grids, rankings, point budgets and week maps, across eighteen
+topics (anxiety, worry, racing thoughts, low mood, stress and burnout, sleep,
+relationships, boundaries, self-esteem, emotions, anger, grief and change,
+loneliness, focus, habits, values and meaning, work and school, calm and
+grounding).
+
+They deliberately live in the site rather than in the database:
+
+| File | What it holds |
+|---|---|
+| `site/assets/discover-tools.js` | The 100 tools as data. Each has a stable v5 UUID derived from its slug. |
+| `site/assets/discover.js` | The engine: renders each of the 16 interaction kinds, keeps state, writes the closing reflection. No imports, so it can be tested without Supabase. |
+| `site/assets/discover.css` | Layout for the interaction kinds. |
+| `site/discover.html` | The index (search and topic filter) and the tool page (`?slug=`). |
+
+Because they ship with the site, there is no `min_level` to check and nothing
+to unlock. `explore.html` merges them into the library under the **Free
+discovery tools** chip with `kind = 'discover'` and `min_level = 0`.
+
+What a visitor gets versus a member:
+
+| | Visitor | Registered member |
+|---|---|---|
+| Use all 100 tools | yes | yes |
+| Answers remembered | in this browser only (`localStorage`, key `tg.discover.<slug>`) | in this browser, plus Started / Completed in `item_progress` with `item_type = 'discover'` |
+| Favorite, save for later | no (the controls are not shown) | yes, via `favorites`, same as any other activity |
+| Shows on the dashboard | no dashboard | yes: favorites, saved for later, picked up but not finished |
+
+None of the tools diagnoses, screens for, or treats anything. Every result is
+framed as "what you noticed", the closing note points to a licensed
+professional, and `tests/discover-fixture/check.mjs` fails the build if the copy
+uses diagnostic language. See `tests/discover-fixture/README.md` for the checks.
+
+To add a tool, append an entry to `discover-tools.js`, give it an id with
+`uuid5(NAMESPACE_URL, 'https://theraglee.com/discover/<slug>')`, and run the
+check. Never change an id once it has shipped; members' favorites point at it.
 
 ## Content
 

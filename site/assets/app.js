@@ -160,6 +160,7 @@ export async function openPortal(btn) {
 const NAV = [
   ['Today',      'dashboard.html'],
   ['Explore',    'explore.html'],
+  ['Discover',   'discover.html'],
   ['Challenges', 'challenges.html'],
   ['Journal',    'journal.html'],
   ['Articles',   'articles.html'],
@@ -263,7 +264,8 @@ function footer() {
           therapists when you want more support.</p>
       </div>
       <div><h4>Explore</h4>
-        <a href="explore.html">Library</a><a href="challenges.html">Challenges</a>
+        <a href="explore.html">Library</a><a href="discover.html">Free discovery tools</a>
+        <a href="challenges.html">Challenges</a>
         <a href="journal.html">Journal</a><a href="articles.html">Articles</a></div>
       <div><h4>Membership</h4>
         <a href="pricing.html">Membership plans</a><a href="login.html?mode=signup">Join free</a>

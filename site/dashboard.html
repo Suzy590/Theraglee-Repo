@@ -83,6 +83,7 @@
 <script type="module">
 import { chrome, sb, access, requireAuth, esc, tierName, toast, fmtDate } from './assets/app.js';
 import { library, isFavorite, favButton, statusBadge, bindLibrary } from './assets/library.js';
+import { TOOLS } from './assets/discover-tools.js';
 await chrome({ active:'dashboard.html' });
 const a = await requireAuth();
 if (a) {
@@ -169,6 +170,7 @@ if (ch?.length) {
 
 /* ---- favorites, saved for later, in progress ---- */
 const HREF = {
+  discover:  r => `discover.html?slug=${encodeURIComponent(r.slug)}`,
   quiz:      r => `quiz.html?slug=${encodeURIComponent(r.slug)}`,
   worksheet: r => `worksheet.html?slug=${encodeURIComponent(r.slug)}`,
   checklist: r => `checklist.html?slug=${encodeURIComponent(r.slug)}`,
@@ -176,7 +178,7 @@ const HREF = {
   article:   r => `article.html?slug=${encodeURIComponent(r.slug)}`,
   mandala:   r => `mandalas.html?slug=${encodeURIComponent(r.slug)}`,
 };
-const KIND = { quiz:'Quiz', worksheet:'Worksheet', checklist:'Checklist',
+const KIND = { discover:'Discovery tool', quiz:'Quiz', worksheet:'Worksheet', checklist:'Checklist',
                challenge:'Challenge', article:'Article', mandala:'Mandala' };
 
 async function paintLibrary() {
@@ -189,6 +191,8 @@ async function paintLibrary() {
 
   const { data: cat } = await sb.from('content_catalog').select('*');
   const byKey = new Map((cat || []).map(r => [r.kind + ':' + r.id, r]));
+  // The free discovery tools are not in the catalog table; they ship with the site.
+  for (const t of TOOLS) byKey.set('discover:' + t.id, { kind: 'discover', id: t.id, slug: t.slug, title: t.title });
 
   const tile = (k) => {
     const r = byKey.get(k);
@@ -224,6 +228,7 @@ paintLibrary();
 
 /* ---- quick links ---- */
 const quick = [
+  ['Free discovery tools', 'discover.html', 0],
   ['Journal', 'journal.html', 1],
   ['Checklists', 'explore.html?type=checklist', 1],
   ['Challenges', 'challenges.html', 1],
