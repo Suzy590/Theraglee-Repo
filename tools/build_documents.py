@@ -104,7 +104,11 @@ def rays(cls: str = "rays") -> str:
 
 
 def level_badge(min_level) -> str:
-    label = {0: "Free", 1: "Member", 2: "Premium"}.get(min_level)
+    # Names must match TIERS in site/assets/app.js, which is what a member
+    # actually reads on the site. Levels above 3 clamp to Premium, as
+    # tierName() does there.
+    label = {0: "Visitor", 1: "Free", 2: "Basic", 3: "Premium"}.get(
+        min(3, min_level) if isinstance(min_level, int) else min_level)
     return f'<span class="badge gray">{e(label)}</span>' if label else ""
 
 
