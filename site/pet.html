@@ -11,11 +11,26 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
 <link rel="stylesheet" href="assets/styles.css">
 <style>
-  .pet-art{display:flex;justify-content:center;margin-bottom:6px}
-  .pet-art svg{animation:pet-bob 3.4s ease-in-out infinite}
+  .pet-art{display:flex;justify-content:center;margin-bottom:2px}
+  .pet-art img{width:186px;height:auto;animation:pet-bob 3.4s ease-in-out infinite}
   @keyframes pet-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
-  @media (prefers-reduced-motion:reduce){.pet-art svg{animation:none}}
+  @media (prefers-reduced-motion:reduce){.pet-art img{animation:none}}
   .pet-lede{max-width:60ch;margin-left:auto;margin-right:auto}
+  .dl{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));margin-top:22px}
+  .dl .card{padding:22px;display:flex;flex-direction:column;gap:10px;text-align:left}
+  .dl .card.here{border-color:var(--lime-2);box-shadow:var(--shadow-2)}
+  .dl h3{margin:0;font-size:1.02rem}
+  .dl .meta{font-size:.84rem;color:var(--faint)}
+  .steps{counter-reset:s;list-style:none;padding:0;margin:10px 0 0;text-align:left}
+  .steps li{counter-increment:s;position:relative;padding-left:30px;margin:9px 0;font-size:.93rem;
+    color:var(--muted)}
+  .steps li::before{content:counter(s);position:absolute;left:0;top:0;width:20px;height:20px;
+    border-radius:50%;background:var(--soft);color:var(--green-deep);font-size:.75rem;font-weight:600;
+    display:flex;align-items:center;justify-content:center}
+  .doing{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-top:18px}
+  .doing .card{padding:18px}
+  .doing h3{font-size:.98rem;margin:0 0 6px}
+  .doing p{margin:0;font-size:.93rem}
 </style>
 </head>
 <body>
@@ -28,73 +43,93 @@ import { chrome } from './assets/app.js';
 const a = await chrome({ active:'dashboard.html' });
 const root = document.getElementById('root');
 
-/* The pet, drawn inline so it costs no extra request and follows the site's colors. */
-const ART = `
-  <div class="pet-art">
-    <svg viewBox="0 0 140 140" width="150" height="150" role="img"
-         aria-label="The Theraglee desktop pet: a small round companion with a leaf sprouting from its head">
-      <ellipse cx="70" cy="122" rx="34" ry="7" fill="var(--sand)"/>
-      <path d="M70 34 C70 24 76 16 86 13" fill="none" stroke="var(--green)" stroke-width="3" stroke-linecap="round"/>
-      <path d="M86 13c8-3 14 2 13 10c-1 7-9 10-15 6c-4-3-4-12 2-16z" fill="var(--lime)"/>
-      <path d="M70 32c22 0 38 17 38 40c0 24-17 40-38 40s-38-16-38-40c0-23 16-40 38-40z"
-            fill="var(--mist)" stroke="var(--green)" stroke-width="3"/>
-      <ellipse cx="49" cy="82" rx="7" ry="4.5" fill="var(--lime)" opacity=".55"/>
-      <ellipse cx="91" cy="82" rx="7" ry="4.5" fill="var(--lime)" opacity=".55"/>
-      <circle cx="57" cy="70" r="4.6" fill="var(--ink)"/>
-      <circle cx="83" cy="70" r="4.6" fill="var(--ink)"/>
-      <path d="M60 86q10 9 20 0" fill="none" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/>
-    </svg>
-  </div>`;
+/* Pip, drawn by the same code that draws him in the app. */
+const ART = `<div class="pet-art"><img src="assets/pip.png" width="261" height="222"
+  alt="Pip, a small round green cat with closed happy eyes and a curled tail"></div>`;
 
-/* Shown to everyone, so the page is worth landing on either way. */
+const MAC = { file:'downloads/Pip-mac.zip', size:'568 KB', needs:'macOS 12 or later' };
+const WIN = { file:'downloads/Pip-windows.zip', size:'8.9 MB', needs:'Windows 10 or 11, 64-bit' };
+
+const onMac = /Mac|iPhone|iPad/.test(navigator.platform || '') ||
+              /Mac OS X/.test(navigator.userAgent || '');
+
+const downloads = () => {
+  const mac = `<div class="card ${onMac?'here':''}">
+      <h3>For Mac</h3>
+      <span class="meta">${MAC.needs} · ${MAC.size}</span>
+      <a class="btn ${onMac?'':'ghost'}" href="${MAC.file}" download>Download for Mac</a>
+      <ol class="steps">
+        <li>Open the downloaded file, then drag <strong>Pip</strong> to your Applications folder.</li>
+        <li>Double-click Pip. The first time, macOS says it cannot check the app — that is
+            normal for small apps like this one, not a sign of a problem.</li>
+        <li>Open <strong>System Settings → Privacy &amp; Security</strong>, scroll down, and
+            click <strong>Open Anyway</strong>. You only do this once.</li>
+      </ol>
+    </div>`;
+  const win = `<div class="card ${onMac?'':'here'}">
+      <h3>For Windows</h3>
+      <span class="meta">${WIN.needs} · ${WIN.size}</span>
+      <a class="btn ${onMac?'ghost':''}" href="${WIN.file}" download>Download for Windows</a>
+      <ol class="steps">
+        <li>Open the downloaded file and drag <strong>Pip</strong> somewhere you will find it
+            again — your Desktop is fine.</li>
+        <li>Double-click Pip. Windows shows a blue "Windows protected your PC" box the first
+            time, because the app is small and new rather than because anything is wrong.</li>
+        <li>Click <strong>More info</strong>, then <strong>Run anyway</strong>. You only do
+            this once.</li>
+      </ol>
+    </div>`;
+  return `<div class="dl">${onMac ? mac + win : win + mac}</div>`;
+};
+
 const ABOUT = `
-  <h2 style="margin:38px 0 4px">What it does</h2>
+  <h2 style="margin:40px 0 4px">What Pip does</h2>
   <p class="muted" style="margin-top:0">A companion, not another thing to keep up with.</p>
-  <div class="grid g3" style="margin-top:18px">
-    <div class="card" style="padding:20px">
-      <h3 style="font-size:1rem;margin:0 0 6px">Sits quietly on your desktop</h3>
-      <p class="muted" style="margin:0;font-size:.94rem">It pads around the corner of your screen while
-        you work. No notifications, no streaks to keep alive, nothing to lose by ignoring it.</p></div>
-    <div class="card" style="padding:20px">
-      <h3 style="font-size:1rem;margin:0 0 6px">Nudges you to take a breath</h3>
-      <p class="muted" style="margin:0;font-size:.94rem">Now and then it stretches, yawns, or settles
-        down for a moment — a small cue to unclench your jaw and sit back.</p></div>
-    <div class="card" style="padding:20px">
-      <h3 style="font-size:1rem;margin:0 0 6px">Yours to keep</h3>
-      <p class="muted" style="margin:0;font-size:.94rem">Download it once and it runs on your own
-        computer. It does not read your journal, your quizzes, or anything else in your account.</p></div>
+  <div class="doing">
+    <div class="card"><h3>Lives at the edge of your screen</h3>
+      <p class="muted">Pip wanders along the bottom of your desktop, sits, dozes off, and
+        watches your cursor while you work. No notifications, no streaks to keep alive.</p></div>
+    <div class="card"><h3>Cat or dog, four colors</h3>
+      <p class="muted">Right-click Pip to switch between a cat and a dog and to pick a color.
+        Your choice is remembered.</p></div>
+    <div class="card"><h3>Play with it</h3>
+      <p class="muted">Click to pet it. Drag it around and let go. Double-click for zoomies —
+        a sprint, a somersault and a silent "Theragleeeeee!!!"</p></div>
+    <div class="card"><h3>Self-care nudges</h3>
+      <p class="muted">Switch on self-care mode and every 25 minutes or so Pip holds up a small
+        sign: drink water, or stretch. Off by default.</p></div>
+    <div class="card"><h3>Quiet by design</h3>
+      <p class="muted">Never steals focus from what you are typing, makes no sound at all,
+        and sits out of the way in the corner.</p></div>
+    <div class="card"><h3>Stays on your computer</h3>
+      <p class="muted">Pip has no internet access. It does not read your journal, your quizzes,
+        or anything else in your account.</p></div>
   </div>`;
 
 const memberView = () => `
   ${ART}
   <div class="center">
     <span class="badge live">Included with your membership</span>
-    <h1 style="margin:14px 0 10px">Your desktop pet</h1>
+    <h1 style="margin:14px 0 10px">Meet Pip, your desktop pet</h1>
     <p class="muted pet-lede">A small companion for the corner of your screen, for the days when a
-      little company helps.</p>
+      little company helps. Yours to download and keep.</p>
   </div>
-  <div class="card pad-lg center" style="margin-top:26px">
-    <h2 style="margin:0 0 10px">Still being built</h2>
-    <p class="muted pet-lede" style="margin:0">We are putting the finishing touches on it. It is already
-      part of your membership, so when the download is ready it will appear on this page — there is
-      nothing further to buy.</p>
-  </div>
+  ${downloads()}
   ${ABOUT}`;
 
 const upgradeView = () => `
   ${ART}
   <div class="center">
     <span class="badge lock">Basic membership</span>
-    <h1 style="margin:14px 0 10px">The desktop pet is part of Basic</h1>
+    <h1 style="margin:14px 0 10px">Pip comes with Basic</h1>
     <p class="muted pet-lede">A small companion for the corner of your screen, for the days when a
-      little company helps. It comes with <strong>Basic</strong> and with <strong>Premium</strong>.</p>
+      little company helps. Pip is included with <strong>Basic</strong> and with
+      <strong>Premium</strong>, for Mac and for Windows.</p>
   </div>
   <div class="card pad-lg center" style="margin-top:26px">
-    <h2 style="margin:0 0 10px">Upgrade to get it</h2>
-    <p class="muted pet-lede">Upgrade any time, and cancel just as easily.</p>
-    <p class="muted pet-lede" style="font-size:.92rem">One honest note before you do: the pet is still
-      being built, so it is not ready to download yet. Upgrading today gets you everything else in
-      Basic straight away, and the pet lands on this page when it is finished.</p>
+    <h2 style="margin:0 0 10px">Upgrade to bring Pip home</h2>
+    <p class="muted pet-lede">Upgrade any time, and cancel just as easily. You get Pip along with
+      the 62 quizzes, 17 worksheets and year-long challenges in Basic.</p>
     <div class="row" style="justify-content:center;margin-top:16px">
       <a class="btn lg" href="pricing.html">See membership options</a>
       <a class="btn ghost" href="dashboard.html">Back to Today</a>
