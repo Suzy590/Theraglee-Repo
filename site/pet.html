@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Desktop pet — Theraglee</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="assets/favicon.png" sizes="48x48">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  .pet-art{display:flex;justify-content:center;margin-bottom:6px}
+  .pet-art svg{animation:pet-bob 3.4s ease-in-out infinite}
+  @keyframes pet-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+  @media (prefers-reduced-motion:reduce){.pet-art svg{animation:none}}
+  .pet-lede{max-width:60ch;margin-left:auto;margin-right:auto}
+</style>
+</head>
+<body>
+<main class="section"><div class="wrap" id="root">
+  <div class="skeleton" style="height:240px"></div>
+</div></main>
+
+<script type="module">
+import { chrome } from './assets/app.js';
+const a = await chrome({ active:'dashboard.html' });
+const root = document.getElementById('root');
+
+/* The pet, drawn inline so it costs no extra request and follows the site's colors. */
+const ART = `
+  <div class="pet-art">
+    <svg viewBox="0 0 140 140" width="150" height="150" role="img"
+         aria-label="The Theraglee desktop pet: a small round companion with a leaf sprouting from its head">
+      <ellipse cx="70" cy="122" rx="34" ry="7" fill="var(--sand)"/>
+      <path d="M70 34 C70 24 76 16 86 13" fill="none" stroke="var(--green)" stroke-width="3" stroke-linecap="round"/>
+      <path d="M86 13c8-3 14 2 13 10c-1 7-9 10-15 6c-4-3-4-12 2-16z" fill="var(--lime)"/>
+      <path d="M70 32c22 0 38 17 38 40c0 24-17 40-38 40s-38-16-38-40c0-23 16-40 38-40z"
+            fill="var(--mist)" stroke="var(--green)" stroke-width="3"/>
+      <ellipse cx="49" cy="82" rx="7" ry="4.5" fill="var(--lime)" opacity=".55"/>
+      <ellipse cx="91" cy="82" rx="7" ry="4.5" fill="var(--lime)" opacity=".55"/>
+      <circle cx="57" cy="70" r="4.6" fill="var(--ink)"/>
+      <circle cx="83" cy="70" r="4.6" fill="var(--ink)"/>
+      <path d="M60 86q10 9 20 0" fill="none" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+  </div>`;
+
+/* Shown to everyone, so the page is worth landing on either way. */
+const ABOUT = `
+  <h2 style="margin:38px 0 4px">What it does</h2>
+  <p class="muted" style="margin-top:0">A companion, not another thing to keep up with.</p>
+  <div class="grid g3" style="margin-top:18px">
+    <div class="card" style="padding:20px">
+      <h3 style="font-size:1rem;margin:0 0 6px">Sits quietly on your desktop</h3>
+      <p class="muted" style="margin:0;font-size:.94rem">It pads around the corner of your screen while
+        you work. No notifications, no streaks to keep alive, nothing to lose by ignoring it.</p></div>
+    <div class="card" style="padding:20px">
+      <h3 style="font-size:1rem;margin:0 0 6px">Nudges you to take a breath</h3>
+      <p class="muted" style="margin:0;font-size:.94rem">Now and then it stretches, yawns, or settles
+        down for a moment — a small cue to unclench your jaw and sit back.</p></div>
+    <div class="card" style="padding:20px">
+      <h3 style="font-size:1rem;margin:0 0 6px">Yours to keep</h3>
+      <p class="muted" style="margin:0;font-size:.94rem">Download it once and it runs on your own
+        computer. It does not read your journal, your quizzes, or anything else in your account.</p></div>
+  </div>`;
+
+const memberView = () => `
+  ${ART}
+  <div class="center">
+    <span class="badge live">Included with your membership</span>
+    <h1 style="margin:14px 0 10px">Your desktop pet</h1>
+    <p class="muted pet-lede">A small companion for the corner of your screen, for the days when a
+      little company helps.</p>
+  </div>
+  <div class="card pad-lg center" style="margin-top:26px">
+    <h2 style="margin:0 0 10px">Still being built</h2>
+    <p class="muted pet-lede" style="margin:0">We are putting the finishing touches on it. It is already
+      part of your membership, so when the download is ready it will appear on this page — there is
+      nothing further to buy.</p>
+  </div>
+  ${ABOUT}`;
+
+const upgradeView = () => `
+  ${ART}
+  <div class="center">
+    <span class="badge lock">Basic membership</span>
+    <h1 style="margin:14px 0 10px">The desktop pet is part of Basic</h1>
+    <p class="muted pet-lede">A small companion for the corner of your screen, for the days when a
+      little company helps. It comes with <strong>Basic</strong> and with <strong>Premium</strong>.</p>
+  </div>
+  <div class="card pad-lg center" style="margin-top:26px">
+    <h2 style="margin:0 0 10px">Upgrade to get it</h2>
+    <p class="muted pet-lede">Upgrade any time, and cancel just as easily.</p>
+    <p class="muted pet-lede" style="font-size:.92rem">One honest note before you do: the pet is still
+      being built, so it is not ready to download yet. Upgrading today gets you everything else in
+      Basic straight away, and the pet lands on this page when it is finished.</p>
+    <div class="row" style="justify-content:center;margin-top:16px">
+      <a class="btn lg" href="pricing.html">See membership options</a>
+      <a class="btn ghost" href="dashboard.html">Back to Today</a>
+    </div>
+  </div>
+  ${ABOUT}`;
+
+root.innerHTML = a.level >= 2 ? memberView() : upgradeView();
+</script>
+</body>
+</html>
