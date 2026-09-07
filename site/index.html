@@ -61,7 +61,7 @@
   .free-plug ul{list-style:none;padding:0;margin:14px 0 18px}
   .free-plug li{padding:5px 0 5px 26px;position:relative;font-size:.95rem;color:var(--ink-2)}
   .free-plug li::before{content:"";position:absolute;left:2px;top:12px;width:13px;height:7px; border-left:2px solid var(--lime-2);border-bottom:2px solid var(--lime-2);transform:rotate(-45deg)}
-  .free-plug .btn{margin-top:auto;align-self:flex-start}
+  .free-plug-cta{margin-top:auto;display:flex;gap:12px;flex-wrap:wrap}
   .free-plug .fine{display:block;margin-top:12px;color:var(--faint);font-size:.85rem}
   @media(max-width:900px){
     .today-row{grid-template-columns:1fr}
@@ -142,7 +142,10 @@
             <li>Checklists with your progress tracked</li>
             <li>Let therapists reach out to you — only if you switch it on</li>
           </ul>
-          <a class="btn" href="login.html?mode=signup">Create my free account</a>
+          <div class="free-plug-cta">
+            <a class="btn" href="login.html?mode=signup">Create my free account</a>
+            <a class="btn ghost" href="explore.html">Browse the library</a>
+          </div>
           <small class="fine">Free forever. Upgrade only if a deeper tool becomes useful.</small>
         </aside>
       </div>
@@ -261,7 +264,6 @@ host.innerHTML = `
   </div>
   <div class="today-cta">
     <a class="btn sm" href="login.html?mode=signup">Want these in your inbox each day?</a>
-    <a class="btn sm ghost" href="explore.html">Browse the library</a>
   </div>`;
 </script>
 </body>
