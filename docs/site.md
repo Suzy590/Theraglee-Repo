@@ -28,7 +28,7 @@ by editing the page. Every piece of content carries a `min_level`:
 |---|---|---|
 | 0 | Visitor | No account. Browses therapists, articles, quotes, tips, fun facts, affirmations, and uses all 360 free discovery tools. |
 | 1 | Free | Registered, no card. Adds the progress dashboard with favorites, personalized daily content, the journal and its prompts, checklists with progress, 7-day challenges, articles by email every morning, and the switch that lets therapists reach out. |
-| 2 | Basic | Paid. Adds 62 quizzes, 17 worksheets, challenges up to 365 days, the downloadable desktop pet. |
+| 2 | Basic | Paid. Adds 62 quizzes, 17 worksheets, challenges up to 365 days, and Pip, the downloadable desktop pet. |
 | 3 | Premium | Paid. Adds goals, mood tracking, mandalas, playlists, resource map, personalized therapist recommendations. |
 
 A member can edit only their own profile details from the browser — name, zip,
@@ -234,6 +234,22 @@ The daily items are **placeholders written for launch**, because the
 "Daily Affirmations", "Daily Inspirational Quotes", "Daily Mental Health Tips"
 and "Daily Mental Health Fun Facts" folders were empty. Replace them with your
 own writing when you have it.
+
+## The desktop pet
+
+`site/pet.html` is where Basic and Premium members download **Pip**, a small
+desktop companion. Free members and signed-out visitors get an upgrade ask on
+the same page instead; the dashboard tile that leads there is flagged `ownGate`
+so it opens the page rather than jumping straight to the plans.
+
+The apps themselves are built from source in [`pet/`](../pet/README.md) — Swift
+for the Mac, C# for Windows — and the two downloads are checked into
+`site/downloads/`, which Vercel publishes with the rest of the site.
+
+Because `site/` is public, those two URLs are reachable by anyone who has them.
+The membership gate is a courtesy, not a lock. Making it a real one would mean
+serving the files from Supabase Storage behind a signed URL issued only to
+members at level 2 or above.
 
 ## Admin
 
