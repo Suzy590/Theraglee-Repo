@@ -52,6 +52,21 @@
   .today-list p.aff{font-family:var(--serif);font-style:italic;font-size:1.14rem;
     line-height:1.4;color:var(--green)}
   .today-cta{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:24px}
+  /* Two columns: today's card on the left, the free-membership plug on the right. */
+  .today-row{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:26px;align-items:start}
+  .today-row .today{max-width:none;margin:0}
+  .free-plug{background:var(--paper);border:1px solid var(--hair);border-radius:var(--r-lg);
+    padding:30px;box-shadow:var(--shadow-2)}
+  .free-plug h2{margin:14px 0 8px;font-size:1.55rem;line-height:1.2}
+  .free-plug ul{list-style:none;padding:0;margin:18px 0 22px}
+  .free-plug li{padding:7px 0 7px 26px;position:relative;font-size:.95rem;color:var(--ink-2)}
+  .free-plug li::before{content:"";position:absolute;left:2px;top:14px;width:13px;height:7px; border-left:2px solid var(--lime-2);border-bottom:2px solid var(--lime-2);transform:rotate(-45deg)}
+  .free-plug .fine{display:block;margin-top:12px;color:var(--faint);font-size:.85rem}
+  @media(max-width:900px){
+    .today-row{grid-template-columns:1fr}
+    .today-row .today{max-width:640px;margin:0 auto}
+    .free-plug{max-width:640px;margin:0 auto}
+  }
   .feature{display:flex;gap:14px;align-items:flex-start}
   .feature .ico{flex:0 0 40px;height:40px;border-radius:12px;background:var(--soft);
     display:grid;place-items:center;color:var(--green)}
@@ -105,12 +120,30 @@
 
   <section class="section tight">
     <div class="wrap">
-      <div class="today" id="today">
-        <div class="today-head">
-          <span class="badge">Today on Theraglee</span>
-          <span class="faint" id="today-date"></span>
+      <div class="today-row">
+        <div class="today" id="today">
+          <div class="today-head">
+            <span class="badge">Today on Theraglee</span>
+            <span class="faint" id="today-date"></span>
+          </div>
+          <div class="skeleton" style="height:96px"></div>
         </div>
-        <div class="skeleton" style="height:96px"></div>
+        <aside class="free-plug" aria-labelledby="free-plug-title">
+          <span class="badge live"><span class="dot"></span> Free membership — no card needed</span>
+          <h2 id="free-plug-title">Make today's card yours.</h2>
+          <p class="muted" style="margin:0">Registering is free and never asks for a card. It unlocks:</p>
+          <ul>
+            <li>A dashboard that tracks your progress</li>
+            <li>Favorites, kept in your dashboard</li>
+            <li>Journal prompts and a private journal</li>
+            <li>Mental health articles sent to your inbox</li>
+            <li>7-day mental health challenges</li>
+            <li>Checklists with your progress tracked</li>
+            <li>Let therapists reach out to you — only if you switch it on</li>
+          </ul>
+          <a class="btn" href="login.html?mode=signup">Create my free account</a>
+          <small class="fine">Free forever. Upgrade only if a deeper tool becomes useful.</small>
+        </aside>
       </div>
     </div>
   </section>
