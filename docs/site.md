@@ -31,6 +31,13 @@ by editing the page. Every piece of content carries a `min_level`:
 | 2 | Basic | Paid. Adds 62 quizzes, 17 worksheets, challenges up to 365 days. |
 | 3 | Premium | Paid. Adds goals, mood tracking, mandalas, playlists, resource map, personalized therapist recommendations. |
 
+A member can edit only their own profile details from the browser — name, zip,
+topics, the morning-email settings, onboarding, and the therapist reach-out
+switch. `tier`, `role`, the Stripe columns and the unsubscribe token are
+writable only by the service role (the Stripe webhook and the daily digest)
+and from the Supabase dashboard, so a member cannot promote themselves
+(`supabase/migrations/20260907090000_profiles_member_column_guard.sql`).
+
 Therapist membership is separate and not tiered — one flat level, gated on
 license verification *and* an active subscription. It includes:
 
