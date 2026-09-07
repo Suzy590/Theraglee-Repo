@@ -283,13 +283,16 @@ const quick = [
   ['Challenges', 'challenges.html', 1],
   ['Quizzes', 'explore.html?type=quiz', 2],
   ['Worksheets', 'explore.html?type=worksheet', 2],
+  ['Desktop pet', 'pet.html', 2, true],
   ['Goals & tracking', 'goals.html', 3],
   ['Mandalas', 'mandalas.html', 3],
   ['Find a therapist', 'therapists.html', 0],
 ];
-document.getElementById('quick').innerHTML = quick.map(([label, href, need]) => {
+/* A tile flagged `ownGate` opens its page even when locked, because that page makes its
+   own upgrade ask. Every other locked tile goes straight to the plans. */
+document.getElementById('quick').innerHTML = quick.map(([label, href, need, ownGate]) => {
   const locked = a.level < need;
-  return `<a class="tile ${locked?'locked':''}" href="${locked?'pricing.html':href}">
+  return `<a class="tile ${locked?'locked':''}" href="${locked && !ownGate ? 'pricing.html' : href}">
     <h3 style="font-size:.98rem">${esc(label)}</h3>
     ${locked ? `<span class="badge lock">${tierName(need)}</span>` : '<span class="meta">Open</span>'}</a>`;
 }).join('');

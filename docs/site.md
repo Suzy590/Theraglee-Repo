@@ -28,7 +28,7 @@ by editing the page. Every piece of content carries a `min_level`:
 |---|---|---|
 | 0 | Visitor | No account. Browses therapists, articles, quotes, tips, fun facts, affirmations, and uses all 360 free discovery tools. |
 | 1 | Free | Registered, no card. Adds the progress dashboard with favorites, personalized daily content, the journal and its prompts, checklists with progress, 7-day challenges, articles by email every morning, and the switch that lets therapists reach out. |
-| 2 | Basic | Paid. Adds 62 quizzes, 17 worksheets, challenges up to 365 days. |
+| 2 | Basic | Paid. Adds 62 quizzes, 17 worksheets, challenges up to 365 days, the downloadable desktop pet. |
 | 3 | Premium | Paid. Adds goals, mood tracking, mandalas, playlists, resource map, personalized therapist recommendations. |
 
 A member can edit only their own profile details from the browser — name, zip,
