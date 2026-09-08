@@ -120,10 +120,12 @@
 </main>
 
 <script type="module">
-import { chrome, sb, access, startCheckout, esc, qs, toast } from './assets/app.js';
+import { chrome, sb, access, startCheckout, esc, qs, toast,
+         contentCounts, counted, suffixCount } from './assets/app.js';
 const a = await chrome({ active:'pricing.html' });
 
-const { data: cfgRows } = await sb.from('app_config').select('key,value');
+const [{ data: cfgRows }, c] = await Promise.all([
+  sb.from('app_config').select('key,value'), contentCounts()]);
 const cfg = Object.fromEntries((cfgRows||[]).map(r=>[r.key,r.value]));
 const live = cfg.stripe_enabled === 'true';
 const money = k => cfg['display_'+k] || '—';
@@ -144,7 +146,8 @@ const PLANS = [
            ['Toggle on/off button on dashboard allowing therapists to reach out to YOU',1]] },
   { key:'basic', name:'Basic', featured:true, price:()=>'$'+money('basic_'+cycle), sub:'per '+(cycle==='monthly'?'month':'year'),
     cta:{plan:'basic'},
-    feats:[['Everything in Free',1],['62 self-assessment quizzes',1],['16 interactive worksheets',1],
+    feats:[['Everything in Free',1],[counted(c.quiz,'self-assessment quizzes','Self-assessment quizzes'),1],
+           [counted(c.worksheet,'interactive worksheets','Interactive worksheets'),1],
            ['Design challenges up to 365 days',1],['Downloadable desktop pet',1],
            ['Goal & mood tracking',0],['Printable mandalas',0]] },
   { key:'premium', name:'Premium', price:()=>'$'+money('premium_'+cycle), sub:'per '+(cycle==='monthly'?'month':'year'),
@@ -167,8 +170,8 @@ const COMPARE = [
   ['7-day mental health challenges', 1],
   ['Checklists with progress tracked', 1],
   ['Dashboard toggle: let therapists reach out to you', 1],
-  ['Self-assessment quizzes (62)', 2],
-  ['Interactive worksheets (16)', 2],
+  [suffixCount('Self-assessment quizzes', c.quiz), 2],
+  [suffixCount('Interactive worksheets', c.worksheet), 2],
   ['Custom challenges up to 365 days', 2],
   ['Downloadable desktop pet', 2],
   ['Goal setting & progress tracking', 3],

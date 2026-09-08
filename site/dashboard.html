@@ -105,11 +105,13 @@
 </main>
 
 <script type="module">
-import { chrome, sb, access, requireAuth, esc, tierName, toast, fmtDate } from './assets/app.js';
+import { chrome, sb, access, requireAuth, esc, tierName, toast, fmtDate,
+         contentCounts, counted } from './assets/app.js';
 import { library, isFavorite, favButton, statusBadge, bindLibrary } from './assets/library.js';
 import { TOOLS } from './assets/discover-tools.js';
 await chrome({ active:'dashboard.html' });
 const a = await requireAuth();
+const c = await contentCounts();
 if (a) {
 
 const p = a.profile || {};
@@ -303,7 +305,7 @@ if (a.level < 3) {
   document.getElementById('upsell').innerHTML = `<div class="card pad-lg center">
     <h3>There's more in ${nextTier}</h3>
     <p class="muted">${a.level < 2
-      ? '62 quizzes, 16 worksheets, and challenges you design yourself — up to a full year.'
+      ? `${counted(c.quiz,'quizzes')}, ${counted(c.worksheet,'worksheets')}, and challenges you design yourself — up to a full year.`
       : 'Goal tracking, mood patterns, printable mandalas, playlists and the local resource map.'}</p>
     <a class="btn" href="pricing.html">Compare memberships</a></div>`;
 }

@@ -27,10 +27,12 @@
 
 <script type="module">
 import { chrome, sb, requireAuth, access, clearAccess, esc, toast, busy, qs,
-         fmtDate, tierName, openPortal, startCheckout, modal } from './assets/app.js';
+         fmtDate, tierName, openPortal, startCheckout, modal,
+         contentCounts, counted } from './assets/app.js';
 import { MEMBER_ISSUES } from './assets/lists.js';
 await chrome({ active:'account.html' });
 let a = await requireAuth();
+const c = await contentCounts();
 if (a) {
 const root = document.getElementById('root');
 let tab = location.hash.replace('#','') || 'membership';
@@ -86,7 +88,7 @@ function membership(){
       ${[['Progress dashboard',1],['Favorites in your dashboard',1],['Journal & prompts',1],
          ['Articles sent to your inbox',1],['7-day challenges',1],['Checklists with progress',1],
          ['Therapist reach-out switch',1],['Daily personalized content',1],
-         ['62 quizzes',2],['16 worksheets',2],['365-day custom challenges',2],
+         [counted(c.quiz,'quizzes','Quizzes'),2],[counted(c.worksheet,'worksheets','Worksheets'),2],['365-day custom challenges',2],
          ['Downloadable desktop pet',2],
          ['Goal & mood tracking',3],['Printable mandalas',3],['Resource map & playlists',3]]
         .map(([l,n])=>`<div class="card" style="padding:16px">

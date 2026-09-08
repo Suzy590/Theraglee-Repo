@@ -179,10 +179,10 @@
           <h3>7-day &amp; custom challenges</h3>
           <p class="muted">Start with a free week. Members design challenges up to a full year.</p></div></div>
         <div class="feature"><div class="ico">◎</div><div>
-          <h3>62 self-assessment quizzes</h3>
+          <h3 data-count="quiz">Self-assessment quizzes</h3>
           <p class="muted">Scored and explained — never diagnostic, always a starting point.</p></div></div>
         <div class="feature"><div class="ico">▤</div><div>
-          <h3>16 interactive worksheets</h3>
+          <h3 data-count="worksheet">Interactive worksheets</h3>
           <p class="muted">Thought records, values maps, self-compassion letters. Saved as you type.</p></div></div>
         <div class="feature"><div class="ico">♡</div><div>
           <h3>Goals, mood &amp; mandalas</h3>
@@ -226,8 +226,9 @@
 </main>
 
 <script type="module">
-import { chrome, sb, esc } from './assets/app.js';
+import { chrome, sb, esc, applyCounts } from './assets/app.js';
 await chrome();
+applyCounts();   // fills the quiz / worksheet counts in "What's inside"
 
 document.getElementById('today-date').textContent =
   new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
