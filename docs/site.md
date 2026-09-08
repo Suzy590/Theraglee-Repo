@@ -233,7 +233,7 @@ Most of it was imported from the Word documents in the parent folder:
 - 4 checklists
 - 3 challenges (two 30-day, one free 7-day)
 - 2 articles
-- 12 mandalas to print or color online (drawn in the browser from a seed)
+- 200 mandalas to print or color online (drawn in the browser from a seed)
 - 150 mental health trivia sets (1,500 questions), written for the site rather than imported
 - 140 daily items — affirmations, tips, fun facts, quotes
 
@@ -327,8 +327,9 @@ check. Never change an id once it has shipped.
 
 ## Mandalas: print or color online
 
-`site/mandalas.html` is the Premium coloring page. The gallery shows the 12
-mandalas from the `mandalas` table; each card has **Color online** (opens
+`site/mandalas.html` is the Premium coloring page. The gallery shows the 200
+mandalas from the `mandalas` table (12 from launch, 188 added in
+`20260909000000_more_mandalas.sql`); each card has **Color online** (opens
 `?slug=`) and **Print**, which prints that one figure blank on a single page.
 **Print all (blank)** prints the whole set, one per page.
 
