@@ -200,7 +200,11 @@ function render(){
   }).join('');
 
   document.querySelectorAll('[data-plan]').forEach(b=>b.addEventListener('click',()=>{
-    if(!live){ toast('Payments are not switched on yet — see the admin screen.','err'); return; }
+    // Admins can test a checkout before payments are switched on; the server
+    // applies the same exception, and everyone else is still turned away.
+    if(!live && a.profile?.role !== 'admin'){
+      toast('Payments are not switched on yet — see the admin screen.','err'); return;
+    }
     startCheckout(b.dataset.plan, cycle, b);
   }));
 
