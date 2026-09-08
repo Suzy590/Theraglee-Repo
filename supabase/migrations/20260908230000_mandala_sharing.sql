@@ -21,6 +21,8 @@ comment on column public.mandala_colorings.share_token is
 
 -- Mint (or return the existing) share token for one of the caller's colorings.
 -- Runs as the caller, so the update policy (own row, Premium) applies.
+-- pgcrypto lives in the extensions schema on Supabase, and this function pins
+-- search_path to public, so gen_random_bytes is named with its schema.
 create or replace function public.share_mandala_coloring(p_mandala_id uuid)
 returns text
 language sql
@@ -28,7 +30,7 @@ security invoker
 set search_path = public
 as $$
   update public.mandala_colorings
-     set share_token = coalesce(share_token, encode(gen_random_bytes(12), 'hex'))
+     set share_token = coalesce(share_token, encode(extensions.gen_random_bytes(12), 'hex'))
    where user_id = auth.uid() and mandala_id = p_mandala_id
   returning share_token;
 $$;
