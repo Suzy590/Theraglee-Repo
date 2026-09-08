@@ -92,7 +92,8 @@ async function verify(){
               · <a href="${esc(lookupUrl(t))}" target="_blank" rel="noopener">Open the board lookup ↗</a></p>
           </div>
           <span class="badge ${t.verification==='verified'?'':'gray'}">
-            ${esc(t.verification)}${t.published?' · live':''}</span>
+            ${esc(t.verification)}${t.identity_status && t.identity_status!=='unverified'
+              ? ' · ID ' + esc(t.identity_status.replace('_',' ')) : ''}${t.published?' · live':''}</span>
         </div>
         ${t.bio?`<p class="muted" style="font-size:.92rem;margin-top:10px">${esc(String(t.bio).slice(0,240))}</p>`:''}
         <p class="faint" style="margin:8px 0">Private contact: ${esc(t.contact_email||'—')}
@@ -226,6 +227,14 @@ async function billing(){
   const row = (k,label,ph) => `<div class="kvrow">
     <label for="${k}" style="margin:0">${label}</label>
     <input id="${k}" value="${esc(cfg[k]||'')}" placeholder="${ph}"></div>`;
+  const toggle = (k,label,help) => `
+    <label style="display:flex;gap:12px;align-items:center;padding:16px;
+      border:1px solid var(--hair);border-radius:var(--r-sm);background:var(--paper)">
+      <input type="checkbox" class="cfgtoggle" id="${k}" ${cfg[k]==='true'?'checked':''}
+        style="width:20px;height:20px;accent-color:var(--green);flex:none">
+      <span><strong>${label}</strong><br>
+        <span class="muted">${help}</span></span>
+    </label>`;
 
   render(`
     <h2>Stripe price IDs</h2>
@@ -246,14 +255,21 @@ async function billing(){
     ${row('display_therapist_monthly','Therapist — monthly','29')}
     ${row('display_therapist_yearly','Therapist — yearly','290')}
 
+    <h2 style="margin-top:34px">Session payments (Stripe Connect)</h2>
+    ${row('platform_fee_percent','Theraglee keeps (%)','10')}
+    ${row('platform_fee_min_cents','…but never less than (cents)','100')}
+
     <h2 style="margin-top:34px">Go live</h2>
-    <label style="display:flex;gap:12px;align-items:center;padding:16px;
-      border:1px solid var(--hair);border-radius:var(--r-sm);background:var(--paper)">
-      <input type="checkbox" id="stripe_enabled" ${cfg.stripe_enabled==='true'?'checked':''}
-        style="width:20px;height:20px;accent-color:var(--green)">
-      <span><strong>Accept payments</strong><br>
-        <span class="muted">Turn on once the keys are set in Supabase and the price IDs are filled in.</span></span>
-    </label>
+    <div class="stack">
+      ${toggle('stripe_enabled','Accept payments',
+        'Turn on once the keys are set in Supabase and the price IDs are filled in. Admins can test checkout before this is on.')}
+      ${toggle('stripe_tax_enabled','Collect sales tax with Stripe Tax',
+        'Turn on after Stripe Tax is set up in the Dashboard (origin address, registrations, and a tax code on each product). Checkout fails if this is on before that.')}
+      ${toggle('identity_required','Require the Stripe Identity check before a listing publishes',
+        'Turn on after Stripe Identity is activated on the account. Therapists see the check on their Membership tab either way.')}
+      ${toggle('connect_enabled','Let therapists take session payments (Stripe Connect)',
+        'Turn on after the Connect platform profile is complete and the Connect webhook is pointed at stripe-webhook.')}
+    </div>
 
     <div class="row" style="margin-top:24px">
       <button class="btn" id="savecfg">Save settings</button>
@@ -262,11 +278,14 @@ async function billing(){
 
     <div class="notice warn" style="margin-top:26px">
       <strong>Set outside this screen</strong>, under Supabase → Edge Functions → Secrets:
-      <code>STRIPE_SECRET_KEY</code>, <code>STRIPE_WEBHOOK_SECRET</code>, <code>SITE_URL</code>,
+      <code>STRIPE_SECRET_KEY</code>, <code>STRIPE_WEBHOOK_SECRET</code>,
+      <code>STRIPE_CONNECT_WEBHOOK_SECRET</code> (the second endpoint, for connected accounts),
+      <code>SITE_URL</code>,
       <code>RESEND_API_KEY</code> and <code>MAIL_FROM</code> for therapist messages, and
       <code>LICENSE_VERIFY_URL</code> / <code>LICENSE_VERIFY_API_KEY</code> if you sign up with a
-      license-verification service. Point a Stripe webhook at
+      license-verification service. Point both Stripe webhooks at
       <code>https://oekqzuguruyqkafsqhos.supabase.co/functions/v1/stripe-webhook</code>.
+      The step-by-step is in <code>docs/stripe.md</code> in the repository.
     </div>`);
 
   document.getElementById('savecfg').onclick = async (e) => {
@@ -274,8 +293,9 @@ async function billing(){
     for (const i of document.querySelectorAll('.kvrow input')) {
       await sb.rpc('admin_set_config', { p_key: i.id, p_value: i.value.trim() });
     }
-    await sb.rpc('admin_set_config', { p_key:'stripe_enabled',
-      p_value: document.getElementById('stripe_enabled').checked ? 'true' : 'false' });
+    for (const i of document.querySelectorAll('.cfgtoggle')) {
+      await sb.rpc('admin_set_config', { p_key: i.id, p_value: i.checked ? 'true' : 'false' });
+    }
     busy(e.target, false);
     document.getElementById('cfgstatus').textContent = 'Saved ' + new Date().toLocaleTimeString();
     toast('Settings saved.','ok');

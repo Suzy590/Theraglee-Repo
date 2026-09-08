@@ -117,43 +117,61 @@ export async function logActivity(item_type, item_id, action = 'view', tags = []
 }
 
 /* ------------------------------------------------------------- billing */
+/** POSTs to a Stripe Edge Function with the member's session attached.
+ *  Resolves to the function's JSON, or `{ error, message }` when unreachable. */
+export async function callStripeFn(name, body = {}) {
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    const res = await fetch(`${FN}/${name}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token ?? ''}` },
+      body: JSON.stringify({ return_url: location.origin, ...body }),
+    });
+    return await res.json();
+  } catch {
+    return { error: 'unreachable', message: 'Could not reach the billing service.' };
+  }
+}
+
+/** Sends the browser to a Stripe-hosted page; shows the message otherwise. */
+async function goStripe(name, body, btn, label, fallback) {
+  busy(btn, true, label);
+  const out = await callStripeFn(name, body);
+  if (out.url) { location.href = out.url; return out; }
+  busy(btn, false);
+  toast(out.message || fallback, 'err');
+  return out;
+}
+
 export async function startCheckout(plan, interval, btn) {
   const a = await access();
   if (!a.authenticated) {
     location.href = `login.html?next=${encodeURIComponent('pricing.html')}&plan=${plan}`;
     return;
   }
-  busy(btn, true, 'Opening checkout…');
-  try {
-    const { data: { session } } = await sb.auth.getSession();
-    const res = await fetch(`${FN}/stripe-checkout`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token ?? ''}` },
-      body: JSON.stringify({ plan, interval, return_url: location.origin }),
-    });
-    const out = await res.json();
-    if (out.url) { location.href = out.url; return; }
-    toast(out.message || 'Could not start checkout.', 'err');
-  } catch (e) {
-    toast('Could not reach the billing service.', 'err');
-  }
-  busy(btn, false);
+  // A member who already subscribes is sent to the billing portal to switch
+  // plan, so nobody ends up paying for two memberships at once.
+  await goStripe('stripe-checkout', { plan, interval }, btn, 'Opening checkout…', 'Could not start checkout.');
 }
 
 export async function openPortal(btn) {
-  busy(btn, true, 'Opening…');
-  try {
-    const { data: { session } } = await sb.auth.getSession();
-    const res = await fetch(`${FN}/stripe-portal`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token ?? ''}` },
-      body: JSON.stringify({ return_url: location.origin }),
-    });
-    const out = await res.json();
-    if (out.url) { location.href = out.url; return; }
-    toast(out.message || 'Billing portal unavailable.', 'err');
-  } catch { toast('Could not reach the billing service.', 'err'); }
-  busy(btn, false);
+  await goStripe('stripe-portal', {}, btn, 'Opening…', 'Billing portal unavailable.');
+}
+
+/** Therapist: Stripe Identity (government ID + selfie) before publishing. */
+export async function startIdentity(btn) {
+  return goStripe('stripe-identity', { action: 'start' }, btn, 'Opening ID check…', 'Could not start the ID check.');
+}
+
+/** Therapist: Stripe Connect payouts. `action` is onboard | dashboard. */
+export async function connectAction(action, btn) {
+  const label = action === 'dashboard' ? 'Opening payouts…' : 'Opening setup…';
+  return goStripe('stripe-connect', { action }, btn, label, 'Could not open the payouts setup.');
+}
+
+/** Visitor or member: pay a therapist for a session. */
+export async function startSessionPayment(therapistId, btn) {
+  return goStripe('stripe-session-checkout', { therapist_id: therapistId }, btn, 'Opening payment…', 'Could not start the payment.');
 }
 
 /* ---------------------------------------------------------------- chrome */

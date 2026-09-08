@@ -34,7 +34,7 @@
 </div></main>
 
 <script type="module">
-import { chrome, sb, esc, qs, access, toast, busy, modal, FN } from './assets/app.js';
+import { chrome, sb, esc, qs, access, toast, busy, modal, FN, startSessionPayment } from './assets/app.js';
 const a = await chrome({ active:'therapists.html' });
 const root = document.getElementById('root');
 const slug = qs('slug');
@@ -101,9 +101,14 @@ if (!t) {
           <p class="faint" style="margin:0 0 14px">Connects you straight through</p>` : ''}
         <div class="stack">
           ${t.accepts_messages ? `<button class="btn block" id="email">Send a message</button>` : ''}
+          ${t.accepts_payments && t.session_fee_cents
+            ? `<button class="btn ghost block" id="pay">Pay for a session · $${(t.session_fee_cents/100).toFixed(0)}</button>` : ''}
           ${t.website ? `<button class="btn ghost block" id="site">Visit website</button>` : ''}
           <button class="btn ghost block" id="share">Share this profile</button>
         </div>
+        ${t.accepts_payments && t.session_fee_cents ? `
+        <p class="faint" style="margin:12px 0 0;font-size:.8rem">
+          Payment goes to ${esc(t.first_name)} through Stripe. Book the time with them directly.</p>` : ''}
         <p class="faint" style="margin:16px 0 0;font-size:.8rem">
           Messages go through Theraglee, so their direct line and inbox stay private
           until they choose to share them.</p>
@@ -111,6 +116,17 @@ if (!t) {
     </div>`;
 
   document.getElementById('call')?.addEventListener('click', () => log('call'));
+  document.getElementById('pay')?.addEventListener('click', (e) => {
+    log('payment_started');
+    startSessionPayment(t.id, e.target);
+  });
+  if (qs('payment') === 'success') {
+    toast(`Payment sent to ${t.first_name}. They will be in touch to arrange the session.`, 'ok');
+    history.replaceState({}, '', `therapist.html?slug=${encodeURIComponent(slug)}`);
+  } else if (qs('payment') === 'canceled') {
+    toast('Payment canceled — nothing was charged.');
+    history.replaceState({}, '', `therapist.html?slug=${encodeURIComponent(slug)}`);
+  }
   document.getElementById('site')?.addEventListener('click', () => {
     log('website_click');
     const u = /^https?:/i.test(t.website) ? t.website : 'https://' + t.website;

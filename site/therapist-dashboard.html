@@ -46,7 +46,8 @@
 
 <script type="module">
 import { chrome, sb, requireAuth, access, clearAccess, esc, toast, busy, fmtDate,
-         modal, openPortal, startCheckout, FN, qs } from './assets/app.js';
+         modal, openPortal, startCheckout, startIdentity, connectAction, callStripeFn,
+         FN, qs } from './assets/app.js';
 import { SPECIALTIES, MODALITIES, INSURANCES, AGE_RANGES, PARTICIPANTS,
          LANGUAGES, CREDENTIALS, STATES } from './assets/lists.js';
 await chrome();
@@ -64,6 +65,25 @@ if (a.profile.role !== 'therapist') {
 let T = a.therapist || null;
 let tab = location.hash.replace('#','') || (T ? 'referrals' : 'profile');
 let unread = 0;
+
+// Back from Stripe (membership checkout, the ID check, or payouts setup):
+// bring what we know up to date before drawing anything.
+if (qs('checkout') || qs('identity') || qs('connect')) {
+  if (qs('checkout') === 'success') {
+    toast('Payment received — welcome aboard. It can take a moment to appear.', 'ok');
+    await new Promise(r => setTimeout(r, 2500));
+  }
+  if (qs('identity')) await callStripeFn('stripe-identity', { action: 'status' });
+  if (qs('connect') === 'return') await callStripeFn('stripe-connect', { action: 'status' });
+  if (qs('connect') === 'refresh') {
+    // The onboarding link expired or was reused; Stripe asks us to make a new one.
+    const out = await callStripeFn('stripe-connect', { action: 'onboard' });
+    if (out.url) location.href = out.url;
+  }
+  clearAccess(); a = await access(true); T = a.therapist || T;
+  tab = 'membership';
+  history.replaceState({}, '', 'therapist-dashboard.html#membership');
+}
 
 const paid = ['active','trialing'].includes(a.profile.subscription_status);
 const liveListing = T?.verification === 'verified' && T?.published;
@@ -578,7 +598,8 @@ async function togglePublish(e){
   T = data;
   if (wanted && !T.published) {
     toast(!paid ? 'Publishing needs an active membership.'
-                : 'Publishing needs a verified license.', 'err');
+        : T.verification !== 'verified' ? 'Publishing needs a verified license.'
+        : 'Publishing needs a passed identity check — see the Membership tab.', 'err');
   } else {
     toast(T.published ? 'You are live in the directory.' : 'Unpublished.','ok');
   }
@@ -588,11 +609,24 @@ async function togglePublish(e){
 /* ------------------------------------------------------- membership */
 async function membership(){
   render('<div class="skeleton" style="height:140px"></div>');
-  const { data: checks } = T
-    ? await sb.from('license_verifications').select('*')
-        .eq('therapist_id', T.id).order('checked_at', { ascending:false }).limit(5)
-    : { data: [] };
+  const [{ data: checks }, { data: cfgRows }] = await Promise.all([
+    T ? sb.from('license_verifications').select('*')
+          .eq('therapist_id', T.id).order('checked_at', { ascending:false }).limit(5)
+      : Promise.resolve({ data: [] }),
+    sb.from('app_config').select('key,value')
+      .in('key', ['identity_required','connect_enabled','platform_fee_percent']),
+  ]);
+  const cfg = Object.fromEntries((cfgRows||[]).map(r=>[r.key,r.value]));
   const p = a.profile;
+
+  const idStatus = T?.identity_status || 'unverified';
+  const idLabel = { unverified:'Not started', pending:'Being checked', verified:'Verified',
+                    requires_input:'Needs another try', canceled:'Canceled' }[idStatus] || idStatus;
+  const acct = T?.stripe_account_status || 'none';
+  const acctLabel = { none:'Not set up', onboarding:'Setup not finished',
+                      enabled:'Ready for payouts', restricted:'Needs attention' }[acct] || acct;
+  const connectOn = cfg.connect_enabled === 'true';
+  const feeDollars = T?.session_fee_cents ? String(Math.round(T.session_fee_cents / 100)) : '';
 
   render(`
     <h2>Therapist membership</h2>
@@ -609,6 +643,60 @@ async function membership(){
       </div>
     </div>
 
+    ${T ? `
+    <h3 style="margin-top:32px">Identity check</h3>
+    <div class="card">
+      <div class="spread">
+        <div><strong>${esc(idLabel)}</strong><br>
+          <span class="muted">${
+            idStatus==='verified'
+              ? `Confirmed${T.identity_verified_at ? ' on ' + fmtDate(T.identity_verified_at) : ''} with a government ID and a selfie, through Stripe Identity.`
+            : idStatus==='pending'
+              ? 'Stripe is checking your document. This usually takes a few minutes.'
+            : idStatus==='requires_input'
+              ? esc(T.identity_last_error || 'The last attempt could not be confirmed. You can try again.')
+            : 'A quick photo of your government ID and a selfie, handled by Stripe. Theraglee never sees the document itself.'}</span></div>
+        ${idStatus!=='verified' && idStatus!=='pending'
+          ? `<button class="btn ghost" id="idv">${idStatus==='requires_input'?'Try again':'Verify my identity'}</button>` : ''}
+      </div>
+    </div>
+    ${cfg.identity_required==='true'
+      ? `<p class="faint" style="margin-top:10px">Listings publish only after this check passes.</p>` : ''}
+
+    ${connectOn ? `
+    <h3 style="margin-top:32px">Get paid through Theraglee</h3>
+    <div class="card">
+      <div class="spread">
+        <div><strong>${esc(acctLabel)}</strong><br>
+          <span class="muted">${
+            acct==='enabled'    ? 'Clients can pay you for sessions from your profile. Payouts go to your own bank account.'
+          : acct==='restricted' ? 'Stripe needs more information before payouts can continue.'
+          : acct==='onboarding' ? 'Pick up where you left off to finish setting up payouts.'
+          : T.verification==='verified'
+              ? `Take session payments from your profile. Theraglee keeps ${esc(cfg.platform_fee_percent||'10')}% and Stripe pays the rest to your bank.`
+              : 'Opens once your license is verified.'}</span></div>
+        <div class="row">
+          ${acct==='enabled' || acct==='restricted'
+            ? `<button class="btn ghost" id="payouts">Payouts dashboard</button>` : ''}
+          ${acct==='restricted'
+            ? `<button class="btn" id="connect">Update details</button>`
+          : acct!=='enabled' && T.verification==='verified'
+            ? `<button class="btn" id="connect">${acct==='none'?'Set up payouts':'Continue setup'}</button>` : ''}
+        </div>
+      </div>
+      ${acct==='enabled' ? `
+      <form id="feeform" class="row" style="margin-top:18px;align-items:flex-end;gap:14px;flex-wrap:wrap">
+        <div class="field" style="margin:0"><label for="fee">Session price (USD)</label>
+          <input id="fee" type="number" min="5" max="1000" step="1" value="${esc(feeDollars)}"
+                 style="width:140px" placeholder="120"></div>
+        <label style="display:flex;gap:8px;align-items:center;margin:0 0 10px">
+          <input type="checkbox" id="acc" ${T.accepts_payments?'checked':''}>
+          Show “Pay for a session” on my profile</label>
+        <button class="btn ghost" type="submit" style="margin-bottom:4px">Save</button>
+      </form>` : ''}
+    </div>` : ''}
+    ` : ''}
+
     <h3 style="margin-top:32px">License verification</h3>
     ${(checks||[]).length ? `<div class="scroll-x"><table class="data">
       <thead><tr><th>Checked</th><th>Result</th><th>How</th><th>Board</th><th>Expires</th></tr></thead>
@@ -624,12 +712,32 @@ async function membership(){
 
     <div class="notice" style="margin-top:24px">
       A listing appears in the directory only while the license is verified and current
-      <em>and</em> the membership is active. If either lapses, the profile comes down
-      automatically.
+      <em>and</em> the membership is active${cfg.identity_required==='true'
+        ? ' <em>and</em> the identity check has passed' : ''}. If any of those lapses, the
+      profile comes down automatically.
     </div>`);
 
   document.getElementById('portal')?.addEventListener('click', e => openPortal(e.target));
   document.getElementById('sub')?.addEventListener('click', e => startCheckout('therapist','monthly',e.target));
+  document.getElementById('idv')?.addEventListener('click', e => startIdentity(e.target));
+  document.getElementById('connect')?.addEventListener('click', e => connectAction('onboard', e.target));
+  document.getElementById('payouts')?.addEventListener('click', e => connectAction('dashboard', e.target));
+  document.getElementById('feeform')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const dollars = Number(document.getElementById('fee').value);
+    const accepts = document.getElementById('acc').checked;
+    if (accepts && !(dollars >= 5 && dollars <= 1000)) {
+      return toast('Enter a session price between $5 and $1,000.', 'err');
+    }
+    const btn = e.target.querySelector('button[type=submit]');
+    busy(btn, true, 'Saving…');
+    const { data, error } = await sb.from('therapist_profiles')
+      .update({ session_fee_cents: dollars ? Math.round(dollars * 100) : null, accepts_payments: accepts })
+      .eq('id', T.id).select().single();
+    busy(btn, false);
+    if (error) return toast(error.message, 'err');
+    T = data; toast('Saved.', 'ok'); membership();
+  });
 }
 
 root.addEventListener('click', (e) => {

@@ -45,3 +45,11 @@ it and commit the regenerated output.
 
 A push to the default branch deploys `site/` via Vercel, and every file in it is
 publicly readable. Documentation belongs in `docs/`, never in `site/`.
+
+## `supabase/` is the source of truth for the backend
+
+The Stripe Edge Functions live in `supabase/functions/` and their schema changes
+in `supabase/migrations/`. Change them here, run
+`node tests/billing-logic/check.mjs`, and deploy with the Supabase CLI — never
+edit a function in the Supabase Dashboard, or the next deploy will overwrite it.
+`docs/stripe.md` is the guide.
