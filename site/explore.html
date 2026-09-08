@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Library — Theraglee</title>
-<meta name="description" content="Browse every free discovery tool, quiz, worksheet, checklist, challenge and article on Theraglee.">
+<meta name="description" content="Browse every free discovery tool, quiz, worksheet, checklist, challenge, article and trivia set on Theraglee.">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="alternate icon" href="assets/favicon.png" sizes="48x48">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
@@ -33,6 +33,7 @@
         <button class="chip" data-t="challenge">Challenges</button>
         <button class="chip" data-t="article">Articles</button>
         <button class="chip" data-t="mandala">Mandalas</button>
+        <button class="chip" data-t="trivia">Trivia</button>
       </div>
       <div class="chips" id="tiers" style="margin-top:12px">
         <button class="chip on" data-l="">Any tier</button>
@@ -59,6 +60,7 @@ import { chrome, sb, access, esc, tierName, qs, unlockHref } from './assets/app.
 import { library, isFavorite, isLater, favButton, statusBadge,
          bindLibrary, progressOf } from './assets/library.js';
 import { TOOLS } from './assets/discover-tools.js';
+import { SETS as TRIVIA } from './assets/trivia-sets.js';
 const a = await chrome({ active:'explore.html' });
 
 const HREF = {
@@ -69,9 +71,10 @@ const HREF = {
   challenge: r => `challenges.html?template=${encodeURIComponent(r.slug)}`,
   article:   r => `article.html?slug=${encodeURIComponent(r.slug)}`,
   mandala:   r => `mandalas.html?slug=${encodeURIComponent(r.slug)}`,
+  trivia:    r => `trivia.html?slug=${encodeURIComponent(r.slug)}`,
 };
 const LABEL = { discover:'Discovery tool', quiz:'Quiz', worksheet:'Worksheet', checklist:'Checklist',
-                challenge:'Challenge', article:'Article', mandala:'Mandala' };
+                challenge:'Challenge', article:'Article', mandala:'Mandala', trivia:'Trivia' };
 
 // The 360 discovery tools live in the site itself (assets/discover-tools.js),
 // not in the database, so they are free for every visitor. They are shaped like
@@ -81,11 +84,18 @@ const discoverRows = TOOLS.map(t => ({
   category: t.topic, tags: t.tags, min_level: 0,
 }));
 
+// The 150 trivia sets ship with the site too (assets/trivia-sets.js). They are
+// Premium, so they carry min_level 3 and lock like any catalog row.
+const triviaRows = TRIVIA.map(t => ({
+  kind: 'trivia', id: t.id, slug: t.slug, title: t.title, description: t.description,
+  category: t.topic, tags: t.tags, min_level: 3,
+}));
+
 const { data: rows, error } = await sb.from('content_catalog').select('*');
 const lib = await library();
 if (lib.authenticated) document.getElementById('views').classList.remove('hide');
 if (error) console.error(error);
-const all = [...discoverRows, ...(rows || [])];
+const all = [...discoverRows, ...(rows || []), ...triviaRows];
 
 let type = qs('type','') , term = '', onlyMine = false, view = qs('view','');
 if (view) document.querySelector(`#views .chip[data-v="${view}"]`)?.classList.add('on');

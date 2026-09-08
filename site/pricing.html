@@ -122,6 +122,7 @@
 <script type="module">
 import { chrome, sb, access, startCheckout, esc, qs, toast,
          contentCounts, counted, suffixCount } from './assets/app.js';
+import { SETS as TRIVIA } from './assets/trivia-sets.js';
 const a = await chrome({ active:'pricing.html' });
 
 const [{ data: cfgRows }, c] = await Promise.all([
@@ -149,10 +150,11 @@ const PLANS = [
     feats:[['Everything in Free',1],[counted(c.quiz,'self-assessment quizzes','Self-assessment quizzes'),1],
            [counted(c.worksheet,'interactive worksheets','Interactive worksheets'),1],
            ['Design challenges up to 365 days',1],['Downloadable desktop pet',1],
-           ['Goal & mood tracking',0],['Printable mandalas',0]] },
+           ['Goal & mood tracking',0],['Mental health trivia',0]] },
   { key:'premium', name:'Premium', price:()=>'$'+money('premium_'+cycle), sub:'per '+(cycle==='monthly'?'month':'year'),
     cta:{plan:'premium'},
     feats:[['Everything in Basic',1],['Goal setting & progress tracking',1],['Mood tracking & patterns',1],
+           [`${TRIVIA.length} mental health trivia sets`,1],
            ['Printable mandalas',1],['Mood-based music playlists',1],['Local resource map',1],
            ['Personal therapist recommendations',1]] },
 ];
@@ -176,6 +178,7 @@ const COMPARE = [
   ['Downloadable desktop pet', 2],
   ['Goal setting & progress tracking', 3],
   ['Mood tracking & patterns', 3],
+  [suffixCount('Mental health trivia sets', TRIVIA.length), 3],
   ['Printable mandalas', 3],
   ['Mood-based music playlists', 3],
   ['Local mental health resource map', 3],
