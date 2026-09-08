@@ -161,7 +161,7 @@
   <section class="section band" id="inside">
     <div class="wrap">
       <div class="center" style="max-width:60ch;margin:0 auto 44px">
-        <h2>What's inside</h2>
+        <h2>Discover what's here for you</h2>
         <p class="muted">Everything is built around one idea: the smallest useful thing you can
           actually do today.</p>
       </div>
@@ -218,7 +218,7 @@
 
   <section class="section band" id="honest">
     <div class="wrap narrow center">
-      <h2>Honest about what this is</h2>
+      <h2>Honest about what Theraglee is</h2>
       <p class="muted">Theraglee is a set of supportive tools, not treatment. Nothing here
         diagnoses anything, and no quiz result is a clinical finding. If something in your life
         needs real care, the directory is there — and if you are in crisis, please call or text
@@ -231,7 +231,7 @@
 <script type="module">
 import { chrome, sb, esc, applyCounts } from './assets/app.js';
 await chrome();
-applyCounts();   // fills the quiz / worksheet counts in "What's inside"
+applyCounts();   // fills the quiz / worksheet counts in the #inside tiles
 
 document.getElementById('today-date').textContent =
   new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
