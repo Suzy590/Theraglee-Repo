@@ -28,7 +28,7 @@ by editing the page. Every piece of content carries a `min_level`:
 |---|---|---|
 | 0 | Visitor | No account. Browses therapists, articles, quotes, tips, fun facts, affirmations, and uses all 360 free discovery tools. |
 | 1 | Free | Registered, no card. Adds the progress dashboard with favorites, personalized daily content, the journal and its prompts, checklists with progress, 7-day challenges, articles by email every morning, and the switch that lets therapists reach out. |
-| 2 | Basic | Paid. Adds 62 quizzes, 17 worksheets, challenges up to 365 days, and Pip, the downloadable desktop pet. |
+| 2 | Basic | Paid. Adds 62 quizzes, 186 worksheets, challenges up to 365 days, and Pip, the downloadable desktop pet. |
 | 3 | Premium | Paid. Adds goals, mood tracking, 150 sets of mental health trivia, mandalas, playlists, resource map, personalized therapist recommendations. |
 
 A member can edit only their own profile details from the browser — name, zip,
@@ -225,11 +225,11 @@ check. Never change an id once it has shipped; members' favorites point at it.
 
 ## Content
 
-All of it was imported from the Word documents in the parent folder:
+Most of it was imported from the Word documents in the parent folder:
 
 - 62 self-assessment quizzes (253 questions, 247 result bands)
 - 374 journal prompts
-- 17 interactive worksheets
+- 186 interactive worksheets (16 imported, 170 written for the site — see below)
 - 4 checklists
 - 3 challenges (two 30-day, one free 7-day)
 - 2 articles
@@ -241,6 +241,36 @@ The daily items are **placeholders written for launch**, because the
 "Daily Affirmations", "Daily Inspirational Quotes", "Daily Mental Health Tips"
 and "Daily Mental Health Fun Facts" folders were empty. Replace them with your
 own writing when you have it.
+
+## Interactive worksheets (Basic)
+
+`site/worksheet.html` renders each worksheet from the `worksheets` table: a
+title, a short description, an intro paragraph, and a list of fields grouped
+under section headings. A field is a text box or a small table, and a signed-in
+member's answers save to `worksheet_responses` as they type. The page also
+prints cleanly.
+
+The library holds **186 worksheets** at `min_level = 2`. Sixteen were imported
+from the original Word documents; the other 170 were written for the site, ten
+in each of seventeen themes: anxiety and worry; stress and burnout; sleep and
+rest; self-esteem and shame; relationships and loneliness; boundaries and
+assertiveness; grief and loss; anger; grounding and feeling safe; habits and
+motivation; mindfulness; values and decisions; emotion regulation; CBT and
+thinking traps; work, money and life transitions; body, food and movement; and
+parenting, family and caregiving.
+
+The rows live in the database, and the repo copy is `data/worksheets.json`.
+The two are kept in step by hand: edit the JSON, run
+`node tests/worksheets-fixture/check.mjs`, regenerate `documents/`, then apply
+the SQL from `python3 tools/worksheets_sql.py <slug>` (an upsert on `slug`, so
+an edited worksheet keeps its id and every member's saved answers). The 170
+written for the site arrived in
+`supabase/migrations/20260908150000_worksheets_library.sql`, which was made the
+same way.
+
+Tags are a fixed vocabulary, listed in the check, so the library's filters stay
+tidy. Worksheets on grief, loss, trauma and panic end their intro with the
+988 line, and the check refuses one that does not.
 
 ## Mental health trivia (Premium)
 
