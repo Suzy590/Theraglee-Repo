@@ -14,6 +14,9 @@
 <link rel="stylesheet" href="assets/styles.css">
 <style>
   .hero{position:relative;overflow:hidden;padding:70px 0 90px;text-align:center}
+  /* The hero's outlined button gets a black border so it reads as a real button
+     against the rays; it stays black on hover instead of fading. */
+  .hero .btn.ghost,.hero .btn.ghost:hover{border-color:var(--ink)}
   .hero .glow{position:absolute;left:50%;bottom:-190px;transform:translateX(-50%);
     width:min(1500px,145vw);height:760px;pointer-events:none;
     background:radial-gradient(closest-side,rgba(141,198,29,.30),rgba(141,198,29,.09) 55%,rgba(141,198,29,0) 100%)}
@@ -179,7 +182,7 @@
           <h3>62 self-assessment quizzes</h3>
           <p class="muted">Scored and explained — never diagnostic, always a starting point.</p></div></div>
         <div class="feature"><div class="ico">▤</div><div>
-          <h3>17 interactive worksheets</h3>
+          <h3>16 interactive worksheets</h3>
           <p class="muted">Thought records, values maps, self-compassion letters. Saved as you type.</p></div></div>
         <div class="feature"><div class="ico">♡</div><div>
           <h3>Goals, mood &amp; mandalas</h3>
