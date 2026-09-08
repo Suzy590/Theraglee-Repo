@@ -343,6 +343,7 @@ shapes are the guide.
 | `site/assets/mandala.js` | Draws a figure from its `seed`. Every closed shape, including the band between two rings, is a region with a stable `data-i` index and a ring group in `data-g`. `colorable()` gives hand-drawn SVG in the `svg` column the same treatment. |
 | `site/assets/coloring.js` | The coloring itself: the palette, the tap handler, whole-ring fills, undo, PNG export. Works on any SVG whose shapes carry `.rg` and `data-i`. |
 | `supabase/migrations/20260908170000_mandala_colorings.sql` | The `mandala_colorings` table, so a half-finished coloring follows a member across devices. |
+| `supabase/migrations/20260908230000_mandala_sharing.sql` | `share_token` on `mandala_colorings` and the three sharing functions. |
 
 A coloring is a JSON object `{ "<region index>": "#rrggbb" }`. The page always
 keeps it in the browser (`localStorage`, key `tg.mandala.<slug>`) and, once the
@@ -351,6 +352,16 @@ newer is the one shown. Until the migration is applied the table read fails
 quietly and the browser copy is all there is. Started / Completed (all shapes
 colored) goes to `item_progress` with `item_type = 'mandala'`, and the favorite
 button works like every other activity.
+
+Sharing: **Share** on the coloring page mints a link,
+`mandalas.html?share=<token>`, that shows the colored figure to anyone, signed
+in or not, with nothing about who colored it. The token sits on the member's
+`mandala_colorings` row (`share_mandala_coloring()` mints or returns it,
+`unshare_mandala_coloring()` clears it, and every copy of the link stops
+working). `shared_mandala_coloring(token)` is the one public read: it runs as
+the definer, because the `mandalas` table is Premium-only, and returns only the
+title, the seed or SVG, and the fills. On phones the dialog also offers the
+browser's own share sheet with the picture attached.
 
 Because the figure is drawn from its seed, changing `mandala.js` changes what
 every member sees and can move the region indexes a saved coloring points at.

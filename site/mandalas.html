@@ -48,6 +48,8 @@
   .panel .btn.tool.on,.panel .btn.tool.on:hover{background:var(--green);color:#fff;border-color:var(--green)}
   .status{font-size:.82rem;color:var(--faint);margin:12px 0 0;min-height:1.4em}
   .hint{font-size:.88rem;color:var(--muted);margin:0 0 14px}
+  .share-link{margin-top:14px;min-height:2.6em}
+  .share-link input{font-size:.9rem}
 
   @media print{
     .sheet{display:block;page-break-after:always;padding:6vh 8vw}
@@ -67,7 +69,7 @@
 </div></main>
 
 <script type="module">
-import { chrome, sb, esc, qs, toast, lockNotice, logActivity } from './assets/app.js';
+import { chrome, sb, esc, qs, toast, modal, lockNotice, logActivity } from './assets/app.js';
 import { library, isFavorite, favButton, bindLibrary, setProgress } from './assets/library.js';
 import { mandala, colorable } from './assets/mandala.js';
 import { colorbook, paletteHtml } from './assets/coloring.js';
@@ -75,7 +77,7 @@ import { colorbook, paletteHtml } from './assets/coloring.js';
 const a = await chrome({ active:'explore.html' });
 const root = document.getElementById('root');
 
-const { data: rows } = await sb.from('mandalas').select('*').order('title');
+let rows = [];
 
 /* The figure for one row: hand-drawn SVG when there is one, otherwise the seed. */
 const figure = (m) => m.svg ? colorable(m.svg) : mandala(m.seed || 1, { title: m.title });
@@ -108,12 +110,18 @@ function applyFills(host, fills) {
   }
 }
 
-if (!rows || !rows.length) {
-  lockNotice(root, 3, 'Mandalas');
+const shareToken = qs('share');
+if (shareToken) {
+  await shared(shareToken);                     // a link anyone can open, signed in or not
 } else {
-  const single = qs('slug');
-  if (single) await studio(rows.find(r => r.slug === single));
-  else await gallery();
+  ({ data: rows } = await sb.from('mandalas').select('*').order('title'));
+  if (!rows || !rows.length) {
+    lockNotice(root, 3, 'Mandalas');
+  } else {
+    const single = qs('slug');
+    if (single) await studio(rows.find(r => r.slug === single));
+    else await gallery();
+  }
 }
 
 /* ================================================================ gallery */
@@ -199,6 +207,7 @@ async function studio(m) {
         <div class="tools">
           <button type="button" class="btn sm" id="print">Print</button>
           <button type="button" class="btn sm ghost" id="png">Save picture</button>
+          <button type="button" class="btn sm ghost" id="share">Share</button>
         </div>
         <p class="status" id="status"></p>
       </div>
@@ -231,13 +240,14 @@ async function studio(m) {
     timer = setTimeout(flush, 900);
   }
   async function flush() {
-    if (!pending || !a.authenticated) return;
+    if (!pending || !a.authenticated) return true;
     const { row, colored, total } = pending; pending = null;
     const { error } = await sb.from('mandala_colorings')
       .upsert({ user_id: a.profile.id, mandala_id: m.id, fills: row.fills, updated_at: row.updated_at },
               { onConflict: 'user_id,mandala_id' });
     if (error) console.debug('mandala_colorings', error.message);     // not applied yet: the browser copy stands
     setProgress('mandala', m.id, colored, total);
+    return !error;
   }
   window.addEventListener('pagehide', () => { if (pending) flush(); });
 
@@ -294,6 +304,98 @@ async function studio(m) {
     } catch { toast('Could not make the picture. Try Print instead.', 'err'); }
     btn.disabled = false;
   });
+  document.getElementById('share').addEventListener('click', () => shareDialog(m, book, flush));
+}
+
+/* ------------------------------------------------------------- sharing */
+/* Two ways out: a link that shows the coloring to anyone (kept on the
+   member's row, so it can be switched off), and the phone's own share sheet
+   with the picture attached where the browser offers one. */
+async function shareDialog(m, book, flush) {
+  const back = modal(`
+    <h2 style="margin-top:0">Share "${esc(m.title)}"</h2>
+    <p class="muted">Anyone with the link can see your coloring, not your name or account.
+      Turn the link off any time and every copy of it stops working.</p>
+    <div id="share-link" class="share-link muted">Making your link…</div>
+    <div class="row" style="margin-top:16px">
+      ${navigator.share ? '<button type="button" class="btn sm" id="share-native">Share picture…</button>' : ''}
+      <button type="button" class="btn sm ghost" id="share-close">Done</button>
+    </div>`);
+  back.querySelector('#share-close').addEventListener('click', () => back.remove());
+
+  const native = back.querySelector('#share-native');
+  if (native) native.addEventListener('click', async () => {
+    native.disabled = true;
+    try {
+      const blob = await book.toPNG();
+      const file = new File([blob], `theraglee-${m.slug}.png`, { type: 'image/png' });
+      const data = { title: `${m.title} — Theraglee`, text: `I colored "${m.title}" on Theraglee.` };
+      if (navigator.canShare?.({ files: [file] })) data.files = [file];
+      else if (linkUrl) data.url = linkUrl;
+      await navigator.share(data);
+    } catch (e) { if (e?.name !== 'AbortError') toast('Sharing did not go through.', 'err'); }
+    native.disabled = false;
+  });
+
+  // The link needs the coloring on the account first.
+  let linkUrl = null;
+  const host = back.querySelector('#share-link');
+  const saved = await flush();
+  const { data: token, error } = saved
+    ? await sb.rpc('share_mandala_coloring', { p_mandala_id: m.id })
+    : { data: null, error: { message: 'not saved' } };
+  if (error || !token) {
+    console.debug('share_mandala_coloring', error?.message);
+    host.innerHTML = `<p class="muted" style="margin:0">A link is not available right now.${
+      navigator.share ? ' You can still share the picture.' : ' Use Save picture and send the file instead.'}</p>`;
+    return;
+  }
+  linkUrl = `${location.origin}/mandalas.html?share=${token}`;
+  host.innerHTML = `
+    <div class="row">
+      <input type="text" readonly value="${esc(linkUrl)}" aria-label="Share link" style="flex:1 1 220px">
+      <button type="button" class="btn sm" id="share-copy">Copy link</button>
+    </div>
+    <button type="button" class="btn sm ghost danger" id="share-off" style="margin-top:10px">Turn the link off</button>`;
+  const input = host.querySelector('input');
+  input.addEventListener('focus', () => input.select());
+  host.querySelector('#share-copy').addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(linkUrl); toast('Link copied.', 'ok'); }
+    catch { input.select(); toast('Press Ctrl+C or Cmd+C to copy.'); }
+  });
+  host.querySelector('#share-off').addEventListener('click', async (e) => {
+    e.currentTarget.disabled = true;
+    const { error } = await sb.rpc('unshare_mandala_coloring', { p_mandala_id: m.id });
+    if (error) { toast('Could not turn the link off.', 'err'); e.currentTarget.disabled = false; return; }
+    linkUrl = null;
+    host.innerHTML = '<p class="muted" style="margin:0">The link is off. Open Share again to make a new one.</p>';
+    toast('Link turned off.', 'ok');
+  });
+}
+
+/* What a share link shows: the colored figure, nothing about who colored it. */
+async function shared(token) {
+  const { data, error } = await sb.rpc('shared_mandala_coloring', { p_token: token });
+  const m = data?.[0];
+  if (error || !m) {
+    root.innerHTML = `<div class="empty">This share link is not active any more.
+      <a href="mandalas.html">See the mandalas</a></div>`;
+    return;
+  }
+  document.title = `${m.title} — a colored mandala on Theraglee`;
+  root.innerHTML = `
+    <div class="no-print center">
+      <span class="badge">Shared coloring</span>
+      <h1 style="margin-top:14px">${esc(m.title)}</h1>
+      <p class="muted" style="max-width:52ch;margin-left:auto;margin-right:auto">A member colored this on
+        Theraglee. Coloring is a quiet, low-effort way to settle a busy head.</p>
+    </div>
+    <div class="sheet live board"><h2>${esc(m.title)}</h2>${figure(m)}</div>
+    <div class="no-print row" style="justify-content:center;margin-top:22px">
+      <a class="btn" href="mandalas.html">Color your own</a>
+      <button type="button" class="btn ghost" onclick="window.print()">Print</button>
+    </div>`;
+  applyFills(root.querySelector('.board'), m.fills);
 }
 </script>
 </body>
