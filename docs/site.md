@@ -29,7 +29,7 @@ by editing the page. Every piece of content carries a `min_level`:
 | 0 | Visitor | No account. Browses therapists, articles, quotes, tips, fun facts, affirmations, and uses all 360 free discovery tools. |
 | 1 | Free | Registered, no card. Adds the progress dashboard with favorites, personalized daily content, the journal and its prompts, checklists with progress, 7-day challenges, articles by email every morning, and the switch that lets therapists reach out. |
 | 2 | Basic | Paid. Adds 62 quizzes, 186 worksheets, challenges up to 365 days, and Pip, the downloadable desktop pet. |
-| 3 | Premium | Paid. Adds goals, mood tracking, 150 sets of mental health trivia, mandalas, playlists, resource map, personalized therapist recommendations. |
+| 3 | Premium | Paid. Adds goals, mood tracking, 150 sets of mental health trivia, mandalas to print or color online, playlists, resource map, personalized therapist recommendations. |
 
 A member can edit only their own profile details from the browser — name, zip,
 topics, the morning-email settings, onboarding, and the therapist reach-out
@@ -233,7 +233,7 @@ Most of it was imported from the Word documents in the parent folder:
 - 4 checklists
 - 3 challenges (two 30-day, one free 7-day)
 - 2 articles
-- 12 printable mandalas (drawn in the browser from a seed)
+- 12 mandalas to print or color online (drawn in the browser from a seed)
 - 150 mental health trivia sets (1,500 questions), written for the site rather than imported
 - 140 daily items — affirmations, tips, fun facts, quotes
 
@@ -324,6 +324,37 @@ show on the dashboard and under the library's member views.
 To add a set, append an entry to `trivia-sets.js`, give it an id with
 `uuid5(NAMESPACE_URL, 'https://theraglee.com/trivia/<slug>')`, and run the
 check. Never change an id once it has shipped.
+
+## Mandalas: print or color online
+
+`site/mandalas.html` is the Premium coloring page. The gallery shows the 12
+mandalas from the `mandalas` table; each card has **Color online** (opens
+`?slug=`) and **Print**, which prints that one figure blank on a single page.
+**Print all (blank)** prints the whole set, one per page.
+
+The coloring page is one-touch: pick a color, tap a shape, and it fills. There
+is an eraser, **Whole ring** (one tap colors every matching shape in that
+ring), undo, start over, **Print** (prints the colored figure) and **Save
+picture** (a PNG made in the browser). Nothing is a number to look up; the
+shapes are the guide.
+
+| File | What it holds |
+|---|---|
+| `site/assets/mandala.js` | Draws a figure from its `seed`. Every closed shape, including the band between two rings, is a region with a stable `data-i` index and a ring group in `data-g`. `colorable()` gives hand-drawn SVG in the `svg` column the same treatment. |
+| `site/assets/coloring.js` | The coloring itself: the palette, the tap handler, whole-ring fills, undo, PNG export. Works on any SVG whose shapes carry `.rg` and `data-i`. |
+| `supabase/migrations/20260908170000_mandala_colorings.sql` | The `mandala_colorings` table, so a half-finished coloring follows a member across devices. |
+
+A coloring is a JSON object `{ "<region index>": "#rrggbb" }`. The page always
+keeps it in the browser (`localStorage`, key `tg.mandala.<slug>`) and, once the
+migration has been applied, also in `mandala_colorings`; whichever copy is
+newer is the one shown. Until the migration is applied the table read fails
+quietly and the browser copy is all there is. Started / Completed (all shapes
+colored) goes to `item_progress` with `item_type = 'mandala'`, and the favorite
+button works like every other activity.
+
+Because the figure is drawn from its seed, changing `mandala.js` changes what
+every member sees and can move the region indexes a saved coloring points at.
+Treat the drawing order in `mandala()` as a data contract.
 
 ## The desktop pet
 
