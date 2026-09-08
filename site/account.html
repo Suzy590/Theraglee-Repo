@@ -181,7 +181,7 @@ async function inbox(){
     }).join('') : '<div class="empty" style="margin-top:18px">No messages.</div>'}`;
 }
 
-async function history(){
+async function historyTab(){
   const host = document.getElementById('body');
   const [{ data: quizzes }, { count: nJ }, { data: sheets }] = await Promise.all([
     sb.from('quiz_attempts').select('*, quizzes(title,slug)')
@@ -299,7 +299,7 @@ async function render(){
   }
 
   if (tab === 'inbox')   inbox();
-  if (tab === 'history') history();
+  if (tab === 'history') historyTab();
 }
 
 render();
