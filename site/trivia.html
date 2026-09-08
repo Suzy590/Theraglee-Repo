@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mental health trivia — Theraglee</title>
+<meta name="description" content="150 sets of mental health trivia, ten questions each, across fifteen topics. Test what you know and learn something on every question.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="assets/favicon.png" sizes="48x48">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  /* ---- index ---- */
+  .tstats{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin:22px 0 6px}
+  .tstats .card{padding:16px 18px}
+  .tstats .n{font-size:1.9rem;font-weight:300;letter-spacing:-.03em;line-height:1;color:var(--green)}
+  .tstats .k{font-size:.74rem;text-transform:uppercase;letter-spacing:.09em;color:var(--faint);font-weight:600;margin-top:6px}
+  .tile .best{margin-top:8px}
+  .diff{display:inline-flex;gap:3px;vertical-align:middle;margin-left:6px}
+  .diff i{width:6px;height:6px;border-radius:50%;background:var(--hair);display:inline-block}
+  .diff i.on{background:var(--lime-2)}
+  .topics-preview{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-top:22px}
+  .topics-preview .card{padding:14px 16px}
+  .topics-preview h3{font-size:.96rem;margin:0}
+  .topics-preview .meta{font-size:.82rem;color:var(--faint)}
+
+  /* ---- play ---- */
+  .tq{background:var(--paper);border:1px solid var(--hair);border-radius:var(--r-lg);padding:28px;margin-top:22px}
+  .tq .qhead{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+  .tprog{height:4px;border-radius:2px;background:var(--sand);overflow:hidden;margin-bottom:22px}
+  .tprog>i{display:block;height:100%;background:var(--lime);border-radius:2px;transition:width .3s}
+  .tq h2{font-size:clamp(1.2rem,2.2vw,1.55rem);margin-bottom:20px}
+  .opts{display:grid;gap:10px}
+  .opt{display:flex;gap:14px;align-items:flex-start;text-align:left;width:100%;padding:13px 16px;
+    border:1px solid var(--hair);border-radius:var(--r-sm);background:var(--cream);cursor:pointer;
+    font:inherit;color:inherit;line-height:1.45;transition:all .18s}
+  .opt:hover:not(:disabled){border-color:var(--lime-2);background:var(--soft)}
+  .opt:disabled{cursor:default}
+  .opt .key{flex:0 0 auto;width:26px;height:26px;border-radius:50%;border:1px solid var(--hair);
+    display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:600;color:var(--muted);background:var(--paper)}
+  .opt.right{background:var(--soft);border-color:var(--green)}
+  .opt.right .key{background:var(--green);border-color:var(--green);color:#fff}
+  .opt.wrong{background:#FBF2F2;border-color:var(--danger)}
+  .opt.wrong .key{background:var(--danger);border-color:var(--danger);color:#fff}
+  .opt.dim{opacity:.55}
+  .why{margin-top:18px;padding:16px 18px;border-radius:var(--r-sm);background:var(--sand);border:1px solid var(--hair)}
+  .why.right{background:var(--soft);border-color:var(--mist)}
+  .why .verdict{font-weight:600;margin-bottom:4px}
+  .why p{margin:0 0 12px;color:var(--ink-2)}
+  .result{background:var(--paper);border:2px solid var(--lime);border-radius:var(--r-lg);padding:34px;text-align:center;margin-top:22px}
+  .score{font-size:3.2rem;font-weight:300;letter-spacing:-.03em;line-height:1;color:var(--green)}
+  .review{margin-top:30px}
+  .review .item{background:var(--paper);border:1px solid var(--hair);border-radius:var(--r);padding:16px 18px;margin-bottom:10px}
+  .review .item h3{font-size:.98rem;margin:0 0 8px}
+  .review .item p{margin:4px 0;font-size:.92rem}
+  .review .item .yours{color:var(--danger)}
+  .review .item .correct{color:var(--green-deep)}
+  .kbd{font-size:.8rem;color:var(--faint);margin-top:12px}
+  @media (max-width:600px){.tq{padding:20px}.result{padding:26px 18px}}
+</style>
+</head>
+<body>
+<main class="section"><div class="wrap" id="root">
+  <div class="skeleton" style="height:220px"></div>
+</div></main>
+
+<script type="module">
+import { chrome, sb, esc, qs, tierName, toast, logActivity, unlockHref } from './assets/app.js';
+import { library, isFavorite, isLater, favButton, laterButton, bindLibrary, setProgress } from './assets/library.js';
+import { SETS, TOPICS } from './assets/trivia-sets.js';
+import { DIFFICULTY, band, playOrder, score, summarize, scoreKey, QUESTIONS_PER_SET } from './assets/trivia.js';
+
+const a = await chrome({ active: 'explore.html' });
+const root = document.getElementById('root');
+const slug = qs('slug');
+const bySlug = new Map(SETS.map(s => [s.slug, s]));
+const set = slug ? bySlug.get(slug) : null;
+const N = QUESTIONS_PER_SET;
+const NEEDED = 3;                                // Premium
+
+document.title = (set ? set.title : 'Mental health trivia') + ' — Theraglee';
+
+const dots = (d) => `<span class="diff" title="${DIFFICULTY[d]}" aria-label="${DIFFICULTY[d]}">${
+  [1,2,3].map(i => `<i class="${i <= d ? 'on' : ''}"></i>`).join('')}</span>`;
+const meta = (s) => `${esc(s.topic)} · ${DIFFICULTY[s.difficulty]}${dots(s.difficulty)} · ${N} questions`;
+
+/* ================================================================ locked */
+if (a.level < NEEDED) {
+  const perTopic = TOPICS.map(t => [t, SETS.filter(s => s.topic === t).length]);
+  root.innerHTML = `
+    <div class="center">
+      <span class="badge lock">${esc(tierName(NEEDED))} membership</span>
+      <h1 style="margin:14px 0 10px">${set ? esc(set.title) + ' is part of Premium' : 'Mental health trivia comes with Premium'}</h1>
+      <p class="muted" style="max-width:60ch;margin-left:auto;margin-right:auto">
+        ${SETS.length} sets of ten questions across ${TOPICS.length} topics, from the science of sleep to the
+        history of therapy. Every answer comes with a short explanation, so a wrong guess still
+        teaches you something. Your best scores are kept for you.</p>
+    </div>
+    <div class="card pad-lg center" style="margin-top:26px">
+      <h2 style="margin:0 0 10px">${a.authenticated ? 'Go Premium to start playing' : 'Join to start playing'}</h2>
+      <p class="muted" style="max-width:56ch;margin-left:auto;margin-right:auto">
+        Premium adds trivia along with goal tracking, mood patterns, printable mandalas, playlists
+        and the local resource map. Upgrade any time, and cancel just as easily.</p>
+      <div class="row" style="justify-content:center;margin-top:16px">
+        <a class="btn lg" href="${unlockHref(NEEDED, a.authenticated)}">See membership options</a>
+        <a class="btn ghost" href="${a.authenticated ? 'dashboard.html' : 'explore.html'}">${a.authenticated ? 'Back to Today' : 'Back to the library'}</a>
+      </div>
+    </div>
+    <h2 style="margin-top:40px">What's in it</h2>
+    <div class="topics-preview">${perTopic.map(([t, n]) => `
+      <div class="card"><h3>${esc(t)}</h3><span class="meta">${n} sets · ${n * N} questions</span></div>`).join('')}
+    </div>`;
+} else {
+  await member();
+}
+
+/* ================================================================ member */
+async function member() {
+  const lib = await library();
+
+  /* ---- scores: localStorage always, trivia_scores when the table is there ---- */
+  const scores = new Map();                      // slug -> { best, last, total, plays, played_at }
+  const readLocal = (s) => { try { return JSON.parse(localStorage.getItem(scoreKey(s.slug)) || 'null'); } catch { return null; } };
+  const writeLocal = (s, row) => { try { localStorage.setItem(scoreKey(s.slug), JSON.stringify(row)); } catch {} };
+  for (const s of SETS) { const r = readLocal(s); if (r) scores.set(s.slug, r); }
+
+  if (a.authenticated) {
+    const { data, error } = await sb.from('trivia_scores')
+      .select('set_id,best,last,total,plays,played_at').eq('user_id', a.profile.id);
+    if (error) console.debug('trivia_scores', error.message);   // not applied yet: localStorage carries on
+    const byId = new Map(SETS.map(s => [s.id, s]));
+    for (const r of data || []) {
+      const s = byId.get(r.set_id);
+      if (!s) continue;
+      const local = scores.get(s.slug);
+      const row = local && local.best > r.best ? { ...r, best: local.best } : r;
+      scores.set(s.slug, row);
+      writeLocal(s, row);
+    }
+  }
+
+  async function saveScore(s, right) {
+    const prev = scores.get(s.slug);
+    let row = { best: Math.max(right, prev?.best || 0), last: right, total: N,
+                plays: (prev?.plays || 0) + 1, played_at: new Date().toISOString() };
+    scores.set(s.slug, row);
+    writeLocal(s, row);
+    if (!a.authenticated) return row;
+    const { data, error } = await sb.rpc('record_trivia_score', { p_set_id: s.id, p_score: right, p_total: N });
+    if (error) { console.debug('record_trivia_score', error.message); return row; }
+    if (data) { row = { ...data, best: Math.max(data.best, row.best) }; scores.set(s.slug, row); writeLocal(s, row); }
+    return row;
+  }
+
+  const bestBadge = (s) => {
+    const r = scores.get(s.slug);
+    if (!r) return '';
+    const perfect = r.best >= (r.total || N);
+    return `<span class="badge ${perfect ? 'done' : 'gray'} best">Best ${r.best}/${r.total || N}</span>`;
+  };
+
+  if (set) play(set, lib, saveScore, scores, bestBadge);
+  else if (slug) root.innerHTML = '<div class="empty">That trivia set could not be found. <a href="trivia.html">All trivia sets</a></div>';
+  else index(lib, scores, bestBadge);
+}
+
+/* ================================================================= index */
+function index(lib, scores, bestBadge) {
+  let topic = qs('topic', ''), diff = '', term = '', view = '';
+  if (!TOPICS.includes(topic)) topic = '';
+
+  root.innerHTML = `
+    <div class="spread" style="margin-bottom:6px">
+      <div>
+        <h1 style="margin:0">Mental health trivia</h1>
+        <p class="muted" style="max-width:60ch;margin:.5em 0 0">${SETS.length} sets, ten questions each. Every answer comes with a short
+          note, so you learn something whether you were right or not. Best scores are kept.</p>
+      </div>
+      <span class="badge live">Included with Premium</span>
+    </div>
+    <div class="tstats" id="stats"></div>
+    <div class="card" style="margin:20px 0 26px">
+      <div class="field" style="margin-bottom:14px">
+        <label for="q">Search</label>
+        <input id="q" type="text" placeholder="Try “sleep”, “Freud”, “grief”, “burnout”…">
+      </div>
+      <div class="chips" id="topics">
+        <button class="chip ${topic ? '' : 'on'}" data-t="">All topics</button>
+        ${TOPICS.map(t => `<button class="chip ${t === topic ? 'on' : ''}" data-t="${esc(t)}">${esc(t)}</button>`).join('')}
+      </div>
+      <div class="chips" id="diffs" style="margin-top:12px">
+        <button class="chip on" data-d="">Any difficulty</button>
+        ${[1,2,3].map(d => `<button class="chip" data-d="${d}">${DIFFICULTY[d]}</button>`).join('')}
+      </div>
+      <div class="chips" id="views" style="margin-top:12px">
+        <button class="chip" data-v="new">Not played yet</button>
+        <button class="chip" data-v="played">Played</button>
+        <button class="chip" data-v="perfect">Perfect scores</button>
+        <button class="chip" data-v="favorite">Favorites</button>
+      </div>
+    </div>
+    <p class="faint" id="count"></p>
+    <div class="grid g3" id="results"></div>
+    <div class="notice" style="margin-top:34px">Trivia is here to make learning about mental health enjoyable.
+      Nothing in it is medical advice, and a score says nothing about you beyond what you happened to know today.
+      If a topic raises something for you, <a href="therapists.html">find a therapist</a>.</div>`;
+
+  function paintStats() {
+    const s = summarize(SETS, scores);
+    document.getElementById('stats').innerHTML = `
+      <div class="card"><div class="n">${s.played}<span class="faint" style="font-size:1rem"> / ${SETS.length}</span></div><div class="k">Sets played</div></div>
+      <div class="card"><div class="n">${s.perfect}</div><div class="k">Perfect scores</div></div>
+      <div class="card"><div class="n">${s.played ? s.avg + '%' : '—'}</div><div class="k">Average best score</div></div>
+      <div class="card"><div class="n">${SETS.length * N}</div><div class="k">Questions in all</div></div>`;
+  }
+
+  function render() {
+    const t = term.trim().toLowerCase();
+    const list = SETS.filter(s =>
+      (!topic || s.topic === topic) &&
+      (!diff || String(s.difficulty) === diff) &&
+      (!view ||
+        (view === 'new'      && !scores.has(s.slug)) ||
+        (view === 'played'   && scores.has(s.slug)) ||
+        (view === 'perfect'  && (scores.get(s.slug)?.best ?? -1) >= N) ||
+        (view === 'favorite' && isFavorite(lib, 'trivia', s.id))) &&
+      (!t || (s.title + ' ' + s.description + ' ' + s.topic + ' ' + (s.tags || []).join(' ')).toLowerCase().includes(t))
+    );
+    document.getElementById('count').textContent =
+      `${list.length} set${list.length === 1 ? '' : 's'}${topic ? ' in ' + topic : ''}`;
+    document.getElementById('results').innerHTML = list.length
+      ? list.map(s => `<a class="tile" href="trivia.html?slug=${encodeURIComponent(s.slug)}">
+          ${favButton('trivia', s.id, isFavorite(lib, 'trivia', s.id), { size: 20, label: false })}
+          <h3>${esc(s.title)}</h3>
+          <p class="meta" style="color:var(--muted)">${esc(s.description)}</p>
+          <span class="meta">${meta(s)}</span>
+          <div class="row" style="gap:7px">${bestBadge(s)}${isLater(lib, 'trivia', s.id) ? '<span class="badge gray">Saved for later</span>' : ''}</div>
+        </a>`).join('')
+      : '<div class="empty" style="grid-column:1/-1">Nothing matches that yet. Try a different word or topic.</div>';
+  }
+
+  document.getElementById('q').addEventListener('input', e => { term = e.target.value; render(); });
+  const chips = (host, attr, set) => document.querySelectorAll(`#${host} .chip`).forEach(c => c.addEventListener('click', () => {
+    document.querySelectorAll(`#${host} .chip`).forEach(x => x.classList.remove('on'));
+    c.classList.add('on'); set(c.dataset[attr]); render();
+  }));
+  chips('topics', 't', v => { topic = v; });
+  chips('diffs', 'd', v => { diff = v; });
+  document.querySelectorAll('#views .chip').forEach(c => c.addEventListener('click', () => {
+    const was = view === c.dataset.v;
+    document.querySelectorAll('#views .chip').forEach(x => x.classList.remove('on'));
+    view = was ? '' : c.dataset.v;
+    if (!was) c.classList.add('on');
+    render();
+  }));
+  bindLibrary(document.getElementById('results'), () => render());
+  paintStats();
+  render();
+}
+
+/* ================================================================== play */
+function play(s, lib, saveScore, scores, bestBadge) {
+  logActivity('trivia', s.id, 'view', s.tags || []);
+  let alreadyDone = lib.progress.get('trivia:' + s.id)?.status === 'completed';
+
+  root.innerHTML = `
+    <div class="wrap narrow" style="padding:0">
+      <a class="faint" href="trivia.html?topic=${encodeURIComponent(s.topic)}">← ${esc(s.topic)} trivia</a>
+      <h1 style="margin-top:12px">${esc(s.title)}</h1>
+      <p class="muted">${esc(s.description)}</p>
+      <span class="meta faint">${meta(s)}</span>
+      <div class="row" id="libbar" style="margin-top:14px">
+        ${favButton('trivia', s.id, isFavorite(lib, 'trivia', s.id))}
+        ${laterButton('trivia', s.id, isLater(lib, 'trivia', s.id))}
+        <span id="bestpill">${bestBadge(s)}</span>
+      </div>
+      <div id="stage"></div>
+    </div>`;
+  bindLibrary(root);
+  const stage = document.getElementById('stage');
+
+  let questions, picks, i, right;
+
+  function start() {
+    questions = playOrder(s, Date.now() ^ (Math.random() * 1e9));
+    picks = []; i = 0; right = 0;
+    ask();
+  }
+
+  function ask() {
+    const q = questions[i];
+    stage.innerHTML = `
+      <div class="tq">
+        <div class="qhead"><span class="faint">Question ${i + 1} of ${N}</span><span class="faint">${right} right so far</span></div>
+        <div class="tprog"><i style="width:${Math.round(i / N * 100)}%"></i></div>
+        <h2>${esc(q.q)}</h2>
+        <div class="opts">${q.options.map((o, j) => `
+          <button type="button" class="opt" data-i="${j}"><span class="key">${'ABCD'[j]}</span><span>${esc(o)}</span></button>`).join('')}
+        </div>
+        <div id="why"></div>
+        <p class="kbd no-print">Tip: press 1–4 to answer, then Enter for the next question.</p>
+      </div>`;
+    stage.querySelectorAll('.opt').forEach(b => b.addEventListener('click', () => pick(+b.dataset.i)));
+    stage.querySelector('.opts .opt')?.focus();
+  }
+
+  function pick(j) {
+    if (picks.length > i) return;                 // already answered
+    const q = questions[i];
+    picks[i] = j;
+    const ok = j === q.answer;
+    if (ok) right++;
+    stage.querySelectorAll('.opt').forEach(b => {
+      const k = +b.dataset.i;
+      b.disabled = true;
+      if (k === q.answer) b.classList.add('right');
+      else if (k === j) b.classList.add('wrong');
+      else b.classList.add('dim');
+    });
+    stage.querySelector('.qhead span:last-child').textContent = `${right} right so far`;
+    const last = i === N - 1;
+    document.getElementById('why').innerHTML = `
+      <div class="why ${ok ? 'right' : ''}">
+        <div class="verdict">${ok ? 'Right.' : `Not quite — it's ${esc(q.options[q.answer])}.`}</div>
+        <p>${esc(q.why)}</p>
+        <button class="btn" id="next" type="button">${last ? 'See my score' : 'Next question'}</button>
+      </div>`;
+    const next = document.getElementById('next');
+    next.addEventListener('click', advance);
+    next.focus();
+    if (!alreadyDone) setProgress('trivia', s.id, i + 1, N);
+  }
+
+  function advance() {
+    if (picks.length <= i) return;
+    i++;
+    if (i < N) ask(); else finish();
+  }
+
+  async function finish() {
+    const total = score(questions, picks);
+    const b = band(total, N);
+    stage.innerHTML = `
+      <div class="result">
+        <div class="score">${total}<span class="faint" style="font-size:1.1rem"> / ${N}</span></div>
+        <h2 style="margin-top:12px">${esc(b.label)}</h2>
+        <p class="muted">${esc(b.text)}</p>
+        <p class="faint" id="bestline"></p>
+        <div class="row" style="justify-content:center;margin-top:18px">
+          <button class="btn" id="again" type="button">Play again</button>
+          <a class="btn ghost" id="nextset" href="#">Next set in ${esc(s.topic)}</a>
+          <a class="btn ghost" href="trivia.html">All trivia sets</a>
+        </div>
+      </div>
+      <div class="review">
+        <h2 style="font-size:1.3rem">The answers</h2>
+        ${questions.map((q, k) => {
+          const ok = picks[k] === q.answer;
+          return `<div class="item">
+            <h3>${k + 1}. ${esc(q.q)}</h3>
+            ${ok ? `<p class="correct">✓ ${esc(q.options[q.answer])}</p>`
+                 : `<p class="yours">✗ You chose: ${esc(q.options[picks[k]])}</p><p class="correct">✓ ${esc(q.options[q.answer])}</p>`}
+            <p class="muted">${esc(q.why)}</p>
+          </div>`; }).join('')}
+      </div>
+      <div class="notice" style="margin-top:22px">Trivia is for learning, not a measure of you. Nothing here is medical
+        advice or a diagnosis. If a question raised something, <a href="therapists.html">find a therapist</a>.</div>`;
+    stage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    // Next unplayed set in this topic, otherwise the next one after this.
+    const inTopic = SETS.filter(x => x.topic === s.topic);
+    const at = inTopic.findIndex(x => x.slug === s.slug);
+    const nextSet = inTopic.slice(at + 1).concat(inTopic.slice(0, at)).find(x => !scores.has(x.slug))
+                 || inTopic[(at + 1) % inTopic.length];
+    const nextA = document.getElementById('nextset');
+    if (nextSet && nextSet.slug !== s.slug) nextA.href = `trivia.html?slug=${encodeURIComponent(nextSet.slug)}`;
+    else nextA.remove();
+    document.getElementById('again').addEventListener('click', start);
+
+    if (!alreadyDone) { setProgress('trivia', s.id, N, N); alreadyDone = true; }
+    const row = await saveScore(s, total);
+    document.getElementById('bestline').textContent =
+      `Best on this set: ${row.best}/${row.total || N} · played ${row.plays} time${row.plays === 1 ? '' : 's'}`;
+    document.getElementById('bestpill').innerHTML = bestBadge(s);
+    if (total === N && row.plays === 1) toast('Perfect on the first try!', 'ok');
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.target.matches('input,textarea')) return;
+    const k = e.key;
+    if (picks.length <= i && /^[1-4]$/.test(k)) { e.preventDefault(); pick(+k - 1); }
+    else if (picks.length <= i && /^[a-dA-D]$/.test(k)) { e.preventDefault(); pick('abcd'.indexOf(k.toLowerCase())); }
+    else if (picks.length > i && i < N && (k === 'Enter' || k === ' ')) {
+      if (e.target.closest('button') && e.target.id !== 'next') return;   // let other buttons keep Enter
+      e.preventDefault(); advance();
+    }
+  });
+
+  start();
+}
+</script>
+</body>
+</html>

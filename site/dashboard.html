@@ -109,6 +109,7 @@ import { chrome, sb, access, requireAuth, esc, tierName, toast, fmtDate,
          contentCounts, counted } from './assets/app.js';
 import { library, isFavorite, favButton, statusBadge, bindLibrary } from './assets/library.js';
 import { TOOLS } from './assets/discover-tools.js';
+import { SETS as TRIVIA } from './assets/trivia-sets.js';
 await chrome({ active:'dashboard.html' });
 const a = await requireAuth();
 const c = await contentCounts();
@@ -228,9 +229,10 @@ const HREF = {
   challenge: r => `challenges.html?template=${encodeURIComponent(r.slug)}`,
   article:   r => `article.html?slug=${encodeURIComponent(r.slug)}`,
   mandala:   r => `mandalas.html?slug=${encodeURIComponent(r.slug)}`,
+  trivia:    r => `trivia.html?slug=${encodeURIComponent(r.slug)}`,
 };
 const KIND = { discover:'Discovery tool', quiz:'Quiz', worksheet:'Worksheet', checklist:'Checklist',
-               challenge:'Challenge', article:'Article', mandala:'Mandala' };
+               challenge:'Challenge', article:'Article', mandala:'Mandala', trivia:'Trivia' };
 
 async function paintLibrary() {
   const lib = await library(true);
@@ -244,6 +246,8 @@ async function paintLibrary() {
   const byKey = new Map((cat || []).map(r => [r.kind + ':' + r.id, r]));
   // The free discovery tools are not in the catalog table; they ship with the site.
   for (const t of TOOLS) byKey.set('discover:' + t.id, { kind: 'discover', id: t.id, slug: t.slug, title: t.title });
+  // Same for the trivia sets.
+  for (const t of TRIVIA) byKey.set('trivia:' + t.id, { kind: 'trivia', id: t.id, slug: t.slug, title: t.title });
 
   const tile = (k) => {
     const r = byKey.get(k);
@@ -288,6 +292,7 @@ const quick = [
   ['Desktop pet', 'pet.html', 2, true],
   ['Goals & tracking', 'goals.html', 3],
   ['Mandalas', 'mandalas.html', 3],
+  ['Mental health trivia', 'trivia.html', 3, true],
   ['Find a therapist', 'therapists.html', 0],
 ];
 /* A tile flagged `ownGate` opens its page even when locked, because that page makes its
@@ -306,7 +311,7 @@ if (a.level < 3) {
     <h3>There's more in ${nextTier}</h3>
     <p class="muted">${a.level < 2
       ? `${counted(c.quiz,'quizzes')}, ${counted(c.worksheet,'worksheets')}, and challenges you design yourself — up to a full year.`
-      : 'Goal tracking, mood patterns, printable mandalas, playlists and the local resource map.'}</p>
+      : `Goal tracking, mood patterns, ${TRIVIA.length} sets of mental health trivia, printable mandalas, playlists and the local resource map.`}</p>
     <a class="btn" href="pricing.html">Compare memberships</a></div>`;
 }
 }
