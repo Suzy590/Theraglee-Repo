@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Printable mandalas — Theraglee</title>
+<title>Mandalas — Theraglee</title>
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="alternate icon" href="assets/favicon.png" sizes="48x48">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
@@ -14,11 +14,50 @@
   .m{background:#fff;border:1px solid var(--hair);border-radius:var(--r);padding:18px;
     box-shadow:var(--shadow-1)}
   .m h3{font-size:.98rem;margin:12px 0 0;text-align:center}
+  .m .acts{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+  .m .prog{display:block;text-align:center;margin-top:8px;font-size:.78rem;color:var(--faint)}
+
+  /* Print sheets: hidden on screen, one per page in print. */
   .sheet{display:none}
+  .sheet.live{display:block}
+  .sheet.live>h2{display:none}
+
+  /* The coloring studio */
+  .studio{display:grid;gap:22px;grid-template-columns:minmax(0,1fr) 300px;align-items:start}
+  @media (max-width:860px){.studio{grid-template-columns:1fr}}
+  .board{background:#fff;border:1px solid var(--hair);border-radius:var(--r);padding:18px;
+    box-shadow:var(--shadow-1);max-width:680px;margin:0 auto;width:100%}
+  .board svg.coloring{-webkit-user-select:none;user-select:none}
+  .board svg.coloring .rg{cursor:pointer}
+  @media (hover:hover){.board svg.coloring .rg:hover{stroke-width:2.4}}
+  .panel{background:var(--paper);border:1px solid var(--hair);border-radius:var(--r);padding:18px;
+    box-shadow:var(--shadow-1);position:sticky;top:84px}
+  .panel h3{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);
+    font-weight:500;margin:0 0 10px}
+  .swatches{display:flex;flex-wrap:wrap;gap:8px}
+  .swatch{width:34px;height:34px;border-radius:50%;border:2px solid #fff;background:var(--c);
+    box-shadow:0 0 0 1px var(--hair);cursor:pointer;padding:0;transition:transform .12s}
+  .swatch:hover{transform:scale(1.1)}
+  .swatch.on{box-shadow:0 0 0 2px var(--ink)}
+  .swatch.custom{position:relative;display:grid;place-items:center;color:#fff;font-size:1.1rem;
+    background:conic-gradient(#F4B6C2,#F3E27A,#8DC61D,#4FA3C7,#8E7CC3,#F4B6C2)}
+  .swatch.custom.on{color:var(--ink)}
+  .swatch.custom input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:0}
+  .tools{display:flex;flex-wrap:wrap;gap:8px}
+  .tools .btn{flex:1 1 auto}
+  .panel .btn.tool.on,.panel .btn.tool.on:hover{background:var(--green);color:#fff;border-color:var(--green)}
+  .status{font-size:.82rem;color:var(--faint);margin:12px 0 0;min-height:1.4em}
+  .hint{font-size:.88rem;color:var(--muted);margin:0 0 14px}
+
   @media print{
     .sheet{display:block;page-break-after:always;padding:6vh 8vw}
-    .sheet h2{text-align:center;font-weight:400;margin-bottom:4vh}
-    body>main>.wrap>*:not(.sheet){display:none}
+    .sheet>h2,.sheet.live>h2{display:block;text-align:center;font-weight:400;margin-bottom:4vh}
+    .sheet>div{max-width:640px;margin:0 auto}
+    body.only .sheet:not(.only){display:none}
+    .studio{display:block}
+    .board{border:0;box-shadow:none;padding:0;max-width:none}
+    svg{print-color-adjust:exact;-webkit-print-color-adjust:exact}
+    svg .rg{stroke-width:1.1 !important}
   }
 </style>
 </head>
@@ -28,38 +67,233 @@
 </div></main>
 
 <script type="module">
-import { chrome, sb, esc, qs, lockNotice } from './assets/app.js';
-import { mandala } from './assets/mandala.js';
+import { chrome, sb, esc, qs, toast, lockNotice, logActivity } from './assets/app.js';
+import { library, isFavorite, favButton, bindLibrary, setProgress } from './assets/library.js';
+import { mandala, colorable } from './assets/mandala.js';
+import { colorbook, paletteHtml } from './assets/coloring.js';
+
 const a = await chrome({ active:'explore.html' });
 const root = document.getElementById('root');
 
 const { data: rows } = await sb.from('mandalas').select('*').order('title');
 
+/* The figure for one row: hand-drawn SVG when there is one, otherwise the seed. */
+const figure = (m) => m.svg ? colorable(m.svg) : mandala(m.seed || 1, { title: m.title });
+
+/* ---- saved colorings: localStorage always, mandala_colorings when signed in ---- */
+const localKey = (slug) => `tg.mandala.${slug}`;
+const readLocal = (slug) => { try { return JSON.parse(localStorage.getItem(localKey(slug)) || 'null'); } catch { return null; } };
+const writeLocal = (slug, row) => { try { localStorage.setItem(localKey(slug), JSON.stringify(row)); } catch {} };
+
+/* Newest of the two copies wins, so a coloring done on another device shows up here. */
+function newest(localRow, remoteRow) {
+  if (!localRow) return remoteRow || null;
+  if (!remoteRow) return localRow;
+  return new Date(remoteRow.updated_at) > new Date(localRow.updated_at) ? remoteRow : localRow;
+}
+
+async function remoteRows() {
+  if (!a.authenticated) return new Map();
+  const { data, error } = await sb.from('mandala_colorings')
+    .select('mandala_id,fills,updated_at').eq('user_id', a.profile.id);
+  if (error) { console.debug('mandala_colorings', error.message); return new Map(); }   // not applied yet
+  return new Map((data || []).map(r => [r.mandala_id, r]));
+}
+
+/* Paint a saved coloring onto any rendered figure. */
+function applyFills(host, fills) {
+  for (const [i, c] of Object.entries(fills || {})) {
+    const el = host.querySelector(`.rg[data-i="${CSS.escape(String(i))}"]`);
+    if (el && /^#[0-9a-f]{6}$/i.test(c)) el.setAttribute('fill', c);
+  }
+}
+
 if (!rows || !rows.length) {
-  lockNotice(root, 3, 'Printable mandalas');
+  lockNotice(root, 3, 'Mandalas');
 } else {
   const single = qs('slug');
-  const list = single ? rows.filter(r => r.slug === single) : rows;
+  if (single) await studio(rows.find(r => r.slug === single));
+  else await gallery();
+}
 
+/* ================================================================ gallery */
+async function gallery() {
   root.innerHTML = `
     <div class="no-print">
-      <h1>Printable mandalas</h1>
-      <p class="muted" style="max-width:56ch">Coloring is a quiet, low-effort way to settle a busy
-        head. Print one, or several — they come out clean on plain paper.</p>
+      <h1>Mandalas</h1>
+      <p class="muted" style="max-width:56ch">Coloring is a quiet, low-effort way to settle a busy head.
+        Print one and reach for your pencils, or color it right here — tap a shape and it fills in.
+        Your coloring is saved as you go.</p>
       <div class="row" style="margin:18px 0 26px">
-        <button class="btn" onclick="window.print()">Print ${single?'this one':'all'}</button>
-        ${single ? '<a class="btn ghost" href="mandalas.html">See all mandalas</a>' : ''}
+        <button class="btn ghost" id="print-all">Print all (blank)</button>
       </div>
-      <div class="grid g3">${list.map(m => `
-        <div class="m">${m.svg || mandala(m.seed || 1)}
+      <div class="grid g3">${rows.map(m => `
+        <div class="m" data-slug="${esc(m.slug)}">${figure(m)}
           <h3>${esc(m.title)}</h3>
-          <div class="center" style="margin-top:8px">
-            <a class="btn sm ghost" href="mandalas.html?slug=${encodeURIComponent(m.slug)}">Print just this</a>
+          <span class="prog"></span>
+          <div class="acts">
+            <a class="btn sm" href="mandalas.html?slug=${encodeURIComponent(m.slug)}">Color online</a>
+            <button type="button" class="btn sm ghost" data-print="${esc(m.slug)}">Print</button>
           </div></div>`).join('')}
       </div>
     </div>
-    ${list.map(m => `<div class="sheet"><h2>${esc(m.title)}</h2>
-      <div style="max-width:640px;margin:0 auto">${m.svg || mandala(m.seed || 1)}</div></div>`).join('')}`;
+    ${rows.map(m => `<div class="sheet" data-sheet="${esc(m.slug)}"><h2>${esc(m.title)}</h2>
+      <div>${figure(m)}</div></div>`).join('')}`;
+
+  // Show each card the way the member last left it.
+  const remote = await remoteRows();
+  for (const m of rows) {
+    const saved = newest(readLocal(m.slug), remote.get(m.id));
+    const n = Object.keys(saved?.fills || {}).length;
+    if (!n) continue;
+    const card = root.querySelector(`.m[data-slug="${CSS.escape(m.slug)}"]`);
+    applyFills(card, saved.fills);
+    card.querySelector('.prog').textContent = 'In progress — tap Color online to continue';
+  }
+
+  document.getElementById('print-all').addEventListener('click', () => window.print());
+  root.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-print]');
+    if (!b) return;
+    const sheet = root.querySelector(`.sheet[data-sheet="${CSS.escape(b.dataset.print)}"]`);
+    sheet.classList.add('only'); document.body.classList.add('only');
+    const done = () => { sheet.classList.remove('only'); document.body.classList.remove('only'); };
+    window.addEventListener('afterprint', done, { once: true });
+    window.print();
+  });
+}
+
+/* ================================================================= studio */
+async function studio(m) {
+  if (!m) {
+    root.innerHTML = '<div class="empty">That mandala could not be found. <a href="mandalas.html">All mandalas</a></div>';
+    return;
+  }
+  document.title = `${m.title} — Theraglee`;
+  logActivity('mandala', m.id, 'view');
+  const lib = await library();
+
+  root.innerHTML = `
+    <div class="no-print">
+      <a class="faint" href="mandalas.html">← All mandalas</a>
+      <div class="spread" style="margin-top:12px;margin-bottom:6px">
+        <h1 style="margin:0">${esc(m.title)}</h1>
+        ${favButton('mandala', m.id, isFavorite(lib, 'mandala', m.id))}
+      </div>
+      <p class="hint">Pick a color, then tap any shape. Turn on <strong>Whole ring</strong> to color
+        every matching shape in a ring with one tap.</p>
+    </div>
+    <div class="studio">
+      <div class="sheet live board" id="board"><h2>${esc(m.title)}</h2>${figure(m)}</div>
+      <div class="panel no-print">
+        <h3>Colors</h3>
+        ${paletteHtml()}
+        <h3 style="margin-top:18px">Tools</h3>
+        <div class="tools">
+          <button type="button" class="btn sm ghost tool" id="erase" aria-pressed="false">Eraser</button>
+          <button type="button" class="btn sm ghost tool" id="ring" aria-pressed="false">Whole ring</button>
+          <button type="button" class="btn sm ghost" id="undo">Undo</button>
+          <button type="button" class="btn sm ghost" id="clear">Start over</button>
+        </div>
+        <h3 style="margin-top:18px">Keep it</h3>
+        <div class="tools">
+          <button type="button" class="btn sm" id="print">Print</button>
+          <button type="button" class="btn sm ghost" id="png">Save picture</button>
+        </div>
+        <p class="status" id="status"></p>
+      </div>
+    </div>`;
+  bindLibrary(root);
+
+  const board = document.getElementById('board');
+  const status = document.getElementById('status');
+  const book = colorbook(board, { onChange: queueSave });
+
+  /* ---- load what was saved before ---- */
+  const remote = await remoteRows();
+  const saved = newest(readLocal(m.slug), remote.get(m.id));
+  if (saved?.fills) {
+    book.apply(saved.fills);
+    status.textContent = 'Picked up where you left off.';
+  } else {
+    status.textContent = a.authenticated
+      ? 'Saves to your account as you color.' : 'Saves in this browser as you color.';
+  }
+
+  /* ---- saving: right away in the browser, a moment later to the account ---- */
+  let timer = null, pending = null;
+  function queueSave(fills, { colored, total }) {
+    const row = { fills, updated_at: new Date().toISOString() };
+    writeLocal(m.slug, row);
+    pending = { row, colored, total };
+    status.textContent = colored ? `${colored} of ${total} shapes colored` : 'Blank';
+    clearTimeout(timer);
+    timer = setTimeout(flush, 900);
+  }
+  async function flush() {
+    if (!pending || !a.authenticated) return;
+    const { row, colored, total } = pending; pending = null;
+    const { error } = await sb.from('mandala_colorings')
+      .upsert({ user_id: a.profile.id, mandala_id: m.id, fills: row.fills, updated_at: row.updated_at },
+              { onConflict: 'user_id,mandala_id' });
+    if (error) console.debug('mandala_colorings', error.message);     // not applied yet: the browser copy stands
+    setProgress('mandala', m.id, colored, total);
+  }
+  window.addEventListener('pagehide', () => { if (pending) flush(); });
+
+  /* ---- palette ---- */
+  const panel = root.querySelector('.panel');
+  const custom = panel.querySelector('.swatch.custom');
+  const select = (btn) => {
+    panel.querySelectorAll('.swatch').forEach(s => { s.classList.toggle('on', s === btn); s.setAttribute('aria-checked', s === btn); });
+    erase.classList.remove('on'); erase.setAttribute('aria-pressed', 'false');
+  };
+  panel.addEventListener('click', (e) => {
+    const s = e.target.closest('.swatch[data-color]');
+    if (!s) return;
+    book.setColor(s.dataset.color);
+    select(s);
+  });
+  custom.querySelector('input').addEventListener('input', (e) => {
+    custom.style.setProperty('--c', e.target.value);
+    custom.style.background = e.target.value;
+    book.setColor(e.target.value);
+    select(custom);
+  });
+
+  /* ---- tools ---- */
+  const erase = document.getElementById('erase');
+  const ring  = document.getElementById('ring');
+  erase.addEventListener('click', () => {
+    const on = book.mode !== 'erase';
+    book.setMode(on ? 'erase' : 'fill');
+    erase.classList.toggle('on', on); erase.setAttribute('aria-pressed', String(on));
+    if (on) panel.querySelectorAll('.swatch').forEach(s => { s.classList.remove('on'); s.setAttribute('aria-checked', 'false'); });
+    else select(panel.querySelector(`.swatch[data-color="${book.color}"]`) || custom);
+  });
+  ring.addEventListener('click', () => {
+    book.setRing(!book.ring);
+    ring.classList.toggle('on', book.ring); ring.setAttribute('aria-pressed', String(book.ring));
+  });
+  document.getElementById('undo').addEventListener('click', () => {
+    if (!book.undo()) toast('Nothing to undo.');
+  });
+  document.getElementById('clear').addEventListener('click', () => {
+    if (confirm('Clear every color and start this mandala over?')) book.clear();
+  });
+  document.getElementById('print').addEventListener('click', () => window.print());
+  document.getElementById('png').addEventListener('click', async (e) => {
+    const btn = e.currentTarget;
+    btn.disabled = true;
+    try {
+      const blob = await book.toPNG();
+      const url = URL.createObjectURL(blob);
+      const link = Object.assign(document.createElement('a'), { href: url, download: `theraglee-${m.slug}.png` });
+      document.body.appendChild(link); link.click(); link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+    } catch { toast('Could not make the picture. Try Print instead.', 'err'); }
+    btn.disabled = false;
+  });
 }
 </script>
 </body>
