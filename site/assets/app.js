@@ -27,6 +27,41 @@ export const esc = (s) => String(s ?? '').replace(/[&<>"']/g,
   (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 export const qs = (k, d = null) => new URLSearchParams(location.search).get(k) ?? d;
 
+/* ------------------------------------------------------- catalog counts */
+// How many items of each kind the library holds, e.g. { quiz: 62, worksheet: 16 },
+// read from content_catalog so the numbers in marketing copy can never go stale.
+// One request per page, shared by every caller on it. Resolves to {} if the
+// catalog can't be reached; callers then leave the number out rather than show
+// a wrong one.
+let _counts;
+export function contentCounts() {
+  return _counts ??= (async () => {
+    const { data, error } = await sb.from('content_catalog').select('kind');
+    if (error || !data) return {};
+    const c = {};
+    for (const r of data) c[r.kind] = (c[r.kind] || 0) + 1;
+    return c;
+  })();
+}
+// "16 interactive worksheets" when the count is known, otherwise the fallback
+// (the plural itself unless given), so a missing count never shows a wrong number.
+export const counted = (n, plural, fallback = plural) =>
+  Number.isInteger(n) ? `${n} ${plural}` : fallback;
+// "Interactive worksheets (16)" when known, otherwise just the label.
+export const suffixCount = (label, n) => Number.isInteger(n) ? `${label} (${n})` : label;
+// Fill every [data-count="kind"] element in static markup. Its text is the
+// number-free default, which gains the count in front:
+// "Interactive worksheets" -> "16 interactive worksheets".
+export async function applyCounts(root = document) {
+  const c = await contentCounts();
+  for (const el of root.querySelectorAll('[data-count]')) {
+    const n = c[el.dataset.count];
+    if (!Number.isInteger(n)) continue;
+    const t = el.textContent.trim();
+    el.textContent = `${n} ${t.charAt(0).toLowerCase()}${t.slice(1)}`;
+  }
+}
+
 export function toast(msg, kind = '') {
   let host = $('#toasts');
   if (!host) { host = document.createElement('div'); host.id = 'toasts'; document.body.appendChild(host); }
