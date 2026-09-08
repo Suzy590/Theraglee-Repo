@@ -28,7 +28,7 @@ by editing the page. Every piece of content carries a `min_level`:
 |---|---|---|
 | 0 | Visitor | No account. Browses therapists, articles, quotes, tips, fun facts, affirmations, and uses all 360 free discovery tools. |
 | 1 | Free | Registered, no card. Adds the progress dashboard with favorites, personalized daily content, the journal and its prompts, checklists with progress, 7-day challenges, articles by email every morning, and the switch that lets therapists reach out. |
-| 2 | Basic | Paid. Adds 62 quizzes, 186 worksheets, challenges up to 365 days, and Pip, the downloadable desktop pet. |
+| 2 | Basic | Paid. Adds 312 quizzes, 186 worksheets, challenges up to 365 days, and Pip, the downloadable desktop pet. |
 | 3 | Premium | Paid. Adds goals, mood tracking, 150 sets of mental health trivia, mandalas to print or color online, playlists, resource map, personalized therapist recommendations. |
 
 A member can edit only their own profile details from the browser — name, zip,
@@ -227,7 +227,7 @@ check. Never change an id once it has shipped; members' favorites point at it.
 
 Most of it was imported from the Word documents in the parent folder:
 
-- 62 self-assessment quizzes (253 questions, 247 result bands)
+- 312 self-assessment quizzes (1,503 questions, 1,247 result bands; 62 imported, 250 written for the site — see below)
 - 374 journal prompts
 - 186 interactive worksheets (16 imported, 170 written for the site — see below)
 - 4 checklists
@@ -271,6 +271,44 @@ same way.
 Tags are a fixed vocabulary, listed in the check, so the library's filters stay
 tidy. Worksheets on grief, loss, trauma and panic end their intro with the
 988 line, and the check refuses one that does not.
+
+## Self-assessment quizzes (Basic)
+
+`site/quiz.html` renders each quiz from the `quizzes` table and its questions
+from `quiz_questions`; `submit_quiz` scores the answers server-side, picks the
+matching row in `quiz_bands`, and records the attempt in `quiz_attempts`, so a
+member's history follows them across devices.
+
+The library holds **312 quizzes** at `min_level = 2`. Sixty-two were imported
+from the original Word documents; the other 250 were written for the site,
+twenty-five in each of ten themes: anxiety and worry; mood, energy and
+motivation; stress, burnout and work; sleep, rest and the body; relationships
+and communication; boundaries, assertiveness and people-pleasing; self-esteem,
+self-compassion and the inner critic; habits, focus and digital life; emotion
+regulation, anger and coping; and meaning, values, life transitions, grief and
+change.
+
+Each of the 250 is five questions of four options scored 4, 3, 2, 1, where 4
+is always the more settled or resourced answer, and four result bands that
+together cover every score from 0 to 20. A band names what the score suggests
+in plain words, normalizes it, and offers one small next step; it never grades
+the member or diagnoses anything (the page carries the "not a diagnosis"
+notice, so the copy does not repeat it). Quizzes on grief, loss, trauma, panic
+and low mood point to the 988 line in their lowest band.
+
+The rows live in the database, and the repo copy is `data/quizzes.txt` (the
+pipe-delimited format described in the README). The two are kept in step by
+hand: edit the text file, run `node tests/quizzes-fixture/check.mjs`,
+regenerate `documents/`, then apply the SQL from
+`python3 tools/quizzes_sql.py <slug>` (an upsert on `slug`, so an edited quiz
+keeps its id and every member's favorites, progress and past attempts; its
+questions and bands are replaced). The 250 written for the site arrived in
+`supabase/migrations/20260909010000_more_quizzes.sql`, which was made the same
+way.
+
+Tags are a fixed vocabulary, listed in the check, so the library's filters stay
+tidy. The sixty-two imported quizzes keep their original free-form tags and
+looser shape; the check lists them as legacy.
 
 ## Mental health trivia (Premium)
 
