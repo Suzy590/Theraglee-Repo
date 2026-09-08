@@ -38,6 +38,12 @@ writable only by the service role (the Stripe webhook and the daily digest)
 and from the Supabase dashboard, so a member cannot promote themselves
 (`supabase/migrations/20260907090000_profiles_member_column_guard.sql`).
 
+On every table in `public`, the browser roles (`anon` and `authenticated`) hold
+only the four row privileges — select, insert, update, delete — that row-level
+security governs. TRUNCATE, which RLS does not cover, along with REFERENCES,
+TRIGGER and MAINTAIN, is revoked from them on existing tables and by default on
+new ones (`supabase/migrations/20260908130000_member_table_privileges.sql`).
+
 Therapist membership is separate and not tiered — one flat level, gated on
 license verification *and* an active subscription. It includes:
 
