@@ -55,7 +55,11 @@ create policy "own trivia scores delete" on public.trivia_scores
   for delete to authenticated
   using (user_id = auth.uid());
 
+-- Supabase's default privileges hand every new table in public to
+-- `authenticated` wholesale, including TRUNCATE, which row-level security
+-- does not cover. Keep members to the four row operations the policies govern.
 revoke all on public.trivia_scores from anon;
+revoke all on public.trivia_scores from authenticated;
 grant select, insert, update, delete on public.trivia_scores to authenticated;
 
 -- Record one finished play. Keeps the best score, replaces the last score, and
