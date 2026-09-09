@@ -69,9 +69,35 @@ Each day's session:
    default branch.
 
 If a day is missed the next day does not double up; the site simply gets five
-that day. If a session cannot reach the database it still commits the JSON and
-the migration file, so the SQL can be applied later, and says so in the pull
-request.
+that day.
+
+### Getting the SQL into the database
+
+The session that writes the articles applies the SQL itself when it has the
+Supabase connector. A routine only carries the connectors it was given when it
+was created, and this one was created from a session that could not pass its
+Supabase connector along, so there are two ways to make the daily run
+hands-off. Either one is enough; both together are fine.
+
+1. **Attach Supabase to the routine.** In Claude Code, open Routines,
+   pick "Theraglee daily articles", and add the Supabase connector. From then
+   on each session applies its own SQL and confirms the rows.
+2. **Let GitHub apply it.** `.github/workflows/apply-article-migrations.yml`
+   runs on every push to `claude/daily-articles` that adds an
+   `*_articles_*.sql` file and applies the new files with `psql`. It needs one
+   repository secret, `SUPABASE_DB_URL`: the project's Postgres connection
+   string (Supabase dashboard → Connect → Session pooler URI, with the
+   database password filled in), added under Settings → Secrets and
+   variables → Actions. Until the secret is set the workflow says so and
+   does nothing. It can also be run by hand from the Actions tab with "all"
+   checked, which applies every article file (they are upserts on slug, so
+   this is safe).
+
+When neither is in place, a day's articles are still written, checked,
+committed and pushed; only the database step waits. The daily session says in
+its pull request comment whether the rows reached the database, and
+`python3 tools/articles_sql.py --since <date>` regenerates the SQL for any
+span of days to paste into the Supabase SQL editor.
 
 ## Writing an article
 
