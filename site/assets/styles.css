@@ -54,14 +54,16 @@ em.script{font-family:var(--serif);font-style:italic;font-weight:400;color:var(-
 /* Keep the wordmark from crowding the burger on small phones. */
 @media(max-width:420px){.nav .brand img{height:46px}}
 .nav .links{display:flex;align-items:center;gap:22px}
-.nav .links a{font-size:.95rem;color:var(--ink);letter-spacing:-.01em;transition:opacity .2s}
+.nav .links a{font-size:.95rem;color:var(--ink);letter-spacing:-.01em;white-space:nowrap;transition:opacity .2s}
 .nav .links a:hover{opacity:.6}
 .nav .links a.active{color:var(--green);font-weight:500}
 /* .nav .links a sets the ink link color, which outranks .btn's own white text.
    Put it back for solid buttons in the header; ghost and lime keep their ink. */
 .nav .links a.btn:not(.ghost):not(.lime){color:#fff}
 .burger{display:none;background:none;border:0;cursor:pointer;padding:8px;color:var(--ink)}
-@media(max-width:900px){
+/* Eleven links is a full row: tighten on laptops, then fold into the burger. */
+@media(max-width:1240px){.nav .links{gap:14px}.nav .links a{font-size:.9rem}}
+@media(max-width:1040px){
   .nav .links{position:absolute;top:100%;left:0;right:0;flex-direction:column;align-items:stretch;
     gap:0;background:var(--paper);border-bottom:1px solid var(--hair);padding:8px 22px 18px;
     box-shadow:var(--shadow-1)}

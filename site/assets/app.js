@@ -218,6 +218,7 @@ const NAV = [
   ['Journal',    'journal.html'],
   ['Articles',   'articles.html'],
   ['Therapists', 'therapists.html'],
+  ['For Therapists', 'for-therapists.html'],
 ];
 
 export async function chrome({ active = '' } = {}) {
