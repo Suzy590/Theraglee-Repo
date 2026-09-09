@@ -264,13 +264,13 @@ async function members(){
           · joined ${fmtDate(m.created_at)}</p>
         <button class="btn sm" style="margin-top:14px" data-reach="${m.id}"
           ${(!liveListing || m.already_contacted)?'disabled':''}>
-          ${m.already_contacted?'Already contacted':'Reach out'}</button>
+          ${m.already_contacted?'Already contacted':'Theraglee Match'}</button>
       </div>`).join('')}</div>`
     : `<div class="empty" style="margin-top:20px">No members have turned on Theraglee Match yet.</div>`}`);
 
   document.querySelectorAll('[data-reach]').forEach(b => b.onclick = () => {
     const back = modal(`
-      <h2>Reach out</h2>
+      <h2>Theraglee Match</h2>
       <p class="muted" style="font-size:.92rem">They see this in their Theraglee inbox along
         with a link to your profile. Keep it short and warm.</p>
       <div class="field"><label for="om">Your message</label>
