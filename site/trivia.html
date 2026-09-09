@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Mental health trivia — Theraglee</title>
-<meta name="description" content="150 sets of mental health trivia, ten questions each, across fifteen topics. Test what you know and learn something on every question.">
+<meta name="description" content="150 mental health trivia quizzes, ten questions each, across fifteen topics. Test what you know and learn something on every question.">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="alternate icon" href="assets/favicon.png" sizes="48x48">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
@@ -78,7 +78,7 @@ const slug = qs('slug');
 const bySlug = new Map(SETS.map(s => [s.slug, s]));
 const set = slug ? bySlug.get(slug) : null;
 const N = QUESTIONS_PER_SET;
-const NEEDED = 3;                                // Premium
+const NEEDED = 2;                                // Basic
 
 document.title = (set ? set.title : 'Mental health trivia') + ' — Theraglee';
 
@@ -92,17 +92,17 @@ if (a.level < NEEDED) {
   root.innerHTML = `
     <div class="center">
       <span class="badge lock">${esc(tierName(NEEDED))} membership</span>
-      <h1 style="margin:14px 0 10px">${set ? esc(set.title) + ' is part of Premium' : 'Mental health trivia comes with Premium'}</h1>
+      <h1 style="margin:14px 0 10px">${set ? esc(set.title) + ' is part of Basic' : 'Mental health trivia comes with Basic'}</h1>
       <p class="muted" style="max-width:60ch;margin-left:auto;margin-right:auto">
-        ${SETS.length} sets of ten questions across ${TOPICS.length} topics, from the science of sleep to the
+        ${SETS.length} quizzes of ten questions across ${TOPICS.length} topics, from the science of sleep to the
         history of therapy. Every answer comes with a short explanation, so a wrong guess still
         teaches you something. Your best scores are kept for you.</p>
     </div>
     <div class="card pad-lg center" style="margin-top:26px">
-      <h2 style="margin:0 0 10px">${a.authenticated ? 'Go Premium to start playing' : 'Join to start playing'}</h2>
+      <h2 style="margin:0 0 10px">${a.authenticated ? 'Upgrade to Basic to start playing' : 'Join to start playing'}</h2>
       <p class="muted" style="max-width:56ch;margin-left:auto;margin-right:auto">
-        Premium adds trivia along with goal tracking, mood patterns, mandalas to print or color, playlists
-        and the local resource map. Upgrade any time, and cancel just as easily.</p>
+        Basic adds trivia along with self-assessment quizzes, interactive worksheets, challenges you design
+        yourself and Pip, the desktop pet. Upgrade any time, and cancel just as easily.</p>
       <div class="row" style="justify-content:center;margin-top:16px">
         <a class="btn lg" href="${unlockHref(NEEDED, a.authenticated)}">See membership options</a>
         <a class="btn ghost" href="${a.authenticated ? 'dashboard.html' : 'explore.html'}">${a.authenticated ? 'Back to Today' : 'Back to the library'}</a>
@@ -110,7 +110,7 @@ if (a.level < NEEDED) {
     </div>
     <h2 style="margin-top:40px">What's in it</h2>
     <div class="topics-preview">${perTopic.map(([t, n]) => `
-      <div class="card"><h3>${esc(t)}</h3><span class="meta">${n} sets · ${n * N} questions</span></div>`).join('')}
+      <div class="card"><h3>${esc(t)}</h3><span class="meta">${n} quizzes · ${n * N} questions</span></div>`).join('')}
     </div>`;
 } else {
   await member();
@@ -162,7 +162,7 @@ async function member() {
   };
 
   if (set) play(set, lib, saveScore, scores, bestBadge);
-  else if (slug) root.innerHTML = '<div class="empty">That trivia set could not be found. <a href="trivia.html">All trivia sets</a></div>';
+  else if (slug) root.innerHTML = '<div class="empty">That trivia quiz could not be found. <a href="trivia.html">All trivia quizzes</a></div>';
   else index(lib, scores, bestBadge);
 }
 
@@ -175,10 +175,10 @@ function index(lib, scores, bestBadge) {
     <div class="spread" style="margin-bottom:6px">
       <div>
         <h1 style="margin:0">Mental health trivia</h1>
-        <p class="muted" style="max-width:60ch;margin:.5em 0 0">${SETS.length} sets, ten questions each. Every answer comes with a short
+        <p class="muted" style="max-width:60ch;margin:.5em 0 0">${SETS.length} quizzes, ten questions each. Every answer comes with a short
           note, so you learn something whether you were right or not. Best scores are kept.</p>
       </div>
-      <span class="badge live">Included with Premium</span>
+      <span class="badge live">Included with Basic</span>
     </div>
     <div class="tstats" id="stats"></div>
     <div class="card" style="margin:20px 0 26px">
@@ -210,7 +210,7 @@ function index(lib, scores, bestBadge) {
   function paintStats() {
     const s = summarize(SETS, scores);
     document.getElementById('stats').innerHTML = `
-      <div class="card"><div class="n">${s.played}<span class="faint" style="font-size:1rem"> / ${SETS.length}</span></div><div class="k">Sets played</div></div>
+      <div class="card"><div class="n">${s.played}<span class="faint" style="font-size:1rem"> / ${SETS.length}</span></div><div class="k">Quizzes played</div></div>
       <div class="card"><div class="n">${s.perfect}</div><div class="k">Perfect scores</div></div>
       <div class="card"><div class="n">${s.played ? s.avg + '%' : '—'}</div><div class="k">Average best score</div></div>
       <div class="card"><div class="n">${SETS.length * N}</div><div class="k">Questions in all</div></div>`;
@@ -229,7 +229,7 @@ function index(lib, scores, bestBadge) {
       (!t || (s.title + ' ' + s.description + ' ' + s.topic + ' ' + (s.tags || []).join(' ')).toLowerCase().includes(t))
     );
     document.getElementById('count').textContent =
-      `${list.length} set${list.length === 1 ? '' : 's'}${topic ? ' in ' + topic : ''}`;
+      `${list.length} quiz${list.length === 1 ? '' : 'zes'}${topic ? ' in ' + topic : ''}`;
     document.getElementById('results').innerHTML = list.length
       ? list.map(s => `<a class="tile" href="trivia.html?slug=${encodeURIComponent(s.slug)}">
           ${favButton('trivia', s.id, isFavorite(lib, 'trivia', s.id), { size: 20, label: false })}
@@ -350,8 +350,8 @@ function play(s, lib, saveScore, scores, bestBadge) {
         <p class="faint" id="bestline"></p>
         <div class="row" style="justify-content:center;margin-top:18px">
           <button class="btn" id="again" type="button">Play again</button>
-          <a class="btn ghost" id="nextset" href="#">Next set in ${esc(s.topic)}</a>
-          <a class="btn ghost" href="trivia.html">All trivia sets</a>
+          <a class="btn ghost" id="nextset" href="#">Next quiz in ${esc(s.topic)}</a>
+          <a class="btn ghost" href="trivia.html">All trivia quizzes</a>
         </div>
       </div>
       <div class="review">
@@ -369,7 +369,7 @@ function play(s, lib, saveScore, scores, bestBadge) {
         advice or a diagnosis. If a question raised something, <a href="therapists.html">find a therapist</a>.</div>`;
     stage.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-    // Next unplayed set in this topic, otherwise the next one after this.
+    // Next unplayed quiz in this topic, otherwise the next one after this.
     const inTopic = SETS.filter(x => x.topic === s.topic);
     const at = inTopic.findIndex(x => x.slug === s.slug);
     const nextSet = inTopic.slice(at + 1).concat(inTopic.slice(0, at)).find(x => !scores.has(x.slug))
@@ -382,7 +382,7 @@ function play(s, lib, saveScore, scores, bestBadge) {
     if (!alreadyDone) { setProgress('trivia', s.id, N, N); alreadyDone = true; }
     const row = await saveScore(s, total);
     document.getElementById('bestline').textContent =
-      `Best on this set: ${row.best}/${row.total || N} · played ${row.plays} time${row.plays === 1 ? '' : 's'}`;
+      `Best on this quiz: ${row.best}/${row.total || N} · played ${row.plays} time${row.plays === 1 ? '' : 's'}`;
     document.getElementById('bestpill').innerHTML = bestBadge(s);
     if (total === N && row.plays === 1) toast('Perfect on the first try!', 'ok');
   }

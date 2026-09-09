@@ -246,7 +246,7 @@ async function paintLibrary() {
   const byKey = new Map((cat || []).map(r => [r.kind + ':' + r.id, r]));
   // The free discovery tools are not in the catalog table; they ship with the site.
   for (const t of TOOLS) byKey.set('discover:' + t.id, { kind: 'discover', id: t.id, slug: t.slug, title: t.title });
-  // Same for the trivia sets.
+  // Same for the trivia quizzes.
   for (const t of TRIVIA) byKey.set('trivia:' + t.id, { kind: 'trivia', id: t.id, slug: t.slug, title: t.title });
 
   const tile = (k) => {
@@ -290,9 +290,9 @@ const quick = [
   ['Quizzes', 'explore.html?type=quiz', 2],
   ['Worksheets', 'explore.html?type=worksheet', 2],
   ['Desktop pet', 'pet.html', 2, true],
+  ['Mental health trivia', 'trivia.html', 2, true],
   ['Goals & tracking', 'goals.html', 3],
   ['Mandalas', 'mandalas.html', 3],
-  ['Mental health trivia', 'trivia.html', 3, true],
   ['Find a therapist', 'therapists.html', 0],
 ];
 /* A tile flagged `ownGate` opens its page even when locked, because that page makes its
@@ -310,8 +310,8 @@ if (a.level < 3) {
   document.getElementById('upsell').innerHTML = `<div class="card pad-lg center">
     <h3>There's more in ${nextTier}</h3>
     <p class="muted">${a.level < 2
-      ? `${counted(c.quiz,'quizzes')}, ${counted(c.worksheet,'worksheets')}, and challenges you design yourself — up to a full year.`
-      : `Goal tracking, mood patterns, ${TRIVIA.length} sets of mental health trivia, mandalas to print or color online, playlists and the local resource map.`}</p>
+      ? `${counted(c.quiz,'quizzes')}, ${counted(c.worksheet,'worksheets')}, ${TRIVIA.length} mental health trivia quizzes, and challenges you design yourself — up to a full year.`
+      : `Goal tracking, mood patterns, mandalas to print or color online, playlists and the local resource map.`}</p>
     <a class="btn" href="pricing.html">Compare memberships</a></div>`;
 }
 }

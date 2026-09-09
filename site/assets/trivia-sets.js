@@ -1,7 +1,7 @@
 /* =============================================================================
-   Theraglee — Mental health trivia: 150 sets, ten questions each, fifteen topics.
+   Theraglee — Mental health trivia: 150 quizzes, ten questions each, fifteen topics.
    -----------------------------------------------------------------------------
-   A Premium feature. Like the free discovery tools, the sets ship with the site
+   A Basic feature. Like the free discovery tools, the quizzes ship with the site
    rather than living in the database; trivia.html renders them and keeps
    scores (trivia_scores, with localStorage as the fallback).
 
@@ -13,6 +13,9 @@
    (uuid5 of https://theraglee.com/trivia/<slug>), so a set can be favorited and
    tracked in item_progress like any other activity. Do not change an id once
    published; change the slug and the id together.
+
+   In code a quiz is a "set" (SETS, set_id, this file's name); the site calls
+   them quizzes.
 
    Shape of every set
      slug, id, title, topic, difficulty (1 easy · 2 medium · 3 hard),
