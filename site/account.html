@@ -114,8 +114,8 @@ function profile(){
       <div class="field"><label>What are you working on?</label>
         <div class="chips" id="issues">${MEMBER_ISSUES.map(i=>
           `<button type="button" class="chip ${(p.issues||[]).includes(i)?'on':''}" data-v="${esc(i)}">${esc(i)}</button>`).join('')}</div>
-        <div class="help">This shapes the daily content you see. If you switch on therapist
-          contact under Privacy, these topics are also what therapists see.</div></div>
+        <div class="help">This shapes the daily content you see. If you switch on Theraglee
+          Match under Privacy, these topics are also what therapists see.</div></div>
 
       <hr class="hr">
       <h3>Daily email</h3>
@@ -143,8 +143,8 @@ function privacy(){
       <h2>Who can see you</h2>
       <label class="switch">
         <input type="checkbox" id="vis" ${p.visible_to_therapists?'checked':''}>
-        <span><strong>Let therapists reach out to me</strong><br>
-        <span class="muted">Verified therapists with an active membership will see your
+        <span><strong>Theraglee Match</strong><br>
+        <span class="muted">Let therapists reach out to you. Verified therapists with an active membership will see your
         <strong>name</strong>, the topics you picked above, and your zip code — and can send you a
         message here. They never see your email address, your journal, your quiz results, or
         anything else you have written. Switch it off and you disappear from their view
@@ -172,7 +172,7 @@ async function inbox(){
   const host = document.getElementById('body');
   host.innerHTML = `
     <h2>Messages from therapists</h2>
-    <p class="muted">Only therapists you allowed to contact you, under Privacy.</p>
+    <p class="muted">Only therapists you allowed to reach you by turning on Theraglee Match, under Privacy.</p>
     ${(data||[]).length ? data.map(m=>{
       const t = m.therapist_profiles || {};
       return `<div class="card" style="margin-top:14px">

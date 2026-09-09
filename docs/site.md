@@ -27,7 +27,7 @@ by editing the page. Every piece of content carries a `min_level`:
 | Level | Tier | Who |
 |---|---|---|
 | 0 | Visitor | No account. Browses therapists, quotes, tips, fun facts, affirmations, reads every article, and uses all 360 free discovery tools. |
-| 1 | Free | Registered, no card. Adds the progress dashboard with favorites and saved-for-later (articles included), personalized daily content, the journal and its prompts, checklists with progress, 7-day challenges, articles by email every morning, and the switch that lets therapists reach out. |
+| 1 | Free | Registered, no card. Adds the progress dashboard with favorites and saved-for-later (articles included), personalized daily content, the journal and its prompts, checklists with progress, 7-day challenges, articles by email every morning, and Theraglee Match, the switch that lets therapists reach out. |
 | 2 | Basic | Paid. Adds 312 quizzes, 186 worksheets, challenges up to 365 days, 150 mental health trivia quizzes, and Pip, the downloadable desktop pet. |
 | 3 | Premium | Paid. Adds goals, mood tracking, mandalas to print or color online, playlists, resource map, personalized therapist recommendations. |
 
@@ -128,7 +128,7 @@ gated by tier, so Basic and Premium have them too:
 | Articles sent to your inbox | the `daily-digest` Edge Function, below | `profiles.daily_email` |
 | 7-day mental health challenges | `challenge_templates` (the 7-day one is `min_level = 1`); Free can also design a 7-day one | `min_level` |
 | Checklists with progress tracked | 4 `checklists` at `min_level = 1`, `checklist_progress` + `item_progress` | `min_level`, RLS `own rows` |
-| Dashboard switch: let therapists reach out | `profiles.visible_to_therapists`, toggled on `dashboard.html` and `account.html` | `member_opted_in()` |
+| Theraglee Match (dashboard switch: let therapists reach out) | `profiles.visible_to_therapists`, toggled on `dashboard.html` and `account.html` | `member_opted_in()` |
 
 ## The morning email
 
