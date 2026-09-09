@@ -53,3 +53,10 @@ in `supabase/migrations/`. Change them here, run
 `node tests/billing-logic/check.mjs`, and deploy with the Supabase CLI — never
 edit a function in the Supabase Dashboard, or the next deploy will overwrite it.
 `docs/stripe.md` is the guide.
+
+## Articles are free, and five arrive every day
+
+Every article is `min_level = 0` (the database enforces it). The repo copy is
+`data/articles.json`; check it with `node tests/articles-fixture/check.mjs`,
+generate the SQL with `python3 tools/articles_sql.py`, and follow
+`docs/articles.md` for the daily routine and the writing rules.

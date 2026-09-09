@@ -21,18 +21,17 @@
   <div class="skeleton" style="height:260px"></div>
 </div></main>
 <script type="module">
-import { chrome, sb, esc, qs, lockNotice, logActivity, fmtDate, toast } from './assets/app.js';
+import { chrome, sb, esc, qs, logActivity, fmtDate, toast } from './assets/app.js';
 import { library, isFavorite, isLater, favButton, laterButton, statusBadge,
-         bindLibrary, setProgress } from './assets/library.js';
+         bindLibrary, setProgress, signupHref } from './assets/library.js';
 const a = await chrome({ active:'articles.html' });
 const root = document.getElementById('root');
 const slug = qs('slug');
 const { data: art } = await sb.from('articles').select('*').eq('slug', slug).maybeSingle();
 
 if (!art) {
-  const { data: cat } = await sb.from('content_catalog').select('*').eq('slug',slug).eq('kind','article').maybeSingle();
-  if (cat) { document.title = cat.title + ' — Theraglee'; lockNotice(root, cat.min_level, cat.title); }
-  else root.innerHTML = '<div class="empty">Article not found. <a href="articles.html">All articles</a></div>';
+  // Every article is free, so a missing slug is simply not found.
+  root.innerHTML = '<div class="empty">Article not found. <a href="articles.html">All articles</a></div>';
 } else {
   document.title = art.title + ' — Theraglee';
   logActivity('article', art.id, 'view', art.tags || []);
@@ -53,6 +52,9 @@ if (!art) {
       ${laterButton('article', art.id, isLater(lib,'article',art.id))}
       <span id="statuspill">${statusBadge(lib.progress.get('article:'+art.id))}</span>
     </div>
+    ${lib.authenticated ? '' : `<p class="faint no-print" style="margin-top:10px;max-width:60ch">Free to read, no account
+      needed. <a href="${signupHref('save')}">Create a free account</a> to favorite this article, save it for
+      later, and keep track of what you have read.</p>`}
     <div class="prose" style="margin-top:26px">${paras}</div>
     <div class="row no-print" style="margin-top:26px">
       <button class="btn ghost${read ? ' on' : ''}" id="markread">${

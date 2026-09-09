@@ -38,7 +38,7 @@ supabase/
                        identity, connect, session payments) — see docs/stripe.md
   migrations/          Schema changes that go with them
 documents/
-  index.html           Browsable library of all 518 documents
+  index.html           Browsable library of all 523 documents
   CONTENT-HEALTH.md    Source-data defects found while building
   challenges/ articles/ checklists/ journal-prompts/ quizzes/ worksheets/
 ```
@@ -107,7 +107,7 @@ chromium --headless --no-pdf-header-footer \
 
 | File | Source table | Rows |
 |---|---|---|
-| `articles.json` | `articles` | 2 |
+| `articles.json` | `articles` | 7 (five more every day — see `docs/articles.md`) |
 | `checklists.json` | `checklists` | 4 |
 | `challenges.json` | `challenge_templates` + `challenge_days` | 3 (67 days) |
 | `worksheets.json` | `worksheets` | 186 |
@@ -115,8 +115,8 @@ chromium --headless --no-pdf-header-footer \
 | `journal-prompts.txt` | `daily_content` where `kind = 'journal_prompt'` | 372 |
 
 The 372 journal prompts are grouped into 11 themed collections at build time
-(keyword rules live in `THEMES` in the generator), which is why 518 documents come
-out of 879 source rows.
+(keyword rules live in `THEMES` in the generator), which is why 523 documents come
+out of 884 source rows.
 
 `quizzes.txt` is a compact pipe-delimited format rather than JSON — `Q|` a quiz,
 `P|` a question, `O|value|label` an option, `B|min|max|label|interpretation` a
@@ -179,7 +179,9 @@ disagree with the counts it is derived from.
 An activity counts as **started** at one answer and **completed** when every
 answer is in. Worksheets count filled fields (a table field counts once any cell
 is filled), quizzes count answered questions, checklists count ticked items.
-Articles have no questions, so they carry an explicit **Mark as read**.
+Articles have no questions, so they carry an explicit **Mark as read**. Every
+article is free to read without an account; favoriting, saving for later and
+marking read are for registered members (`docs/articles.md`).
 
 The favorite control is the **"ee" from the wordmark with its smile** —
 `brand/assets/favorite.svg`, traced from `logo.png` so the curves are the real
