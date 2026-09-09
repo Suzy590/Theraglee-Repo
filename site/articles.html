@@ -10,33 +10,163 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
 <link rel="stylesheet" href="assets/styles.css">
 <title>Articles — Theraglee</title>
-<meta name="description" content="Evidence-informed articles on habits, thinking traps, resilience and everyday mental health.">
+<meta name="description" content="Free, plain-language articles on anxiety, sleep, boundaries, stress, habits and everyday mental health. New articles every day. No account needed.">
 </head>
 <body>
 <main class="section"><div class="wrap">
   <h1>Articles</h1>
-  <p class="muted" style="max-width:56ch">Plain-language pieces on how this stuff actually works.</p>
-  <div class="grid g3" id="list" style="margin-top:28px">
+  <p class="muted" style="max-width:56ch">Plain-language pieces on how this stuff actually works. Every
+    article is free to read, with new ones every day.</p>
+  <p class="faint" id="visitor-note" hidden style="max-width:60ch">Want to keep one?
+    <a id="signup-link" href="login.html?mode=signup&amp;why=save&amp;next=articles.html">Create a free account</a>
+    to favorite articles, save them for later, and mark what you have read.</p>
+
+  <div class="card" style="margin:26px 0">
+    <div class="field" style="margin-bottom:14px">
+      <label for="q">Search articles</label>
+      <input id="q" type="search" placeholder="Try “sleep”, “boundaries”, “can't stop worrying”…" autocomplete="off">
+      <p class="faint" style="margin:6px 0 0">Searches titles, summaries, topics and the full text of every article.</p>
+    </div>
+    <div class="chips" id="tags"><button class="chip on" data-tag="">Every topic</button></div>
+    <!-- Member-only views; hidden for signed-out visitors. -->
+    <div class="chips hide" id="views" style="margin-top:12px">
+      <button class="chip on" data-v="">All articles</button>
+      <button class="chip" data-v="favorite">Favorites</button>
+      <button class="chip" data-v="later">Saved for later</button>
+      <button class="chip" data-v="read">Read</button>
+      <button class="chip" data-v="unread">Not read yet</button>
+    </div>
+  </div>
+
+  <p class="faint" id="count"></p>
+  <div class="grid g3" id="list">
     <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
   </div>
 </div></main>
 <script type="module">
-import { chrome, sb, esc, tierName, unlockHref } from './assets/app.js';
-const a = await chrome({ active:'articles.html' });
-const { data } = await sb.from('content_catalog').select('*').eq('kind','article');
-document.getElementById('list').innerHTML = (data||[]).length
-  ? data.map(r=>{
-      const locked = r.min_level > a.level;
-      return `<a class="tile ${locked?'locked':''}" href="${locked?unlockHref(r.min_level,a.authenticated):'article.html?slug='+encodeURIComponent(r.slug)}">
-        <div class="row" style="justify-content:space-between;align-items:flex-start">
-          <h3>${esc(r.title)}</h3>
-          ${locked?`<span class="badge lock">${tierName(r.min_level)}</span>`:''}
+import { chrome, sb, esc, qs, fmtDate } from './assets/app.js';
+import { library, isFavorite, isLater, favButton, progressOf, bindLibrary, signupHref }
+  from './assets/library.js';
+await chrome({ active:'articles.html' });
+
+// Every article is free to everyone, so the page reads the table itself rather
+// than the level-gated catalog view, newest first.
+const [{ data, error }, lib] = await Promise.all([
+  sb.from('articles').select('id,slug,title,excerpt,tags,published_at')
+    .order('published_at', { ascending: false }),
+  library(),
+]);
+if (error) console.error(error);
+const all = data || [];
+
+if (lib.authenticated) document.getElementById('views').classList.remove('hide');
+else {
+  const note = document.getElementById('visitor-note');
+  note.hidden = false;
+  document.getElementById('signup-link').href = signupHref('save');
+}
+
+// Topic chips come from the tags in use, so a new topic appears on its own.
+const tagCounts = new Map();
+for (const a of all) for (const t of a.tags || []) tagCounts.set(t, (tagCounts.get(t) || 0) + 1);
+const tagsHost = document.getElementById('tags');
+tagsHost.insertAdjacentHTML('beforeend', [...tagCounts.keys()].sort().map(t =>
+  `<button class="chip" data-tag="${esc(t)}">${esc(t)}</button>`).join(''));
+
+let term = qs('q', '') || '', tag = qs('tag', ''), view = '';
+document.getElementById('q').value = term;
+if (tag && !tagCounts.has(tag)) tag = '';
+tagsHost.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', c.dataset.tag === tag));
+
+const readOf = (a) => progressOf(lib, 'article', a.id)?.status === 'completed';
+
+/* ---- search ----
+   Two layers. The words typed are matched, in any order, against what the
+   page already has (title, summary, topics). The full text stays in the
+   database, so the same words are also sent to it and any article whose body
+   mentions all of them is included. Every article is free, so the search
+   works signed in or out. */
+const words = (t) => t.toLowerCase().split(/\s+/).filter(w => w.length > 1);
+const localHit = (a, ws) => {
+  const hay = (a.title + ' ' + (a.excerpt || '') + ' ' + (a.tags || []).join(' ')).toLowerCase();
+  return ws.every(w => hay.includes(w));
+};
+let bodyHits = new Set(), bodyTerm = '', searchTimer = null;
+async function searchBodies(t) {
+  const ws = words(t);
+  if (!ws.length) { bodyHits = new Set(); bodyTerm = ''; return; }
+  // One ilike per word, so an article has to mention every word somewhere.
+  let q = sb.from('articles').select('id');
+  for (const w of ws) q = q.ilike('body_md', `%${w.replace(/[%_\\]/g, '\\$&')}%`);
+  const { data, error } = await q;
+  if (error) { console.debug('search', error.message); return; }
+  if (t !== term) return;                     // typed on; a newer search is coming
+  bodyHits = new Set((data || []).map(r => r.id));
+  bodyTerm = t;
+}
+function rememberSearch() {
+  const u = new URL(location.href);
+  term.trim() ? u.searchParams.set('q', term.trim()) : u.searchParams.delete('q');
+  tag ? u.searchParams.set('tag', tag) : u.searchParams.delete('tag');
+  history.replaceState(null, '', u);
+}
+
+function render() {
+  const t = term.trim(), ws = words(t);
+  const list = all.filter(a =>
+    (!tag || (a.tags || []).includes(tag)) &&
+    (!view ||
+      (view === 'favorite' && isFavorite(lib, 'article', a.id)) ||
+      (view === 'later'    && isLater(lib, 'article', a.id)) ||
+      (view === 'read'     && readOf(a)) ||
+      (view === 'unread'   && !readOf(a))) &&
+    (!ws.length || localHit(a, ws) || (bodyTerm === t && bodyHits.has(a.id))));
+
+  document.getElementById('count').textContent =
+    `${list.length} article${list.length === 1 ? '' : 's'}${tag ? ` on ${tag.toLowerCase()}` : ''}${
+      t ? ` matching “${t}”` : ''}`;
+
+  document.getElementById('list').innerHTML = list.length
+    ? list.map(a => `<a class="tile" href="article.html?slug=${encodeURIComponent(a.slug)}">
+        ${favButton('article', a.id, isFavorite(lib, 'article', a.id), { size:20, label:false })}
+        <h3>${esc(a.title)}</h3>
+        ${a.excerpt ? `<p class="meta" style="color:var(--muted)">${esc(String(a.excerpt).slice(0,150))}${String(a.excerpt).length > 150 ? '…' : ''}</p>` : ''}
+        <span class="meta">${fmtDate(a.published_at)}${(a.tags || []).length ? ' · ' + a.tags.map(esc).join(' · ') : ''}</span>
+        <div class="row" style="gap:7px;margin-top:2px">
+          ${readOf(a) ? '<span class="badge done">Read</span>' : ''}
+          ${isLater(lib, 'article', a.id) ? '<span class="badge gray">Saved for later</span>' : ''}
         </div>
-        <p class="meta" style="color:var(--muted)">${esc(String(r.description||'').slice(0,150))}</p>
-        ${(r.tags||[]).length?`<span class="meta">${r.tags.map(esc).join(' · ')}</span>`:''}
-      </a>`;
-    }).join('')
-  : '<div class="empty" style="grid-column:1/-1">No articles published yet.</div>';
+      </a>`).join('')
+    : `<div class="empty" style="grid-column:1/-1">${
+        !all.length ? 'No articles published yet.'
+        : t ? `Nothing matches “${esc(t)}”. Try fewer or different words.`
+        : 'Nothing here yet.'}</div>`;
+}
+
+document.getElementById('q').addEventListener('input', e => {
+  term = e.target.value;
+  render();                                   // titles and summaries answer at once
+  rememberSearch();
+  clearTimeout(searchTimer);                  // the full text follows once typing pauses
+  searchTimer = setTimeout(async () => { await searchBodies(term.trim()); render(); }, 250);
+});
+tagsHost.addEventListener('click', e => {
+  const c = e.target.closest('.chip'); if (!c) return;
+  tag = c.dataset.tag;
+  tagsHost.querySelectorAll('.chip').forEach(x => x.classList.toggle('on', x === c));
+  render();
+  rememberSearch();
+});
+document.getElementById('views').addEventListener('click', e => {
+  const c = e.target.closest('.chip'); if (!c) return;
+  view = c.dataset.v;
+  document.querySelectorAll('#views .chip').forEach(x => x.classList.toggle('on', x === c));
+  render();
+});
+// Favorite toggles on the tiles; a signed-out visitor is sent to the free sign-up.
+bindLibrary(document.getElementById('list'), () => { if (view) render(); });
+render();
+if (term.trim()) { await searchBodies(term.trim()); render(); }   // a shared link with ?q=
 </script>
 </body>
 </html>

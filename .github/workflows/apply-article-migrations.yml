@@ -1,0 +1,59 @@
+# Applies each day's article SQL to the Supabase project when the daily
+# articles routine pushes it, so the site gets the articles even when the
+# session that wrote them had no database access.
+#
+# Needs one repository secret: SUPABASE_DB_URL, the project's Postgres
+# connection string (Supabase dashboard → Connect → Session pooler URI, with
+# the database password filled in). With the secret unset the job says so
+# and does nothing. The article files are upserts on slug, so applying one
+# twice is harmless.
+name: Apply article migrations
+
+on:
+  push:
+    branches: [claude/daily-articles]
+    paths: ['supabase/migrations/*_articles_*.sql']
+  workflow_dispatch:
+    inputs:
+      all:
+        description: Apply every article migration, not just the ones in the last push
+        type: boolean
+        default: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Pick the files to apply
+        id: pick
+        env:
+          BEFORE: ${{ github.event.before }}
+          ALL: ${{ inputs.all }}
+        run: |
+          if [ "$ALL" = "true" ] || [ -z "$BEFORE" ] || ! git cat-file -e "$BEFORE" 2>/dev/null; then
+            files=$(ls supabase/migrations/*_articles_*.sql)
+          else
+            files=$(git diff --name-only "$BEFORE" HEAD -- 'supabase/migrations/*_articles_*.sql' | sort)
+          fi
+          echo "files<<EOF" >> "$GITHUB_OUTPUT"; echo "$files" >> "$GITHUB_OUTPUT"; echo "EOF" >> "$GITHUB_OUTPUT"
+          echo "Will apply:"; echo "$files"
+
+      - name: Apply them
+        env:
+          DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          FILES: ${{ steps.pick.outputs.files }}
+        run: |
+          if [ -z "$DB_URL" ]; then
+            echo "::notice::SUPABASE_DB_URL is not set, so nothing was applied. Add it under Settings → Secrets and variables → Actions, then re-run this workflow with 'all' checked."
+            exit 0
+          fi
+          if [ -z "$FILES" ]; then echo "No article migrations in this push."; exit 0; fi
+          for f in $FILES; do
+            echo "== $f"
+            psql "$DB_URL" -v ON_ERROR_STOP=1 -q -f "$f"
+          done
+          psql "$DB_URL" -Atc "select count(*) || ' articles, all at min_level ' || min(min_level) || '-' || max(min_level) from public.articles"

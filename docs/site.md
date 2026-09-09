@@ -26,8 +26,8 @@ by editing the page. Every piece of content carries a `min_level`:
 
 | Level | Tier | Who |
 |---|---|---|
-| 0 | Visitor | No account. Browses therapists, articles, quotes, tips, fun facts, affirmations, and uses all 360 free discovery tools. |
-| 1 | Free | Registered, no card. Adds the progress dashboard with favorites, personalized daily content, the journal and its prompts, checklists with progress, 7-day challenges, articles by email every morning, and the switch that lets therapists reach out. |
+| 0 | Visitor | No account. Browses therapists, quotes, tips, fun facts, affirmations, reads every article, and uses all 360 free discovery tools. |
+| 1 | Free | Registered, no card. Adds the progress dashboard with favorites and saved-for-later (articles included), personalized daily content, the journal and its prompts, checklists with progress, 7-day challenges, articles by email every morning, and the switch that lets therapists reach out. |
 | 2 | Basic | Paid. Adds 312 quizzes, 186 worksheets, challenges up to 365 days, 150 mental health trivia quizzes, and Pip, the downloadable desktop pet. |
 | 3 | Premium | Paid. Adds goals, mood tracking, mandalas to print or color online, playlists, resource map, personalized therapist recommendations. |
 
@@ -149,9 +149,9 @@ Account → Profile → Daily email.
 How an article is chosen: one the member's level allows, never sent to them
 before if there is one, otherwise the one they were sent longest ago — and
 nothing from the last 30 days. When every article is too recent the email goes
-out without one, so a small library does not repeat itself daily. **There are
-two articles right now**; every article added to `articles` becomes another
-morning email.
+out without one, so a small library does not repeat itself daily. Every article
+added to `articles` becomes another morning email, and five are added every day
+(see [`articles.md`](articles.md)).
 
 Nobody gets two emails in a day (`digest_sends` has a unique index on user and
 date), and a failed send is retried at most once more that day.
@@ -232,7 +232,7 @@ Most of it was imported from the Word documents in the parent folder:
 - 186 interactive worksheets (16 imported, 170 written for the site — see below)
 - 4 checklists
 - 3 challenges (two 30-day, one free 7-day)
-- 2 articles
+- 7 articles, free to everyone, with five more published every day — see [`articles.md`](articles.md)
 - 200 mandalas to print or color online (drawn in the browser from a seed)
 - 150 mental health trivia quizzes (1,500 questions), written for the site rather than imported
 - 140 daily items — affirmations, tips, fun facts, quotes
