@@ -143,7 +143,7 @@ function privacy(){
       <h2>Who can see you</h2>
       <label class="switch">
         <input type="checkbox" id="vis" ${p.visible_to_therapists?'checked':''}>
-        <span><strong>Theraglee Match</strong><br>
+        <span><strong>Theraglee Match Mode</strong><br>
         <span class="muted">Let therapists reach out to you. Verified therapists with an active membership will see your
         <strong>name</strong>, the topics you picked above, and your zip code — and can send you a
         message here. They never see your email address, your journal, your quiz results, or
@@ -153,6 +153,16 @@ function privacy(){
       <div class="notice" style="margin-top:20px">
         Your journal entries, quiz results, worksheets and mood logs are private to your account.
         No therapist, and no other member, can read them.
+      </div>
+
+      <h2 style="margin-top:34px">Questions</h2>
+      <div class="stack">
+        <div class="card"><h3>What is Theraglee Match Mode?</h3>
+          <p class="muted" style="margin:0">The switch above. It lets verified therapists reach
+            out to you. When it is on, they can see your name, the topics on your profile and
+            your zip code, and send a message to your inbox here. They never see your email, your
+            journal, or anything you write. It is off by default, it is free, and you can turn it
+            off any time to become invisible to them again.</p></div>
       </div>
 
       <hr class="hr">
@@ -172,7 +182,7 @@ async function inbox(){
   const host = document.getElementById('body');
   host.innerHTML = `
     <h2>Messages from therapists</h2>
-    <p class="muted">Only therapists you allowed to reach you by turning on Theraglee Match, under Privacy.</p>
+    <p class="muted">Only therapists you allowed to reach you by turning on Theraglee Match Mode, under Privacy.</p>
     ${(data||[]).length ? data.map(m=>{
       const t = m.therapist_profiles || {};
       return `<div class="card" style="margin-top:14px">
