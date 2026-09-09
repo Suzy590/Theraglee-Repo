@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Library — Theraglee</title>
-<meta name="description" content="Browse every free discovery tool, quiz, worksheet, checklist, challenge, article and trivia set on Theraglee.">
+<meta name="description" content="Browse every free discovery tool, quiz, worksheet, checklist, challenge, article and trivia quiz on Theraglee.">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="alternate icon" href="assets/favicon.png" sizes="48x48">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
@@ -84,11 +84,11 @@ const discoverRows = TOOLS.map(t => ({
   category: t.topic, tags: t.tags, min_level: 0,
 }));
 
-// The 150 trivia sets ship with the site too (assets/trivia-sets.js). They are
-// Premium, so they carry min_level 3 and lock like any catalog row.
+// The 150 trivia quizzes ship with the site too (assets/trivia-sets.js). They are
+// Basic, so they carry min_level 2 and lock like any catalog row.
 const triviaRows = TRIVIA.map(t => ({
   kind: 'trivia', id: t.id, slug: t.slug, title: t.title, description: t.description,
-  category: t.topic, tags: t.tags, min_level: 3,
+  category: t.topic, tags: t.tags, min_level: 2,
 }));
 
 const { data: rows, error } = await sb.from('content_catalog').select('*');

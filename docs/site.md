@@ -28,8 +28,8 @@ by editing the page. Every piece of content carries a `min_level`:
 |---|---|---|
 | 0 | Visitor | No account. Browses therapists, articles, quotes, tips, fun facts, affirmations, and uses all 360 free discovery tools. |
 | 1 | Free | Registered, no card. Adds the progress dashboard with favorites, personalized daily content, the journal and its prompts, checklists with progress, 7-day challenges, articles by email every morning, and the switch that lets therapists reach out. |
-| 2 | Basic | Paid. Adds 312 quizzes, 186 worksheets, challenges up to 365 days, and Pip, the downloadable desktop pet. |
-| 3 | Premium | Paid. Adds goals, mood tracking, 150 sets of mental health trivia, mandalas to print or color online, playlists, resource map, personalized therapist recommendations. |
+| 2 | Basic | Paid. Adds 312 quizzes, 186 worksheets, challenges up to 365 days, 150 mental health trivia quizzes, and Pip, the downloadable desktop pet. |
+| 3 | Premium | Paid. Adds goals, mood tracking, mandalas to print or color online, playlists, resource map, personalized therapist recommendations. |
 
 A member can edit only their own profile details from the browser — name, zip,
 topics, the morning-email settings, onboarding, and the therapist reach-out
@@ -234,7 +234,7 @@ Most of it was imported from the Word documents in the parent folder:
 - 3 challenges (two 30-day, one free 7-day)
 - 2 articles
 - 200 mandalas to print or color online (drawn in the browser from a seed)
-- 150 mental health trivia sets (1,500 questions), written for the site rather than imported
+- 150 mental health trivia quizzes (1,500 questions), written for the site rather than imported
 - 140 daily items — affirmations, tips, fun facts, quotes
 
 The daily items are **placeholders written for launch**, because the
@@ -310,19 +310,19 @@ Tags are a fixed vocabulary, listed in the check, so the library's filters stay
 tidy. The sixty-two imported quizzes keep their original free-form tags and
 looser shape; the check lists them as legacy.
 
-## Mental health trivia (Premium)
+## Mental health trivia (Basic)
 
-`site/trivia.html` is where Premium members play **150 sets of mental health
-trivia** — ten multiple-choice questions each, 1,500 questions in all, across
+`site/trivia.html` is where Basic members play **150 mental health trivia
+quizzes** — ten multiple-choice questions each, 1,500 questions in all, across
 fifteen topics (anxiety and worry; mood and depression; stress and burnout;
 sleep and rest; mindfulness and meditation; the brain and emotions;
 relationships and communication; self-esteem and self-compassion; grief, loss
 and change; trauma and resilience; habits, motivation and change; therapy and
 how it works; history and science of psychology; myths, stigma and mental
 health literacy; everyday wellbeing). Each topic has four easy, three medium
-and three hard sets.
+and three hard quizzes.
 
-A set is played one question at a time. Every answer is marked straight away
+A quiz is played one question at a time. Every answer is marked straight away
 with a one- or two-sentence explanation, so a wrong guess still teaches
 something, and the score at the end comes with the full answer key. Options are
 shuffled on every play, so a replay is still a fair test. The keyboard works
@@ -334,32 +334,34 @@ saying anything about the person, and `tests/trivia-fixture/check.mjs` fails
 the build if the copy addresses the player's own health, uses retired phrasings
 such as "committed suicide", or slips into UK spelling.
 
-Like the discovery tools, the sets live in the site rather than the database:
+Like the discovery tools, the quizzes live in the site rather than the database
+(in code a quiz is still a "set": `SETS`, `set_id`, `trivia-sets.js`):
 
 | File | What it holds |
 |---|---|
-| `site/assets/trivia-sets.js` | The 150 sets as data. Each has a stable v5 UUID derived from its slug. |
+| `site/assets/trivia-sets.js` | The 150 quizzes as data. Each has a stable v5 UUID derived from its slug. |
 | `site/assets/trivia.js` | The pure parts: shuffling, scoring, the score bands. No imports, so it can be tested without Supabase. |
 | `site/trivia.html` | The index (search, topic, difficulty and played/perfect filters, best scores) and the play page (`?slug=`). |
 | `supabase/migrations/20260908120000_trivia_scores.sql` | The `trivia_scores` table and `record_trivia_score()`, so best scores follow a member across devices. |
+| `supabase/migrations/20260909020000_trivia_basic.sql` | Moves trivia from Premium to Basic: the write policies on `trivia_scores` drop from level 3 to level 2. |
 
 How access is decided: the page checks `my_access()` and shows an upgrade ask
-below Premium, and `explore.html` lists every set at `min_level = 3` so it
+below Basic, and `explore.html` lists every quiz at `min_level = 2` so it
 locks like any catalog row. Because `site/` is public, the question file itself
 is readable by anyone who fetches it, as with Pip's downloads — the gate is on
 the experience and the score-keeping, not on the text of the questions. The
 `trivia_scores` policies are the real lock on the database side: only a member
-at level 3 or above can write a score.
+at level 2 or above can write a score.
 
 Scores: the page always keeps best scores in the browser
 (`localStorage`, key `tg.trivia.<slug>`) and, once the migration has been
 applied, also in `trivia_scores`, merging the two. Until the migration is
 applied the table read fails quietly and the browser copy is all there is.
 Started / Completed goes to `item_progress` with `item_type = 'trivia'`, and
-favorites and "save for later" work like every other activity, so trivia sets
+favorites and "save for later" work like every other activity, so trivia quizzes
 show on the dashboard and under the library's member views.
 
-To add a set, append an entry to `trivia-sets.js`, give it an id with
+To add a quiz, append an entry to `trivia-sets.js`, give it an id with
 `uuid5(NAMESPACE_URL, 'https://theraglee.com/trivia/<slug>')`, and run the
 check. Never change an id once it has shipped.
 

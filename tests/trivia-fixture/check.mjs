@@ -1,4 +1,4 @@
-// Data checks for the mental health trivia sets. Run from the repo root:
+// Data checks for the mental health trivia quizzes ("sets" in code). Run from the repo root:
 //   node tests/trivia-fixture/check.mjs
 // Fails (exit 1) if any set is malformed, any id does not match its slug, or
 // the copy uses language the trivia must avoid.
