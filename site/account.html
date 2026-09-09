@@ -143,7 +143,7 @@ function privacy(){
       <h2>Who can see you</h2>
       <label class="switch">
         <input type="checkbox" id="vis" ${p.visible_to_therapists?'checked':''}>
-        <span><strong>Theraglee Match</strong><br>
+        <span><strong>Theraglee Match Mode</strong><br>
         <span class="muted">Let therapists reach out to you. Verified therapists with an active membership will see your
         <strong>name</strong>, the topics you picked above, and your zip code — and can send you a
         message here. They never see your email address, your journal, your quiz results, or
@@ -172,7 +172,7 @@ async function inbox(){
   const host = document.getElementById('body');
   host.innerHTML = `
     <h2>Messages from therapists</h2>
-    <p class="muted">Only therapists you allowed to reach you by turning on Theraglee Match, under Privacy.</p>
+    <p class="muted">Only therapists you allowed to reach you by turning on Theraglee Match Mode, under Privacy.</p>
     ${(data||[]).length ? data.map(m=>{
       const t = m.therapist_profiles || {};
       return `<div class="card" style="margin-top:14px">
