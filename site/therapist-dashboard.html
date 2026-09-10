@@ -247,8 +247,8 @@ async function members(){
   const rows = data || [];
 
   render(`
-    <h2>Members who have toggled ON Theraglee Match Mode</h2>
-    <p class="muted">Theraglee members who switched on Theraglee Match Mode. You see their
+    <h2>Members who have toggled ON <strong>Theraglee Match Mode</strong></h2>
+    <p class="muted">Theraglee members who switched on <strong>Theraglee Match Mode</strong>. You see their
       name and what they are working on — never an email address, and never anything they
       have written in their journal.</p>
     ${!liveListing ? `<div class="notice warn">Your listing has to be live before you can
@@ -264,13 +264,13 @@ async function members(){
           · joined ${fmtDate(m.created_at)}</p>
         <button class="btn sm" style="margin-top:14px" data-reach="${m.id}"
           ${(!liveListing || m.already_contacted)?'disabled':''}>
-          ${m.already_contacted?'Already contacted':'Theraglee Match Mode'}</button>
+          ${m.already_contacted?'Already contacted':'<strong>Theraglee Match Mode</strong>'}</button>
       </div>`).join('')}</div>`
-    : `<div class="empty" style="margin-top:20px">No members have turned on Theraglee Match Mode yet.</div>`}`);
+    : `<div class="empty" style="margin-top:20px">No members have turned on <strong>Theraglee Match Mode</strong> yet.</div>`}`);
 
   document.querySelectorAll('[data-reach]').forEach(b => b.onclick = () => {
     const back = modal(`
-      <h2>Theraglee Match Mode</h2>
+      <h2><strong>Theraglee Match Mode</strong></h2>
       <p class="muted" style="font-size:.92rem">They see this in their Theraglee inbox along
         with a link to your profile. Keep it short and warm.</p>
       <div class="field"><label for="om">Your message</label>
