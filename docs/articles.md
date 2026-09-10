@@ -62,29 +62,29 @@ Each day's session:
 5. Confirms with a query that the five rows are in `articles` at `min_level 0`.
 6. Runs `python3 tools/build_documents.py` and bumps the article counts in
    `README.md` and `docs/site.md`.
-7. Commits everything to the branch `claude/daily-articles` (created from the
-   default branch the first time; merged up from the default branch on later
-   days), pushes, and keeps one draft pull request open for that branch. If the
-   pull request has been merged, the next day starts the branch again from the
-   default branch.
+7. Commits everything to the branch the session was given (every routine
+   session gets its own `claude/...` branch, started fresh from the default
+   branch), pushes it, and opens one draft pull request titled
+   `Daily articles for <YYYY-MM-DD>`. So each day is its own small pull
+   request to review and merge; nothing is shared between days.
 
 If a day is missed the next day does not double up; the site simply gets five
 that day.
 
 ### Getting the SQL into the database
 
-The session that writes the articles applies the SQL itself when it has the
-Supabase connector. A routine only carries the connectors it was given when it
-was created, and this one was created from a session that could not pass its
-Supabase connector along, so there are two ways to make the daily run
-hands-off. Either one is enough; both together are fine.
+The session that writes the articles applies the SQL itself when it has a
+working Supabase connector. The routine carries that connector, but it only
+works while the connector is signed in on the claude.ai account, so there are
+two ways to make the daily run hands-off. Either one is enough; both together
+are fine.
 
-1. **Attach Supabase to the routine.** In Claude Code, open Routines,
-   pick "Theraglee daily articles", and add the Supabase connector. From then
-   on each session applies its own SQL and confirms the rows.
+1. **Keep the Supabase connector signed in.** In claude.ai, under Settings
+   → Connectors, make sure Supabase is connected (reconnect it if it asks).
+   Then each session applies its own SQL and confirms the rows.
 2. **Let GitHub apply it.** `.github/workflows/apply-article-migrations.yml`
-   runs on every push to `claude/daily-articles` that adds an
-   `*_articles_*.sql` file and applies the new files with `psql`. It needs one
+   runs on every push to a `claude/...` branch that adds or changes an
+   `*_articles_*.sql` file and applies those files with `psql`. It needs one
    repository secret, `SUPABASE_DB_URL`: the project's Postgres connection
    string (Supabase dashboard → Connect → Session pooler URI, with the
    database password filled in), added under Settings → Secrets and

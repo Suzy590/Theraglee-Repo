@@ -157,7 +157,7 @@ function privacy(){
 
       <h2 style="margin-top:34px">Questions</h2>
       <div class="stack">
-        <div class="card"><h3>What is Theraglee Match Mode?</h3>
+        <div class="card"><h3>What is <strong>Theraglee Match Mode</strong>?</h3>
           <p class="muted" style="margin:0">The toggle switch above. It lets Theraglee therapists
             know you are interested in them reaching out to you to set up an appointment for
             therapy. You don't have to contact them — they contact you. When the toggle switch is
@@ -186,7 +186,7 @@ async function inbox(){
   const host = document.getElementById('body');
   host.innerHTML = `
     <h2>Messages from therapists</h2>
-    <p class="muted">Only therapists you allowed to reach you by turning on Theraglee Match Mode, under Privacy.</p>
+    <p class="muted">Only therapists you allowed to reach you by turning on <strong>Theraglee Match Mode</strong>, under Privacy.</p>
     ${(data||[]).length ? data.map(m=>{
       const t = m.therapist_profiles || {};
       return `<div class="card" style="margin-top:14px">

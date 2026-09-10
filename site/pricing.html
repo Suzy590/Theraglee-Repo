@@ -74,16 +74,17 @@
       <div>
         <span class="badge">For licensed professionals</span>
         <h2 style="margin-top:14px">Therapist membership</h2>
-        <p class="muted">A separate, single-level membership — not a tier. List your practice,
-          get found by people already using the tools, and see exactly what the listing brings you.
-          Your license is verified with your state board before the profile goes live.</p>
+        <p class="muted">List your practice and get found by people exploring the therapist database,
+          or reach out to members who have <strong>Theraglee Match Mode</strong> toggled ON, and see
+          exactly what your listing brings you with stats tracked right on your dashboard. Your license
+          is verified with your state board before the profile goes live.</p>
         <ul class="muted" style="font-size:.93rem;padding-left:20px">
           <li>Full profile: specialties, insurances, languages, locations, fees</li>
           <li>Searchable by zip, insurance, specialty, telehealth and more</li>
           <li>A Theraglee phone number, so your own line stays private</li>
           <li>Messages routed to you without your email address being shown</li>
           <li>Theraglee referral stats on your dashboard: calls, messages, website clicks, shares, and views</li>
-          <li>Reach out to members who have toggled ON Theraglee Match Mode</li>
+          <li>Reach out to members who have toggled ON <strong>Theraglee Match Mode</strong></li>
           <li>A clinician library of worksheets and CBT, ACT, DBT, couples and kids exercises</li>
           <li>License verified with your state board, and re-checked before it expires</li>
         </ul>
@@ -115,7 +116,7 @@
         <p class="muted" style="margin:0">No. Theraglee is educational and supportive only, and
           nothing here diagnoses or treats a condition. The directory is there when you want
           licensed care.</p></div>
-      <div class="card"><h3>What is Theraglee Match Mode?</h3>
+      <div class="card"><h3>What is <strong>Theraglee Match Mode</strong>?</h3>
         <p class="muted" style="margin:0">A toggle switch on your dashboard that lets Theraglee therapists know you are
           interested in them reaching out to you to set up an appointment for therapy. You don't
           have to contact them — they contact you. When the toggle switch is turned ON,
@@ -243,7 +244,7 @@ document.querySelectorAll('#cycle button').forEach(b=>b.addEventListener('click'
 }));
 
 document.getElementById('compare').innerHTML = COMPARE.map(([label,min])=>
-  `<tr><td>${esc(label)}</td>${[0,1,2,3].map(l=>
+  `<tr><td>${esc(label).replace('Theraglee Match Mode','<strong>Theraglee Match Mode</strong>')}</td>${[0,1,2,3].map(l=>
     `<td class="${l>=min?'yes':'no'}">${l>=min?'✓':'—'}</td>`).join('')}</tr>`).join('');
 
 render();
