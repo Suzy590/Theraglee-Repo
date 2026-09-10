@@ -244,7 +244,7 @@ document.querySelectorAll('#cycle button').forEach(b=>b.addEventListener('click'
 }));
 
 document.getElementById('compare').innerHTML = COMPARE.map(([label,min])=>
-  `<tr><td>${esc(label)}</td>${[0,1,2,3].map(l=>
+  `<tr><td>${esc(label).replace('Theraglee Match Mode','<strong>Theraglee Match Mode</strong>')}</td>${[0,1,2,3].map(l=>
     `<td class="${l>=min?'yes':'no'}">${l>=min?'✓':'—'}</td>`).join('')}</tr>`).join('');
 
 render();
