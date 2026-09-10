@@ -1,6 +1,7 @@
 # Applies each day's article SQL to the Supabase project when the daily
-# articles routine pushes it, so the site gets the articles even when the
-# session that wrote them had no database access.
+# articles routine pushes it (each day's session pushes its own claude/...
+# branch), so the site gets the articles even when the session that wrote
+# them had no database access.
 #
 # Needs one repository secret: SUPABASE_DB_URL, the project's Postgres
 # connection string (Supabase dashboard → Connect → Session pooler URI, with
@@ -11,7 +12,7 @@ name: Apply article migrations
 
 on:
   push:
-    branches: [claude/daily-articles]
+    branches: ['claude/**']
     paths: ['supabase/migrations/*_articles_*.sql']
   workflow_dispatch:
     inputs:
@@ -33,11 +34,16 @@ jobs:
         env:
           BEFORE: ${{ github.event.before }}
           ALL: ${{ inputs.all }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         run: |
-          if [ "$ALL" = "true" ] || [ -z "$BEFORE" ] || ! git cat-file -e "$BEFORE" 2>/dev/null; then
+          if [ "$ALL" = "true" ]; then
             files=$(ls supabase/migrations/*_articles_*.sql)
-          else
+          elif [ -n "$BEFORE" ] && git cat-file -e "$BEFORE" 2>/dev/null; then
+            # A later push to a branch: only the files this push added or changed.
             files=$(git diff --name-only "$BEFORE" HEAD -- 'supabase/migrations/*_articles_*.sql' | sort)
+          else
+            # The first push of a new branch: the files it adds on top of the default branch.
+            files=$(git diff --name-only "origin/$DEFAULT_BRANCH...HEAD" -- 'supabase/migrations/*_articles_*.sql' | sort)
           fi
           echo "files<<EOF" >> "$GITHUB_OUTPUT"; echo "$files" >> "$GITHUB_OUTPUT"; echo "EOF" >> "$GITHUB_OUTPUT"
           echo "Will apply:"; echo "$files"
