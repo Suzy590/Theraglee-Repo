@@ -72,8 +72,11 @@ record behind the badge, and licenses are re-checked before they expire.
 `state_boards` holds the lookup URL per state: one `behavioral_health` row for
 each of the 50 states, each pointing at the board's own public lookup (the
 migration `state_boards_all_states` seeds them, and its `notes` column names the
-separate social-work or MFT board where a state has one). A state with no row
-falls back to a search link in the admin screen.
+separate social-work or MFT board where a state has one). Fifteen states license
+psychologists through a different board with its own lookup; those have a
+`psychology` row too (`state_boards_psychology`), which the admin screen uses
+when the license type is PsyD, PhD or EdD. A state with no row falls back to a
+search link in the admin screen.
 
 ## Changing the site
 
