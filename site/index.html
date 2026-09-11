@@ -77,9 +77,74 @@
     .today-row .today{max-width:640px;margin:0 auto}
     .explore-plug{max-width:640px;margin:0 auto;width:100%}
   }
-  .feature{display:flex;gap:14px;align-items:flex-start}
-  .feature .ico{flex:0 0 40px;height:40px;border-radius:12px;background:var(--soft);
-    display:grid;place-items:center;color:var(--green)}
+  /* Theraglee Match Mode showcase: a deep green band, a big switch that flips
+     to ON as the section scrolls into view, and the benefits for both sides. */
+  .match{position:relative;overflow:hidden;background:var(--green-deep);color:#fff;padding:90px 0}
+  .match .glow-a,.match .glow-b{position:absolute;border-radius:50%;pointer-events:none}
+  .match .glow-a{width:620px;height:620px;left:-160px;top:-240px;
+    background:radial-gradient(closest-side,rgba(141,198,29,.5),rgba(141,198,29,0))}
+  .match .glow-b{width:720px;height:720px;right:-240px;bottom:-320px;
+    background:radial-gradient(closest-side,rgba(141,198,29,.32),rgba(141,198,29,0))}
+  .match .wrap{position:relative;z-index:1}
+  .match .kicker{display:inline-flex;align-items:center;gap:8px;padding:5px 14px;border-radius:var(--r-pill);
+    background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);font-size:.76rem;
+    letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:#E5F3C6}
+  .match h2{font-size:clamp(2rem,4.6vw,3.3rem);font-weight:300;letter-spacing:-.03em;line-height:1.08;
+    margin:18px 0 14px;color:#fff}
+  .match h2 em{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--lime)}
+  .match p.lede{color:rgba(255,255,255,.78);font-size:1.08rem;max-width:52ch;margin:0}
+  .match-top{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:44px;align-items:center}
+  .switch-stage{display:flex;flex-direction:column;align-items:center;gap:18px}
+  .big-switch{position:relative;width:200px;height:96px;border-radius:100px;cursor:pointer;padding:0;
+    background:rgba(255,255,255,.14);border:2px solid rgba(255,255,255,.28);
+    transition:background .6s ease,border-color .6s ease,box-shadow .6s ease}
+  .big-switch:focus-visible{outline:3px solid #fff;outline-offset:4px}
+  .big-switch i{position:absolute;top:8px;left:8px;width:76px;height:76px;border-radius:50%;background:#fff;
+    box-shadow:0 6px 18px rgba(0,0,0,.25);transition:transform .7s cubic-bezier(.22,1,.36,1)}
+  .match.on .big-switch{background:var(--lime);border-color:var(--lime);
+    box-shadow:0 0 0 10px rgba(141,198,29,.18),0 0 70px rgba(141,198,29,.55)}
+  .match.on .big-switch i{transform:translateX(104px)}
+  .switch-label{font-family:var(--serif);font-style:italic;font-size:1.35rem;color:#E5F3C6;text-align:center}
+  .switch-label b{font-family:var(--sans);font-style:normal;font-weight:600;letter-spacing:.08em;color:#fff}
+  .match.on .switch-label b{color:var(--lime)}
+  .pings{display:grid;gap:10px;width:min(100%,360px);margin-top:6px}
+  .ping{display:flex;gap:12px;align-items:center;background:#fff;color:var(--ink);border-radius:14px;
+    padding:12px 14px;box-shadow:var(--shadow-2);opacity:0;transform:translateY(14px) scale(.98)}
+  .match.on .ping{animation:pingIn .7s cubic-bezier(.22,1,.36,1) forwards}
+  .match.on .ping:nth-child(1){animation-delay:.7s}
+  .match.on .ping:nth-child(2){animation-delay:1.4s}
+  .match.on .ping:nth-child(3){animation-delay:2.1s}
+  @keyframes pingIn{to{opacity:1;transform:none}}
+  .ping .av{flex:0 0 38px;height:38px;border-radius:50%;background:var(--soft);color:var(--green);
+    display:grid;place-items:center;font-weight:600;font-size:.85rem}
+  .ping strong{font-weight:500;font-size:.95rem}
+  .ping small{display:block;color:var(--muted);font-size:.8rem;line-height:1.35}
+  .pings-note{font-size:.78rem;color:rgba(255,255,255,.55);text-align:center;margin:0}
+  .match-cols{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:60px}
+  .match-col{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);border-radius:var(--r-lg);
+    padding:30px;display:flex;flex-direction:column}
+  .match-col .who{font-size:.76rem;letter-spacing:.12em;text-transform:uppercase;color:var(--lime);font-weight:600}
+  .match-col h3{margin:8px 0 0;font-size:1.35rem;color:#fff}
+  .match-col ul{list-style:none;padding:0;margin:16px 0 24px}
+  .match-col li{position:relative;padding:7px 0 7px 30px;color:rgba(255,255,255,.86);line-height:1.45}
+  .match-col li strong{color:#fff;font-weight:500}
+  .match-col li::before{content:"";position:absolute;left:4px;top:15px;width:13px;height:7px;
+    border-left:2px solid var(--lime);border-bottom:2px solid var(--lime);transform:rotate(-45deg)}
+  .match-col .btn{margin-top:auto;align-self:flex-start}
+  .match-col .btn.ghost,.match-col .btn.ghost:hover{color:#fff;border-color:rgba(255,255,255,.55);background:transparent}
+  .match-col .btn.ghost:hover{border-color:#fff}
+  .match-privacy{margin-top:26px;display:grid;grid-template-columns:1fr 1fr;gap:18px;
+    border-top:1px solid rgba(255,255,255,.16);padding-top:22px;color:rgba(255,255,255,.75);font-size:.95rem}
+  .match-privacy p{margin:0}
+  .match-privacy strong{color:#fff;font-weight:500}
+  @media(max-width:900px){
+    .match{padding:64px 0}
+    .match-top,.match-cols,.match-privacy{grid-template-columns:1fr}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .big-switch,.big-switch i{transition:none}
+    .match.on .ping{animation:none;opacity:1;transform:none}
+  }
   .band{background:var(--paper);border-top:1px solid var(--hair);border-bottom:1px solid var(--hair)}
   @media(prefers-reduced-motion:reduce){.ray,.w,.up,.dot{animation:none!important}}
 </style>
@@ -153,47 +218,74 @@
     </div>
   </section>
 
-  <section class="section band" id="inside">
+  <section class="match" id="match-mode" aria-labelledby="match-title">
+    <div class="glow-a"></div><div class="glow-b"></div>
     <div class="wrap">
-      <div class="center" style="max-width:60ch;margin:0 auto 44px">
-        <h2>Discover what's here for you</h2>
-        <p class="muted">Everything is built around one idea: the smallest useful thing you can
-          actually do today.</p>
+      <div class="match-top">
+        <div>
+          <span class="kicker"><span class="dot"></span> Theraglee Match Mode</span>
+          <h2 id="match-title">You never have to make the call.<br><em>Therapists reach out to you.</em></h2>
+          <p class="lede">Flip one switch on your dashboard and licensed therapists in your area can see
+            that you're open to hearing from them. They send you a message through Theraglee, and you
+            decide whether to reply. No phone calls, no cold emails, no chasing.</p>
+        </div>
+        <div class="switch-stage">
+          <button class="big-switch" id="match-switch" type="button" aria-pressed="false"
+            aria-label="Theraglee Match Mode switch"><i></i></button>
+          <div class="switch-label">
+            <span data-off>Match Mode is <b>OFF</b></span>
+            <span data-on hidden>Match Mode is <b>ON</b></span>
+          </div>
+          <div class="pings" aria-hidden="true">
+            <div class="ping"><div class="av">MR</div><div><strong>Maya R., LMFT · 4 miles away</strong>
+              <small>Hi! I saw you're working on stress and sleep. I'd love to help…</small></div></div>
+            <div class="ping"><div class="av">DP</div><div><strong>Daniel P., LCSW · Telehealth</strong>
+              <small>Anxiety is my specialty. Happy to answer any questions, no pressure.</small></div></div>
+            <div class="ping"><div class="av">SK</div><div><strong>Sofia K., PhD · 6 miles away</strong>
+              <small>I have evening openings this month if that would suit you.</small></div></div>
+          </div>
+          <p class="pings-note">Example messages. You reply only if you want to.</p>
+        </div>
       </div>
-      <div class="grid g3">
-        <div class="feature"><div class="ico">◈</div><div>
-          <h3>360 free discovery tools</h3>
-          <p class="muted">Short, interactive ways to notice your own patterns around anxiety, worry,
-          mood, sleep and relationships. Open to everyone, no account needed.
-          <a href="discover.html">Browse them</a>.</p></div></div>
-        <div class="feature"><div class="ico">✦</div><div>
-          <h3>Daily tips &amp; affirmations</h3>
-          <p class="muted">A quote, a tip, a fun fact and an affirmation each day — personalized
-          to what you actually use.</p></div></div>
-        <div class="feature"><div class="ico">✎</div><div>
-          <h3>374 journal prompts</h3>
-          <p class="muted">One a day, or pick your own. Your entries stay private to you.</p></div></div>
-        <div class="feature"><div class="ico">◷</div><div>
-          <h3>7-day &amp; custom challenges</h3>
-          <p class="muted">Start with a free week. Members design challenges up to a full year.</p></div></div>
-        <div class="feature"><div class="ico">◎</div><div>
-          <h3 data-count="quiz">Self-assessment quizzes</h3>
-          <p class="muted">Scored and explained — never diagnostic, always a starting point.</p></div></div>
-        <div class="feature"><div class="ico">▤</div><div>
-          <h3 data-count="worksheet">Interactive worksheets</h3>
-          <p class="muted">Thought records, values maps, self-compassion letters. Saved as you type.</p></div></div>
-        <div class="feature"><div class="ico">⚑</div><div>
-          <h3>Goal tracking</h3>
-          <p class="muted">Set what you're aiming for and track your progress.</p></div></div>
-        <div class="feature"><div class="ico">♡</div><div>
-          <h3>Mood tracking</h3>
-          <p class="muted">Track how you feel and see your patterns over time.</p></div></div>
-        <div class="feature"><div class="ico">✧</div><div>
-          <h3>Mental health trivia</h3>
-          <p class="muted">150 quizzes to test what you know.</p></div></div>
-        <div class="feature"><div class="ico">❋</div><div>
-          <h3 data-count="mandala">Mandalas to print or color</h3>
-          <p class="muted">Print one for your pencils, or color it online with a tap.</p></div></div>
+
+      <div class="match-cols">
+        <div class="match-col">
+          <span class="who">For members</span>
+          <h3>Support comes to you</h3>
+          <ul>
+            <li><strong>No calling around.</strong> Therapists who fit what you're working on message
+              you first, right in your Theraglee inbox.</li>
+            <li><strong>Free with any account.</strong> Match Mode is part of the free membership.
+              No card needed.</li>
+            <li><strong>Private by design.</strong> Therapists see only your name, your zip code, and
+              the broad topics you chose to share.</li>
+            <li><strong>You're in control.</strong> It's off by default, and one tap hides you from
+              therapists again whenever you like.</li>
+          </ul>
+          <a class="btn lime" href="login.html?mode=signup">Create my free account</a>
+        </div>
+        <div class="match-col">
+          <span class="who">For therapists</span>
+          <h3>Clients who already want to talk</h3>
+          <ul>
+            <li><strong>No search algorithms to fight.</strong> You don't have to wait to be found.
+              See members in your area who have asked to be contacted, and reach out first.</li>
+            <li><strong>Know what they need before you write.</strong> Each member shows the topics
+              they want to work on.</li>
+            <li><strong>One message through Theraglee.</strong> Reach out from your dashboard. Your
+              email stays private, and so does theirs.</li>
+            <li><strong>Verified professionals only.</strong> Match Mode is available to licensed
+              therapists with a live Theraglee listing.</li>
+          </ul>
+          <a class="btn ghost" href="for-therapists.html">List my practice</a>
+        </div>
+      </div>
+
+      <div class="match-privacy">
+        <p><strong>What therapists can see:</strong> your name, your zip code, and the broad topics you
+          picked to work on. Nothing else.</p>
+        <p><strong>What they never see:</strong> your email, your journal, your quiz results, or anything
+          you've worked on in your dashboard.</p>
       </div>
     </div>
   </section>
@@ -220,24 +312,6 @@
     </div>
   </section>
 
-  <section class="section">
-    <div class="wrap narrow">
-      <h2>Questions</h2>
-      <div class="stack">
-        <div class="card"><h3>What is <strong>Theraglee Match Mode</strong>?</h3>
-          <p class="muted" style="margin:0">A toggle switch on your dashboard that lets Theraglee therapists know you are
-            interested in them reaching out to you to set up an appointment for therapy. You
-            don't have to contact them — they contact you. When the toggle switch is turned ON,
-            Theraglee therapists in your area can see your name, the broad topics you have
-            selected that you would like to work on, and your zip code. That's it. Theraglee
-            therapists contact you by sending a message to your Theraglee inbox on your
-            dashboard. They never see your email, your journal, or anything you have worked on
-            in your Theraglee dashboard. The toggle switch is OFF by default, and you can turn
-            it OFF at any time to become invisible to Theraglee therapists again.</p></div>
-      </div>
-    </div>
-  </section>
-
   <section class="section band" id="honest">
     <div class="wrap narrow center">
       <h2>Honest about what Theraglee is</h2>
@@ -251,9 +325,8 @@
 </main>
 
 <script type="module">
-import { chrome, sb, esc, applyCounts, tierName, modal } from './assets/app.js';
+import { chrome, sb, esc, tierName, modal } from './assets/app.js';
 const a = await chrome();
-applyCounts();   // fills the quiz / worksheet counts in the #inside tiles
 
 /* ---- What would you like to explore today? ----
    [label, blurb, where it opens, tier needed, icon]. Tier 0 is open to everyone,
@@ -315,6 +388,24 @@ grid.addEventListener('click', (e) => {
     </div>`, { onOpen: (back) =>
       back.querySelector('#explore-later').addEventListener('click', () => back.remove()) });
 });
+
+/* ---- Match Mode switch ----
+   Flips to ON the first time it scrolls into view, and anyone can tap it to
+   flip it themselves. Purely a demo: it changes nothing on any account. */
+const matchSec = document.getElementById('match-mode');
+const matchBtn = document.getElementById('match-switch');
+const setMatch = (on) => {
+  matchSec.classList.toggle('on', on);
+  matchBtn.setAttribute('aria-pressed', String(on));
+  matchSec.querySelector('[data-off]').hidden = on;
+  matchSec.querySelector('[data-on]').hidden = !on;
+};
+matchBtn.addEventListener('click', () => setMatch(!matchSec.classList.contains('on')));
+new IntersectionObserver((entries, obs) => {
+  if (!entries.some(e => e.isIntersecting)) return;
+  obs.disconnect();
+  setTimeout(() => setMatch(true), 400);
+}, { threshold: .6 }).observe(matchBtn);
 
 document.getElementById('explore-fine').innerHTML =
   !a.authenticated
