@@ -69,9 +69,11 @@ one exists; otherwise an administrator confirms against the board's own lookup.
 Every check, whichever route, is written to `license_verifications` as the audit
 record behind the badge, and licenses are re-checked before they expire.
 
-`state_boards` holds the lookup URL per state. Only California is filled in so
-far — confirmed rather than guessed. Any state left blank falls back to a search
-link in the admin screen.
+`state_boards` holds the lookup URL per state: one `behavioral_health` row for
+each of the 50 states, each pointing at the board's own public lookup (the
+migration `state_boards_all_states` seeds them, and its `notes` column names the
+separate social-work or MFT board where a state has one). A state with no row
+falls back to a search link in the admin screen.
 
 ## Changing the site
 
