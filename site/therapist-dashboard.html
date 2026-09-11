@@ -564,8 +564,9 @@ async function save(e){
   if (error) return toast(error.message,'err');
   const isNew = !T?.id;
   T = data; clearAccess();
-  toast('Saved.','ok');
-  if (isNew) { await runVerification(); }
+  // Creating a profile, or changing its license details, queues the license
+  // check in the database; the result arrives by email.
+  toast(isNew ? 'Saved. We are checking your license with the state board and will email you either way.' : 'Saved.', 'ok');
   route();
 }
 

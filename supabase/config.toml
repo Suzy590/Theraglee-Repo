@@ -23,3 +23,8 @@ verify_jwt = false
 
 [functions.stripe-session-checkout]
 verify_jwt = false
+
+# Called by Postgres (pg_net) with a shared key as well as by signed-in users;
+# the function checks both itself.
+[functions.verify-license]
+verify_jwt = false
