@@ -14,11 +14,10 @@
 <link rel="stylesheet" href="assets/styles.css">
 <style>
   .hero{position:relative;overflow:hidden;padding:70px 0 90px;text-align:center}
-  /* Outlined buttons in the hero and the free-membership card, plus any outlined
-     button marked .ink-border, get a black border so they read as real buttons;
+  /* Outlined buttons in the hero, plus any outlined button marked .ink-border,
+     get a black border so they read as real buttons;
      they stay black on hover instead of fading. */
   .hero .btn.ghost,.hero .btn.ghost:hover,
-  .free-plug .btn.ghost,.free-plug .btn.ghost:hover,
   .btn.ghost.ink-border,.btn.ghost.ink-border:hover{border-color:var(--ink)}
   .hero .glow{position:absolute;left:50%;bottom:-190px;transform:translateX(-50%);
     width:min(1500px,145vw);height:760px;pointer-events:none;
@@ -58,21 +57,25 @@
   .today-list p.aff{font-family:var(--serif);font-style:italic;font-size:1.14rem;
     line-height:1.4;color:var(--green)}
   .today-cta{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:auto;padding-top:24px}
-  /* Two columns: today's card on the left, the free-membership plug on the right. */
-  .today-row{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:26px;align-items:stretch}
+  /* Two columns: today's card takes the left third, the explore menu the right two thirds. */
+  .today-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:26px;align-items:stretch}
   .today-row .today{max-width:none;margin:0;display:flex;flex-direction:column}
-  .free-plug{background:var(--paper);border:1px solid var(--hair);border-radius:var(--r-lg);
+  .explore-plug{background:var(--paper);border:1px solid var(--hair);border-radius:var(--r-lg);
     padding:30px;box-shadow:var(--shadow-2);display:flex;flex-direction:column}
-  .free-plug h2{margin:12px 0 6px;font-size:1.55rem;line-height:1.2}
-  .free-plug ul{list-style:none;padding:0;margin:14px 0 18px}
-  .free-plug li{padding:5px 0 5px 26px;position:relative;font-size:.95rem;color:var(--ink-2)}
-  .free-plug li::before{content:"";position:absolute;left:2px;top:12px;width:13px;height:7px; border-left:2px solid var(--lime-2);border-bottom:2px solid var(--lime-2);transform:rotate(-45deg)}
-  .free-plug-cta{margin-top:auto;display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
-  .free-plug .fine{display:block;margin-top:12px;color:var(--faint);font-size:.85rem;text-align:center}
+  .explore-plug h2{margin:0 0 6px;font-size:1.55rem;line-height:1.2}
+  .explore-plug>.muted{margin:0}
+  .explore-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-top:18px}
+  .explore-grid .tile{flex-direction:row;align-items:flex-start;gap:10px;padding:14px;text-decoration:none;color:inherit}
+  .explore-grid .tile .ico{flex:0 0 32px;height:32px;border-radius:10px;background:var(--soft);
+    display:grid;place-items:center;color:var(--green);font-size:.95rem}
+  .explore-grid .tile h3{font-size:.95rem;padding-right:0;line-height:1.25}
+  .explore-grid .tile .meta{display:block;margin-top:3px;line-height:1.35}
+  .explore-grid .tile .badge.lock{margin-top:7px;font-size:.68rem;padding:2px 9px}
+  .explore-plug .fine{display:block;margin-top:auto;padding-top:16px;color:var(--faint);font-size:.85rem;text-align:center}
   @media(max-width:900px){
     .today-row{grid-template-columns:1fr}
     .today-row .today{max-width:640px;margin:0 auto}
-    .free-plug{max-width:640px;margin:0 auto}
+    .explore-plug{max-width:640px;margin:0 auto;width:100%}
   }
   .feature{display:flex;gap:14px;align-items:flex-start}
   .feature .ico{flex:0 0 40px;height:40px;border-radius:12px;background:var(--soft);
@@ -135,24 +138,16 @@
           </div>
           <div class="skeleton" style="height:96px"></div>
         </div>
-        <aside class="free-plug" aria-labelledby="free-plug-title">
-          <span class="badge live"><span class="dot"></span> Free membership — no card needed</span>
-          <h2 id="free-plug-title">Register to access these free perks.</h2>
-          <p class="muted" style="margin:0">Registering is free and never asks for a card. It unlocks:</p>
-          <ul>
-            <li>A dashboard that tracks your progress</li>
-            <li>Favorites, kept in your dashboard</li>
-            <li>Journal prompts and a private journal</li>
-            <li>Mental health articles sent to your inbox</li>
-            <li>7-day mental health challenges</li>
-            <li>Checklists with your progress tracked</li>
-            <li><strong>Theraglee Match Mode</strong>: let therapists reach out to you — only if you switch it on</li>
-          </ul>
-          <div class="free-plug-cta">
-            <a class="btn" href="login.html?mode=signup">Create my free account</a>
-            <a class="btn ghost" href="explore.html">Browse the library</a>
+        <aside class="explore-plug" aria-labelledby="explore-title">
+          <h2 id="explore-title">What would you like to explore today?</h2>
+          <p class="muted">Tap anything below. Some tools need a free account, and a few come with a
+            paid membership — the label on each tile tells you which.</p>
+          <div class="explore-grid" id="explore-grid">
+            <div class="skeleton" style="height:72px"></div>
+            <div class="skeleton" style="height:72px"></div>
+            <div class="skeleton" style="height:72px"></div>
           </div>
-          <small class="fine">Free forever. Upgrade only if a deeper tool becomes useful.</small>
+          <small class="fine" id="explore-fine"></small>
         </aside>
       </div>
     </div>
@@ -256,9 +251,77 @@
 </main>
 
 <script type="module">
-import { chrome, sb, esc, applyCounts } from './assets/app.js';
-await chrome();
+import { chrome, sb, esc, applyCounts, tierName, modal } from './assets/app.js';
+const a = await chrome();
 applyCounts();   // fills the quiz / worksheet counts in the #inside tiles
+
+/* ---- What would you like to explore today? ----
+   [label, blurb, where it opens, tier needed, icon]. Tier 0 is open to everyone,
+   1 needs a free account, 2 is Basic and 3 is Premium (see TIERS in app.js). */
+const EXPLORE = [
+  ['360 free discovery tools',        'Short, interactive ways to notice your own patterns.', 'discover.html',                 0, '◈'],
+  ['Articles',                        'Five new mental health reads every day.',            'articles.html',                 0, '▣'],
+  ['Daily tips & affirmations',       'A quote, a tip, a fun fact and an affirmation, personalized to you.', 'dashboard.html', 1, '✦'],
+  ['374 journal prompts',             'One a day, or pick your own. Entries stay private.',  'journal.html',                  1, '✎'],
+  ['Mental health checklists',        'Work through them with your progress tracked.',      'explore.html?type=checklist',   1, '✓'],
+  ['7-day & custom challenges',       'Start with a free week. Members go up to a year.',   'challenges.html',               1, '◷'],
+  ['Self-assessment quizzes',         'Scored and explained — never diagnostic.',           'explore.html?type=quiz',        2, '◎'],
+  ['Interactive worksheets',          'Thought records, values maps, self-compassion letters.', 'explore.html?type=worksheet', 2, '▤'],
+  ['Mental health trivia',            '150 quizzes to test what you know.',                 'trivia.html',                   2, '✧'],
+  ['Download a desktop pet',          'Meet Pip, a small companion for your screen.',       'pet.html',                      2, '☺'],
+  ['Goal tracking',                   'Set what you\'re aiming for and track your progress.', 'goals.html',                 3, '⚑'],
+  ['Mood tracking',                   'Log how you feel and see your patterns over time.',  'goals.html#mood',               3, '♡'],
+  ['Mood-based music playlists',      'Music matched to how you feel right now.',           'goals.html#music',              3, '♫'],
+  ['Local mental health resource map','Find support near you.',                             'goals.html#map',                3, '⌖'],
+  ['Mandalas to print or color',      'Print one for your pencils, or color it online.',    'mandalas.html',                 3, '❋'],
+];
+
+// Where a tile sends someone. Open tools go straight there. A locked tool sends a
+// visitor to sign-up (and back to the tool afterward); a signed-in member whose
+// tier is too low gets an upgrade prompt instead (see the click handler below).
+const exploreHref = (href, need) =>
+  a.level >= need ? href
+  : !a.authenticated ? `login.html?mode=signup&next=${encodeURIComponent(href)}`
+  : 'pricing.html';
+
+const grid = document.getElementById('explore-grid');
+grid.innerHTML = EXPLORE.map(([label, blurb, href, need, ico]) => {
+  const locked = a.level < need;
+  return `<a class="tile ${locked ? 'locked' : ''}" href="${exploreHref(href, need)}"
+      data-need="${need}" data-label="${esc(label)}">
+    <span class="ico" aria-hidden="true">${ico}</span>
+    <span>
+      <h3>${esc(label)}</h3>
+      <span class="meta">${esc(blurb)}</span>
+      ${locked ? `<span class="badge lock">${esc(tierName(need))}</span>` : ''}
+    </span></a>`;
+}).join('');
+
+// Signed in, but the tool is above their tier: prompt them to upgrade.
+grid.addEventListener('click', (e) => {
+  const tile = e.target.closest('a.tile.locked');
+  if (!tile || !a.authenticated) return;
+  e.preventDefault();
+  const need = Number(tile.dataset.need);
+  modal(`
+    <span class="badge lock">${esc(tierName(need))} membership</span>
+    <h2 style="margin:14px 0 8px">Upgrade to ${esc(tierName(need))} to open this</h2>
+    <p class="muted">You tapped <strong>${esc(tile.dataset.label)}</strong>. That's a
+      ${esc(tierName(need))} tool, and you're on the ${esc(tierName(a.level))} plan right now.
+      Upgrade any time, and cancel just as easily.</p>
+    <div class="row" style="margin-top:18px">
+      <a class="btn" href="pricing.html">See membership options</a>
+      <button class="btn ghost" type="button" id="explore-later">Not now</button>
+    </div>`, { onOpen: (back) =>
+      back.querySelector('#explore-later').addEventListener('click', () => back.remove()) });
+});
+
+document.getElementById('explore-fine').innerHTML =
+  !a.authenticated
+    ? 'Anything marked <strong>Free</strong> just needs a free account — no card needed. <a href="login.html?mode=signup">Create my free account</a>'
+  : a.level < 3
+    ? 'Anything marked <strong>Basic</strong> or <strong>Premium</strong> is part of a paid membership. <a href="pricing.html">Compare memberships</a>'
+    : 'Everything here is included in your Premium membership.';
 
 document.getElementById('today-date').textContent =
   new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
