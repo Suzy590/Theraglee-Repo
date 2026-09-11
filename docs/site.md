@@ -61,22 +61,58 @@ and their referral history.
 
 ### License verification
 
-There is no national API for behavioral-health licenses — each state runs its own
-board, and most publish only a human web lookup. `verify-license` therefore has
-three routes, in order: a primary-source-verification vendor (fully automatic,
-needs `LICENSE_VERIFY_URL` and `LICENSE_VERIFY_API_KEY`); a state endpoint where
-one exists; otherwise an administrator confirms against the board's own lookup.
-Every check, whichever route, is written to `license_verifications` as the audit
-record behind the badge, and licenses are re-checked before they expire.
+There is no national API for behavioral-health licenses: each state runs its
+own board, and most publish only a human web lookup (California's sits behind a
+Cloudflare bot check, for instance). So verification runs like this:
+
+1. **A profile is created, or its license number, state or type changes.** A
+   trigger on `therapist_profiles` queues a check by calling the
+   `verify-license` Edge Function through pg_net. A therapist can also press
+   *Check my license now* on their dashboard. Editing the license details on a
+   verified profile puts it back to *pending* and unpublishes it until the new
+   details are checked.
+2. **The function checks the license**, in this order:
+   - a primary-source-verification vendor, if `LICENSE_VERIFY_URL` and
+     `LICENSE_VERIFY_API_KEY` are set (covers every state);
+   - the board's open dataset, where the state publishes one. Washington
+     (data.wa.gov) and Colorado (data.colorado.gov) do; their `state_boards`
+     rows carry the dataset URL and `automatable = true`;
+   - otherwise the check is filed as *needs review* with the board's own
+     lookup link.
+   Only a record that is exactly current, has no action on it, and is under
+   the therapist's name is verified automatically. An expired or revoked
+   license, or one the board has no record of, is rejected automatically.
+   Anything qualified (on probation, with conditions, a pending action, a name
+   that does not match, two records sharing a number) goes to a person.
+3. **The result is recorded** with `record_license_check`, which writes the
+   audit row to `license_verifications`, moves the profile's `verification`
+   (*verified* activates the account; *rejected* and *expired* deny it), sets
+   the expiry and the re-check date, and unpublishes anything not verified.
+4. **Everyone is emailed.** A trigger on `license_verifications` calls the
+   function again, which emails the therapist the outcome: verified (the
+   account is active; publish when the membership is active), on hold with
+   the reason and what to do next (check the board record, renew, correct the
+   profile to match, or reply), or "we are checking". When a person has to
+   look, the administrator (`app_config.admin_email`) gets the board lookup
+   link and a pointer to the admin queue. Recording the result there sends the
+   therapist's email the same way.
+5. **Verified licenses are re-checked** a month before they expire, or after a
+   year, by a daily pg_cron job (`license-recheck`, 14:00 UTC).
+
+The decisions (which board row, how a dataset row is read, the verdict, the
+email text) are in `supabase/functions/_shared/license.ts` and tested by
+`node tests/license-logic/check.mjs`. The database calls carry the shared key
+`license_hook_key` from `app_secrets`; `RESEND_API_KEY` must be set on the
+project for any of the emails to go out.
 
 `state_boards` holds the lookup URL per state: one `behavioral_health` row for
 each of the 50 states, each pointing at the board's own public lookup (the
 migration `state_boards_all_states` seeds them, and its `notes` column names the
 separate social-work or MFT board where a state has one). Fifteen states license
 psychologists through a different board with its own lookup; those have a
-`psychology` row too (`state_boards_psychology`), which the admin screen uses
-when the license type is PsyD, PhD or EdD. A state with no row falls back to a
-search link in the admin screen.
+`psychology` row too (`state_boards_psychology`), which the admin screen and the
+function use when the license type is PsyD, PhD or EdD. A state with no row
+falls back to a search link in the admin screen.
 
 ## Changing the site
 
