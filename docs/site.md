@@ -314,7 +314,7 @@ Most of it was imported from the Word documents in the parent folder:
 - 186 interactive worksheets (16 imported, 170 written for the site — see below)
 - 4 checklists
 - 3 challenges (two 30-day, one free 7-day)
-- 17 articles, free to everyone, with five more published every day — see [`articles.md`](articles.md)
+- 22 articles, free to everyone, with five more published every day — see [`articles.md`](articles.md)
 - 200 mandalas to print or color online (drawn in the browser from a seed)
 - 150 mental health trivia quizzes (1,500 questions), written for the site rather than imported
 - 140 daily items — affirmations, tips, fun facts, quotes
