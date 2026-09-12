@@ -36,7 +36,14 @@ let a = await requireAuth();
 const c = await contentCounts();
 if (a) {
 const root = document.getElementById('root');
+// A therapist account has no member tier: it gets its own, shorter account page.
+const isTherapist = a.profile.role === 'therapist';
+const TABS = isTherapist
+  ? [['membership','Membership'],['security','Sign-in & data']]
+  : [['membership','Membership'],['profile','Profile'],['privacy','Privacy'],
+     ['inbox','Inbox'],['history','Your history']];
 let tab = location.hash.replace('#','') || 'membership';
+if (!TABS.some(([k]) => k === tab)) tab = 'membership';
 
 if (qs('checkout') === 'success') {
   toast('Payment received — welcome aboard. It can take a moment to appear.', 'ok');
@@ -50,12 +57,10 @@ function shell(body){
     <div class="spread">
       <div><h1 style="margin:0">Your account</h1>
         <p class="faint" style="margin:4px 0 0">${esc(a.profile.email||'')}</p></div>
-      <span class="badge">${tierName(a.level)} membership</span>
+      <span class="badge">${isTherapist ? 'Therapist' : tierName(a.level)} membership</span>
     </div>
     <div class="tabs">
-      ${[['membership','Membership'],['profile','Profile'],['privacy','Privacy'],
-         ['inbox','Inbox'],['history','Your history']]
-        .map(([k,l])=>`<button data-tab="${k}" class="${tab===k?'on':''}">${l}</button>`).join('')}
+      ${TABS.map(([k,l])=>`<button data-tab="${k}" class="${tab===k?'on':''}">${l}</button>`).join('')}
     </div>
     <div id="body">${body}</div>`;
 }
@@ -99,6 +104,60 @@ function membership(){
             ${a.level>=n ? '<span class="badge">Included</span>'
                          : `<span class="badge lock">${tierName(n)}</span>`}
           </div></div>`).join('')}
+    </div>`;
+}
+
+function therapistMembership(){
+  const p = a.profile;
+  const live = ['active','trialing'].includes(p.subscription_status);
+  return `
+    <div class="card pad-lg">
+      <div class="spread">
+        <div>
+          <h2 style="margin:0">Therapist membership</h2>
+          <p class="muted" style="margin:6px 0 0">
+            ${live ? (p.cancel_at_period_end
+                  ? `Ends on ${fmtDate(p.current_period_end)} — your listing stays up until then.`
+                  : `Active. Renews on ${fmtDate(p.current_period_end)}.`)
+              : p.subscription_status === 'past_due' ? 'A payment did not go through. Update your card to keep the listing up.'
+              : 'Not started. Start it from your practice dashboard to publish your listing and open the clinician library.'}
+          </p>
+        </div>
+        <div class="row">
+          ${live ? `<button class="btn ghost" id="portal">Manage billing</button>` : ''}
+          <a class="btn" href="therapist-dashboard.html#membership">Open practice dashboard</a>
+        </div>
+      </div>
+    </div>
+
+    <h2 style="margin-top:34px">What your membership includes</h2>
+    <p class="muted">One flat membership for licensed professionals, separate from the member plans.</p>
+    <div class="grid g3">
+      ${['A verified, searchable listing','A Theraglee phone number that keeps yours private',
+         'Messages routed without your email address','Referral stats: calls, messages, clicks, shares, views',
+         'Theraglee Match Mode: reach out to members who opted in','The clinician library',
+         'Identity check through Stripe','Session payments to your own bank account','Assign Remind (preview)']
+        .map(l=>`<div class="card" style="padding:16px">
+          <div class="row" style="justify-content:space-between">
+            <span style="font-size:.94rem">${esc(l)}</span>
+            ${live ? '<span class="badge">Included</span>' : '<span class="badge lock">With membership</span>'}
+          </div></div>`).join('')}
+    </div>`;
+}
+
+function security(){
+  return `
+    <div style="max-width:560px">
+      <h2>Password</h2>
+      <p class="muted">We email you a link; the link signs you in and lets you set a new one.</p>
+      <button class="btn ghost" id="pw">Send me a reset link</button>
+
+      <hr class="hr">
+      <h2>Your data</h2>
+      <p class="muted">Your listing, messages and referral history live on your
+        <a href="therapist-dashboard.html">practice dashboard</a>. Closing the account takes the
+        listing down and removes them.</p>
+      <button class="btn danger" id="delete">Close my account</button>
     </div>`;
 }
 
@@ -233,14 +292,44 @@ function chipVals(id){ return [...document.querySelectorAll(`#${id} .chip.on`)].
 function wireChips(id){ document.querySelectorAll(`#${id} .chip`).forEach(c =>
   c.addEventListener('click', ()=>c.classList.toggle('on'))); }
 
+// The "close my account" dialog, shared by the member Privacy tab and the therapist Sign-in & data tab.
+function wireDelete(){
+  document.getElementById('delete')?.addEventListener('click', () => {
+    const back = modal(`<h2>Delete your account?</h2>
+      <p class="muted">${isTherapist
+        ? 'This takes your listing down and removes your messages and referral history permanently. It cannot be undone.'
+        : 'This removes your journal, quiz results, worksheets, challenges and tracking permanently. It cannot be undone.'}</p>
+      <p class="muted">Type <strong>DELETE</strong> to confirm.</p>
+      <input id="confirm" placeholder="DELETE">
+      <div class="row" style="justify-content:flex-end;margin-top:18px">
+        <button class="btn ghost" id="no">Keep my account</button>
+        <button class="btn danger" id="yes">Delete permanently</button></div>`);
+    back.querySelector('#no').onclick = () => back.remove();
+    back.querySelector('#yes').onclick = async () => {
+      if (back.querySelector('#confirm').value !== 'DELETE') return toast('Type DELETE to confirm.','err');
+      toast('Account deletion needs to be finished by an administrator — we have logged your request.','err');
+      back.remove();
+    };
+  });
+}
+
 async function render(){
-  const map = { membership, profile, privacy };
+  const map = isTherapist ? { membership: therapistMembership, security } : { membership, profile, privacy };
   root.innerHTML = shell(map[tab] ? map[tab]() : '<div class="skeleton" style="height:120px"></div>');
   root.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => {
     tab = b.dataset.tab; history.replaceState({},'', '#'+tab); render();
   }));
 
   if (tab === 'membership') document.getElementById('portal')?.addEventListener('click', e => openPortal(e.target));
+
+  if (tab === 'security') {
+    document.getElementById('pw').addEventListener('click', async () => {
+      const { error } = await sb.auth.resetPasswordForEmail(a.profile.email,
+        { redirectTo: location.origin + '/therapist-dashboard.html' });
+      error ? toast(error.message,'err') : toast('Reset link sent to your email.','ok');
+    });
+    wireDelete();
+  }
 
   if (tab === 'profile') {
     wireChips('issues'); wireChips('kinds');
@@ -298,22 +387,7 @@ async function render(){
       URL.revokeObjectURL(url);
       busy(e.target, false);
     });
-    document.getElementById('delete').addEventListener('click', () => {
-      const back = modal(`<h2>Delete your account?</h2>
-        <p class="muted">This removes your journal, quiz results, worksheets, challenges and
-          tracking permanently. It cannot be undone.</p>
-        <p class="muted">Type <strong>DELETE</strong> to confirm.</p>
-        <input id="confirm" placeholder="DELETE">
-        <div class="row" style="justify-content:flex-end;margin-top:18px">
-          <button class="btn ghost" id="no">Keep my account</button>
-          <button class="btn danger" id="yes">Delete permanently</button></div>`);
-      back.querySelector('#no').onclick = () => back.remove();
-      back.querySelector('#yes').onclick = async () => {
-        if (back.querySelector('#confirm').value !== 'DELETE') return toast('Type DELETE to confirm.','err');
-        toast('Account deletion needs to be finished by an administrator — we have logged your request.','err');
-        back.remove();
-      };
-    });
+    wireDelete();
   }
 
   if (tab === 'inbox')   inbox();

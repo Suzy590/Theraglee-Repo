@@ -41,7 +41,9 @@ Deno.serve(async (req) => {
     if (cfg.stripe_enabled !== "true" && !isAdmin) {
       return json({ error: "payments_off", message: "Payments are not switched on yet." }, 503);
     }
-    if (planCfg.audience === "therapist" && profile.role !== "therapist") {
+    // The administrator can open the practice dashboard too, and may test a
+    // therapist checkout from it the same way they can test with payments off.
+    if (planCfg.audience === "therapist" && profile.role !== "therapist" && !isAdmin) {
       return json({ error: "wrong_account",
         message: "Therapist membership needs a therapist account." }, 400);
     }

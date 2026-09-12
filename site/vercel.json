@@ -15,7 +15,12 @@
   "redirects": [
     { "source": "/therapists", "destination": "/therapists.html" },
     { "source": "/pricing", "destination": "/pricing.html" },
-    { "source": "/join", "destination": "/login.html?mode=signup" },
+    { "source": "/join", "destination": "/signup.html" },
+    { "source": "/signup", "destination": "/signup.html" },
+    { "source": "/therapist-login", "destination": "/therapist-login.html" },
+    { "source": "/therapist-signup", "destination": "/therapist-signup.html" },
+    { "source": "/therapist-dashboard", "destination": "/therapist-dashboard.html" },
+    { "source": "/practice", "destination": "/therapist-dashboard.html" },
 
     { "source": "/explore", "destination": "/explore.html" },
     { "source": "/discover", "destination": "/discover.html" },

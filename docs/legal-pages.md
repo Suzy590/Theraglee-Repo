@@ -31,7 +31,7 @@ fact; if any of these change, the policy must change in the same pull request.
 | Idle sign-out after 15 minutes | `idleLogoff()` in `site/assets/app.js` |
 | Account deletion completed within 45 days | The Delete button in `site/account.html` currently only shows a message; an administrator must complete deletions by hand until that is automated. The 45-day promise is the legal deadline in every state |
 | Data export from the account page | `site/account.html` (Privacy tab) |
-| Members must be 18 or older | `site/login.html` consent line; there is no age check beyond that |
+| Members must be 18 or older | `site/assets/auth.js` consent line (shown on all four sign-in and sign-up pages); there is no age check beyond that |
 | Retention periods (45 days to delete, 90 for backups, 7 years for payments and verification records, 30 days for logs) | These are commitments, not yet enforced by code. Keep the database, backups and log retention in line with them |
 | Renewal reminders 15–45 days before yearly renewals; 30 days' notice of price changes | Turn on Stripe's "upcoming renewal" customer email for yearly plans, and email members before any price change |
 

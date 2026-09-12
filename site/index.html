@@ -187,7 +187,7 @@
         with a licensed therapist when you want more support.
       </p>
       <div class="row up" style="justify-content:center;animation-delay:.58s">
-        <a class="btn lg" href="login.html?mode=signup">Create my free account</a>
+        <a class="btn lg" href="signup.html">Create my free account</a>
         <a class="btn lg ghost" href="discover.html">Try a self-discovery tool</a>
       </div>
     </div>
@@ -263,7 +263,7 @@
             <li><strong>You're in control.</strong> It's off by default, and one tap hides you from
               therapists again whenever you like.</li>
           </ul>
-          <a class="btn lime" href="login.html?mode=signup">Create my free account</a>
+          <a class="btn lime" href="signup.html">Create my free account</a>
         </div>
         <div class="match-col">
           <span class="who">For therapists</span>
@@ -320,7 +320,7 @@
         diagnoses anything, and no quiz result is a clinical finding. If something in your life
         needs real care, the directory is there — and if you are in crisis, please call or text
         <a href="tel:988">988</a>.</p>
-      <a class="btn lg" href="login.html?mode=signup">Create my free account</a>
+      <a class="btn lg" href="signup.html">Create my free account</a>
     </div>
   </section>
 </main>
@@ -355,7 +355,7 @@ const EXPLORE = [
 // tier is too low gets an upgrade prompt instead (see the click handler below).
 const exploreHref = (href, need) =>
   a.level >= need ? href
-  : !a.authenticated ? `login.html?mode=signup&next=${encodeURIComponent(href)}`
+  : !a.authenticated ? `signup.html?next=${encodeURIComponent(href)}`
   : 'pricing.html';
 
 const grid = document.getElementById('explore-grid');
@@ -410,7 +410,7 @@ new IntersectionObserver((entries, obs) => {
 
 document.getElementById('explore-fine').innerHTML =
   !a.authenticated
-    ? 'Anything marked <strong>Free</strong> just needs a free account — no card needed. <a href="login.html?mode=signup">Create my free account</a>'
+    ? 'Anything marked <strong>Free</strong> just needs a free account — no card needed. <a href="signup.html">Create my free account</a>'
   : a.level < 3
     ? 'Anything marked <strong>Basic</strong> or <strong>Premium</strong> is part of a paid membership. <a href="pricing.html">Compare memberships</a>'
     : 'Everything here is included in your Premium membership.';
@@ -452,7 +452,7 @@ host.innerHTML = `
     ${row('Today\'s affirmation', picked.affirmation, 'aff')}
   </div>
   <div class="today-cta">
-    <a class="btn sm" href="login.html?mode=signup">Want these in your inbox each day?</a>
+    <a class="btn sm" href="signup.html">Want these in your inbox each day?</a>
   </div>`;
 </script>
 </body>

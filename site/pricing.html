@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Membership plans — Theraglee</title>
-<meta name="description" content="Free, Basic and Premium memberships for members, plus a single flat listing membership for licensed therapists.">
+<meta name="description" content="Free, Basic and Premium memberships for Theraglee members. Therapist membership is separate.">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="alternate icon" href="assets/favicon.png" sizes="48x48">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
@@ -40,6 +40,7 @@
 <main>
 <section class="section">
   <div class="wrap center" style="max-width:60ch;margin-bottom:36px">
+    <div id="who-alert"></div>
     <h1>Start free. Upgrade when it's useful.</h1>
     <p class="muted">You can browse a lot of Theraglee without an account at all, including all
       <a href="discover.html">360 free discovery tools</a>. Registering is free and unlocks
@@ -68,36 +69,22 @@
   </div>
 </section>
 
-<section class="section">
+<section class="section tight">
   <div class="wrap">
-    <div class="card pad-lg grid g2" style="align-items:center;gap:34px">
-      <div>
-        <span class="badge">For licensed professionals</span>
-        <h2 style="margin-top:14px">Therapist membership</h2>
-        <p class="muted">List your practice and get found by people exploring the therapist database,
-          or reach out to members who have <strong>Theraglee Match Mode</strong> toggled ON, and see
-          exactly what your listing brings you with stats tracked right on your dashboard. Your license
-          is verified with your state board before the profile goes live.</p>
-        <ul class="muted" style="font-size:.93rem;padding-left:20px">
-          <li>Full profile: specialties, insurances, languages, locations, fees, and more</li>
-          <li>Searchable by zip, insurance, specialty, telehealth and more</li>
-          <li>A Theraglee phone number, so your own number stays private</li>
-          <li>Messages routed to you without your email address being shown</li>
-          <li>Theraglee referral stats on your dashboard: calls, messages, website clicks, shares, and views</li>
-          <li>Reach out to members who have toggled ON <strong>Theraglee Match Mode</strong></li>
-          <li>A clinician library at your fingertips of worksheets and CBT, ACT, DBT, couples and kids exercises</li>
-          <li>License verified with your state board</li>
-        </ul>
-      </div>
-      <div class="center">
-        <div class="burst" role="note">
-          <p><span>Worried about<br>search algorithms or tired of waiting for clients to find you?</span>
-            Just reach out to members who have toggled on <strong>Theraglee<br>Match Mode!</strong></p>
+    <div class="card pad-lg">
+      <div class="spread">
+        <div>
+          <span class="badge">For licensed professionals</span>
+          <h2 style="margin-top:14px">Are you a therapist?</h2>
+          <p class="muted" style="margin:0;max-width:64ch">Therapist membership is a separate account
+            with its own sign-in page and one flat price. It covers a verified listing, a protected
+            phone number, referral stats, <strong>Theraglee Match Mode</strong> requests and the
+            clinician library. None of it is part of the member plans above.</p>
         </div>
-        <div class="price" id="th-price">—</div>
-        <p class="faint" id="th-note"></p>
-        <a class="btn lg block" href="for-therapists.html">List your practice</a>
-        <p class="faint" style="margin-top:12px">License verification required. Cancel any time.</p>
+        <div class="row">
+          <a class="btn" href="for-therapists.html#membership">See therapist membership</a>
+          <a class="btn ghost" href="therapist-login.html">Therapist sign in</a>
+        </div>
       </div>
     </div>
   </div>
@@ -155,7 +142,7 @@ const PLANS = [
            ['Articles, quotes, tips, fun facts',1],['Affirmations',1],
            ['Dashboard, favorites & progress',0],['Articles sent to your inbox',0]] },
   { key:'free', name:'Free', price:()=>'Free', sub:'Registered · no card',
-    cta:{label:'Join free', href:'login.html?mode=signup'},
+    cta:{label:'Join free', href:'signup.html'},
     feats:[['Dashboard to track your progress',1],['Keep favorites in your dashboard',1],
            ['Tons of journal prompts',1],['Automatic mental health articles sent to your inbox',1],
            ['7-Day mental health challenges',1],['Mental health checklists with progress tracked',1],
@@ -229,10 +216,6 @@ function render(){
     startCheckout(b.dataset.plan, cycle, b);
   }));
 
-  document.getElementById('th-price').innerHTML =
-    `$${money('therapist_'+cycle)}<small> / ${cycle==='monthly'?'month':'year'}</small>`;
-  document.getElementById('th-note').textContent =
-    cycle==='monthly' ? 'Billed monthly' : 'Billed once a year';
   document.getElementById('billing-note').textContent = live
     ? 'Secure payments by Stripe. Cancel any time from your account.'
     : 'Payments are not switched on yet. Free and Registered Free memberships work now.';
@@ -248,6 +231,11 @@ document.getElementById('compare').innerHTML = COMPARE.map(([label,min])=>
     `<td class="${l>=min?'yes':'no'}">${l>=min?'✓':'—'}</td>`).join('')}</tr>`).join('');
 
 render();
+if (a.profile?.role === 'therapist') {
+  document.getElementById('who-alert').innerHTML = `<div class="notice warn" style="margin-bottom:22px;text-align:left">
+    <strong>You are signed in with a therapist account.</strong> These plans are for members.
+    Your own membership is managed on your <a href="therapist-dashboard.html#membership">practice dashboard</a>.</div>`;
+}
 if (qs('checkout')==='cancelled') toast('Checkout canceled — nothing was charged.');
 </script>
 </body>

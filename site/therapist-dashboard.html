@@ -51,19 +51,26 @@ import { chrome, sb, requireAuth, access, clearAccess, esc, toast, busy, fmtDate
 import { SPECIALTIES, MODALITIES, INSURANCES, AGE_RANGES, PARTICIPANTS,
          LANGUAGES, CREDENTIALS, STATES } from './assets/lists.js';
 await chrome();
-let a = await requireAuth();
+let a = await requireAuth({ audience: 'therapist' });
 if (a) {
 const root = document.getElementById('root');
 
-if (a.profile.role !== 'therapist') {
+// Therapist membership is separate from the member tiers, so a member account
+// cannot use this dashboard. The administrator can open both.
+if (a.profile.role !== 'therapist' && a.profile.role !== 'admin') {
   root.innerHTML = `<div class="card pad-lg center">
     <h2>This is a member account</h2>
-    <p class="muted">Therapist listings need a therapist account.</p>
-    <a class="btn" href="for-therapists.html">How therapist membership works</a></div>`;
+    <p class="muted" style="max-width:52ch;margin-inline:auto">The practice dashboard is for
+      therapist accounts, which are a separate membership with their own sign-in page. Sign out
+      and create a therapist account, or head back to your own dashboard.</p>
+    <div class="row" style="justify-content:center">
+      <a class="btn" href="therapist-signup.html">Create a therapist account</a>
+      <a class="btn ghost" href="dashboard.html">Back to my dashboard</a></div>
+    <p class="faint" style="margin:16px 0 0"><a href="for-therapists.html">How therapist membership works</a></p></div>`;
 } else {
 
 let T = a.therapist || null;
-let tab = location.hash.replace('#','') || (T ? 'referrals' : 'profile');
+let tab = location.hash.replace('#','') || (T ? 'home' : 'profile');
 let unread = 0;
 
 // Back from Stripe (membership checkout, the ID check, or payouts setup):
@@ -90,6 +97,7 @@ const liveListing = T?.verification === 'verified' && T?.published;
 
 /* ------------------------------------------------------------ shell */
 const TABS = [
+  ['home','Home'],
   ['referrals','Referrals'], ['messages','Messages'], ['members','Member requests'],
   ['library','Resource library'], ['profile','My profile'], ['membership','Membership'],
   ['assign','Assign Remind'],
@@ -99,11 +107,19 @@ function shell(body){
   const status = !T ? 'No listing yet'
     : T.verification === 'verified' ? (T.published ? 'Live in the directory' : 'Verified — not published')
     : T.verification === 'rejected' ? 'License not verified' : 'Verification pending';
+  const first = (T?.first_name || (a.profile.full_name || '').split(' ')[0] || '').trim();
   return `
     <div class="spread">
-      <div><h1 style="margin:0">Practice dashboard</h1>
-        <p class="faint" style="margin:4px 0 0">${esc(a.profile.email||'')}</p></div>
-      <span class="badge ${T?.verification==='verified'?'':'gray'}">${status}</span>
+      <div>
+        <p class="faint" style="margin:0 0 4px">${esc(new Date().toLocaleDateString(undefined,
+          { weekday:'long', month:'long', day:'numeric' }))}</p>
+        <h1 style="margin:0">${first ? 'Hello, ' + esc(first) : 'Practice dashboard'}</h1>
+        <p class="faint" style="margin:4px 0 0">${esc(a.profile.email||'')}${
+          a.profile.role === 'admin' ? ' · administrator, viewing the practice dashboard' : ''}</p></div>
+      <div class="row">
+        <span class="badge ${paid?'':'gray'}">Therapist membership · ${paid ? 'Active' : 'Not started'}</span>
+        <span class="badge ${T?.verification==='verified'?'':'gray'}">${status}</span>
+      </div>
     </div>
     <div class="tabs">${TABS.map(([k,l])=>
       `<button data-tab="${k}" class="${tab===k?'on':''}">${l}${
@@ -125,6 +141,137 @@ function needsListing(){
       counting the referrals it brings in.</p>
     <button class="btn lg" id="go">Start my profile</button></div>`);
   document.getElementById('go').onclick = () => { tab='profile'; route(); };
+}
+
+/* ------------------------------------------------------------- home */
+// The therapist's own front page: where the listing stands, what Theraglee
+// brought in this month, what is waiting, and everything the membership includes.
+async function home(){
+  if (!T) return needsListing();
+  render('<div class="skeleton" style="height:200px"></div>');
+  const [{ data: stats }, { data: msgs }, { data: reqs }, { data: cat }, { data: cfgRows }] = await Promise.all([
+    sb.rpc('therapist_stats', { p_days: 30 }),
+    sb.from('therapist_messages').select('id,sender_name,created_at,read_at')
+      .eq('therapist_id', T.id).order('created_at', { ascending:false }).limit(3),
+    sb.from('member_discovery').select('id,already_contacted').limit(200),
+    sb.from('therapist_resource_catalog').select('*'),
+    sb.from('app_config').select('key,value').in('key', ['identity_required','connect_enabled']),
+  ]);
+  const cfg = Object.fromEntries((cfgRows||[]).map(r=>[r.key,r.value]));
+  const c = stats?.current || {};
+  unread = stats?.unread_messages || 0;
+  const waiting = (reqs||[]).filter(r => !r.already_contacted).length;
+  const libTotal = (cat||[]).reduce((s,r)=>s+r.total, 0);
+  const verified = T.verification === 'verified';
+  const idOk = T.identity_status === 'verified';
+  const needsId = cfg.identity_required === 'true' && !idOk;
+
+  // The one thing to do next, in order: license, membership, identity, publish.
+  const nextStep = liveListing
+    ? { text: 'Your profile is live in the directory.', cta: T.slug
+        ? `<a class="btn sm ghost" href="therapist.html?slug=${esc(T.slug)}">View my public profile</a>` : '' }
+    : T.verification === 'rejected'
+    ? { text: 'We could not confirm that license as current and in good standing. Check the details and resubmit.',
+        cta: '<a class="btn sm" href="#profile">Fix my license details</a>' }
+    : !verified
+    ? { text: 'We are checking your license with the state board. You will get an email either way.',
+        cta: '<a class="btn sm ghost" href="#membership">See the check</a>' }
+    : !paid
+    ? { text: 'Your license is verified. Start your membership to publish the listing and open the library.',
+        cta: '<a class="btn sm" href="#membership">Start membership</a>' }
+    : needsId
+    ? { text: 'One more step before publishing: a quick identity check through Stripe.',
+        cta: '<a class="btn sm" href="#membership">Verify my identity</a>' }
+    : { text: 'Everything is in place. Publish whenever you are ready.',
+        cta: '<a class="btn sm" href="#profile">Publish from My profile</a>' };
+
+  const tile = (n, label) => `<div class="stat"><div class="n">${n ?? 0}</div><div class="l">${label}</div></div>`;
+  const state = (ok, yes, no) => ok ? `<span class="badge">${yes}</span>` : `<span class="badge gray">${no}</span>`;
+  const benefit = (href, title, blurb, badge) => `
+    <a class="tile" href="${href}">
+      <div class="row" style="justify-content:space-between;align-items:flex-start">
+        <h3>${title}</h3>${badge}</div>
+      <p class="meta" style="color:var(--muted)">${blurb}</p></a>`;
+
+  render(`
+    <div class="card pad-lg" style="margin-bottom:22px">
+      <div class="spread">
+        <div>
+          <span class="badge ${liveListing?'':'gray'}">${liveListing ? 'Live in the directory' : 'Not live yet'}</span>
+          <h2 style="margin:12px 0 6px">Your listing</h2>
+          <p class="muted" style="margin:0;max-width:60ch">${nextStep.text}</p>
+        </div>
+        <div class="row">${nextStep.cta}<a class="btn sm ghost" href="#profile">Edit my profile</a></div>
+      </div>
+    </div>
+
+    <div class="spread" style="margin-bottom:14px">
+      <h2 style="margin:0">Last 30 days from Theraglee</h2>
+      <a class="btn sm ghost" href="#referrals">All referral stats</a>
+    </div>
+    <div class="stats">
+      ${tile(c.profile_views, 'Profile views')}
+      ${tile(c.call_taps, 'Phone calls')}
+      ${tile(c.messages, 'Messages')}
+      ${tile(c.website_clicks, 'Website clicks')}
+      ${tile(c.shares, 'Profile shares')}
+    </div>
+    ${!liveListing ? `<p class="faint" style="margin-top:10px">Referrals are counted once your
+      profile is live.</p>` : ''}
+
+    <div class="grid g2" style="margin-top:26px">
+      <div class="card">
+        <div class="spread"><h3 style="margin:0">Messages</h3>
+          ${unread ? `<span class="badge">${unread} unread</span>` : '<span class="badge gray">Nothing new</span>'}</div>
+        ${(msgs||[]).length ? `<div class="stack" style="margin-top:12px">${msgs.map(m=>`
+          <div class="row" style="justify-content:space-between">
+            <span style="font-weight:${m.read_at?'400':'600'}">${esc(m.sender_name)}</span>
+            <span class="faint">${fmtDate(m.created_at)}</span></div>`).join('')}</div>`
+          : '<p class="muted" style="margin:10px 0 0">People who write to you through your profile show up here. Your email address is never shown to them.</p>'}
+        <a class="btn sm ghost" style="margin-top:14px" href="#messages">Open messages</a>
+      </div>
+      <div class="card">
+        <div class="spread"><h3 style="margin:0">Member requests</h3>
+          ${waiting ? `<span class="badge">${waiting} waiting</span>` : '<span class="badge gray">None waiting</span>'}</div>
+        <p class="muted" style="margin:10px 0 0">Members who switched on <strong>Theraglee Match
+          Mode</strong> want a therapist to reach out. You see their name, topics and zip code, and
+          can send each one message.${liveListing ? '' : ' Reaching out needs a live listing.'}</p>
+        <a class="btn sm ghost" style="margin-top:14px" href="#members">See who is waiting</a>
+      </div>
+    </div>
+
+    <h2 style="margin-top:34px">What your membership includes</h2>
+    <p class="muted">One flat therapist membership. Nothing here is tiered, and nothing from the
+      member plans is mixed in.</p>
+    <div class="grid g3">
+      ${benefit('#profile', 'A verified, searchable listing',
+        'Specialties, insurances, languages, locations, fees and telehealth, found by zip and more.',
+        state(verified, 'License verified', T.verification === 'rejected' ? 'Not verified' : 'Verification pending'))}
+      ${benefit('#profile', 'A Theraglee phone number',
+        'Callers reach you through a tracking number, so your own line stays private and every call is counted.',
+        state(!!T.tracking_phone, 'Assigned', 'Assigned when you go live'))}
+      ${benefit('#messages', 'Messages without your address',
+        'People write to you through Theraglee. You reply from your own inbox; they never see it.',
+        state(true, 'Included', ''))}
+      ${benefit('#referrals', 'Referral stats',
+        'Calls, messages, website clicks, shares and profile views, with the previous period alongside.',
+        state(true, 'Included', ''))}
+      ${benefit('#members', 'Theraglee Match Mode',
+        'Reach out to members who asked to be contacted, instead of waiting to be found.',
+        state(liveListing, 'Ready', 'Needs a live listing'))}
+      ${benefit('#library', 'Clinician library',
+        `${libTotal || 'Dozens of'} worksheets and CBT, ACT, DBT, couples, kids and game exercises, printable with guidance.`,
+        state(paid && verified, 'Open', 'Opens with membership'))}
+      ${benefit('#membership', 'Identity check',
+        'A government ID and a selfie through Stripe Identity, so the person on the profile holds the license.',
+        state(idOk, 'Verified', cfg.identity_required === 'true' ? 'Required to publish' : 'Optional'))}
+      ${cfg.connect_enabled === 'true' ? benefit('#membership', 'Get paid through Theraglee',
+        'Clients can pay for a session from your profile. Stripe pays out to your own bank account.',
+        state(T.stripe_account_status === 'enabled', 'Ready for payouts', 'Set up in Membership')) : ''}
+      ${benefit('#assign', 'Assign Remind',
+        'Set homework between sessions, let the reminders chase it, and see what came back.',
+        state(paid, 'Preview', 'Opens with membership'))}
+    </div>`);
 }
 
 /* -------------------------------------------------------- referrals */
@@ -306,7 +453,7 @@ async function library(){
       <h2>The library opens with your membership</h2>
       <p class="muted">Verified therapists with an active membership get the full set of
         worksheets and exercises.</p>
-      <a class="btn" href="pricing.html">See therapist membership</a></div>`);
+      <a class="btn" href="#membership">Start your membership</a></div>`);
   }
 
   const paint = () => {
@@ -615,7 +762,8 @@ async function membership(){
           .eq('therapist_id', T.id).order('checked_at', { ascending:false }).limit(5)
       : Promise.resolve({ data: [] }),
     sb.from('app_config').select('key,value')
-      .in('key', ['identity_required','connect_enabled','platform_fee_percent']),
+      .in('key', ['identity_required','connect_enabled','platform_fee_percent',
+                  'display_therapist_monthly','display_therapist_yearly']),
   ]);
   const cfg = Object.fromEntries((cfgRows||[]).map(r=>[r.key,r.value]));
   const p = a.profile;
@@ -639,9 +787,16 @@ async function membership(){
           <span class="muted">${fmtDate(p.current_period_end)}</span></div>` : ''}
         <div class="row">
           ${paid ? `<button class="btn ghost" id="portal">Manage membership</button>`
-                 : `<button class="btn" id="sub">Start membership</button>`}
+                 : `<button class="btn" id="sub">Start monthly${
+                      cfg.display_therapist_monthly ? ' · $' + esc(cfg.display_therapist_monthly) + '/month' : ''}</button>
+                    <button class="btn ghost" id="sub-yearly">Yearly${
+                      cfg.display_therapist_yearly ? ' · $' + esc(cfg.display_therapist_yearly) + '/year' : ''}</button>`}
         </div>
       </div>
+      ${paid ? '' : `<p class="faint" style="margin:14px 0 0">One flat membership for licensed
+        professionals, separate from the member plans. It publishes your listing once your license
+        is verified, and opens the clinician library, Match Mode and Assign Remind. Cancel any time.
+        <a href="for-therapists.html#membership">Everything it includes</a>.</p>`}
     </div>
 
     ${T ? `
@@ -720,6 +875,7 @@ async function membership(){
 
   document.getElementById('portal')?.addEventListener('click', e => openPortal(e.target));
   document.getElementById('sub')?.addEventListener('click', e => startCheckout('therapist','monthly',e.target));
+  document.getElementById('sub-yearly')?.addEventListener('click', e => startCheckout('therapist','yearly',e.target));
   document.getElementById('idv')?.addEventListener('click', e => startIdentity(e.target));
   document.getElementById('connect')?.addEventListener('click', e => connectAction('onboard', e.target));
   document.getElementById('payouts')?.addEventListener('click', e => connectAction('dashboard', e.target));
@@ -747,8 +903,13 @@ root.addEventListener('click', (e) => {
 
 /* ------------------------------------------------------------ route */
 function route(){
-  ({ referrals, messages, members, library, profile, membership, assign }[tab] || referrals)();
+  ({ home, referrals, messages, members, library, profile, membership, assign }[tab] || home)();
 }
+// The header links and the buttons on the Home tab point at #tabs of this page.
+addEventListener('hashchange', () => {
+  const h = location.hash.replace('#','');
+  if (h && h !== tab) { tab = h; route(); }
+});
 route();
 }
 }

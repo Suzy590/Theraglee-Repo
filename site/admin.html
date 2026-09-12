@@ -44,7 +44,15 @@ const TABS = [['verify','License verification'],['numbers','Tracking numbers'],
               ['billing','Stripe setup'],['content','Content']];
 
 function render(body){
-  root.innerHTML = `<h1>Admin</h1>
+  root.innerHTML = `<div class="spread">
+      <h1 style="margin:0">Admin</h1>
+      <div class="row">
+        <a class="btn sm ghost" href="dashboard.html">Member dashboard</a>
+        <a class="btn sm ghost" href="therapist-dashboard.html">Practice dashboard</a>
+      </div>
+    </div>
+    <p class="faint" style="margin:6px 0 0">Your admin account can open both dashboards: the member
+      one at <code>dashboard.html</code> and the therapist one at <code>therapist-dashboard.html</code>.</p>
     <div class="tabs">${TABS.map(([k,l])=>
       `<button data-tab="${k}" class="${tab===k?'on':''}">${l}</button>`).join('')}</div>
     <div id="body">${body}</div>`;

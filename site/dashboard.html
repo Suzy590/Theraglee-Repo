@@ -113,7 +113,9 @@ import { SETS as TRIVIA } from './assets/trivia-sets.js';
 await chrome({ active:'dashboard.html' });
 const a = await requireAuth();
 const c = await contentCounts();
-if (a) {
+// This is the member dashboard. A therapist has their own; an admin can open both.
+if (a && a.profile?.role === 'therapist') location.replace('therapist-dashboard.html');
+else if (a) {
 
 const p = a.profile || {};
 document.getElementById('datestr').textContent =

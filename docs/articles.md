@@ -14,7 +14,7 @@ views like every other activity.
 | Favorite | `favorites` with `list = 'favorite'`, `item_type = 'article'` | RLS `own rows`; any registered member |
 | Save for later | `favorites` with `list = 'later'` | same |
 | Mark as read | `item_progress (answered 1, total 1)` → `status = 'completed'` | same |
-| Signed-out visitor | the favorite and save buttons open the free sign-up page (`login.html?mode=signup&why=save&next=…`) and return to the article afterward | `signupHref()` in `site/assets/library.js` |
+| Signed-out visitor | the favorite and save buttons open the free sign-up page (`signup.html?why=save&next=…`) and return to the article afterward | `signupHref()` in `site/assets/library.js` |
 | Morning email | `digest_article()` picks an article the member has not been sent | every article is level 0, so every article is eligible |
 
 `site/articles.html` reads the `articles` table directly (not the level-gated
