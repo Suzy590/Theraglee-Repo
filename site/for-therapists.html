@@ -37,7 +37,7 @@
         search result.</p>
       <div class="row">
         <a class="btn lg" href="#start">Start your listing</a>
-        <a class="btn lg ghost" href="pricing.html">See the price</a>
+        <a class="btn lg ghost" href="#membership">See the price</a>
       </div>
       <p class="faint" style="margin-top:14px">License verified before you go live. Cancel any time.</p>
     </div>
@@ -87,8 +87,9 @@
     <div style="margin-top:26px">
       <div class="step"><div class="n">1</div><div>
         <h3>Create a therapist account</h3>
-        <p class="muted">Separate from the member tiers — there is one level of therapist
-          membership, and it is the same for everybody.</p></div></div>
+        <p class="muted">Therapist accounts have their own <a href="therapist-signup.html">sign-up</a>
+          and <a href="therapist-login.html">sign-in</a> pages, separate from member accounts. There
+          is one level of therapist membership, and it is the same for everybody.</p></div></div>
       <div class="step"><div class="n">2</div><div>
         <h3>Fill in your profile</h3>
         <p class="muted">License number and state, specialties, insurances, fees, languages
@@ -101,6 +102,38 @@
       <div class="step"><div class="n">4</div><div>
         <h3>Publish, and watch the referrals</h3>
         <p class="muted">Your dashboard shows exactly what the listing brings in each month.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="membership" style="border-top:1px solid var(--hair)">
+  <div class="wrap">
+    <div class="card pad-lg grid g2" style="align-items:center;gap:34px">
+      <div>
+        <span class="badge">One flat membership</span>
+        <h2 style="margin-top:14px">Therapist membership</h2>
+        <p class="muted">Separate from the member plans, and not tiered: every therapist gets the
+          same membership. Your license is verified with your state board before the profile goes
+          live, and if the license or the membership lapses the listing comes down on its own.</p>
+        <ul class="muted" style="font-size:.93rem;padding-left:20px">
+          <li>Full profile: specialties, insurances, languages, locations, fees, and more</li>
+          <li>Searchable by zip, insurance, specialty, telehealth and more</li>
+          <li>A Theraglee phone number, so your own number stays private</li>
+          <li>Messages routed to you without your email address being shown</li>
+          <li>Referral stats on your dashboard: calls, messages, website clicks, shares, and views</li>
+          <li>Reach out to members who have toggled ON <strong>Theraglee Match Mode</strong></li>
+          <li>A clinician library of worksheets and CBT, ACT, DBT, couples and kids exercises</li>
+          <li>Identity check and optional session payments through Stripe</li>
+          <li>Assign Remind, in preview</li>
+        </ul>
+      </div>
+      <div class="center">
+        <div class="price" id="th-price" style="font-size:2.5rem;font-weight:300;letter-spacing:-.03em;line-height:1;margin:12px 0 2px">—</div>
+        <p class="faint" id="th-note"></p>
+        <a class="btn lg block" href="#start">List your practice</a>
+        <p class="faint" style="margin-top:12px">License verification required. Cancel any time.
+          Billing starts from your practice dashboard once your account exists.</p>
+      </div>
     </div>
   </div>
 </section>
@@ -147,17 +180,35 @@ document.getElementById('libcount').innerHTML = (cat||[]).length
      + `<div><b>${total}</b><span>in total</span></div>`)
   : '<div><b>—</b><span>library loading</span></div>';
 
+// The price comes from the admin screen, like the member plans.
+const { data: cfgRows } = await sb.from('app_config').select('key,value')
+  .in('key', ['display_therapist_monthly','display_therapist_yearly']);
+const cfg = Object.fromEntries((cfgRows||[]).map(r=>[r.key,r.value]));
+if (cfg.display_therapist_monthly) {
+  document.getElementById('th-price').innerHTML =
+    `$${esc(cfg.display_therapist_monthly)}<small style="font-size:.95rem;color:var(--faint);font-weight:400;letter-spacing:0"> / month</small>`;
+  document.getElementById('th-note').textContent = cfg.display_therapist_yearly
+    ? `or $${cfg.display_therapist_yearly} a year` : 'Billed monthly';
+} else {
+  document.getElementById('th-note').textContent = 'Price shown once payments are switched on.';
+}
+
 const box = document.getElementById('cta-box');
 if (!a.authenticated) {
   box.innerHTML = `<h2>Ready to list?</h2>
-    <p class="muted">Create a therapist account — it takes about a minute.</p>
-    <a class="btn lg" href="login.html?mode=signup">Create a therapist account</a>
-    <p class="faint" style="margin-top:12px">Choose “A licensed therapist” on the sign-up form.</p>`;
-} else if (a.profile?.role !== 'therapist') {
+    <p class="muted">Create a therapist account — it takes about a minute. It is separate from a
+      member account and has its own sign-in page.</p>
+    <a class="btn lg" href="therapist-signup.html">Create a therapist account</a>
+    <p class="faint" style="margin-top:12px">Already have one?
+      <a href="therapist-login.html">Sign in to your practice</a>.</p>`;
+} else if (a.profile?.role !== 'therapist' && a.profile?.role !== 'admin') {
   box.innerHTML = `<h2>This account is a member account</h2>
-    <p class="muted">Therapist listings live on a separate account type. Sign out and register
-      again as a licensed therapist, or get in touch and we will switch this one over.</p>
-    <a class="btn ghost" href="dashboard.html">Back to your dashboard</a>`;
+    <p class="muted">Therapist listings live on a separate account type, with its own sign-up
+      page. Sign out and create a therapist account, or get in touch and we will switch this
+      one over.</p>
+    <div class="row" style="justify-content:center">
+      <a class="btn" href="therapist-signup.html">Create a therapist account</a>
+      <a class="btn ghost" href="dashboard.html">Back to your dashboard</a></div>`;
 } else if (!a.therapist) {
   box.innerHTML = `<h2>Let's build your profile</h2>
     <p class="muted">Everything can be edited later, and nothing is public until your license

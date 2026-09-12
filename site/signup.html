@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Member sign in — Theraglee</title>
-<meta name="description" content="Sign in to your Theraglee member account.">
+<title>Create your free account — Theraglee</title>
+<meta name="description" content="Create a free Theraglee member account. No card, no cost.">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="alternate icon" href="assets/favicon.png" sizes="48x48">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
@@ -16,8 +16,8 @@
 <main class="section">
   <div class="wrap" style="max-width:470px">
     <div class="center" style="margin-bottom:26px">
-      <h1 style="font-size:2rem">Welcome back</h1>
-      <p class="muted">Sign in to pick up where you left off.</p>
+      <h1 style="font-size:2rem">Create your free account</h1>
+      <p class="muted">No card, no cost. Takes about twenty seconds.</p>
     </div>
 
     <div class="card pad-lg">
@@ -26,13 +26,14 @@
     </div>
 
     <p class="center muted" style="margin-top:22px">
-      New here? <a href="signup.html">Create a free account</a>
+      Already have an account? <a href="login.html">Sign in</a>
     </p>
     <p class="center faint" style="margin-top:8px">
-      Registering is free and never asks for a card.
+      Free forever: a progress dashboard, favorites, journal prompts, checklists,
+      7-day challenges, articles in your inbox, and Theraglee Match Mode.
     </p>
     <p class="center faint" style="margin-top:20px">
-      Are you a licensed therapist? <a href="therapist-login.html">Sign in to your practice</a>
+      Licensed therapist? <a href="therapist-signup.html">Create a therapist account instead</a>
     </p>
   </div>
 </main>
@@ -40,14 +41,8 @@
 <script type="module">
 import { chrome } from './assets/app.js';
 import { authPage } from './assets/auth.js';
-// The old address for creating a member account was login.html?mode=signup.
-// It now has a page of its own; carry the rest of the address across.
-{
-  const q = new URLSearchParams(location.search);
-  if (q.get('mode') === 'signup') { q.delete('mode'); location.replace('signup.html' + ([...q].length ? '?' + q : '')); }
-}
 await chrome();
-await authPage({ audience: 'member', mode: 'signin' });
+await authPage({ audience: 'member', mode: 'signup' });
 </script>
 </body>
 </html>

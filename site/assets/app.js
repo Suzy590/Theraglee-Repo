@@ -20,6 +20,24 @@ export const TIERS = [
 ];
 export const tierName = (l) => (TIERS[Math.max(0, Math.min(3, l ?? 0))] || TIERS[0]).name;
 
+/* ------------------------------------------------------- two front doors */
+// Members and therapists are separate memberships with separate sign-in and
+// sign-up pages and separate dashboards. Everything that sends someone to a
+// door or a home goes through these, so the two never get mixed up.
+export const DOORS = {
+  member:    { signin: 'login.html',           signup: 'signup.html',
+               home: 'dashboard.html',          name: 'member' },
+  therapist: { signin: 'therapist-login.html', signup: 'therapist-signup.html',
+               home: 'therapist-dashboard.html', name: 'therapist' },
+};
+/** Which door an account belongs to. Admins use the member door and can open both dashboards. */
+export const audienceOf = (profile) => profile?.role === 'therapist' ? 'therapist' : 'member';
+/** The dashboard this account lands on after signing in. */
+export const homeFor = (profile) => DOORS[audienceOf(profile)].home;
+/** The sign-in page for an account (or for a page's audience). */
+export const loginFor = (profileOrAudience) => DOORS[
+  typeof profileOrAudience === 'string' ? profileOrAudience : audienceOf(profileOrAudience)].signin;
+
 /* ---------------------------------------------------------------- utils */
 export const $  = (s, r = document) => r.querySelector(s);
 export const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -112,11 +130,14 @@ export async function access(force = false) {
 }
 export const clearAccess = () => { _access = null; };
 
-/** Redirect to sign-in if not logged in. Returns the access object otherwise. */
-export async function requireAuth() {
+/** Redirect to sign-in if not logged in. Returns the access object otherwise.
+ *  Pass `audience: 'therapist'` on therapist pages so the sign-in page they
+ *  are sent to is the therapist one. */
+export async function requireAuth({ audience = 'member' } = {}) {
   const a = await access();
   if (!a.authenticated) {
-    location.href = 'login.html?next=' + encodeURIComponent(location.pathname.split('/').pop() + location.search);
+    location.href = loginFor(audience) + '?next=' +
+      encodeURIComponent(location.pathname.split('/').pop() + location.search + location.hash);
     return null;
   }
   return a;
@@ -124,7 +145,7 @@ export async function requireAuth() {
 
 /** Where a locked item should send someone: Free tier needs an account, not money. */
 export function unlockHref(needed, authenticated) {
-  return (needed <= 1 && !authenticated) ? 'login.html?mode=signup' : 'pricing.html';
+  return (needed <= 1 && !authenticated) ? DOORS.member.signup : 'pricing.html';
 }
 
 /** Renders an inline upgrade prompt into `host` when the tier is too low. */
@@ -181,7 +202,7 @@ async function goStripe(name, body, btn, label, fallback) {
 export async function startCheckout(plan, interval, btn) {
   const a = await access();
   if (!a.authenticated) {
-    location.href = `login.html?next=${encodeURIComponent('pricing.html')}&plan=${plan}`;
+    location.href = `${DOORS.member.signin}?next=${encodeURIComponent('pricing.html')}&plan=${plan}`;
     return;
   }
   // A member who already subscribes is sent to the billing portal to switch
@@ -220,27 +241,45 @@ const NAV = [
   ['Therapists', 'therapists.html'],
   ['For Therapists', 'for-therapists.html'],
 ];
+// A signed-in therapist gets the practice, not the member library.
+const THERAPIST_NAV = [
+  ['Dashboard',       'therapist-dashboard.html'],
+  ['Referrals',       'therapist-dashboard.html#referrals'],
+  ['Messages',        'therapist-dashboard.html#messages'],
+  ['Member requests', 'therapist-dashboard.html#members'],
+  ['Library',         'therapist-dashboard.html#library'],
+  ['My profile',      'therapist-dashboard.html#profile'],
+  ['Directory',       'therapists.html'],
+];
 
 export async function chrome({ active = '' } = {}) {
   const a = await access();
   const here = location.pathname.split('/').pop() || 'index.html';
+  const therapist = a.authenticated && a.profile?.role === 'therapist';
+  const admin = a.authenticated && a.profile?.role === 'admin';
 
-  const links = NAV.map(([label, href]) =>
-    `<a href="${href}" class="${(active === href || here === href) ? 'active' : ''}">${label}</a>`).join('');
+  const links = (therapist ? THERAPIST_NAV : NAV).map(([label, href]) => {
+    const page = href.split('#')[0];
+    const on = therapist ? (href.includes('#') ? here + location.hash === href : here === page)
+                         : (active === href || here === href);
+    return `<a href="${href}" class="${on ? 'active' : ''}">${label}</a>`;
+  }).join('');
 
   const right = a.authenticated
-    ? `<a href="account.html" class="${here === 'account.html' ? 'active' : ''}">Account</a>
+    ? `${admin ? `<a href="therapist-dashboard.html" class="${here === 'therapist-dashboard.html' ? 'active' : ''}">Practice</a>
+                  <a href="admin.html" class="${here === 'admin.html' ? 'active' : ''}">Admin</a>` : ''}
+       <a href="account.html" class="${here === 'account.html' ? 'active' : ''}">Account</a>
        <a class="btn sm ghost" href="#" id="signout">Sign out</a>`
     : `<a href="pricing.html" class="${here === 'pricing.html' ? 'active' : ''}">Membership</a>
-       <a href="login.html">Sign in</a>
-       <a class="btn sm" href="login.html?mode=signup">Join free</a>`;
+       <a href="${DOORS.member.signin}">Sign in</a>
+       <a class="btn sm" href="${DOORS.member.signup}">Join free</a>`;
 
   const header = document.createElement('div');
   header.innerHTML = `
     <div class="crisis">In crisis? Call or text <a href="tel:988">988</a> (US Suicide &amp; Crisis Lifeline),
       or text HOME to <a href="sms:741741">741741</a>. If you are in danger, call 911.</div>
     <header class="topbar"><div class="wrap"><nav class="nav">
-      <a class="brand" href="${a.authenticated ? 'dashboard.html' : 'index.html'}">
+      <a class="brand" href="${a.authenticated ? homeFor(a.profile) : 'index.html'}">
         <img src="assets/logo.png" alt="Theraglee"></a>
       <button class="burger" id="burger" aria-label="Menu" aria-expanded="false">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -261,7 +300,7 @@ export async function chrome({ active = '' } = {}) {
   const onScroll = () => bar.classList.toggle('scrolled', window.scrollY > 4);
   addEventListener('scroll', onScroll, { passive: true }); onScroll();
 
-  if (a.authenticated) idleLogoff();
+  if (a.authenticated) idleLogoff({ login: loginFor(a.profile) });
 
   footer();
   return a;
@@ -270,14 +309,14 @@ export async function chrome({ active = '' } = {}) {
 /* --------------------------------------------------------- auto logoff */
 /** Signs a signed-in user out after a period of inactivity, so a session left
     open on a shared or unattended screen does not stay open. */
-export function idleLogoff({ minutes = 15, warnSeconds = 60 } = {}) {
+export function idleLogoff({ minutes = 15, warnSeconds = 60, login = DOORS.member.signin } = {}) {
   let timer, warnTimer, warned = false;
 
   const signOut = async (why) => {
     try { await sb.auth.signOut(); } catch {}
     clearAccess();
-    location.href = 'login.html?next=' +
-      encodeURIComponent(location.pathname.split('/').pop()) + '&timeout=1';
+    location.href = login + '?next=' +
+      encodeURIComponent(location.pathname.split('/').pop() + location.hash) + '&timeout=1';
   };
 
   const showWarning = () => {
@@ -322,10 +361,12 @@ function footer() {
         <a href="challenges.html">Challenges</a>
         <a href="journal.html">Journal</a><a href="articles.html">Articles</a></div>
       <div><h4>Membership</h4>
-        <a href="pricing.html">Membership plans</a><a href="login.html?mode=signup">Join free</a>
+        <a href="pricing.html">Membership plans</a><a href="${DOORS.member.signup}">Join free</a>
+        <a href="${DOORS.member.signin}">Member sign in</a>
         <a href="account.html">Your account</a></div>
       <div><h4>Therapists</h4>
-        <a href="therapists.html">Find a therapist</a><a href="for-therapists.html">List your practice</a>
+        <a href="therapists.html">Find a therapist</a><a href="for-therapists.html">Therapist membership</a>
+        <a href="${DOORS.therapist.signin}">Therapist sign in</a>
         <a href="therapist-dashboard.html">Practice dashboard</a></div>
     </div>
     <div class="legal">

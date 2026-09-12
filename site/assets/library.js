@@ -65,7 +65,7 @@ export const progressOf = (lib, kind, id) => lib.progress.get(key(kind, id)) || 
     sign-up page, which comes back to the page they were on. */
 export function signupHref(why = 'save') {
   const here = location.pathname.split('/').pop() + location.search;
-  return `login.html?mode=signup&why=${encodeURIComponent(why)}&next=${encodeURIComponent(here)}`;
+  return `signup.html?why=${encodeURIComponent(why)}&next=${encodeURIComponent(here)}`;
 }
 
 /** Add or remove an activity from a list. Returns the new on/off state. */

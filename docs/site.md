@@ -19,6 +19,44 @@ Moving the domain off HostGator is written up step by step in
 | Hosting | Serves the site. | Vercel project `theraglee-site` |
 | Domain | `theraglee.com`. | Registered at Network Solutions, served by Vercel |
 
+## Two front doors: members and therapists
+
+Members and therapists are separate memberships, so each has its own sign-in
+page, its own sign-up page and its own dashboard. Nothing on one side is part of
+the other.
+
+| | Members | Therapists |
+|---|---|---|
+| Sign up | `signup.html` (free, no card) | `therapist-signup.html` |
+| Sign in | `login.html` | `therapist-login.html` |
+| Home after signing in | `dashboard.html` | `therapist-dashboard.html` |
+| Account page | `account.html` (tier, profile, privacy, inbox, history) | `account.html` shows a short therapist version (membership, sign-in and data) |
+| Plans | `pricing.html` (Free, Basic, Premium) | `for-therapists.html#membership` (one flat price); billing starts from the practice dashboard |
+| Header links | Today, Explore, Discover, Challenges, Journal, Articles, Therapists | Dashboard, Referrals, Messages, Member requests, Library, My profile, Directory |
+
+The four sign-in and sign-up pages share one script, `site/assets/auth.js`,
+which owns the form and what happens on submit; each page owns only its copy.
+The sign-up page decides the account type (`role` in the sign-up metadata, read
+by `handle_new_user`), so there is no "I am joining as" choice any more. The
+old address `login.html?mode=signup` redirects to `signup.html`.
+
+Using the wrong door still works, but says so: a therapist who signs in on the
+member page (or the other way round) sees a notice naming their own sign-in
+page and is taken to their own dashboard. `dashboard.html` sends a therapist
+account on to the practice dashboard, and the practice dashboard turns a member
+account away with a link to the therapist sign-up. `requireAuth({ audience:
+'therapist' })` on therapist pages, and the idle sign-out, send people to the
+sign-in page for their side. `DOORS`, `homeFor()` and `loginFor()` in
+`site/assets/app.js` are the one place these addresses live.
+
+The administrator account (see "Admin" below) uses the member door and can open
+both dashboards: the header shows **Practice** and **Admin** links, and the admin
+screen links to both. The practice dashboard lets `role = 'admin'` through
+everywhere a therapist would go; the one database change this needed is
+`20260912000000_admin_sees_member_requests.sql`, which lets an admin read
+`member_discovery` (the Member requests tab), and `stripe-checkout` lets an admin
+test a therapist checkout the way it already lets them test with payments off.
+
 ## Membership tiers
 
 Access is decided by the database, not the browser, so it can't be bypassed
@@ -45,7 +83,10 @@ TRIGGER and MAINTAIN, is revoked from them on existing tables and by default on
 new ones (`supabase/migrations/20260908130000_member_table_privileges.sql`).
 
 Therapist membership is separate and not tiered — one flat level, gated on
-license verification *and* an active subscription. It includes:
+license verification *and* an active subscription. The practice dashboard opens
+on a **Home** tab: where the listing stands and the one thing to do next, the
+last thirty days of referrals, unread messages and waiting member requests, and
+every benefit below with its current state. It includes:
 
 - a verified, searchable listing
 - a Theraglee tracking phone number, so the therapist's own line stays private
@@ -252,7 +293,7 @@ What a visitor gets versus a member:
 |---|---|---|
 | Use all 360 tools | yes | yes |
 | Answers remembered | in this browser only (`localStorage`, key `tg.discover.<slug>`) | in this browser, plus Started / Completed in `item_progress` with `item_type = 'discover'` |
-| Favorite, save for later, save to my dashboard | the buttons are shown, and each one opens the free sign-up page (`login.html?mode=signup&why=save&next=…`), which returns to the tool afterwards | yes: favorites via `favorites`, "save to my dashboard" records the tool as started in `item_progress` |
+| Favorite, save for later, save to my dashboard | the buttons are shown, and each one opens the free sign-up page (`signup.html?why=save&next=…`), which returns to the tool afterwards | yes: favorites via `favorites`, "save to my dashboard" records the tool as started in `item_progress` |
 | Shows on the dashboard | no dashboard | yes: favorites, saved for later, picked up but not finished |
 
 None of the tools diagnoses, screens for, or treats anything. Every result is
@@ -467,8 +508,10 @@ members at level 2 or above.
 
 ## Admin
 
-Sign in with **scanchol@hotmail.com** and you are made an administrator
-automatically. Then go to `/admin.html` for:
+Sign in with **scanchol@hotmail.com** (on the member sign-in page) and you are
+made an administrator automatically. The header then carries **Practice** and
+**Admin** links, so the account can open the member dashboard, the practice
+dashboard and `/admin.html`, which offers:
 
 - the therapist license verification queue (with each therapist's ID-check state)
 - Stripe price IDs, the platform fee, and the on/off switches for payments,

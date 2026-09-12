@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Create your therapist account — Theraglee</title>
+<meta name="description" content="Create a Theraglee therapist account: a verified listing, a protected phone number, referral stats and a clinician library.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="assets/favicon.png" sizes="48x48">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<main class="section">
+  <div class="wrap" style="max-width:470px">
+    <div class="center" style="margin-bottom:26px">
+      <span class="badge">For licensed professionals</span>
+      <h1 style="font-size:2rem;margin-top:14px">Create your therapist account</h1>
+      <p class="muted">List your practice, get verified, and see exactly what Theraglee brings you.</p>
+    </div>
+
+    <div class="card pad-lg">
+      <div id="alert"></div>
+      <div id="auth"><div class="skeleton" style="height:220px"></div></div>
+    </div>
+
+    <div class="card" style="margin-top:22px">
+      <h3 style="margin-bottom:10px">What happens next</h3>
+      <ol class="muted" style="margin:0;padding-left:20px;font-size:.93rem;line-height:1.6">
+        <li>Create your account (about a minute).</li>
+        <li>Fill in your profile: license, specialties, insurances, fees, locations.</li>
+        <li>We verify your license with your state board.</li>
+        <li>Start your membership and publish. Referrals are counted from day one.</li>
+      </ol>
+    </div>
+    <p class="center muted" style="margin-top:22px">
+      Already have a therapist account? <a href="therapist-login.html">Sign in</a>
+    </p>
+    <p class="center faint" style="margin-top:8px">
+      One flat membership, billed monthly or yearly. Cancel any time.
+      <a href="for-therapists.html">See everything it includes</a>.
+    </p>
+    <p class="center faint" style="margin-top:20px">
+      Not a therapist? <a href="signup.html">Create a free member account</a>
+    </p>
+  </div>
+</main>
+
+<script type="module">
+import { chrome } from './assets/app.js';
+import { authPage } from './assets/auth.js';
+await chrome();
+await authPage({ audience: 'therapist', mode: 'signup' });
+</script>
+</body>
+</html>
