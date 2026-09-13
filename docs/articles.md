@@ -82,9 +82,10 @@ are fine.
 1. **Keep the Supabase connector signed in.** In claude.ai, under Settings
    → Connectors, make sure Supabase is connected (reconnect it if it asks).
    Then each session applies its own SQL and confirms the rows.
-2. **Let GitHub apply it.** `.github/workflows/apply-article-migrations.yml`
+2. **Let GitHub apply it.** `.github/workflows/apply-content-migrations.yml`
    runs on every push to a `claude/...` branch that adds or changes an
-   `*_articles_*.sql` file and applies those files with `psql`. It needs one
+   `*_articles_*.sql` file (or a `*_therapist_resources_*.sql` file, the
+   clinician library's equivalent) and applies those files with `psql`. It needs one
    repository secret, `SUPABASE_DB_URL`: the project's Postgres connection
    string (Supabase dashboard → Connect → Session pooler URI, with the
    database password filled in), added under Settings → Secrets and

@@ -1,23 +1,25 @@
-# Applies each day's article SQL to the Supabase project when the daily
-# articles routine pushes it (each day's session pushes its own claude/...
-# branch), so the site gets the articles even when the session that wrote
-# them had no database access.
+# Applies each day's content SQL (articles, and clinician-library resources
+# for therapists) to the Supabase project when a daily routine pushes it (each
+# day's session pushes its own claude/... branch), so the site gets the content
+# even when the session that wrote it had no database access.
 #
 # Needs one repository secret: SUPABASE_DB_URL, the project's Postgres
 # connection string (Supabase dashboard → Connect → Session pooler URI, with
 # the database password filled in). With the secret unset the job says so
-# and does nothing. The article files are upserts on slug, so applying one
-# twice is harmless.
-name: Apply article migrations
+# and does nothing. The files are upserts on slug, so applying one twice is
+# harmless.
+name: Apply content migrations
 
 on:
   push:
     branches: ['claude/**']
-    paths: ['supabase/migrations/*_articles_*.sql']
+    paths:
+      - 'supabase/migrations/*_articles_*.sql'
+      - 'supabase/migrations/*_therapist_resources_*.sql'
   workflow_dispatch:
     inputs:
       all:
-        description: Apply every article migration, not just the ones in the last push
+        description: Apply every article and clinician-library migration, not just the ones in the last push
         type: boolean
         default: false
 
@@ -37,13 +39,13 @@ jobs:
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         run: |
           if [ "$ALL" = "true" ]; then
-            files=$(ls supabase/migrations/*_articles_*.sql)
+            files=$(ls supabase/migrations/*_articles_*.sql supabase/migrations/*_therapist_resources_*.sql | sort)
           elif [ -n "$BEFORE" ] && git cat-file -e "$BEFORE" 2>/dev/null; then
             # A later push to a branch: only the files this push added or changed.
-            files=$(git diff --name-only "$BEFORE" HEAD -- 'supabase/migrations/*_articles_*.sql' | sort)
+            files=$(git diff --name-only "$BEFORE" HEAD -- 'supabase/migrations/*_articles_*.sql' 'supabase/migrations/*_therapist_resources_*.sql' | sort)
           else
             # The first push of a new branch: the files it adds on top of the default branch.
-            files=$(git diff --name-only "origin/$DEFAULT_BRANCH...HEAD" -- 'supabase/migrations/*_articles_*.sql' | sort)
+            files=$(git diff --name-only "origin/$DEFAULT_BRANCH...HEAD" -- 'supabase/migrations/*_articles_*.sql' 'supabase/migrations/*_therapist_resources_*.sql' | sort)
           fi
           echo "files<<EOF" >> "$GITHUB_OUTPUT"; echo "$files" >> "$GITHUB_OUTPUT"; echo "EOF" >> "$GITHUB_OUTPUT"
           echo "Will apply:"; echo "$files"
@@ -57,9 +59,10 @@ jobs:
             echo "::notice::SUPABASE_DB_URL is not set, so nothing was applied. Add it under Settings → Secrets and variables → Actions, then re-run this workflow with 'all' checked."
             exit 0
           fi
-          if [ -z "$FILES" ]; then echo "No article migrations in this push."; exit 0; fi
+          if [ -z "$FILES" ]; then echo "No content migrations in this push."; exit 0; fi
           for f in $FILES; do
             echo "== $f"
             psql "$DB_URL" -v ON_ERROR_STOP=1 -q -f "$f"
           done
           psql "$DB_URL" -Atc "select count(*) || ' articles, all at min_level ' || min(min_level) || '-' || max(min_level) from public.articles"
+          psql "$DB_URL" -Atc "select count(*) || ' clinician-library resources across ' || count(distinct kind) || ' kinds' from public.therapist_resources"
