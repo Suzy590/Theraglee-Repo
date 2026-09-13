@@ -48,6 +48,7 @@
 import { chrome, sb, requireAuth, access, clearAccess, esc, toast, busy, fmtDate,
          modal, openPortal, startCheckout, startIdentity, connectAction, callStripeFn,
          FN, qs } from './assets/app.js';
+import { matchSummary } from './assets/match.js';
 import { SPECIALTIES, MODALITIES, INSURANCES, AGE_RANGES, PARTICIPANTS,
          LANGUAGES, CREDENTIALS, STATES } from './assets/lists.js';
 await chrome();
@@ -72,6 +73,7 @@ if (a.profile.role !== 'therapist' && a.profile.role !== 'admin') {
 let T = a.therapist || null;
 let tab = location.hash.replace('#','') || (T ? 'home' : 'profile');
 let unread = 0;
+let unreadReplies = 0;
 
 // Back from Stripe (membership checkout, the ID check, or payouts setup):
 // bring what we know up to date before drawing anything.
@@ -123,7 +125,8 @@ function shell(body){
     </div>
     <div class="tabs">${TABS.map(([k,l])=>
       `<button data-tab="${k}" class="${tab===k?'on':''}">${l}${
-        k==='messages' && unread ? `<span class="dot">${unread}</span>` : ''}</button>`).join('')}</div>
+        k==='messages' && unread ? `<span class="dot">${unread}</span>`
+        : k==='members' && unreadReplies ? `<span class="dot">${unreadReplies}</span>` : ''}</button>`).join('')}</div>
     <div id="body">${body}</div>`;
 }
 
@@ -149,17 +152,20 @@ function needsListing(){
 async function home(){
   if (!T) return needsListing();
   render('<div class="skeleton" style="height:200px"></div>');
-  const [{ data: stats }, { data: msgs }, { data: reqs }, { data: cat }, { data: cfgRows }] = await Promise.all([
+  const [{ data: stats }, { data: msgs }, { data: reqs }, { data: cat }, { data: cfgRows }, { count: nReplies }] = await Promise.all([
     sb.rpc('therapist_stats', { p_days: 30 }),
     sb.from('therapist_messages').select('id,sender_name,created_at,read_at')
       .eq('therapist_id', T.id).order('created_at', { ascending:false }).limit(3),
     sb.from('member_discovery').select('id,already_contacted').limit(200),
     sb.from('therapist_resource_catalog').select('*'),
     sb.from('app_config').select('key,value').in('key', ['identity_required','connect_enabled']),
+    sb.from('outreach_replies').select('id', { count:'exact', head:true })
+      .eq('therapist_id', T.id).is('read_at', null),
   ]);
   const cfg = Object.fromEntries((cfgRows||[]).map(r=>[r.key,r.value]));
   const c = stats?.current || {};
   unread = stats?.unread_messages || 0;
+  unreadReplies = nReplies || 0;
   const waiting = (reqs||[]).filter(r => !r.already_contacted).length;
   const libTotal = (cat||[]).reduce((s,r)=>s+r.total, 0);
   const verified = T.verification === 'verified';
@@ -234,8 +240,11 @@ async function home(){
         <div class="spread"><h3 style="margin:0">Member requests</h3>
           ${waiting ? `<span class="badge">${waiting} waiting</span>` : '<span class="badge gray">None waiting</span>'}</div>
         <p class="muted" style="margin:10px 0 0">Members who switched on <strong>Theraglee Match
-          Mode</strong> want a therapist to reach out. You see their name, topics and zip code, and
-          can send each one message.${liveListing ? '' : ' Reaching out needs a live listing.'}</p>
+          Mode</strong> want a therapist to reach out. You see a short anonymous line about each
+          one, and can send them a message. A member who replies gives you their real
+          name.${liveListing ? '' : ' Reaching out needs a live listing.'}</p>
+        ${unreadReplies ? `<p class="muted" style="margin:8px 0 0"><strong>${unreadReplies} new
+          ${unreadReplies===1?'reply':'replies'}</strong> from members waiting for you.</p>` : ''}
         <a class="btn sm ghost" style="margin-top:14px" href="#members">See who is waiting</a>
       </div>
     </div>
@@ -257,7 +266,7 @@ async function home(){
         'Calls, messages, website clicks, shares and profile views, with the previous period alongside.',
         state(true, 'Included', ''))}
       ${benefit('#members', 'Theraglee Match Mode',
-        'Reach out to members who asked to be contacted, instead of waiting to be found.',
+        'Reach out to members who asked to be contacted, instead of waiting to be found. They stay anonymous until they reply.',
         state(liveListing, 'Ready', 'Needs a live listing'))}
       ${benefit('#library', 'Clinician library',
         `${libTotal || 'Dozens of'} worksheets and CBT, ACT, DBT, couples, kids and game exercises, printable with guidance.`,
@@ -389,21 +398,73 @@ async function messages(){
 async function members(){
   if (!T) return needsListing();
   render('<div class="skeleton" style="height:160px"></div>');
-  const { data, error } = await sb.from('member_discovery').select('*').limit(100);
+  const [{ data, error }, { data: sent }, { data: replies }] = await Promise.all([
+    sb.from('member_discovery').select('*').limit(100),
+    sb.from('therapist_outreach').select('id,member_id,message,created_at')
+      .eq('therapist_id', T.id).order('created_at', { ascending:true }),
+    sb.from('outreach_replies').select('*')
+      .eq('therapist_id', T.id).order('created_at', { ascending:true }),
+  ]);
   if (error) return render(`<div class="notice err">${esc(error.message)}</div>`);
   const rows = data || [];
+  unreadReplies = (replies||[]).filter(r => !r.read_at).length;
+
+  // Conversations: everything you sent and everything a member answered, by member.
+  const threads = new Map();
+  for (const m of sent || []) {
+    const t = threads.get(m.member_id) || { items: [], name: '', unread: 0 };
+    t.items.push({ from: 'you', at: m.created_at, text: m.message });
+    threads.set(m.member_id, t);
+  }
+  for (const r of replies || []) {
+    const t = threads.get(r.member_id) || { items: [], name: '', unread: 0 };
+    t.items.push({ from: 'member', at: r.created_at, text: r.message, name: r.member_name, id: r.id, read: r.read_at });
+    t.name = r.member_name; if (!r.read_at) t.unread++;
+    threads.set(r.member_id, t);
+  }
+  const convos = [...threads.entries()].filter(([, t]) => t.name)
+    .map(([id, t]) => { t.items.sort((x, y) => new Date(x.at) - new Date(y.at)); return [id, t]; })
+    .sort((x, y) => new Date(y[1].items.at(-1).at) - new Date(x[1].items.at(-1).at));
+
+  const line = (m) => matchSummary(m);
 
   render(`
     <h2>Members who have toggled ON <strong>Theraglee Match Mode</strong></h2>
-    <p class="muted">Theraglee members who switched on <strong>Theraglee Match Mode</strong>. You see their
-      name and what they are working on — never an email address, and never anything they
-      have written in their journal.</p>
+    <p class="muted">Theraglee members who switched on <strong>Theraglee Match Mode</strong>. Each one
+      is anonymous: you see their gender, age, what they want help with, whether they want
+      in-person or telehealth sessions, and their zip code. Never a name or an email address, and
+      never anything they have written in their journal. A member who answers your message gives
+      you their real name with the reply.</p>
     ${!liveListing ? `<div class="notice warn">Your listing has to be live before you can
       reach out.</div>` : ''}
-    ${rows.length ? `<div class="grid g3" style="margin-top:20px">${rows.map(m=>`
+
+    ${convos.length ? `
+      <h3 style="margin-top:28px">Replies from members</h3>
+      <div class="stack">${convos.map(([mid, t]) => `
+        <div class="msg ${t.unread?'unread':''}" data-thread="${esc(mid)}">
+          <div class="spread">
+            <span class="who">${esc(t.name)}</span>
+            <span class="faint">${fmtDate(t.items.at(-1).at)}</span></div>
+          <p class="faint" style="margin:4px 0 0">${rows.some(r => r.id === mid)
+            ? esc(line(rows.find(r => r.id === mid)))
+            : 'Has since switched Match Mode off. You can still answer this conversation.'}</p>
+          <div class="stack" style="margin-top:12px">${t.items.map(i => `
+            <div style="padding:12px 14px;border-radius:var(--r-sm);background:${i.from==='you'?'var(--sand)':'var(--soft)'}">
+              <div class="spread"><span class="faint">${i.from==='you' ? 'You' : esc(i.name)}</span>
+                <span class="faint">${fmtDate(i.at)}</span></div>
+              <p style="margin:6px 0 0;white-space:pre-wrap;color:var(--ink-2)">${esc(i.text)}</p></div>`).join('')}</div>
+          <div class="row" style="margin-top:14px">
+            <button class="btn sm" data-followup="${esc(mid)}" data-name="${esc(t.name)}" ${liveListing?'':'disabled'}>Write back</button>
+            ${t.unread ? `<button class="btn sm ghost" data-readall="${esc(mid)}">Mark as read</button>` : ''}
+          </div>
+        </div>`).join('')}</div>` : ''}
+
+    <h3 style="margin-top:28px">Waiting to hear from a therapist</h3>
+    ${rows.length ? `<div class="grid g3" style="margin-top:14px">${rows.map(m=>`
       <div class="card">
-        <div class="spread"><strong>${esc(m.display_name)}</strong>
-          ${m.already_contacted?'<span class="badge gray">Contacted</span>':''}</div>
+        <div class="spread"><strong>${esc(line(m))}</strong>
+          ${m.has_replied ? '<span class="badge">Replied</span>'
+            : m.already_contacted ? '<span class="badge gray">Contacted</span>' : ''}</div>
         <div class="chips" style="margin:12px 0">${
           (m.issues||[]).map(i=>`<span class="badge">${esc(i)}</span>`).join('')
           || '<span class="faint">No topics listed</span>'}</div>
@@ -415,13 +476,12 @@ async function members(){
       </div>`).join('')}</div>`
     : `<div class="empty" style="margin-top:20px">No members have turned on <strong>Theraglee Match Mode</strong> yet.</div>`}`);
 
-  document.querySelectorAll('[data-reach]').forEach(b => b.onclick = () => {
+  const send = (memberId, intro, placeholder) => {
     const back = modal(`
       <h2><strong>Theraglee Match Mode</strong></h2>
-      <p class="muted" style="font-size:.92rem">They see this in their Theraglee inbox along
-        with a link to your profile. Keep it short and warm.</p>
+      <p class="muted" style="font-size:.92rem">${intro}</p>
       <div class="field"><label for="om">Your message</label>
-        <textarea id="om" placeholder="Hello — I work with anxiety and sleep, and I have space on Tuesdays…"></textarea></div>
+        <textarea id="om" placeholder="${esc(placeholder)}"></textarea></div>
       <div class="row" style="justify-content:flex-end">
         <button class="btn ghost" id="no">Cancel</button>
         <button class="btn" id="yes">Send</button></div>`);
@@ -431,11 +491,24 @@ async function members(){
       if (msg.length < 10) return toast('Please write a little more.','err');
       busy(e.target, true, 'Sending…');
       const { error } = await sb.from('therapist_outreach')
-        .insert({ therapist_id: T.id, member_id: b.dataset.reach, message: msg });
+        .insert({ therapist_id: T.id, member_id: memberId, message: msg });
       busy(e.target, false);
       if (error) return toast(error.message,'err');
       back.remove(); toast('Message sent.','ok'); members();
     };
+  };
+
+  document.querySelectorAll('[data-reach]').forEach(b => b.onclick = () => send(b.dataset.reach,
+    `They see this in their Theraglee inbox along with a link to your profile. They stay anonymous
+     until they choose to reply. Keep it short and warm.`,
+    'Hello — I work with anxiety and sleep, and I have space on Tuesdays…'));
+  document.querySelectorAll('[data-followup]').forEach(b => b.onclick = () => send(b.dataset.followup,
+    `A reply to ${esc(b.dataset.name)}. It lands in their Theraglee inbox.`,
+    'Thanks for writing back — here is how to book a first session…'));
+  document.querySelectorAll('[data-readall]').forEach(b => b.onclick = async () => {
+    await sb.from('outreach_replies').update({ read_at: new Date().toISOString() })
+      .eq('therapist_id', T.id).eq('member_id', b.dataset.readall).is('read_at', null);
+    members();
   });
 }
 

@@ -210,7 +210,29 @@ gated by tier, so Basic and Premium have them too:
 | Articles sent to your inbox | the `daily-digest` Edge Function, below | `profiles.daily_email` |
 | 7-day mental health challenges | `challenge_templates` (the 7-day one is `min_level = 1`); Free can also design a 7-day one | `min_level` |
 | Checklists with progress tracked | 4 `checklists` at `min_level = 1`, `checklist_progress` + `item_progress` | `min_level`, RLS `own rows` |
-| Theraglee Match Mode (dashboard switch: let therapists reach out) | `profiles.visible_to_therapists`, toggled on `dashboard.html` and `account.html` | `member_opted_in()` |
+| Theraglee Match Mode (dashboard switch: let therapists reach out) | `profiles.visible_to_therapists`, toggled on `dashboard.html` and `account.html`; the details therapists see are asked for in `assets/match.js` | `member_opted_in()` |
+
+## Theraglee Match Mode is anonymous until the member replies
+
+A member who switches Match Mode on is asked, right then, for the things a
+therapist gets to see: gender, age, the broad topics they want help with (the
+same `profiles.issues` that shape daily content), whether they want in-person or
+telehealth sessions, and their zip code. Therapists read one line per member,
+such as "Male, 39 · seeks help with anxiety · seeking in-person sessions · near
+90210". No name, ever, on that screen.
+
+| Piece | Where |
+|---|---|
+| The details | `profiles.match_gender`, `match_age`, `match_delivery`, plus `issues` and `zip` |
+| The window that asks for them, and the one-line summary | `site/assets/match.js` (`matchDetailsModal`, `matchSummary`) |
+| What a therapist can read | the `member_discovery` view: gender, age, delivery, issues, zip, `already_contacted`, `has_replied`. No name column. |
+| A therapist's message | `therapist_outreach` (unchanged) |
+| A member's reply | `outreach_replies`. `member_name` is required by a check constraint: the real name travels only here, and only to that therapist. |
+| A follow-up from the therapist | Another `therapist_outreach` row. `member_replied_to()` lets the insert through even if the member has since switched Match Mode off. |
+| Migration | `supabase/migrations/20260913200000_match_mode_anonymous.sql` |
+
+`profiles.full_name` is now just what the dashboard greets the member by; the
+sign-up form asks for "what should we call you" and marks it optional.
 
 ## The morning email
 

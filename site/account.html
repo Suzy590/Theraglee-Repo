@@ -31,6 +31,7 @@ import { chrome, sb, requireAuth, access, clearAccess, esc, toast, busy, qs,
          contentCounts, counted } from './assets/app.js';
 import { MEMBER_ISSUES } from './assets/lists.js';
 import { SETS as TRIVIA } from './assets/trivia-sets.js';
+import { matchDetailsModal, matchSummary, matchComplete, MATCH_BLURB } from './assets/match.js';
 await chrome({ active:'account.html' });
 let a = await requireAuth();
 const c = await contentCounts();
@@ -165,16 +166,18 @@ function profile(){
   const p = a.profile;
   return `
     <form id="pf" style="max-width:560px">
-      <div class="field"><label for="name">Your name</label>
-        <input id="name" value="${esc(p.full_name||'')}"></div>
+      <div class="field"><label for="name">What should we call you?</label>
+        <input id="name" value="${esc(p.full_name||'')}" placeholder="A first name or nickname is fine">
+        <div class="help">Only for greeting you on your dashboard. Therapists never see it. You give
+          a therapist your real name only when you reply to one from your inbox.</div></div>
       <div class="field"><label for="zip">Zip code</label>
         <input id="zip" value="${esc(p.zip||'')}" inputmode="numeric">
         <div class="help">Used to find nearby therapists and resources. Never shown publicly.</div></div>
       <div class="field"><label>What are you working on?</label>
         <div class="chips" id="issues">${MEMBER_ISSUES.map(i=>
           `<button type="button" class="chip ${(p.issues||[]).includes(i)?'on':''}" data-v="${esc(i)}">${esc(i)}</button>`).join('')}</div>
-        <div class="help">This shapes the daily content you see. If you switch on Theraglee
-          Match under Privacy, these topics are also what therapists see.</div></div>
+        <div class="help">This shapes the daily content you see. If you switch on <strong>Theraglee
+          Match Mode</strong> under Privacy, these topics are also what therapists see.</div></div>
 
       <hr class="hr">
       <h3>Daily email</h3>
@@ -203,11 +206,11 @@ function privacy(){
       <label class="switch">
         <input type="checkbox" id="vis" ${p.visible_to_therapists?'checked':''}>
         <span><strong>Theraglee Match Mode</strong><br>
-        <span class="muted">Let therapists reach out to you. Verified therapists with an active membership will see your
-        <strong>name</strong>, the topics you picked above, and your zip code — and can send you a
-        message here. They never see your email address, your journal, your quiz results, or
-        anything else you have written. Switch it off and you disappear from their view
+        <span class="muted">${MATCH_BLURB} Switch it off and you disappear from their view
         entirely.</span></span></label>
+      ${p.visible_to_therapists ? `<div class="notice" style="margin-bottom:12px">
+          <strong>Therapists read:</strong> ${esc(matchSummary(p))}
+          <div><button type="button" class="btn sm ghost" id="vis-edit" style="margin-top:10px">Change what they see</button></div></div>` : ''}
 
       <div class="notice" style="margin-top:20px">
         Your journal entries, quiz results, worksheets and mood logs are private to your account.
@@ -219,13 +222,22 @@ function privacy(){
         <div class="card"><h3>What is <strong>Theraglee Match Mode</strong>?</h3>
           <p class="muted" style="margin:0">The toggle switch above. It lets Theraglee therapists
             know you are interested in them reaching out to you to set up an appointment for
-            therapy. You don't have to contact them — they contact you. When the toggle switch is
-            turned ON, Theraglee therapists in your area can see your name, the broad topics you
-            have selected that you would like to work on, and your zip code. That's it. Theraglee
-            therapists contact you by sending a message to your Theraglee inbox on your dashboard.
-            They never see your email, your journal, or anything you have worked on in your
-            Theraglee dashboard. The toggle switch is OFF by default, and you can turn it OFF at
-            any time to become invisible to Theraglee therapists again.</p></div>
+            therapy. You don't have to contact them — they contact you. When you turn the switch
+            ON, we ask you for a few details, and that is all Theraglee therapists in your area
+            can see: your gender, your age, the broad topics you would like to work on, whether
+            you want in-person or telehealth sessions, and your zip code. Something like
+            "Male, 39 · seeks help with anxiety · seeking in-person sessions". Not your name.
+            Theraglee therapists contact you by sending a message to your Theraglee inbox on
+            your dashboard, and you decide whether to answer. If you do reply, you give that one
+            therapist your real name with your reply, so they know who they are talking to. They
+            never see your email, your journal, or anything you have worked on in your Theraglee
+            dashboard. The toggle switch is OFF by default, and you can turn it OFF at any time
+            to become invisible to Theraglee therapists again.</p></div>
+        <div class="card"><h3>Why do I give my real name when I reply?</h3>
+          <p class="muted" style="margin:0">Browsing and being found stays anonymous. Booking
+            therapy does not: a therapist needs to know who they are arranging an appointment
+            with. So the moment you choose to answer a therapist, your reply carries your real
+            name. It goes to that therapist only, and only because you chose to write back.</p></div>
       </div>
 
       <hr class="hr">
@@ -239,23 +251,93 @@ function privacy(){
 }
 
 async function inbox(){
-  const { data } = await sb.from('therapist_outreach')
-    .select('*, therapist_profiles(first_name,last_name,credentials,slug)')
-    .eq('member_id', a.profile.id).order('created_at', { ascending:false });
   const host = document.getElementById('body');
+  const [{ data: sent }, { data: replies }] = await Promise.all([
+    sb.from('therapist_outreach')
+      .select('*, therapist_profiles(first_name,last_name,credentials,slug)')
+      .eq('member_id', a.profile.id).order('created_at', { ascending:true }),
+    sb.from('outreach_replies').select('*')
+      .eq('member_id', a.profile.id).order('created_at', { ascending:true }),
+  ]);
+
+  // One thread per therapist: their messages and your replies, oldest first.
+  const threads = new Map();
+  for (const m of sent || []) {
+    const t = threads.get(m.therapist_id) || { therapist: m.therapist_profiles || {}, items: [], last: m };
+    t.items.push({ from: 'therapist', at: m.created_at, text: m.message, id: m.id });
+    t.last = m; threads.set(m.therapist_id, t);
+  }
+  for (const r of replies || []) {
+    const t = threads.get(r.therapist_id);
+    if (t) t.items.push({ from: 'you', at: r.created_at, text: r.message, name: r.member_name });
+  }
+  const list = [...threads.entries()].map(([id, t]) => {
+    t.items.sort((x, y) => new Date(x.at) - new Date(y.at));
+    return [id, t];
+  }).sort((x, y) => new Date(y[1].items.at(-1).at) - new Date(x[1].items.at(-1).at));
+  const lastName = (replies || []).at(-1)?.member_name || '';
+
   host.innerHTML = `
     <h2>Messages from therapists</h2>
-    <p class="muted">Only therapists you allowed to reach you by turning on <strong>Theraglee Match Mode</strong>, under Privacy.</p>
-    ${(data||[]).length ? data.map(m=>{
-      const t = m.therapist_profiles || {};
-      return `<div class="card" style="margin-top:14px">
+    <p class="muted">Only therapists you allowed to reach you by turning on <strong>Theraglee Match
+      Mode</strong>, under Privacy. They do not know your name. If you reply, your reply carries
+      your real name to that one therapist, so they know who they will be booking with.</p>
+    ${list.length ? list.map(([tid, t]) => {
+      const th = t.therapist;
+      const replied = t.items.some(i => i.from === 'you');
+      return `<div class="card" style="margin-top:14px" data-thread="${esc(tid)}">
         <div class="spread">
-          <strong>${esc(t.first_name||'')} ${esc(t.last_name||'')}${t.credentials?', '+esc(t.credentials):''}</strong>
-          <span class="faint">${fmtDate(m.created_at)}</span></div>
-        <p class="muted" style="margin:10px 0 0;white-space:pre-wrap">${esc(m.message)}</p>
-        ${t.slug?`<a class="btn sm ghost" style="margin-top:12px" href="therapist.html?slug=${esc(t.slug)}">View their profile</a>`:''}
+          <strong>${esc(th.first_name||'')} ${esc(th.last_name||'')}${th.credentials?', '+esc(th.credentials):''}</strong>
+          ${replied ? '<span class="badge">You replied</span>' : '<span class="badge gray">Waiting for you</span>'}</div>
+        <div class="stack" style="margin-top:12px">${t.items.map(i => `
+          <div style="padding:12px 14px;border-radius:var(--r-sm);background:${i.from==='you'?'var(--soft)':'var(--sand)'}">
+            <div class="spread"><span class="faint">${i.from==='you' ? 'You, as ' + esc(i.name) : 'Therapist'}</span>
+              <span class="faint">${fmtDate(i.at)}</span></div>
+            <p class="muted" style="margin:6px 0 0;white-space:pre-wrap">${esc(i.text)}</p></div>`).join('')}</div>
+        <div class="row" style="margin-top:12px">
+          ${th.slug?`<a class="btn sm ghost" href="therapist.html?slug=${esc(th.slug)}">View their profile</a>`:''}
+          <button class="btn sm" data-reply="${esc(tid)}">${replied ? 'Reply again' : 'Reply with my name'}</button>
+        </div>
+        <form class="reply" data-form="${esc(tid)}" hidden style="margin-top:16px">
+          <div class="notice" style="margin-bottom:12px">Your reply goes to this therapist with your
+            <strong>real name</strong>, so they know who they are arranging an appointment with.
+            Nothing else about you changes: they still cannot see your email or anything you have written.</div>
+          <div class="field"><label for="rn-${esc(tid)}">Your real name *</label>
+            <input id="rn-${esc(tid)}" type="text" autocomplete="name" placeholder="First and last name"
+                   value="${esc(lastName)}" required></div>
+          <div class="field"><label for="rm-${esc(tid)}">Your message *</label>
+            <textarea id="rm-${esc(tid)}" placeholder="Hello — yes, I would like to hear more about…" required></textarea></div>
+          <div class="row" style="justify-content:flex-end">
+            <button type="button" class="btn ghost" data-cancel="${esc(tid)}">Cancel</button>
+            <button type="submit" class="btn">Send my reply</button></div>
+        </form>
       </div>`;
     }).join('') : '<div class="empty" style="margin-top:18px">No messages.</div>'}`;
+
+  host.querySelectorAll('[data-reply]').forEach(b => b.onclick = () => {
+    const f = host.querySelector(`[data-form="${b.dataset.reply}"]`);
+    f.hidden = false; b.hidden = true; f.querySelector('input').focus();
+  });
+  host.querySelectorAll('[data-cancel]').forEach(b => b.onclick = () => {
+    host.querySelector(`[data-form="${b.dataset.cancel}"]`).hidden = true;
+    host.querySelector(`[data-reply="${b.dataset.cancel}"]`).hidden = false;
+  });
+  host.querySelectorAll('form.reply').forEach(f => f.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const tid = f.dataset.form, t = threads.get(tid);
+    const name = f.querySelector('input').value.trim();
+    const msg  = f.querySelector('textarea').value.trim();
+    if (name.length < 2 || !name.includes(' ')) return toast('Please give your real first and last name.','err');
+    if (msg.length < 2) return toast('Please write a message.','err');
+    const btn = f.querySelector('[type=submit]');
+    busy(btn, true, 'Sending…');
+    const { error } = await sb.from('outreach_replies').insert({
+      outreach_id: t.last.id, therapist_id: tid, member_id: a.profile.id,
+      member_name: name, message: msg });
+    busy(btn, false);
+    if (error) return toast(error.message,'err');
+    toast('Reply sent with your name.','ok'); inbox();
+  }));
 }
 
 async function historyTab(){
@@ -359,11 +441,24 @@ async function render(){
 
   if (tab === 'privacy') {
     document.getElementById('vis')?.addEventListener('change', async (e) => {
+      if (e.target.checked) {
+        // Switching on asks for the details therapists will see, then saves both at once.
+        e.target.checked = false;
+        const saved = await matchDetailsModal(a.profile, { editing: matchComplete(a.profile) });
+        if (!saved) return;
+        clearAccess(); a = await access(true); render();
+        return toast('Match Mode is on. Therapists can now reach out.','ok');
+      }
       const { error } = await sb.from('profiles')
-        .update({ visible_to_therapists: e.target.checked }).eq('id', a.profile.id);
-      if (error) { e.target.checked = !e.target.checked; return toast(error.message,'err'); }
-      clearAccess(); a = await access(true);
-      toast(e.target.checked ? 'Therapists can now reach out.' : 'You are hidden from therapists.','ok');
+        .update({ visible_to_therapists: false }).eq('id', a.profile.id);
+      if (error) { e.target.checked = true; return toast(error.message,'err'); }
+      clearAccess(); a = await access(true); render();
+      toast('Match Mode is off. You are hidden from therapists.','ok');
+    });
+    document.getElementById('vis-edit')?.addEventListener('click', async () => {
+      if (await matchDetailsModal(a.profile, { editing: true })) {
+        clearAccess(); a = await access(true); render(); toast('Saved.','ok');
+      }
     });
     document.getElementById('export').addEventListener('click', async (e) => {
       busy(e.target, true, 'Gathering…');
