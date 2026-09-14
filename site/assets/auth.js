@@ -58,9 +58,14 @@ export async function authPage({ audience, mode }) {
 
   host.innerHTML = `
     <form id="form" class="stack" novalidate>
-      ${up ? `<div class="field">
+      ${up && audience === 'therapist' ? `<div class="field">
         <label for="name">Your name</label>
         <input id="name" type="text" autocomplete="name" placeholder="First and last name">
+      </div>` : up ? `<div class="field">
+        <label for="name">What should we call you? <span class="faint">(optional)</span></label>
+        <input id="name" type="text" autocomplete="given-name" placeholder="A first name or nickname is fine">
+        <div class="help">Only for greeting you. Therapists never see it; you give a therapist your
+          real name only if you reply to one.</div>
       </div>` : ''}
       <div class="field">
         <label for="email">Email</label>

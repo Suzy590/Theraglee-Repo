@@ -79,12 +79,17 @@
       <h3>Your switches</h3>
       <p class="faint" style="margin-top:-4px">Both are yours to flip any time. Nothing else changes.</p>
       <div class="grid g2" style="margin-top:14px">
+        <div>
         <label class="switch">
           <input type="checkbox" id="vis">
           <span><strong>Theraglee Match Mode</strong><br>
-          <span class="muted">Let therapists reach out to you. Verified therapists see your name, the topics on your profile and your zip
-          code, and can message your inbox here. Never your email, your journal, or anything you write.
-          Off means you are invisible to them.</span></span></label>
+          <span class="muted">Let therapists reach out to you. Verified therapists see a short line
+          about you, never your name: your gender, age, the topics you want help with, whether you
+          want in-person or telehealth sessions, and your zip code. They message your inbox here.
+          Your real name goes to a therapist only if you choose to reply to them. Off means you are
+          invisible to them.</span></span></label>
+        <p id="vis-summary" class="muted" style="margin:8px 0 0;font-size:.9rem"></p>
+        </div>
         <label class="switch">
           <input type="checkbox" id="demail">
           <span><strong>Morning email with an article</strong><br>
@@ -110,6 +115,7 @@ import { chrome, sb, access, requireAuth, esc, tierName, toast, fmtDate,
 import { library, isFavorite, favButton, statusBadge, bindLibrary } from './assets/library.js';
 import { TOOLS } from './assets/discover-tools.js';
 import { SETS as TRIVIA } from './assets/trivia-sets.js';
+import { matchDetailsModal, matchSummary, matchComplete } from './assets/match.js';
 await chrome({ active:'dashboard.html' });
 const a = await requireAuth();
 const c = await contentCounts();
@@ -174,12 +180,34 @@ const vis = document.getElementById('vis'), demail = document.getElementById('de
 vis.checked = Boolean(p.visible_to_therapists);
 demail.checked = Boolean(p.daily_email);
 
+// Under the switch: the exact line therapists read, with a way to change it.
+const visSummary = document.getElementById('vis-summary');
+function paintVis(){
+  visSummary.innerHTML = p.visible_to_therapists
+    ? `<strong>Therapists read:</strong> ${esc(matchSummary(p))}
+       · <a href="#" id="vis-edit">Change</a>`
+    : '';
+  visSummary.querySelector('#vis-edit')?.addEventListener('click', async (e) => {
+    e.preventDefault();
+    if (await matchDetailsModal(p, { editing: true })) { paintVis(); toast('Saved.', 'ok'); }
+  });
+}
+paintVis();
+
 vis.addEventListener('change', async () => {
+  if (vis.checked) {
+    // Switching on asks for the details therapists will see, then saves both at once.
+    vis.checked = false;
+    const saved = await matchDetailsModal(p, { editing: matchComplete(p) });
+    if (!saved) return;
+    vis.checked = true; paintVis();
+    return toast('Match Mode is on. Therapists can now reach out to you.', 'ok');
+  }
   const { error } = await sb.from('profiles')
-    .update({ visible_to_therapists: vis.checked }).eq('id', p.id);
-  if (error) { vis.checked = !vis.checked; return toast(error.message, 'err'); }
-  p.visible_to_therapists = vis.checked;
-  toast(vis.checked ? 'Therapists can now reach out to you.' : 'You are hidden from therapists.', 'ok');
+    .update({ visible_to_therapists: false }).eq('id', p.id);
+  if (error) { vis.checked = true; return toast(error.message, 'err'); }
+  p.visible_to_therapists = false; paintVis();
+  toast('Match Mode is off. You are hidden from therapists.', 'ok');
 });
 demail.addEventListener('change', async () => {
   const patch = { daily_email: demail.checked };
