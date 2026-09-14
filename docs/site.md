@@ -229,7 +229,8 @@ such as "Male, 39 · seeks help with anxiety · seeking in-person sessions · ne
 | A therapist's message | `therapist_outreach` (unchanged) |
 | A member's reply | `outreach_replies`. `member_name` is required by a check constraint: the real name travels only here, and only to that therapist. |
 | A follow-up from the therapist | Another `therapist_outreach` row. `member_replied_to()` lets the insert through even if the member has since switched Match Mode off. |
-| Migration | `supabase/migrations/20260913200000_match_mode_anonymous.sql` |
+| The email to the therapist | Trigger `outreach_reply_alert` posts to the `match-reply-alert` Edge Function through pg_net with `app_secrets.match_hook_key`; the function emails the therapist's contact address (else their sign-in email) through Resend and records `notified_at` / `notify_error` on the reply. Needs the same `RESEND_API_KEY` secret as the digest. |
+| Migrations | `supabase/migrations/20260913200000_match_mode_anonymous.sql`, `supabase/migrations/20260914210000_match_reply_alert.sql` |
 
 `profiles.full_name` is now just what the dashboard greets the member by; the
 sign-up form asks for "what should we call you" and marks it optional.
