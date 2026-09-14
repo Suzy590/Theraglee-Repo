@@ -300,8 +300,9 @@ async function inbox(){
         </div>
         <form class="reply" data-form="${esc(tid)}" hidden style="margin-top:16px">
           <div class="notice" style="margin-bottom:12px">Your reply goes to this therapist with your
-            <strong>real name</strong>, so they know who they are arranging an appointment with.
-            Nothing else about you changes: they still cannot see your email or anything you have written.</div>
+            <strong>real name</strong>, so they know who they are arranging an appointment with. They
+            get an email that you wrote back. Nothing else about you changes: they still cannot see
+            your email address or anything you have written.</div>
           <div class="field"><label for="rn-${esc(tid)}">Your real name *</label>
             <input id="rn-${esc(tid)}" type="text" autocomplete="name" placeholder="First and last name"
                    value="${esc(lastName)}" required></div>

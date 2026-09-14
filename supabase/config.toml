@@ -28,3 +28,8 @@ verify_jwt = false
 # the function checks both itself.
 [functions.verify-license]
 verify_jwt = false
+
+# Called by Postgres (pg_net) with a shared key when a member replies to a
+# Match Mode message; the function checks the key itself.
+[functions.match-reply-alert]
+verify_jwt = false
