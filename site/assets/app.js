@@ -359,13 +359,14 @@ function footer() {
       <div><h4>Explore</h4>
         <a href="explore.html">Library</a><a href="discover.html">Free discovery tools</a>
         <a href="challenges.html">Challenges</a>
-        <a href="journal.html">Journal</a><a href="articles.html">Articles</a></div>
+        <a href="journal.html">Journal</a><a href="articles.html">Articles</a>
+        <a href="therapists.html">Find a therapist</a></div>
       <div><h4>Membership</h4>
         <a href="pricing.html">Membership plans</a><a href="${DOORS.member.signup}">Join free</a>
         <a href="${DOORS.member.signin}">Member sign in</a>
         <a href="account.html">Your account</a></div>
       <div><h4>Therapists</h4>
-        <a href="therapists.html">Find a therapist</a><a href="for-therapists.html">Therapist membership</a>
+        <a href="for-therapists.html">Therapist membership</a>
         <a href="${DOORS.therapist.signin}">Therapist sign in</a>
         <a href="therapist-dashboard.html">Practice dashboard</a></div>
     </div>
