@@ -53,6 +53,36 @@
   .mm-flow li+li::before{content:"→ ";color:var(--lime-2);font-size:1.1rem}
   .mm-top .badge{white-space:normal;text-align:left;line-height:1.35}
   @media (max-width:820px){.mm-top{grid-template-columns:minmax(0,1fr)}}
+  /* Clinician library showcase: the pitch, a real tool opened as it appears on
+     the dashboard, live counts per kind, and a shelf of example titles. */
+  .lib-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:44px;align-items:center}
+  .lib-top h2{margin-top:14px;font-size:clamp(1.9rem,3.6vw,2.6rem);line-height:1.1}
+  .lib-top .lede{font-size:1.06rem;max-width:52ch}
+  .lib-top .badge{white-space:normal;text-align:left;line-height:1.35}
+  .lib-feats{display:grid;gap:16px;margin-top:24px}
+  .lib-feats strong{font-weight:500}
+  .lib-feats p{margin:2px 0 0;font-size:.92rem}
+  .lib-res{background:var(--cream);border:1px solid var(--hair);border-radius:var(--r-lg);
+    box-shadow:var(--shadow-2);padding:26px 28px}
+  .lib-res h3{margin:10px 0 6px;font-size:1.3rem}
+  .lib-res .lib-sum{margin:0;color:var(--muted)}
+  .lib-kv{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;font-size:.9rem;margin:14px 0 0}
+  .lib-kv dt{color:var(--faint)}
+  .lib-kv dd{margin:0}
+  .lib-res h4{margin:18px 0 6px;font-size:.95rem}
+  .lib-res .lib-notes{margin:0;font-size:.92rem;color:var(--muted)}
+  .lib-res ol{margin:0;padding-left:20px;font-size:.9rem;color:var(--ink-2)}
+  .lib-res ol li{margin-bottom:4px}
+  .lib-res .lib-more{font-size:.85rem;color:var(--faint);margin:6px 0 0}
+  .lib-foot{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+  .lib-cap{font-size:.78rem;color:var(--faint);text-align:center;margin:10px 0 0}
+  .lib-counts{margin-top:52px}
+  .lib-counts h3{text-align:center;margin:0 0 14px;font-size:1.1rem}
+  .lib-shelf{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:14px 0 0}
+  .lib-chip{display:inline-flex;align-items:center;gap:7px;padding:5px 12px;border-radius:var(--r-pill);
+    background:var(--paper);border:1px solid var(--hair);font-size:.85rem;color:var(--ink-2)}
+  .lib-chip b{font-weight:600;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--green)}
+  @media (max-width:820px){.lib-top{grid-template-columns:minmax(0,1fr)}}
 </style>
 </head>
 <body>
@@ -178,15 +208,82 @@
   </div>
 </section>
 
-<section class="section" style="background:var(--paper);border-block:1px solid var(--hair)">
+<section class="section" id="library" style="background:var(--paper);border-block:1px solid var(--hair)" aria-labelledby="lib-title">
   <div class="wrap">
-    <div class="center" style="max-width:58ch;margin:0 auto 34px">
-      <h2>A continually growing clinician library, included</h2>
-      <p class="muted">New worksheets and exercises added daily. Use between and inside sessions.
-        Adjuncts to your own clinical judgment, not protocols.</p>
+    <div class="lib-top">
+      <div>
+        <span class="badge">Clinician library · Included with therapist membership</span>
+        <h2 id="lib-title">Walk into every session with the right tool <em class="script">already in hand.</em></h2>
+        <p class="muted lede">A library of worksheets and exercises written for working clinicians.
+          Search it by the problem in front of you, open a tool, and you have the goal, who it suits,
+          how long it takes, a colleague's notes on running it, and the client prompts, ready to
+          print. New tools arrive every day.</p>
+        <div class="lib-feats">
+          <div class="feat"><div class="ico">✦</div><div>
+            <strong>Find it in seconds</strong>
+            <p class="muted">Search by what the client brings, like "exposure", "values" or "anger",
+              or filter by approach. No digging through folders before a session.</p></div></div>
+          <div class="feat"><div class="ico">✎</div><div>
+            <strong>Written clinician to clinician</strong>
+            <p class="muted">Every tool says what to use it for, who it suits and how long it takes,
+              then tells you how to run it and what usually trips people up.</p></div></div>
+          <div class="feat"><div class="ico">✓</div><div>
+            <strong>Print and go</strong>
+            <p class="muted">Open it in session or print it as homework. Each one is an adjunct to
+              your own clinical judgment, not a protocol.</p></div></div>
+          <div class="feat"><div class="ico">↑</div><div>
+            <strong>Grows every day</strong>
+            <p class="muted">New tools in every category, every day, each covering different ground
+              from what is already on the shelf.</p></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="lib-res" role="img" aria-label="Example of a library tool opened on the therapist dashboard: Behavioral Experiment Record, with its goal, audience, time, clinician notes, client prompts and a Print button.">
+          <div aria-hidden="true">
+            <span class="badge gray">CBT</span>
+            <h3>Behavioral Experiment Record</h3>
+            <p class="lib-sum">Designs a real-world test of a specific prediction, then records what happened.</p>
+            <dl class="lib-kv">
+              <dt>Use it for</dt><dd>Shift belief through lived disconfirmation rather than argument.</dd>
+              <dt>Who with</dt><dd>Adults, Teens</dd>
+              <dt>Time</dt><dd>One session to design, one week to run</dd>
+            </dl>
+            <h4>Running it</h4>
+            <p class="lib-notes">The prediction must be specific and falsifiable before the experiment is worth running. &#x27;It will go badly&#x27; is not testable; &#x27;I will stammer and at least two people will look away&#x27; is. Write the prediction down before the experiment — memory is generous to the old belief afterwards.</p>
+            <h4>Client prompts</h4>
+            <ol>
+              <li>Belief being tested, and how strongly you hold it (0-100%)</li>
+              <li>The experiment — what exactly will you do?</li>
+              <li>Prediction — what specifically do you expect to happen?</li>
+              <li>What actually happened</li>
+            </ol>
+            <p class="lib-more">and 2 more</p>
+            <div class="lib-foot"><span class="btn ghost sm">Print</span><span class="btn sm">Close</span></div>
+          </div>
+        </div>
+        <p class="lib-cap">A real tool from the library, as it opens on your dashboard.</p>
+      </div>
     </div>
-    <div class="libcount" id="libcount"><div><b>—</b><span>loading</span></div></div>
-    <p class="center faint" style="margin-top:18px">Printable, with guidance on running each one.</p>
+
+    <div class="lib-counts">
+      <h3>On the shelf today</h3>
+      <div class="libcount" id="libcount"><div><b>—</b><span>loading</span></div></div>
+      <p class="center faint" style="margin-top:12px">Live counts. New tools are added daily.</p>
+      <div class="lib-shelf" aria-label="A few tools from the library">
+      <span class="lib-chip"><b>CBT</b>Activity and Mood Log</span>
+      <span class="lib-chip"><b>ACT</b>Leaves on a Stream</span>
+      <span class="lib-chip"><b>DBT</b>DEAR MAN Script Builder</span>
+      <span class="lib-chip"><b>DBT</b>Chain Analysis</span>
+      <span class="lib-chip"><b>Couples</b>Love Maps Questionnaire</span>
+      <span class="lib-chip"><b>Couples</b>Conflict Pattern Map</span>
+      <span class="lib-chip"><b>Kids</b>Brave Ladder</span>
+      <span class="lib-chip"><b>Kids</b>Calm-Down Kit Planner</span>
+      <span class="lib-chip"><b>Games</b>Emotion Jenga</span>
+      <span class="lib-chip"><b>Games</b>Reframe Tennis</span>
+      <span class="lib-chip"><b>Worksheet</b>Crisis Plan</span>
+      <span class="lib-chip"><b>Worksheet</b>Boundary Script Builder</span>
+      </div>
+    </div>
   </div>
 </section>
 
