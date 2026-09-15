@@ -23,6 +23,36 @@
   .libcount div{background:var(--paper);padding:16px;text-align:center}
   .libcount b{display:block;font-size:1.5rem;font-weight:300;color:var(--green)}
   .libcount span{font-size:.8rem;color:var(--muted)}
+  /* Theraglee Match Mode, pitched to therapists: a soft green band with a
+     mock of the dashboard list, three reasons it fills a caseload, and the flow. */
+  .mm{background:var(--soft);border-top:1px solid var(--hair)}
+  .mm-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:44px;align-items:center}
+  .mm h2{margin-top:14px;font-size:clamp(1.9rem,3.6vw,2.6rem);line-height:1.1}
+  .mm .lede{font-size:1.06rem;max-width:52ch}
+  .mm-dash{background:var(--paper);border:1px solid var(--hair);border-radius:var(--r-lg);
+    box-shadow:var(--shadow-2);overflow:hidden}
+  .mm-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:12px 18px;border-bottom:1px solid var(--hair);background:var(--cream);
+    font-size:.8rem;color:var(--muted)}
+  .mm-bar b{font-weight:500;color:var(--ink)}
+  .mm-list{padding:14px;display:grid;gap:10px}
+  .mm-m{border:1px solid var(--hair);border-radius:var(--r);padding:14px 16px;display:grid;gap:9px}
+  .mm-m strong{font-weight:500;font-size:.95rem;line-height:1.35}
+  .mm-m .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .mm-m .foot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+  .mm-m .foot span{font-size:.8rem;color:var(--faint)}
+  .mm-note{padding:10px 18px 14px;font-size:.78rem;color:var(--faint);text-align:center}
+  .mm-why{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-top:44px}
+  .mm-why .card h3{margin:0 0 6px;font-size:1.1rem}
+  .mm-why .card p{margin:0;color:var(--muted);font-size:.95rem}
+  .mm-why .num{font-family:var(--serif);font-style:italic;font-size:1.7rem;color:var(--green);
+    line-height:1;margin-bottom:10px}
+  .mm-flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:30px 0 0;
+    padding:0;list-style:none;font-size:.92rem;color:var(--muted)}
+  .mm-flow li{display:inline}
+  .mm-flow li+li::before{content:"→ ";color:var(--lime-2);font-size:1.1rem}
+  .mm-top .badge{white-space:normal;text-align:left;line-height:1.35}
+  @media (max-width:820px){.mm-top{grid-template-columns:minmax(0,1fr)}}
 </style>
 </head>
 <body>
@@ -73,6 +103,78 @@
             choose from, and the library's content expands daily.</p></div></div>
       </div>
     </div>
+  </div>
+</section>
+
+<section class="section mm" id="match-mode" aria-labelledby="mm-title">
+  <div class="wrap">
+    <div class="mm-top">
+      <div>
+        <span class="badge">Theraglee Match Mode · Included with therapist membership</span>
+        <h2 id="mm-title">Stop waiting to be found. <em class="script">Reach out first.</em></h2>
+        <p class="muted lede">A directory listing waits for a search. <strong>Theraglee Match
+          Mode</strong> turns that around. Members who want a therapist to contact them switch it
+          on, and they appear on your dashboard with the essentials you need to judge the fit. You
+          send one short message. If they reply, you have a real conversation with a real name,
+          and a first session to book.</p>
+        <div class="row" style="margin-top:22px">
+          <a class="btn lg" href="#start">Start your listing</a>
+          <a class="btn lg ghost" href="#membership">See what's included</a>
+        </div>
+        <p class="faint" style="margin-top:14px">Opens once your license is verified and your
+          listing is live. No fee per contact.</p>
+      </div>
+      <div class="mm-dash" role="img" aria-label="Example of the Match Mode list on a therapist dashboard: three anonymous members waiting to hear from a therapist, each with a Reach out button.">
+        <div class="mm-bar"><b>Your dashboard</b><span>Waiting to hear from a therapist · 3</span></div>
+        <div class="mm-list" aria-hidden="true">
+          <div class="mm-m">
+            <strong>Female, 34 · seeks help with anxiety and sleep · seeking telehealth sessions · near 30309</strong>
+            <div class="chips"><span class="badge">anxiety</span><span class="badge">sleep</span></div>
+            <div class="foot"><span>Switched on 2 days ago</span><span class="btn sm">Reach out</span></div>
+          </div>
+          <div class="mm-m">
+            <strong>Male, 41 · seeks help with stress and relationships · seeking in-person sessions · near 30306</strong>
+            <div class="chips"><span class="badge">stress</span><span class="badge">relationships</span></div>
+            <div class="foot"><span>Switched on yesterday</span><span class="btn sm">Reach out</span></div>
+          </div>
+          <div class="mm-m">
+            <strong>Female, 27 · seeks help with depression · open to in-person or telehealth · near 30318</strong>
+            <div class="chips"><span class="badge">depression</span></div>
+            <div class="foot"><span>Switched on today</span><span class="btn sm">Reach out</span></div>
+          </div>
+        </div>
+        <div class="mm-note">Example members. Real ones appear here as they switch it on.</div>
+      </div>
+    </div>
+
+    <div class="mm-why">
+      <div class="card">
+        <div class="num">1</div>
+        <h3>They asked to hear from you</h3>
+        <p>Every member on that list flipped a switch that means one thing: "I'm ready, please
+          reach out." That is a warm lead, not a cold click from a search page.</p>
+      </div>
+      <div class="card">
+        <div class="num">2</div>
+        <h3>You know the fit before you write</h3>
+        <p>Each line shows gender, age, the topics they want help with, in-person or telehealth,
+          and their zip code. Message only the people you are the right therapist for.</p>
+      </div>
+      <div class="card">
+        <div class="num">3</div>
+        <h3>One message, no chasing</h3>
+        <p>Send it from your dashboard. A reply arrives with the member's real name and an email
+          alert to you. Your email stays private, and so does theirs.</p>
+      </div>
+    </div>
+
+    <ol class="mm-flow" aria-label="How a match happens">
+      <li>A member switches on <strong>Theraglee Match Mode</strong></li>
+      <li>They appear on your dashboard</li>
+      <li>You send one message</li>
+      <li>They reply with their name</li>
+      <li>You book a first session</li>
+    </ol>
   </div>
 </section>
 
