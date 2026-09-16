@@ -639,9 +639,9 @@ function wireSpecChips(){
     if (!c.classList.contains('on')) c.classList.remove('top');
   });
 }
-// The write-ins: whatever is saved that is not on the list, up to three.
-const customSpecs = (sel) => {
-  const c = (sel||[]).filter(s => !SPECIALTIES.includes(s));
+// The write-ins for a list: whatever is saved that is not on it, up to three.
+const writeIns = (sel, list) => {
+  const c = (sel||[]).filter(s => !list.includes(s));
   return [c[0]||'', c[1]||'', c[2]||''];
 };
 function wireChips(id){
@@ -769,10 +769,15 @@ function profile(){
           selected one to make it one of your top three — those lead your listing.</div>
         ${specChips(SPECIALTIES, t.specialties, t.top_specialties)}
         <div class="grid g3" style="margin-top:14px">
-          ${customSpecs(t.specialties).map((v, i) => `<div><label for="spec-c${i+1}">Your own specialty ${i+1}</label>
+          ${writeIns(t.specialties, SPECIALTIES).map((v, i) => `<div><label for="spec-c${i+1}">Your own specialty ${i+1}</label>
             <input id="spec-c${i+1}" maxlength="60" value="${esc(v)}" placeholder="Not on the list? Write it in"></div>`).join('')}
         </div></div>
-      <div class="field"><label>Approaches</label>${chipGroup('mods', MODALITIES, t.treatment_modalities)}</div>
+      <div class="field"><label>Treatment Modalities</label>
+        ${chipGroup('mods', MODALITIES, t.treatment_modalities)}
+        <div class="grid g3" style="margin-top:14px">
+          ${writeIns(t.treatment_modalities, MODALITIES).map((v, i) => `<div><label for="mod-c${i+1}">Your own modality ${i+1}</label>
+            <input id="mod-c${i+1}" maxlength="60" value="${esc(v)}" placeholder="Not on the list? Write it in"></div>`).join('')}
+        </div></div>
       <div class="field"><label>Insurance accepted</label>
         <div class="help" style="margin:0 0 8px">The insurance plans you accept. They show on your
           listing, and visitors can filter the directory by them.</div>
@@ -918,6 +923,8 @@ async function save(e){
   const written = ['spec-c1','spec-c2','spec-c3'].map(V).filter(Boolean);
   const allSpecs = [...new Set([...chipVals('spec'), ...written])];
   const topSpecs = [...document.querySelectorAll('#spec .chip.top')].map(c => c.dataset.v);
+  // Treatment modalities: the chips plus the write-ins.
+  const allMods = [...new Set([...chipVals('mods'), ...['mod-c1','mod-c2','mod-c3'].map(V).filter(Boolean)])];
 
   const locations = [...document.querySelectorAll('[data-loc]')].map(r => ({
     address: r.querySelector('.l-address').value.trim(),
@@ -934,7 +941,7 @@ async function save(e){
     license_number: V('lic'), license_type: V('ltype') || null,
     license_states: chipVals('states'),
     specialties: allSpecs, top_specialties: topSpecs,
-    treatment_modalities: chipVals('mods'), insurances: chipVals('ins'),
+    treatment_modalities: allMods, insurances: chipVals('ins'),
     payment_methods: chipVals('pay'),
     age_ranges: chipVals('ages'), participants: chipVals('parts'), languages: chipVals('langs'),
     delivery: V('delivery'), fees: V('fees') || null,
