@@ -92,6 +92,7 @@ if (!t) {
           <dt>Approaches</dt><dd>${list(t.treatment_modalities)}</dd>
           <dt>Insurance</dt><dd>${list(t.insurances)}</dd>
           <dt>Fees</dt><dd>${esc(t.fees||'—')}</dd>
+          <dt>Payment</dt><dd>${list(t.payment_methods)}</dd>
           <dt>Sees</dt><dd>${list(t.participants)}</dd>
           <dt>Ages</dt><dd>${list(t.age_ranges)}</dd>
           <dt>Languages</dt><dd>${list(t.languages)}</dd>

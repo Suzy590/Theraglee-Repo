@@ -29,6 +29,12 @@ export const INSURANCES = [
   'Self-pay only','Sliding scale available',
 ];
 
+// How the practice takes payment. Separate from paying through Theraglee.
+export const PAYMENT_METHODS = [
+  'ACH bank transfer','American Express','Apple Cash','Cash','Check','Discover',
+  'Health Savings Account','Mastercard','PayPal','Venmo','Visa','Wire','Zelle',
+];
+
 export const AGE_RANGES = [
   'Children (under 12)','Teens (13–17)','Young adults (18–25)','Adults (26–64)','Older adults (65+)',
 ];

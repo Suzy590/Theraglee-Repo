@@ -179,6 +179,18 @@ policies cover them; the public URLs go into `therapist_profiles.practice_photos
 them as a gallery headed "The office" between About and Practice details.
 Removing one on the dashboard deletes its file on the next save.
 
+### Payment methods
+
+The **Payment** section of My profile is a multi-select of how the practice
+takes payment: ACH bank transfer, American Express, Apple Cash, Cash, Check,
+Discover, Health Savings Account, Mastercard, PayPal, Venmo, Visa, Wire and
+Zelle (`PAYMENT_METHODS` in `site/assets/lists.js`). The choices are stored in
+`therapist_profiles.payment_methods` (`text[]`, added by the migration
+`therapist_payment_methods`, which also appends the column to the
+`therapist_directory` view) and shown on `therapist.html` as the Payment row of
+Practice details. It is separate from "Get paid through Theraglee" on the
+Membership tab, which is Stripe session payments through the site.
+
 ## Changing the site
 
 The readable source is `site/`, and **a push to the default branch deploys it**.
