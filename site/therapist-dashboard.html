@@ -735,9 +735,9 @@ function profile(){
       <div class="field"><label>Specialties</label>${chipGroup('spec', SPECIALTIES, t.specialties)}</div>
       <div class="field"><label>Star your top three</label>${chipGroup('top', SPECIALTIES, t.top_specialties, 3)}</div>
       <div class="field"><label>Approaches</label>${chipGroup('mods', MODALITIES, t.treatment_modalities)}</div>
-      <div class="field"><label>In-network with</label>
-        <div class="help" style="margin:0 0 8px">The insurance plans you are in-network with. They show on
-          your listing, and visitors can filter the directory by them.</div>
+      <div class="field"><label>Insurance accepted</label>
+        <div class="help" style="margin:0 0 8px">The insurance plans you accept. They show on your
+          listing, and visitors can filter the directory by them.</div>
         ${chipGroup('ins', INSURANCES, t.insurances)}</div>
       <div class="field"><label>Ages seen</label>${chipGroup('ages', AGE_RANGES, t.age_ranges)}</div>
       <div class="field"><label>Who you see</label>${chipGroup('parts', PARTICIPANTS, t.participants)}</div>

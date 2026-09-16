@@ -179,15 +179,15 @@ policies cover them; the public URLs go into `therapist_profiles.practice_photos
 them as a gallery headed "The office" between About and Practice details.
 Removing one on the dashboard deletes its file on the next save.
 
-### In-network insurance
+### Insurance accepted
 
-The **In-network with** picker on My profile (formerly "Insurance accepted")
-lists 103 plans — `INSURANCES` in `site/assets/lists.js`, taken from the
-owner's reference list — and stores the choices in
-`therapist_profiles.insurances` (`text[]`, in the `therapist_directory` view
-since the start). `therapist.html` shows them as the In-network with row of
-Practice details; each directory card in `therapists.html` shows the first six
-and "+N more", with the plan the visitor filtered by moved to the front. The
+The **Insurance accepted** picker on My profile lists 103 plans — `INSURANCES`
+in `site/assets/lists.js`, taken from the owner's reference list — and stores
+the choices in `therapist_profiles.insurances` (`text[]`, in the
+`therapist_directory` view since the start). `therapist.html` shows them as
+the Insurance row of Practice details; each directory card in `therapists.html`
+shows the first six after "Insurance:" and "+N more", with the plan the visitor
+filtered by moved to the front. The
 directory's **Insurance** filter is filled from the same list and passed to
 `search_therapists` as `p_insurance`, which matches on the exact stored name,
 so the names in the list must stay exactly as visitors look for them.

@@ -119,7 +119,7 @@ async function run(){
         ${t.bio ? `<p class="muted" style="margin:0 0 8px;font-size:.93rem">${esc(String(t.bio).slice(0,150))}${t.bio.length>150?'…':''}</p>` : ''}
         <div class="chips">${spec.map(s=>`<span class="badge gray">${esc(s)}</span>`).join('')}</div>
         ${inNet.length ? `<p class="faint" style="margin:8px 0 0;font-size:.85rem">
-          In-network with ${inNet.slice(0, 6).map(esc).join(' · ')}${
+          Insurance: ${inNet.slice(0, 6).map(esc).join(' · ')}${
           inNet.length > 6 ? ` · +${inNet.length - 6} more` : ''}</p>` : ''}
         ${(t.payment_methods||[]).length ? `<p class="faint" style="margin:8px 0 0;font-size:.85rem">
           Accepts ${t.payment_methods.map(esc).join(' · ')}</p>` : ''}
