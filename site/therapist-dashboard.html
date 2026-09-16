@@ -64,7 +64,7 @@ import { chrome, sb, requireAuth, access, clearAccess, esc, toast, busy, fmtDate
          FN, qs } from './assets/app.js';
 import { matchSummary } from './assets/match.js';
 import { SPECIALTIES, MODALITIES, INSURANCES, AGE_RANGES, PARTICIPANTS,
-         LANGUAGES, CREDENTIALS, STATES } from './assets/lists.js';
+         LANGUAGES, CREDENTIALS, STATES, PAYMENT_METHODS } from './assets/lists.js';
 await chrome();
 let a = await requireAuth({ audience: 'therapist' });
 if (a) {
@@ -751,6 +751,13 @@ function profile(){
         <input id="edu" value="${esc(t.education||'')}" placeholder="e.g. MA Clinical Psychology, NYU"></div>
 
       <hr class="hr">
+      <h2>Payment</h2>
+      <div class="field"><label>I accept the following payment methods</label>
+        ${chipGroup('pay', PAYMENT_METHODS, t.payment_methods)}
+        <div class="help">How clients pay your practice directly. Paying for a session through
+          Theraglee is set up separately, on the Membership tab.</div></div>
+
+      <hr class="hr">
       <h2>Locations</h2>
       <div id="locs">${locs.map(locRow).join('')}</div>
       <button type="button" class="btn ghost sm" id="addloc">Add another location</button>
@@ -785,7 +792,7 @@ function profile(){
       </div>
     </form>`);
 
-  ['states','spec','top','mods','ins','ages','parts','langs'].forEach(wireChips);
+  ['states','spec','top','mods','ins','ages','parts','langs','pay'].forEach(wireChips);
   document.getElementById('addloc').onclick = () =>
     document.getElementById('locs').insertAdjacentHTML('beforeend', locRow({}));
   document.getElementById('pform').addEventListener('submit', save);
@@ -870,6 +877,7 @@ async function save(e){
     license_states: chipVals('states'),
     specialties: chipVals('spec'), top_specialties: chipVals('top'),
     treatment_modalities: chipVals('mods'), insurances: chipVals('ins'),
+    payment_methods: chipVals('pay'),
     age_ranges: chipVals('ages'), participants: chipVals('parts'), languages: chipVals('langs'),
     delivery: V('delivery'), fees: V('fees') || null, education: V('edu') || null,
     locations,
