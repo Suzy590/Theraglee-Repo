@@ -29,7 +29,7 @@ export const INSURANCES = [
   'Self-pay only','Sliding scale available',
 ];
 
-// How the practice takes payment. Separate from paying through Theraglee.
+// Payment methods a therapist uses in their practice and advertises on their listing.
 export const PAYMENT_METHODS = [
   'ACH bank transfer','American Express','Apple Cash','Cash','Check','Discover',
   'Health Savings Account','Mastercard','PayPal','Venmo','Visa','Wire','Zelle',
