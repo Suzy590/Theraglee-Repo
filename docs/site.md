@@ -179,6 +179,20 @@ policies cover them; the public URLs go into `therapist_profiles.practice_photos
 them as a gallery headed "The office" between About and Practice details.
 Removing one on the dashboard deletes its file on the next save.
 
+### Specialties
+
+The **Specialties** picker on My profile offers the 98 specialties from the
+owner's reference list, alphabetized (`SPECIALTIES` in `site/assets/lists.js`,
+which also fills the directory's Specialty filter). It is one chip group doing
+two jobs: tapping a chip selects the specialty, and tapping the star that
+appears on a selected chip marks it as one of the therapist's top three (the
+former separate "Star your top three" list is gone). Three write-in boxes
+follow the chips for specialties not on the list; they are saved with the rest
+but cannot be starred and are not offered as a filter. Storage is unchanged:
+`therapist_profiles.specialties` and `top_specialties`, which the profile page
+(★ badges), the directory card (top three, else the first three) and Quick look
+already read.
+
 ### Education
 
 The **Education** section of My profile has three fields: school most recently
