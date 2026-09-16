@@ -28,13 +28,26 @@ export const SPECIALTIES = [
   "Women's Issues",'Workplace Issues',
 ];
 
+// Treatment modalities, alphabetized. The dashboard also takes up to three
+// written in, saved alongside these.
 export const MODALITIES = [
-  'Acceptance and Commitment (ACT)','Art therapy','Attachment-based','Cognitive Behavioral (CBT)',
-  'Compassion Focused','Culturally sensitive','Dialectical Behavior (DBT)','EMDR',
-  'Emotionally Focused','Existential','Exposure and Response Prevention (ERP)','Family systems',
-  'Gestalt','Humanistic','Internal Family Systems (IFS)','Interpersonal','Mindfulness-based (MBCT)',
-  'Motivational interviewing','Narrative','Person-centered','Play therapy','Psychoanalytic',
-  'Psychodynamic','Solution-focused','Somatic','Strength-based','Trauma-focused',
+  'Acceptance and Commitment (ACT)','Adlerian','AEDP','Applied Behavioral Analysis (ABA)',
+  'Art Therapy','Attachment-based','Biofeedback','Brainspotting','Christian Counseling',
+  'Clinical Supervision and Licensed Supervisors','Coaching','Cognitive Behavioral (CBT)',
+  'Cognitive Processing (CPT)','Compassion Focused','Culturally Sensitive',
+  'Dance Movement Therapy','Dialectical Behavior (DBT)','Eclectic','EMDR','Emotionally Focused',
+  'Energy Psychology','Existential','Experiential Therapy','Exposure Response Prevention (ERP)',
+  'Expressive Arts','Family / Marital','Family Systems','Feminist','Forensic Psychology',
+  'Gestalt','Gottman Method','Humanistic','Hypnotherapy','Imago','Integrative',
+  'Internal Family Systems (IFS)','Interpersonal','Intervention','Jungian','Ketamine-Assisted',
+  'Mindfulness-Based (MBCT)','Motivational Interviewing','Multicultural','Music Therapy',
+  'Narrative','Neuro-Linguistic (NLP)','Neurofeedback','Parent-Child Interaction (PCIT)',
+  'Person-Centered','Play Therapy','Positive Psychology','Prolonged Exposure Therapy',
+  'Psychoanalytic','Psychobiological Approach Couple Therapy','Psychodynamic',
+  'Psychological Testing and Evaluation','Rational Emotive Behavior (REBT)','Reality Therapy',
+  'Relational','Sandplay','Schema Therapy','Solution Focused Brief (SFBT)','Somatic',
+  'Strength-Based','Structural Family Therapy','The Cortina Method (TCM)','Transpersonal',
+  'Trauma Focused',
 ];
 
 // Insurance plans a therapist can be in-network with. Shown on the listing and

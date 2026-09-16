@@ -196,6 +196,16 @@ after About, every specialty as a chip with the top three first and starred;
 the directory card shows the top three (else the first three) and Quick look
 lists them all.
 
+### Treatment modalities
+
+The **Treatment Modalities** picker on My profile (formerly "Approaches")
+offers 68 modalities, alphabetized — the 67 from the owner's reference list
+plus The Cortina Method (TCM) — as `MODALITIES` in `site/assets/lists.js`,
+with three write-in boxes after the chips. The choices, write-ins included,
+are stored in `therapist_profiles.treatment_modalities` as before and shown
+as the Treatment Modalities row of Practice details on `therapist.html` and in
+Quick look; the collapsed directory card does not show them.
+
 ### Education
 
 The **Education** section of My profile has three fields: school most recently
