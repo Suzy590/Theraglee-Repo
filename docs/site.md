@@ -179,6 +179,18 @@ policies cover them; the public URLs go into `therapist_profiles.practice_photos
 them as a gallery headed "The office" between About and Practice details.
 Removing one on the dashboard deletes its file on the next save.
 
+### Directory cards and Quick look
+
+A card in `therapists.html` shows the name, location and session type, a
+150-character bio snippet, up to three specialties, and the Insurance and
+Accepts lines. Clicking anywhere on it, its name, or **View profile** opens
+`therapist.html`. **Quick look** expands the full profile inside the card —
+the whole bio, the office photos and the same Practice details as the profile
+page — and links through to the page for getting in touch (the contact box,
+messaging and session payment live only there). The office photos never appear
+on the collapsed card. The panel is built from the row `search_therapists`
+already returned, so opening it makes no further request.
+
 ### Insurance accepted
 
 The **Insurance accepted** picker on My profile lists 104 plans — `INSURANCES`

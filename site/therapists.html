@@ -17,12 +17,24 @@
     .filters{position:static!important}}
   .filters{position:sticky;top:96px}
   .tcard{display:flex;gap:16px;background:var(--paper);border:1px solid var(--hair);
-    border-radius:var(--r);padding:20px;margin-bottom:14px;box-shadow:var(--shadow-1);
+    border-radius:var(--r);padding:20px;margin-bottom:14px;box-shadow:var(--shadow-1);cursor:pointer;
     transition:transform .3s cubic-bezier(.22,1,.36,1),box-shadow .3s}
   .tcard:hover{transform:translateY(-3px);box-shadow:var(--shadow-2)}
+  .tcard.open,.tcard.open:hover{transform:none}
   .avatar{flex:0 0 74px;height:74px;border-radius:18px;background:var(--soft);object-fit:cover;
     display:grid;place-items:center;font-size:1.4rem;color:var(--green);font-weight:500}
   .tcard h3{margin:0 0 2px;font-size:1.08rem}
+  .tcard h3 a{color:inherit;text-decoration:none}
+  .tcard h3 a:hover{color:var(--green)}
+  /* Quick look: the full profile opened inside the card. */
+  .ql-panel{margin-top:16px;padding-top:16px;border-top:1px solid var(--hair);cursor:auto}
+  .ql-panel h4{margin:18px 0 8px;font-size:.98rem}
+  .ql-panel h4:first-child{margin-top:0}
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:8px 20px;font-size:.92rem}
+  .kv dt{color:var(--faint)} .kv dd{margin:0;color:var(--ink-2)}
+  .office{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+  .office a{display:block;aspect-ratio:4/3;border-radius:var(--r-sm);overflow:hidden;background:var(--soft)}
+  .office img{width:100%;height:100%;object-fit:cover;display:block}
 </style>
 </head>
 <body>
@@ -99,19 +111,21 @@ async function run(){
     `${data.length} therapist${data.length===1?'':'s'}`;
 
   const picked = V('f-ins');
+  const bySlug = new Map(data.map(t => [t.slug, t]));
   res.innerHTML = data.length ? data.map(t => {
     const initials = (t.first_name?.[0]||'') + (t.last_name?.[0]||'');
+    const href = `therapist.html?slug=${encodeURIComponent(t.slug)}`;
     // The plan the visitor filtered by leads the card's list, so it is never
     // hidden behind "+N more".
     const ins = t.insurances || [];
     const inNet = picked && ins.includes(picked) ? [picked, ...ins.filter(i => i !== picked)] : ins;
     const loc = (t.locations||[])[0];
     const spec = (t.top_specialties?.length ? t.top_specialties : t.specialties||[]).slice(0,3);
-    return `<a class="tcard" href="therapist.html?slug=${encodeURIComponent(t.slug)}">
+    return `<div class="tcard" data-slug="${esc(t.slug)}">
       ${t.photo_url ? `<img class="avatar" src="${esc(t.photo_url)}" alt="">`
         : `<div class="avatar">${esc(initials.toUpperCase())}</div>`}
       <div style="flex:1;min-width:0">
-        <h3>${esc(t.first_name)} ${esc(t.last_name)}${t.credentials?`, ${esc(t.credentials)}`:''}</h3>
+        <h3><a href="${href}">${esc(t.first_name)} ${esc(t.last_name)}${t.credentials?`, ${esc(t.credentials)}`:''}</a></h3>
         <p class="faint" style="margin:0 0 6px">
           ${loc ? esc([loc.city, loc.state].filter(Boolean).join(', ')) : (t.license_states||[]).join(', ')}
           ${t.delivery === 'telehealth' ? ' · Telehealth' : t.delivery === 'both' ? ' · In person &amp; telehealth' : ' · In person'}
@@ -123,11 +137,69 @@ async function run(){
           inNet.length > 6 ? ` · +${inNet.length - 6} more` : ''}</p>` : ''}
         ${(t.payment_methods||[]).length ? `<p class="faint" style="margin:8px 0 0;font-size:.85rem">
           Accepts ${t.payment_methods.map(esc).join(' · ')}</p>` : ''}
-      </div></a>`;
+        <div class="row" style="margin-top:12px;gap:8px">
+          <button type="button" class="btn ghost sm ql" aria-expanded="false">Quick look</button>
+          <a class="btn ghost sm" href="${href}">View profile</a>
+        </div>
+        <div class="ql-panel" hidden></div>
+      </div></div>`;
   }).join('') : `<div class="empty">
       <p style="margin:0 0 6px"><strong>No therapists match that yet.</strong></p>
       <p class="faint" style="margin:0">Try widening your filters. New practices are added as they verify.</p>
     </div>`;
+
+  // The card opens the profile page, as it always has, except on its buttons,
+  // its links, and inside an open quick look. Dragging to select text is not a
+  // click-through either.
+  res.querySelectorAll('.tcard').forEach(card => {
+    const t = bySlug.get(card.dataset.slug);
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('a, button, .ql-panel')) return;
+      if (getSelection()?.toString()) return;
+      location.href = `therapist.html?slug=${encodeURIComponent(t.slug)}`;
+    });
+    card.querySelector('.ql').addEventListener('click', () => quickLook(card, t));
+  });
+}
+
+// Opens or closes the full profile inside the card: the whole bio, the office
+// photos (which the collapsed card never shows), and the same practice details
+// as therapist.html. Getting in touch stays on the profile page, which the
+// panel links to. The panel is built the first time it opens.
+function quickLook(card, t){
+  const panel = card.querySelector('.ql-panel');
+  const btn = card.querySelector('.ql');
+  const opening = panel.hidden;
+  if (opening && !panel.innerHTML) {
+    const list = (arr) => (arr||[]).length ? arr.map(esc).join(', ') : '—';
+    const locs = (t.locations||[]).map(l => [l.address, l.city, l.state, l.zip].filter(Boolean).join(', '));
+    panel.innerHTML = `
+      ${t.bio ? `<h4>About</h4>
+        <p class="muted" style="margin:0;white-space:pre-wrap;font-size:.93rem">${esc(t.bio)}</p>` : ''}
+      ${(t.practice_photos||[]).length ? `<h4>The office</h4>
+        <div class="office">${t.practice_photos.map(u =>
+          `<a href="${esc(u)}" target="_blank" rel="noopener"><img src="${esc(u)}" alt="Office photo" loading="lazy"></a>`).join('')}</div>` : ''}
+      <h4>Practice details</h4>
+      <dl class="kv">
+        <dt>Specialties</dt><dd>${list(t.specialties)}</dd>
+        <dt>Approaches</dt><dd>${list(t.treatment_modalities)}</dd>
+        <dt>Insurance</dt><dd>${list(t.insurances)}</dd>
+        <dt>Fees</dt><dd>${esc(t.fees||'—')}</dd>
+        <dt>Payment</dt><dd>${list(t.payment_methods)}</dd>
+        <dt>Sees</dt><dd>${list(t.participants)}</dd>
+        <dt>Ages</dt><dd>${list(t.age_ranges)}</dd>
+        <dt>Languages</dt><dd>${list(t.languages)}</dd>
+        <dt>Licensed in</dt><dd>${list(t.license_states)}</dd>
+        <dt>Education</dt><dd>${esc(t.education||'—')}</dd>
+        ${locs.length ? `<dt>Locations</dt><dd>${locs.map(esc).join('<br>')}</dd>` : ''}
+      </dl>
+      <p style="margin:16px 0 0"><a class="btn sm" href="therapist.html?slug=${encodeURIComponent(t.slug)}">
+        View full profile to get in touch</a></p>`;
+  }
+  panel.hidden = !opening;
+  card.classList.toggle('open', opening);
+  btn.textContent = opening ? 'Close quick look' : 'Quick look';
+  btn.setAttribute('aria-expanded', String(opening));
 }
 
 document.getElementById('search').addEventListener('click', run);
