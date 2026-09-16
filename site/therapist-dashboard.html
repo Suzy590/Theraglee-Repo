@@ -750,8 +750,17 @@ function profile(){
         <div class="field"><label for="fees">Fees</label>
           <input id="fees" value="${esc(t.fees||'')}" placeholder="e.g. $150 per 50-minute session"></div>
       </div>
-      <div class="field"><label for="edu">Education</label>
-        <input id="edu" value="${esc(t.education||'')}" placeholder="e.g. MA Clinical Psychology, NYU"></div>
+      <hr class="hr">
+      <h2>Education</h2>
+      <div class="field"><label for="edu-school">School most recently graduated</label>
+        <input id="edu-school" maxlength="100" value="${esc(t.education_school||'')}" placeholder="e.g. CSU Northridge">
+        <div class="help">100 characters max.</div></div>
+      <div class="grid g2">
+        <div class="field"><label for="edu-degree">Degree/Diploma</label>
+          <input id="edu-degree" maxlength="100" value="${esc(t.education_degree||'')}" placeholder="e.g. Master of Science"></div>
+        <div class="field"><label for="edu-year">Year graduated (YYYY)</label>
+          <input id="edu-year" inputmode="numeric" maxlength="4" value="${esc(t.education_year||'')}" placeholder="e.g. 2007"></div>
+      </div>
 
       <hr class="hr">
       <h2>Payment</h2>
@@ -863,6 +872,9 @@ async function save(e){
   if (!V('lic')) return toast('License number is required.','err');
   if (!chipVals('states').length) return toast('Select at least one state of licensure.','err');
   if (!V('cemail')) return toast('Add the email where messages should go.','err');
+  const gradYear = V('edu-year');
+  if (gradYear && !(/^\d{4}$/.test(gradYear) && Number(gradYear) >= 1900 && Number(gradYear) <= new Date().getFullYear()))
+    return toast('Enter the year you graduated as four digits, like 2007.','err');
 
   const locations = [...document.querySelectorAll('[data-loc]')].map(r => ({
     address: r.querySelector('.l-address').value.trim(),
@@ -882,7 +894,12 @@ async function save(e){
     treatment_modalities: chipVals('mods'), insurances: chipVals('ins'),
     payment_methods: chipVals('pay'),
     age_ranges: chipVals('ages'), participants: chipVals('parts'), languages: chipVals('langs'),
-    delivery: V('delivery'), fees: V('fees') || null, education: V('edu') || null,
+    delivery: V('delivery'), fees: V('fees') || null,
+    education_school: V('edu-school') || null,
+    education_degree: V('edu-degree') || null,
+    education_year: gradYear ? Number(gradYear) : null,
+    // The one-line form the public profile and Quick look show, kept in step.
+    education: [V('edu-degree'), V('edu-school'), gradYear].filter(Boolean).join(', ') || null,
     locations,
     contact_email: V('cemail'), contact_phone: V('cphone') || null,
     website: V('web') || null,
