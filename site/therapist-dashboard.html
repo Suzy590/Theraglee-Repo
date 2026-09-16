@@ -37,6 +37,12 @@
     display:flex;flex-direction:column;gap:8px;cursor:pointer;transition:transform .3s,box-shadow .3s}
   .res:hover{transform:translateY(-4px);box-shadow:var(--shadow-2)}
   .soon{opacity:.62}
+  .photo-pick{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
+  .photo-preview{flex:0 0 96px;width:96px;height:96px;border-radius:24px;background:var(--soft);
+    display:flex;align-items:center;justify-content:center;font-weight:600;font-size:1.3rem;
+    color:var(--green-deep);overflow:hidden}
+  .photo-preview img{width:100%;height:100%;object-fit:cover;display:block}
+  .photo-pick input[type=file]{font:inherit;font-size:.92rem;max-width:100%}
 </style>
 </head>
 <body>
@@ -618,9 +624,37 @@ function locRow(l){
   </div>`;
 }
 
+// A picture chosen on the profile form waits here until Save; the form is
+// re-rendered on every visit, so a pick that was never saved is dropped.
+let photoFile = null;      // the shrunk JPEG to upload
+let photoRemoved = false;  // the therapist asked to take their photo down
+const PHOTO_BUCKET = 'therapist-photos';
+const photoPath = () => `${a.profile.id}/photo.jpg`;
+
+// Shrinks a chosen picture to at most 800px on its long side and re-encodes it
+// as a JPEG, so a 6 MB phone photo lands in storage at roughly 100 KB with its
+// EXIF (location, device) left behind. Returns null if the browser cannot
+// decode the file.
+async function shrinkPhoto(file, max = 800){
+  const url = URL.createObjectURL(file);
+  try {
+    const img = await new Promise((ok, no) => {
+      const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = url;
+    });
+    const scale = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+    const w = Math.round(img.naturalWidth * scale), h = Math.round(img.naturalHeight * scale);
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    c.getContext('2d').drawImage(img, 0, 0, w, h);
+    return await new Promise(ok => c.toBlob(ok, 'image/jpeg', 0.86));
+  } catch { return null; }
+  finally { URL.revokeObjectURL(url); }
+}
+
 function profile(){
   const t = T || {};
   const locs = (t.locations && t.locations.length) ? t.locations : [{}];
+  const initials = ((t.first_name?.[0]||'') + (t.last_name?.[0]||'')).toUpperCase();
+  photoFile = null; photoRemoved = false;
   render(`
     <form id="pform">
       ${t.verification === 'rejected' ? `<div class="notice err" style="margin-bottom:20px">
@@ -644,8 +678,18 @@ function profile(){
       </div>
       <div class="field"><label for="bio">Short bio</label>
         <textarea id="bio" placeholder="How you work, who you work with, what a first session is like.">${esc(t.bio||'')}</textarea></div>
-      <div class="field"><label for="photo">Profile photo URL</label>
-        <input id="photo" type="url" value="${esc(t.photo_url||'')}" placeholder="https://…"></div>
+      <div class="field"><label for="photo">Profile photo</label>
+        <div class="photo-pick">
+          <div class="photo-preview" id="photo-preview">${t.photo_url
+            ? `<img src="${esc(t.photo_url)}" alt="">` : esc(initials || '—')}</div>
+          <div style="flex:1;min-width:220px">
+            <input id="photo" type="file" accept="image/jpeg,image/png,image/webp">
+            <div class="help">A JPG or PNG from your computer or phone. It is shrunk to 800 pixels
+              before it is stored, so a photo straight off the camera is fine.</div>
+            ${t.photo_url ? `<button type="button" class="btn ghost sm" id="photo-remove"
+              style="margin-top:10px">Remove photo</button>` : ''}
+          </div>
+        </div></div>
 
       <hr class="hr">
       <h2>License</h2>
@@ -720,6 +764,24 @@ function profile(){
   document.getElementById('addloc').onclick = () =>
     document.getElementById('locs').insertAdjacentHTML('beforeend', locRow({}));
   document.getElementById('pform').addEventListener('submit', save);
+  const pick = document.getElementById('photo');
+  pick.addEventListener('change', async () => {
+    const file = pick.files?.[0];
+    if (!file) return;
+    if (!['image/jpeg','image/png','image/webp'].includes(file.type)) {
+      pick.value = ''; return toast('Choose a JPG or PNG.','err');
+    }
+    if (file.size > 20 * 1024 * 1024) { pick.value = ''; return toast('That photo is over 20 MB.','err'); }
+    const blob = await shrinkPhoto(file);
+    if (!blob) { pick.value = ''; return toast('That file could not be read as a picture. Try a JPG or PNG.','err'); }
+    photoFile = blob; photoRemoved = false;
+    document.getElementById('photo-preview').innerHTML = `<img src="${URL.createObjectURL(blob)}" alt="">`;
+  });
+  document.getElementById('photo-remove')?.addEventListener('click', (e) => {
+    photoRemoved = true; photoFile = null; pick.value = '';
+    document.getElementById('photo-preview').textContent = initials || '—';
+    e.target.remove();
+  });
   document.getElementById('verify')?.addEventListener('click', runVerification);
   document.getElementById('pub')?.addEventListener('click', togglePublish);
 }
@@ -743,7 +805,7 @@ async function save(e){
     user_id: a.profile.id,
     first_name: V('fn'), last_name: V('ln'),
     credentials: V('cred') || null, gender: V('gender') || null,
-    bio: V('bio') || null, photo_url: V('photo') || null,
+    bio: V('bio') || null, photo_url: T?.photo_url || null,
     license_number: V('lic'), license_type: V('ltype') || null,
     license_states: chipVals('states'),
     specialties: chipVals('spec'), top_specialties: chipVals('top'),
@@ -757,6 +819,21 @@ async function save(e){
 
   const btn = document.getElementById('save');
   busy(btn, true, 'Saving…');
+
+  // The picture goes to storage first, so the row below can carry its address.
+  // Same path every time, so a new upload replaces the old file; the ?v= makes
+  // browsers fetch the new one instead of the copy they cached.
+  if (photoFile) {
+    const { error: upErr } = await sb.storage.from(PHOTO_BUCKET)
+      .upload(photoPath(), photoFile, { upsert: true, contentType: 'image/jpeg', cacheControl: '3600' });
+    if (upErr) { busy(btn, false); return toast(`The photo did not upload: ${upErr.message}`,'err'); }
+    payload.photo_url = sb.storage.from(PHOTO_BUCKET).getPublicUrl(photoPath()).data.publicUrl
+      + '?v=' + Date.now();
+  } else if (photoRemoved) {
+    payload.photo_url = null;
+    await sb.storage.from(PHOTO_BUCKET).remove([photoPath()]);   // best effort
+  }
+
   const { data, error } = T?.id
     ? await sb.from('therapist_profiles').update(payload).eq('id', T.id).select().single()
     : await sb.from('therapist_profiles').insert(payload).select().single();

@@ -154,6 +154,23 @@ psychologists through a different board with its own lookup; those have a
 function use when the license type is PsyD, PhD or EdD. A state with no row
 falls back to a search link in the admin screen.
 
+### Profile photos
+
+The **My profile** tab takes a JPG or PNG from the therapist's computer or
+phone; it no longer asks for a URL. The page shrinks the picture to 800px on
+its long side and re-encodes it as a JPEG in the browser (which also drops the
+EXIF location and device data), then uploads it to the `therapist-photos`
+Storage bucket at `<auth user id>/photo.jpg`. Choosing a new picture overwrites
+that one file, and **Remove photo** deletes it.
+
+`therapist_profiles.photo_url` still holds the address (now the bucket's public
+URL, with a `?v=` cache-buster), so `therapists.html` and `therapist.html`
+display it exactly as they displayed a linked photo. The bucket is public, so
+visitors need no account to see it; the storage policies let a signed-in user
+read, write and remove only inside the folder named after their own id. It is
+created by the migration `therapist_photos_bucket`, which is idempotent and was
+applied to the live project on 2026-09-16.
+
 ## Changing the site
 
 The readable source is `site/`, and **a push to the default branch deploys it**.
