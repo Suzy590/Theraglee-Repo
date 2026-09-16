@@ -96,7 +96,11 @@ if (!t) {
           <dt>Sees</dt><dd>${list(t.participants)}</dd>
           <dt>Ages</dt><dd>${list(t.age_ranges)}</dd>
           <dt>Languages</dt><dd>${list(t.languages)}</dd>
-          <dt>Education</dt><dd>${esc(t.education||'—')}</dd>
+          ${t.education_school || t.education_degree || t.education_year ? `
+          <dt>School</dt><dd>${esc(t.education_school||'—')}</dd>
+          <dt>Degree/Diploma</dt><dd>${esc(t.education_degree||'—')}</dd>
+          <dt>Year graduated</dt><dd>${esc(t.education_year||'—')}</dd>`
+          : `<dt>Education</dt><dd>${esc(t.education||'—')}</dd>`}
           ${locs.length?`<dt>Locations</dt><dd>${locs.map(esc).join('<br>')}</dd>`:''}
         </dl>
       </div>

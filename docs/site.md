@@ -179,6 +179,20 @@ policies cover them; the public URLs go into `therapist_profiles.practice_photos
 them as a gallery headed "The office" between About and Practice details.
 Removing one on the dashboard deletes its file on the next save.
 
+### Education
+
+The **Education** section of My profile has three fields: school most recently
+graduated (100 characters), degree or diploma, and year graduated (four digits,
+1900 to the current year). They are stored in `therapist_profiles.education_school`,
+`education_degree` and `education_year` (migration `therapist_education_fields`,
+which also appends them to the `therapist_directory` view). On every save the
+page also writes the old one-line `education` column as
+"<degree>, <school>, <year>". `therapist.html` shows the three as School,
+Degree/Diploma and Year graduated rows of Practice details (falling back to the
+one-line Education row for a profile that has only the old column); the
+directory's Quick look keeps the one-line form, and the collapsed card shows
+none of it.
+
 ### Directory cards and Quick look
 
 A card in `therapists.html` shows the name, location and session type, a
