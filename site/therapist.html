@@ -26,6 +26,10 @@
   .layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:34px;align-items:start}
   @media(max-width:880px){.layout{grid-template-columns:1fr}.contact-box{position:static}}
   .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+  .office{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+  .office a{display:block;aspect-ratio:4/3;border-radius:var(--r-sm);overflow:hidden;background:var(--soft)}
+  .office img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
+  .office a:hover img{transform:scale(1.03)}
 </style>
 </head>
 <body>
@@ -77,6 +81,10 @@ if (!t) {
 
         ${t.bio?`<h2 style="margin-top:36px">About</h2>
           <p class="muted" style="white-space:pre-wrap">${esc(t.bio)}</p>`:''}
+
+        ${(t.practice_photos||[]).length ? `<h2 style="margin-top:36px">The office</h2>
+          <div class="office">${t.practice_photos.map(u =>
+            `<a href="${esc(u)}" target="_blank" rel="noopener"><img src="${esc(u)}" alt="Office photo" loading="lazy"></a>`).join('')}</div>` : ''}
 
         <h2 style="margin-top:32px">Practice details</h2>
         <dl class="kv">
