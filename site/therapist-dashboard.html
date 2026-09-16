@@ -51,6 +51,10 @@
     border:0;padding:0;background:rgba(0,0,0,.55);color:#fff;font-size:1.05rem;line-height:26px;cursor:pointer}
   .office-thumb button:hover{background:rgba(0,0,0,.75)}
   .field input[type=file]{font:inherit;font-size:.92rem;max-width:100%}
+  /* Specialties: a selected chip shows a star; a starred chip is a top-three pick. */
+  #spec .chip .star{display:none;margin-left:7px;opacity:.55}
+  #spec .chip.on .star{display:inline}
+  #spec .chip.on.top .star{opacity:1;color:#FFD54A}
 </style>
 </head>
 <body>
@@ -612,6 +616,34 @@ function chipGroup(id, options, selected, max){
   }).join('')}</div>`;
 }
 const chipVals = id => [...document.querySelectorAll(`#${id} .chip.on`)].map(c=>c.dataset.v);
+
+// Specialties are one chip group that does two jobs: a chip toggles the
+// specialty on and off, and the star inside a selected chip marks it as one of
+// the therapist's top three, so the list is not shown twice.
+function specChips(options, selected, top){
+  return `<div class="chips" id="spec">${options.map(o => {
+    const on = (selected||[]).includes(o), isTop = on && (top||[]).includes(o);
+    return `<button type="button" class="chip ${on?'on':''} ${isTop?'top':''}" data-v="${esc(o)}">${esc(o)}<span class="star" title="Make this one of your top three">★</span></button>`;
+  }).join('')}</div>`;
+}
+function wireSpecChips(){
+  const host = document.getElementById('spec');
+  host.querySelectorAll('.chip').forEach(c => c.onclick = (e) => {
+    if (e.target.classList.contains('star') && c.classList.contains('on')) {
+      if (!c.classList.contains('top') && host.querySelectorAll('.chip.top').length >= 3)
+        return toast('Choose up to three top specialties.','err');
+      c.classList.toggle('top');
+      return;
+    }
+    c.classList.toggle('on');
+    if (!c.classList.contains('on')) c.classList.remove('top');
+  });
+}
+// The write-ins: whatever is saved that is not on the list, up to three.
+const customSpecs = (sel) => {
+  const c = (sel||[]).filter(s => !SPECIALTIES.includes(s));
+  return [c[0]||'', c[1]||'', c[2]||''];
+};
 function wireChips(id){
   const host = document.getElementById(id);
   const max = Number(host.dataset.max || 0);
@@ -732,8 +764,14 @@ function profile(){
 
       <hr class="hr">
       <h2>Your practice</h2>
-      <div class="field"><label>Specialties</label>${chipGroup('spec', SPECIALTIES, t.specialties)}</div>
-      <div class="field"><label>Star your top three</label>${chipGroup('top', SPECIALTIES, t.top_specialties, 3)}</div>
+      <div class="field"><label>Specialties</label>
+        <div class="help" style="margin:0 0 8px">Tap a specialty to select it. Then tap the star on a
+          selected one to make it one of your top three — those lead your listing.</div>
+        ${specChips(SPECIALTIES, t.specialties, t.top_specialties)}
+        <div class="grid g3" style="margin-top:14px">
+          ${customSpecs(t.specialties).map((v, i) => `<div><label for="spec-c${i+1}">Your own specialty ${i+1}</label>
+            <input id="spec-c${i+1}" maxlength="60" value="${esc(v)}" placeholder="Not on the list? Write it in"></div>`).join('')}
+        </div></div>
       <div class="field"><label>Approaches</label>${chipGroup('mods', MODALITIES, t.treatment_modalities)}</div>
       <div class="field"><label>Insurance accepted</label>
         <div class="help" style="margin:0 0 8px">The insurance plans you accept. They show on your
@@ -804,7 +842,8 @@ function profile(){
       </div>
     </form>`);
 
-  ['states','spec','top','mods','ins','ages','parts','langs','pay'].forEach(wireChips);
+  ['states','mods','ins','ages','parts','langs','pay'].forEach(wireChips);
+  wireSpecChips();
   document.getElementById('addloc').onclick = () =>
     document.getElementById('locs').insertAdjacentHTML('beforeend', locRow({}));
   document.getElementById('pform').addEventListener('submit', save);
@@ -875,6 +914,10 @@ async function save(e){
   const gradYear = V('edu-year');
   if (gradYear && !(/^\d{4}$/.test(gradYear) && Number(gradYear) >= 1900 && Number(gradYear) <= new Date().getFullYear()))
     return toast('Enter the year you graduated as four digits, like 2007.','err');
+  // Specialties: the chips plus the write-ins, and the starred chips as the top three.
+  const written = ['spec-c1','spec-c2','spec-c3'].map(V).filter(Boolean);
+  const allSpecs = [...new Set([...chipVals('spec'), ...written])];
+  const topSpecs = [...document.querySelectorAll('#spec .chip.top')].map(c => c.dataset.v);
 
   const locations = [...document.querySelectorAll('[data-loc]')].map(r => ({
     address: r.querySelector('.l-address').value.trim(),
@@ -890,7 +933,7 @@ async function save(e){
     bio: V('bio') || null, photo_url: T?.photo_url || null,
     license_number: V('lic'), license_type: V('ltype') || null,
     license_states: chipVals('states'),
-    specialties: chipVals('spec'), top_specialties: chipVals('top'),
+    specialties: allSpecs, top_specialties: topSpecs,
     treatment_modalities: chipVals('mods'), insurances: chipVals('ins'),
     payment_methods: chipVals('pay'),
     age_ranges: chipVals('ages'), participants: chipVals('parts'), languages: chipVals('langs'),

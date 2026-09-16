@@ -1,17 +1,30 @@
 /* Reference lists used by therapist profiles and directory filters.
    Edit these in one place — every dropdown on the site reads from here. */
 
+// Specialties a therapist can pick, alphabetized. The dashboard also takes up to
+// three written in, which are saved alongside these but never offered as a filter.
 export const SPECIALTIES = [
-  'ADHD','Addiction','Anger management','Anxiety','Autism','Bipolar disorder','Body image',
-  'Borderline personality','Burnout','Career counseling','Chronic illness','Chronic pain',
-  'Codependency','Coping skills','Couples counseling','Depression','Disordered eating',
-  'Divorce','Domestic violence','Family conflict','Grief and loss','Infertility','Insomnia',
-  'Life transitions','LGBTQ+ issues','Men\'s issues','Military and veterans','Mood disorders',
-  'Obsessive-compulsive (OCD)','Panic attacks','Parenting','Perinatal and postpartum',
-  'Personality disorders','Phobias','Psychosis','PTSD and trauma','Relationship issues',
-  'Religious and spiritual','School issues','Self-esteem','Self-harm','Sexual abuse',
-  'Sleep problems','Social anxiety','Stress','Substance use','Suicidal ideation',
-  'Teen issues','Women\'s issues','Workplace issues',
+  'Addiction','ADHD','Adoption','Alcohol Use','Anger Management','Antisocial Personality',
+  'Anxiety','Autism','Behavioral Issues','Bipolar Disorder','Bisexual','Blended Families',
+  'Body Image','Borderline Personality (BPD)','Burnout','Cancer','Career Counseling',
+  'Caregivers','Child','Chronic Illness','Chronic Impulsivity','Chronic Pain','Chronic Relapse',
+  'Codependency','Coping Skills','Dementia','Depression','Developmental Disorders',
+  'Dissociative Disorders (DID)','Divorce','Domestic Abuse','Domestic Violence','Drug Abuse',
+  'Dual Diagnosis','Eating Disorders','Education and Learning Disabilities',
+  'Emotional Disturbance','Emotional Regulation','Family Conflict','First Responders',
+  'Gambling','Gay','Geriatric and Seniors','Grief','Hoarding','Impulse Control Disorders',
+  'Infertility','Infidelity','Intellectual Disability','Internet Addiction','Lesbian','LGBTQ+',
+  'Life Coaching','Life Transitions','Marital and Premarital','Medical Detox',
+  'Medication Management',"Men's Issues",'Menopause','Mood Disorders','Narcissistic Abuse',
+  'Narcissistic Personality (NPD)','Neurodivergence','Obesity','Obsessive-Compulsive (OCD)',
+  'Oppositional Defiance (ODD)','Parenting','Peer Relationships','Personality Disorders',
+  'Polyamory & ENM','Pregnancy, Prenatal, Postpartum','Premenstrual Dysphoric Disorder (PMDD)',
+  'Psychosis','Racial Identity','Relationship Issues','School Issues','Self Esteem',
+  'Self-Harming','Sex Therapy','Sex-Positive & Kink Friendly','Sexual Abuse','Sexual Addiction',
+  'Sleep or Insomnia','Spirituality','Sports Performance','Stress','Substance Use',
+  'Suicidal Ideation','Teen Violence','Testing and Evaluation','Thinking Disorders',
+  'Transgender','Trauma and PTSD','Traumatic Brain Injury (TBI)','Veterans',
+  'Video Game Addiction','Weight Loss',"Women's Issues",
 ];
 
 export const MODALITIES = [
