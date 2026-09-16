@@ -113,6 +113,8 @@ async function run(){
         </p>
         ${t.bio ? `<p class="muted" style="margin:0 0 8px;font-size:.93rem">${esc(String(t.bio).slice(0,150))}${t.bio.length>150?'…':''}</p>` : ''}
         <div class="chips">${spec.map(s=>`<span class="badge gray">${esc(s)}</span>`).join('')}</div>
+        ${(t.payment_methods||[]).length ? `<p class="faint" style="margin:8px 0 0;font-size:.85rem">
+          Accepts ${t.payment_methods.map(esc).join(' · ')}</p>` : ''}
       </div></a>`;
   }).join('') : `<div class="empty">
       <p style="margin:0 0 6px"><strong>No therapists match that yet.</strong></p>

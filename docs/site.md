@@ -189,8 +189,10 @@ Health Savings Account, Mastercard, PayPal, Venmo, Visa, Wire and Zelle
 `therapist_profiles.payment_methods` (`text[]`, added by the migration
 `therapist_payment_methods`, which also appends the column to the
 `therapist_directory` view) and shown on `therapist.html` as the Payment row of
-Practice details. It is only what the listing advertises; it has nothing to do
-with paying through Theraglee or Stripe.
+Practice details and on each directory card in `therapists.html` as an
+"Accepts …" line under the specialties (`search_therapists` returns rows of the
+view, so it needed no change). It is only what the listing advertises; it has
+nothing to do with paying through Theraglee or Stripe.
 
 ## Changing the site
 
