@@ -94,7 +94,6 @@ every benefit below with its current state. It includes:
 - referral reporting: calls, messages, website clicks, shares and profile views
 - the names and topics of members who opted in to being contacted (any registered member can)
 - a clinician library of 90 resources (worksheets, CBT, ACT, DBT, couples, kids, games), with five more of every kind added every day — see [`therapist-resources.md`](therapist-resources.md)
-- Assign Remind — built, but **held in preview here** (see below)
 
 If either the license or the membership lapses, the listing comes down on its own
 and the library and member list close, while the therapist keeps their own inbox
@@ -561,7 +560,10 @@ information, so it is moving to its own HIPAA-covered project at
 assignremind.com rather than putting the whole site behind ~$1,000/month of
 compliance infrastructure.
 
-Until it moves it is **held in preview here**: the screens work, but the database
+It is **no longer reachable from Theraglee**: the practice dashboard tab, its
+Home benefit card and the `assign()` view have been removed, so the professional
+side has no entry point here. `site/assets/assignremind.js` is still in the repo
+but nothing imports it. The database gate behind it is unchanged — the database
 refuses to accept a client record, and the reminder scheduler is switched off.
 That is deliberate — a warning someone can click past is not adequate protection
 against a real patient record landing on infrastructure with no BAA behind it.
