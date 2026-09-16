@@ -190,9 +190,11 @@ appears on a selected chip marks it as one of the therapist's top three (the
 former separate "Star your top three" list is gone). Three write-in boxes
 follow the chips for specialties not on the list; they are saved with the rest
 but cannot be starred and are not offered as a filter. Storage is unchanged:
-`therapist_profiles.specialties` and `top_specialties`, which the profile page
-(★ badges), the directory card (top three, else the first three) and Quick look
-already read.
+`therapist_profiles.specialties` and `top_specialties`. `therapist.html` shows
+the top three as ★ badges under the name and, in a **Specialties** section
+after About, every specialty as a chip with the top three first and starred;
+the directory card shows the top three (else the first three) and Quick look
+lists them all.
 
 ### Education
 

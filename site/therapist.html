@@ -55,6 +55,7 @@ if (!t) {
   log('profile_view');
 
   const initials = ((t.first_name?.[0]||'') + (t.last_name?.[0]||'')).toUpperCase();
+  const top = t.top_specialties || [];
   const list = (arr) => (arr||[]).length ? arr.map(esc).join(', ') : '—';
   const locs = (t.locations||[]).map(l => [l.address, l.city, l.state, l.zip].filter(Boolean).join(', '));
 
@@ -82,13 +83,19 @@ if (!t) {
         ${t.bio?`<h2 style="margin-top:36px">About</h2>
           <p class="muted" style="white-space:pre-wrap">${esc(t.bio)}</p>`:''}
 
+        ${(t.specialties||[]).length || (t.top_specialties||[]).length ? `<h2 style="margin-top:36px">Specialties</h2>
+          <div class="chips">
+            ${top.map(s => `<span class="badge">★ ${esc(s)}</span>`).join('')}
+            ${(t.specialties||[]).filter(s => !top.includes(s)).map(s => `<span class="badge gray">${esc(s)}</span>`).join('')}
+          </div>
+          ${top.length ? `<p class="faint" style="margin:10px 0 0;font-size:.85rem">★ The areas ${esc(t.first_name)} focuses on most.</p>` : ''}` : ''}
+
         ${(t.practice_photos||[]).length ? `<h2 style="margin-top:36px">The office</h2>
           <div class="office">${t.practice_photos.map(u =>
             `<a href="${esc(u)}" target="_blank" rel="noopener"><img src="${esc(u)}" alt="Office photo" loading="lazy"></a>`).join('')}</div>` : ''}
 
         <h2 style="margin-top:32px">Practice details</h2>
         <dl class="kv">
-          <dt>Specialties</dt><dd>${list(t.specialties)}</dd>
           <dt>Approaches</dt><dd>${list(t.treatment_modalities)}</dd>
           <dt>Insurance</dt><dd>${list(t.insurances)}</dd>
           <dt>Fees</dt><dd>${esc(t.fees||'—')}</dd>
