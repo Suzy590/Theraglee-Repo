@@ -17,14 +17,15 @@ export const SPECIALTIES = [
   'Life Coaching','Life Transitions','Marital and Premarital','Medical Detox',
   'Medication Management',"Men's Issues",'Menopause','Mood Disorders','Narcissistic Abuse',
   'Narcissistic Personality (NPD)','Neurodivergence','Obesity','Obsessive-Compulsive (OCD)',
-  'Oppositional Defiance (ODD)','Parenting','Peer Relationships','Personality Disorders',
-  'Polyamory & ENM','Pregnancy, Prenatal, Postpartum','Premenstrual Dysphoric Disorder (PMDD)',
-  'Psychosis','Racial Identity','Relationship Issues','School Issues','Self Esteem',
-  'Self-Harming','Sex Therapy','Sex-Positive & Kink Friendly','Sexual Abuse','Sexual Addiction',
-  'Sleep or Insomnia','Spirituality','Sports Performance','Stress','Substance Use',
-  'Suicidal Ideation','Teen Violence','Testing and Evaluation','Thinking Disorders',
-  'Transgender','Trauma and PTSD','Traumatic Brain Injury (TBI)','Veterans',
-  'Video Game Addiction','Weight Loss',"Women's Issues",
+  'Oppositional Defiance (ODD)','Panic Attacks','Parenting','Peer Relationships',
+  'Personality Disorders','Phobias','Polyamory & ENM','Pregnancy, Prenatal, Postpartum',
+  'Premenstrual Dysphoric Disorder (PMDD)','Psychosis','Racial Identity','Relationship Issues',
+  'School Issues','Self Esteem','Self-Harming','Sex Therapy','Sex-Positive & Kink Friendly',
+  'Sexual Abuse','Sexual Addiction','Sleep or Insomnia','Social Anxiety','Spirituality',
+  'Sports Performance','Stress','Substance Use','Suicidal Ideation','Teen Violence',
+  'Testing and Evaluation','Thinking Disorders','Transgender','Trauma and PTSD',
+  'Traumatic Brain Injury (TBI)','Veterans','Video Game Addiction','Weight Loss',
+  "Women's Issues",'Workplace Issues',
 ];
 
 export const MODALITIES = [
