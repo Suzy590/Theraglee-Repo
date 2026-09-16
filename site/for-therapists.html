@@ -41,6 +41,7 @@
   .mm-m .chips{display:flex;flex-wrap:wrap;gap:6px}
   .mm-m .foot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
   .mm-m .foot span{font-size:.8rem;color:var(--faint)}
+  .mm-m .foot .btn{color:#fff;font-size:.85rem}
   .mm-note{padding:10px 18px 14px;font-size:.78rem;color:var(--faint);text-align:center}
   .mm-why{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-top:44px}
   .mm-why .card h3{margin:0 0 6px;font-size:1.1rem}
@@ -141,11 +142,11 @@
     <div class="mm-top">
       <div>
         <span class="badge">Theraglee Match Mode · Included with therapist membership</span>
-        <h2 id="mm-title">Stop waiting to be found. <em class="script">Reach out first.</em></h2>
+        <h2 id="mm-title">Stop waiting to be found. <em class="script">Have a warm pipeline of potential clients right on your dashboard.</em></h2>
         <p class="muted lede">A directory listing waits for a search. <strong>Theraglee Match
-          Mode</strong> turns that around. Members who want a therapist to contact them switch it
-          on, and they appear on your dashboard with the essentials you need to judge the fit. You
-          send one short message. If they reply, you have a real conversation with a real name,
+          Mode</strong> turns that around. Members who want a therapist to contact them flip a
+          switch on their dashboard indicating so, and they appear on <em>your dashboard</em> with
+          the essentials you need to assess the fit. You send one short message. If they reply, you have a real conversation with a real name,
           and a first session to book.</p>
         <div class="row" style="margin-top:22px">
           <a class="btn lg" href="#start">Start your listing</a>
@@ -232,7 +233,7 @@
             <p class="muted">Open it in session or print it as homework. Each one is an adjunct to
               your own clinical judgment, not a protocol.</p></div></div>
           <div class="feat"><div class="ico">↑</div><div>
-            <strong>Grows every day</strong>
+            <strong>The clinician library grows every day</strong>
             <p class="muted">New tools in every category, every day, each covering different ground
               from what is already on the shelf.</p></div></div>
         </div>
@@ -293,18 +294,17 @@
     <div style="margin-top:26px">
       <div class="step"><div class="n">1</div><div>
         <h3>Create a therapist account</h3>
-        <p class="muted">Therapist accounts have their own <a href="therapist-signup.html">sign-up</a>
-          and <a href="therapist-login.html">sign-in</a> pages, separate from member accounts. There
-          is one level of therapist membership, and it is the same for everybody.</p></div></div>
+        <p class="muted">Therapist accounts are different and separate from member accounts with
+          entirely different dashboards, offering access to exactly what you need to keep your
+          practice full and sessions running smoothly.</p></div></div>
       <div class="step"><div class="n">2</div><div>
         <h3>Fill in your profile</h3>
-        <p class="muted">License number and state, specialties, insurances, fees, languages
-          and locations. Your own phone and email go in privately.</p></div></div>
+        <p class="muted">We've streamlined this process so that the average therapist profile
+          set-up takes just under 3 minutes.</p></div></div>
       <div class="step"><div class="n">3</div><div>
         <h3>We verify your license</h3>
         <p class="muted">We check it against your state board and confirm it is current and in
-          good standing. We re-check it before it expires, so the badge on your profile keeps
-          meaning something.</p></div></div>
+          good standing.</p></div></div>
       <div class="step"><div class="n">4</div><div>
         <h3>Publish, and watch the referrals</h3>
         <p class="muted">Your dashboard shows exactly what the listing brings in each month.</p></div></div>
@@ -316,7 +316,7 @@
   <div class="wrap">
     <div class="card pad-lg grid g2" style="align-items:center;gap:34px">
       <div>
-        <span class="badge">One flat membership</span>
+        <span class="badge">One flat membership rate</span>
         <h2 style="margin-top:14px">Therapist membership</h2>
         <p class="muted">A Theraglee therapist membership is different. It supports your practice
           by helping to keep your practice full. Theraglee does this by going beyond the usual
@@ -324,13 +324,13 @@
           dashboard, you will see potential clients in your area who match with your specialties who have
           indicated they would like a therapist to reach out to them.</p>
         <ul class="muted" style="font-size:.93rem;padding-left:20px">
+          <li>Reach out to members who have toggled ON <strong>Theraglee Match Mode</strong></li>
           <li>Full profile: specialties, insurances, languages, locations, fees, and more</li>
-          <li>Searchable by zip, insurance, specialty, telehealth and more</li>
+          <li>Searchable directory listing by zip, insurance, specialty, telehealth and more</li>
           <li>A Theraglee phone number, so your own number stays private</li>
           <li>Messages routed to you without your email address being shown</li>
-          <li>Referral stats on your dashboard: calls, messages, website clicks, shares, and views</li>
-          <li>Reach out to members who have toggled ON <strong>Theraglee Match Mode</strong></li>
-          <li>An ever-growing clinician library of worksheets and CBT, ACT, DBT, couples and kids exercises</li>
+          <li>Referral stats right on your dashboard: calls, messages, website clicks, shares, and views</li>
+          <li>An ever-growing clinician library of worksheets and CBT, ACT, DBT, couples and kids exercises with content added daily</li>
         </ul>
       </div>
       <div class="center">
@@ -353,15 +353,49 @@
     <h2>Questions</h2>
     <div class="stack">
       <div class="card"><h3>What is <strong>Theraglee Match Mode</strong>?</h3>
-        <p class="muted" style="margin:0">A switch members can turn on to let verified therapists
-          reach out to them. When a member has it on, you see a short anonymous line on your
-          dashboard: their gender, age, the topics they want help with, whether they want in-person
-          or telehealth sessions, and their zip code. Something like "Male, 39 · seeks help with
-          anxiety · seeking in-person sessions". You can send them a message through Theraglee. If
-          they choose to reply, the reply carries their real name, and you can write back to
-          arrange a first session. You never see their email, their journal, or anything else they
-          have written. Members can turn it off at any time, and your listing has to be live before
-          you can reach out.</p></div>
+        <p class="muted" style="margin:0">Theraglee (non-therapist) members can toggle ON a switch
+          on their dashboard indicating they would like licensed therapists to reach out to them.
+          When a member has <strong>Theraglee Match Mode</strong> turned ON, you see a brief summary
+          of the member's specific request on your dashboard: their gender, age, the broad topics
+          they want help with, whether they want in-person or telehealth sessions, and their zip
+          code. You can choose to send them a message through Theraglee. If they choose to reply,
+          the reply carries their real name (not their Theraglee pseudonym), and you can write back
+          to arrange a first session. Members can turn it off at any time, and your listing has to
+          be live before you can reach out.</p></div>
+      <div class="card"><h3>What happens if a member switches <strong>Theraglee Match Mode</strong> off after we have started talking?</h3>
+        <p class="muted" style="margin:0">Nothing changes for that conversation. Once a member has
+          replied to you, you can keep writing back to them even if they later switch Match Mode
+          off. They simply stop appearing in the list of members waiting to hear from a therapist,
+          so no one new can reach out to them.</p></div>
+      <div class="card"><h3>When does my listing go live?</h3>
+        <p class="muted" style="margin:0">Two things have to be true: your license is verified and
+          your membership is active. You can do them in either order. We check your license against
+          your state board. Where the board publishes its records, that is automatic. Where it does
+          not, a person on our team looks it up by hand, which can take a little longer. You get an
+          email at each step, and if anything needs attention the email says what to do next. Once
+          both are in place, your listing publishes and everything on your dashboard opens.</p></div>
+      <div class="card"><h3>How does the Theraglee phone number work?</h3>
+        <p class="muted" style="margin:0">Your listing shows a Theraglee number that forwards to the
+          phone number you give us, so your own number is never published. Calls are counted on
+          your referral stats, not recorded. The number belongs to Theraglee and is withdrawn when
+          your listing ends.</p></div>
+      <div class="card"><h3>How do messages reach me?</h3>
+        <p class="muted" style="margin:0">People write to you through a contact form on your profile.
+          The message is routed to you without your email address being shown. You reply from your
+          own inbox, and they still never see your address.</p></div>
+      <div class="card"><h3>Is there more than one level of membership?</h3>
+        <p class="muted" style="margin:0">No. There is one flat membership rate for every therapist,
+          billed monthly or yearly, and it includes everything on this page. There are no tiers, no
+          add-ons, and no fee per contact. Billing starts from your practice dashboard once your
+          account exists.</p></div>
+      <div class="card"><h3>How do I cancel my membership?</h3>
+        <p class="muted" style="margin:0">From your practice dashboard, open the Membership tab and
+          click <strong>Manage membership</strong>. That opens a secure billing page where you can
+          cancel, switch between monthly and yearly, or update your card. A cancellation takes effect
+          at the end of the period you have already paid for, and your dashboard shows the date your
+          membership ends. When it ends, your listing comes down automatically and the clinician
+          library and Match Mode close. You keep your inbox and your referral history, and you can
+          restart from the same tab whenever you like.</p></div>
     </div>
   </div>
 </section>

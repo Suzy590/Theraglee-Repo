@@ -2,8 +2,9 @@
 // therapist_resources table). Run from the repo root:
 //   node tests/therapist-resources-fixture/check.mjs
 // Fails (exit 1) if a resource is malformed, a slug or title repeats, a kind
-// is unknown, the client prompts are out of sequence, or the copy uses
-// language the library avoids.
+// is unknown, the client prompts are out of sequence, the copy uses language
+// the library avoids, or a day's batch is short of its five per kind and
+// five per topic.
 import { readFileSync } from 'node:fs';
 
 const ROWS = JSON.parse(readFileSync(new URL('../../data/therapist-resources.json', import.meta.url), 'utf8'));
@@ -20,6 +21,18 @@ export const KINDS = ['worksheet', 'cbt', 'act', 'dbt', 'couples', 'kids', 'game
 // Who a resource is for. The dashboard prints these as written.
 export const AUDIENCES = new Set(['Adults', 'Teens', 'Children', 'Couples', 'Groups']);
 
+// The topics the daily routine covers, five resources each per day since
+// 2026-09-16 (docs/therapist-resources.md). A topic resource carries the topic
+// as one of its tags, spelled exactly like this, so the library's search finds
+// every tool on a topic with one word. Add a topic here to add it to the day.
+export const TOPICS = [
+  'PTSD and trauma', 'anxiety', 'depression', 'ADHD', 'addiction', 'anger management', 'OCD',
+  'panic attacks', 'parenting', 'perinatal and postpartum', 'self-esteem', 'social anxiety',
+  'grief and loss', 'relationship issues', 'sexual abuse', 'coping skills', 'phobias', 'body image',
+];
+const KIND_QUOTA_FROM = '2026-09-13';   // five of every kind, every day since
+const TOPIC_QUOTA_FROM = '2026-09-16';  // five of every topic, every day since
+
 // A resource speaks to the clinician about their client. It never labels a
 // person by a diagnosis and never invents a study to sound authoritative.
 const BANNED = [
@@ -27,6 +40,14 @@ const BANNED = [
   /\bthe mentally ill\b/i, /\ban? (addict|schizophrenic|anorexic|bulimic|borderline)\b/i,
   /\b(crazy|insane|psycho|lunatic)\b(?!-)/i,
   /\bcalories?\b/i, /\bweight loss\b/i, /\blose weight\b/i,
+];
+// Every resource is an adjunct to the clinician's own judgment, never a
+// protocol: nothing here diagnoses, screens for, or treats anything.
+const NOT_A_PROTOCOL = [
+  /\bdiagnos(e|es|ed|ing|is|tic|tics)\b/i, /\bscreen(s|ed|ing)? for\b/i, /\bscreening (tool|questionnaire|measure)\b/i,
+  /\btreatment\b/i, /\btreats? (the |their |a |an )?(condition|symptoms|illness)\b/i, /\bcures?\b/i, /\bcured\b/i,
+  /\bprotocol\b/i, /\bmanualized\b/i, /\b(meets?|meeting) (the )?criteria\b/i, /\bdisorder\b/i,
+  /\bevidence-based\b/i, /\b(assess|assesses|assessment) for\b/i, /\bdos(e|age|es)\b/i, /\bprescri(be|bed|ption)\b/i,
 ];
 const UNSOURCED = [
   /\ba (19|20)\d\d (study|survey|paper|review) (found|showed|shows|reported)/i,
@@ -95,8 +116,25 @@ for (const r of ROWS) {
 
   const text = [r.title, summary, goal, r.duration, body, ...(r.fields || []).map(f => f.label), ...(r.tags || [])].join('\n');
   for (const re of BANNED) { const m = text.match(re); if (m) err(r, `avoid the phrase "${m[0]}"`); }
+  for (const re of NOT_A_PROTOCOL) { const m = text.match(re); if (m) err(r, `an adjunct, not a protocol: avoid "${m[0]}"`); }
   for (const re of UNSOURCED) { const m = text.match(re); if (m) err(r, `unsourced claim: "${m[0]}"`); }
   for (const re of UK) { const m = text.match(re); if (m) err(r, `US spelling: "${m[0]}"`); }
+}
+
+// Each day's batch is five of every kind (since 2026-09-13) plus five of every
+// topic (since 2026-09-16). A day that is present but short is a mistake in
+// that day's run, so the check refuses it.
+const days = [...new Set(ROWS.map(r => String(r.created_at).slice(0, 10)))].sort();
+for (const day of days) {
+  const batch = ROWS.filter(r => String(r.created_at).startsWith(day));
+  if (day >= KIND_QUOTA_FROM) for (const k of KINDS) {
+    const n = batch.filter(r => r.kind === k).length;
+    if (n < 5) errors.push(`${day}: only ${n} ${k} resource${n === 1 ? '' : 's'}; every day adds five of every kind`);
+  }
+  if (day >= TOPIC_QUOTA_FROM) for (const t of TOPICS) {
+    const n = batch.filter(r => (r.tags || []).includes(t)).length;
+    if (n < 5) errors.push(`${day}: only ${n} tagged "${t}"; every day adds five on every topic`);
+  }
 }
 
 if (errors.length) {
@@ -105,4 +143,5 @@ if (errors.length) {
   process.exit(1);
 }
 const byKind = KINDS.map(k => `${k} ${ROWS.filter(r => r.kind === k).length}`).join(', ');
-console.log(`ok: ${ROWS.length} resources (${byKind})`);
+const onTopic = ROWS.filter(r => (r.tags || []).some(t => TOPICS.includes(t))).length;
+console.log(`ok: ${ROWS.length} resources (${byKind}); ${onTopic} on the ${TOPICS.length} daily topics`);

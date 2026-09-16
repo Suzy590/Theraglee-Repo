@@ -93,8 +93,7 @@ every benefit below with its current state. It includes:
 - a contact form that routes messages without exposing their email address
 - referral reporting: calls, messages, website clicks, shares and profile views
 - the names and topics of members who opted in to being contacted (any registered member can)
-- a clinician library of 90 resources (worksheets, CBT, ACT, DBT, couples, kids, games), with five more of every kind added every day — see [`therapist-resources.md`](therapist-resources.md)
-- Assign Remind — built, but **held in preview here** (see below)
+- a clinician library of 215 resources (worksheets, CBT, ACT, DBT, couples, kids, games), with five more of every kind and five on each of eighteen topics added every day, all adjuncts to the therapist's own judgment rather than protocols — see [`therapist-resources.md`](therapist-resources.md)
 
 If either the license or the membership lapses, the listing comes down on its own
 and the library and member list close, while the therapist keeps their own inbox
@@ -154,6 +153,23 @@ psychologists through a different board with its own lookup; those have a
 `psychology` row too (`state_boards_psychology`), which the admin screen and the
 function use when the license type is PsyD, PhD or EdD. A state with no row
 falls back to a search link in the admin screen.
+
+### Profile photos
+
+The **My profile** tab takes a JPG or PNG from the therapist's computer or
+phone; it no longer asks for a URL. The page shrinks the picture to 800px on
+its long side and re-encodes it as a JPEG in the browser (which also drops the
+EXIF location and device data), then uploads it to the `therapist-photos`
+Storage bucket at `<auth user id>/photo.jpg`. Choosing a new picture overwrites
+that one file, and **Remove photo** deletes it.
+
+`therapist_profiles.photo_url` still holds the address (now the bucket's public
+URL, with a `?v=` cache-buster), so `therapists.html` and `therapist.html`
+display it exactly as they displayed a linked photo. The bucket is public, so
+visitors need no account to see it; the storage policies let a signed-in user
+read, write and remove only inside the folder named after their own id. It is
+created by the migration `therapist_photos_bucket`, which is idempotent and was
+applied to the live project on 2026-09-16.
 
 ## Changing the site
 
@@ -561,8 +577,14 @@ information, so it is moving to its own HIPAA-covered project at
 assignremind.com rather than putting the whole site behind ~$1,000/month of
 compliance infrastructure.
 
-Until it moves it is **held in preview here**: the screens work, but the database
-refuses to accept a client record, and the reminder scheduler is switched off.
+It is **no longer reachable from Theraglee**: the practice dashboard tab, its
+Home benefit card and the `assign()` view have been removed, so the professional
+side has no entry point here. `site/assets/assignremind.js` stays in the repo so
+nothing has to be rebuilt later, but `site/.vercelignore` keeps it out of the
+deployment, so `/assets/assignremind.js` answers 404 on the live site. To publish
+it again, delete that line. The database gate behind it is unchanged — the
+database refuses to accept a client record, and the reminder scheduler is
+switched off.
 That is deliberate — a warning someone can click past is not adequate protection
 against a real patient record landing on infrastructure with no BAA behind it.
 

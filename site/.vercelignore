@@ -1,3 +1,9 @@
 # Nothing in the deployed directory is private — Vercel serves this folder
 # verbatim, so documentation must never live here. Docs belong in /docs.
 *.md
+
+# Assign Remind's professional-side module stays in the repo for later, but is
+# not published: nothing on the site imports it, and it must not be fetchable
+# from the deployed site while the product is held back. Delete this line to
+# publish it again.
+assets/assignremind.js
