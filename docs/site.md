@@ -181,7 +181,7 @@ Removing one on the dashboard deletes its file on the next save.
 
 ### Insurance accepted
 
-The **Insurance accepted** picker on My profile lists 103 plans — `INSURANCES`
+The **Insurance accepted** picker on My profile lists 104 plans — `INSURANCES`
 in `site/assets/lists.js`, taken from the owner's reference list — plus
 "Self-pay only" and "Sliding scale available" at the end, and stores
 the choices in `therapist_profiles.insurances` (`text[]`, in the

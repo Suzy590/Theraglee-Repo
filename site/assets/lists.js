@@ -29,7 +29,8 @@ export const MODALITIES = [
 export const INSURANCES = [
   '1199SEIU','AARP','Aetna','Aetna EAP','Aetna Medicare','Aetna Student Health','All Savers',
   'Allegiance','Ambetter',"America's Choice Provider Network (ACPN)",'AmeriHealth','Anthem',
-  'Anthem EAP','Beech Street','BHS | Behavioral Health Systems','Blue Cross','Blue Shield',
+  'Anthem EAP','Anthem Medicare','Beech Street','BHS | Behavioral Health Systems','Blue Cross',
+  'Blue Shield',
   'BlueCross and BlueShield','Carebridge EAP','Carelon Behavioral Health',
   'Carelon Health IPA of California (CHIPA)','CenCal','Centene','Centivo',
   "Children's Health Insurance Program (CHIP)",'Cigna and Evernorth','Cigna EAP','Cigna Medicare',
