@@ -122,8 +122,8 @@ a.tile:hover{transform:translateY(-5px);box-shadow:var(--shadow-2);color:inherit
 
 /* ---------- forms ---------- */
 label{display:block;font-size:.88rem;font-weight:500;margin-bottom:6px;color:var(--ink-2)}
-input[type=text],input[type=email],input[type=password],input[type=number],input[type=url],
-input[type=tel],input[type=date],select,textarea{
+input:not([type]),input[type=text],input[type=email],input[type=password],input[type=number],
+input[type=url],input[type=tel],input[type=date],select,textarea{
   width:100%;padding:11px 14px;border:1px solid var(--hair);border-radius:var(--r-sm);
   background:var(--paper);font:inherit;font-size:.95rem;color:var(--ink);transition:border-color .18s,box-shadow .18s}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--lime-2);
