@@ -50,6 +50,8 @@ export const INSURANCES = [
   'UnitedHealthcare Student Resources','UnitedHealthcare UHC | UBH','Uprise Health',
   'Velocity National Provider Network (VNPN)','WellCare','Wellfleet','Wellpoint | Amerigroup',
   'Workplace Options','Zelis Healthcare',
+  // Not insurers, but picked and filtered the same way.
+  'Self-pay only','Sliding scale available',
 ];
 
 // Payment methods a therapist uses in their practice and advertises on their listing.
