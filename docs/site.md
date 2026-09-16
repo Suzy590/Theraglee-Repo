@@ -181,8 +181,9 @@ Removing one on the dashboard deletes its file on the next save.
 
 ### Specialties
 
-The **Specialties** picker on My profile offers the 98 specialties from the
-owner's reference list, alphabetized (`SPECIALTIES` in `site/assets/lists.js`,
+The **Specialties** picker on My profile offers 102 specialties — the 98 from the
+owner's reference list plus Panic Attacks, Phobias, Social Anxiety and Workplace
+Issues kept from the earlier list — alphabetized (`SPECIALTIES` in `site/assets/lists.js`,
 which also fills the directory's Specialty filter). It is one chip group doing
 two jobs: tapping a chip selects the specialty, and tapping the star that
 appears on a selected chip marks it as one of the therapist's top three (the
