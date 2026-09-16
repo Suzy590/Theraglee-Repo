@@ -43,6 +43,14 @@
     color:var(--green-deep);overflow:hidden}
   .photo-preview img{width:100%;height:100%;object-fit:cover;display:block}
   .photo-pick input[type=file]{font:inherit;font-size:.92rem;max-width:100%}
+  .office-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin:0 0 10px}
+  .office-grid:empty{display:none}
+  .office-thumb{position:relative;aspect-ratio:4/3;border-radius:var(--r-sm);overflow:hidden;background:var(--soft)}
+  .office-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .office-thumb button{position:absolute;top:6px;right:6px;width:26px;height:26px;border-radius:50%;
+    border:0;padding:0;background:rgba(0,0,0,.55);color:#fff;font-size:1.05rem;line-height:26px;cursor:pointer}
+  .office-thumb button:hover{background:rgba(0,0,0,.75)}
+  .field input[type=file]{font:inherit;font-size:.92rem;max-width:100%}
 </style>
 </head>
 <body>
@@ -631,6 +639,17 @@ let photoRemoved = false;  // the therapist asked to take their photo down
 const PHOTO_BUCKET = 'therapist-photos';
 const photoPath = () => `${a.profile.id}/photo.jpg`;
 
+// Office pictures (optional, up to OFFICE_MAX): the saved ones the therapist is
+// keeping, the new ones waiting to upload, and the removed ones whose files go
+// after the save. They live next to the profile photo, in <user id>/office/.
+const OFFICE_MAX = 6;
+let officeKeep = [];   // public URLs already on the profile, still wanted
+let officeAdd = [];    // { blob, url } — shrunk JPEG and its preview
+let officeDrop = [];   // public URLs removed this visit
+const officeDir = () => `${a.profile.id}/office`;
+// The bucket path inside one of our public URLs, for deleting the file.
+const storagePathOf = (url) => (String(url).split(`/${PHOTO_BUCKET}/`)[1] || '').split('?')[0];
+
 // Shrinks a chosen picture to at most 800px on its long side and re-encodes it
 // as a JPEG, so a 6 MB phone photo lands in storage at roughly 100 KB with its
 // EXIF (location, device) left behind. Returns null if the browser cannot
@@ -655,6 +674,7 @@ function profile(){
   const locs = (t.locations && t.locations.length) ? t.locations : [{}];
   const initials = ((t.first_name?.[0]||'') + (t.last_name?.[0]||'')).toUpperCase();
   photoFile = null; photoRemoved = false;
+  officeKeep = [...(t.practice_photos || [])]; officeAdd = []; officeDrop = [];
   render(`
     <form id="pform">
       ${t.verification === 'rejected' ? `<div class="notice err" style="margin-bottom:20px">
@@ -690,6 +710,11 @@ function profile(){
               style="margin-top:10px">Remove photo</button>` : ''}
           </div>
         </div></div>
+      <div class="field"><label for="office">Office photos <span class="faint" style="font-weight:400">(optional)</span></label>
+        <div class="office-grid" id="office-grid"></div>
+        <input id="office" type="file" accept="image/jpeg,image/png,image/webp" multiple>
+        <div class="help">Up to ${OFFICE_MAX} pictures of your office or waiting room, JPG or PNG.
+          They appear on your public profile under “The office”.</div></div>
 
       <hr class="hr">
       <h2>License</h2>
@@ -782,8 +807,43 @@ function profile(){
     document.getElementById('photo-preview').textContent = initials || '—';
     e.target.remove();
   });
+  paintOffice();
+  const officePick = document.getElementById('office');
+  officePick.addEventListener('change', async () => {
+    const files = [...(officePick.files || [])];
+    officePick.value = '';
+    const room = OFFICE_MAX - officeKeep.length - officeAdd.length;
+    if (files.length > room) toast(`Only ${room} more picture${room===1?'':'s'} fit; the first ${room} ${room===1?'was':'were'} kept.`, 'err');
+    for (const file of files.slice(0, Math.max(0, room))) {
+      if (!['image/jpeg','image/png','image/webp'].includes(file.type)) { toast(`${file.name} is not a JPG or PNG.`,'err'); continue; }
+      if (file.size > 20 * 1024 * 1024) { toast(`${file.name} is over 20 MB.`,'err'); continue; }
+      const blob = await shrinkPhoto(file, 1400);
+      if (!blob) { toast(`${file.name} could not be read as a picture.`,'err'); continue; }
+      officeAdd.push({ blob, url: URL.createObjectURL(blob) });
+    }
+    paintOffice();
+  });
   document.getElementById('verify')?.addEventListener('click', runVerification);
   document.getElementById('pub')?.addEventListener('click', togglePublish);
+}
+
+// Draws the office thumbnails (saved ones first, then the new picks), each with
+// a remove button, and closes the picker once the limit is reached.
+function paintOffice(){
+  const grid = document.getElementById('office-grid');
+  const tiles = [
+    ...officeKeep.map((src, i) => ({ src, kind: 'keep', i })),
+    ...officeAdd.map((p, i)   => ({ src: p.url, kind: 'add', i })),
+  ];
+  grid.innerHTML = tiles.map(x => `<div class="office-thumb"><img src="${esc(x.src)}" alt="">
+    <button type="button" data-kind="${x.kind}" data-i="${x.i}" title="Remove this picture">×</button></div>`).join('');
+  grid.querySelectorAll('button').forEach(b => b.onclick = () => {
+    const i = Number(b.dataset.i);
+    if (b.dataset.kind === 'keep') officeDrop.push(...officeKeep.splice(i, 1));
+    else { URL.revokeObjectURL(officeAdd[i].url); officeAdd.splice(i, 1); }
+    paintOffice();
+  });
+  document.getElementById('office').disabled = tiles.length >= OFFICE_MAX;
 }
 
 async function save(e){
@@ -832,6 +892,22 @@ async function save(e){
   } else if (photoRemoved) {
     payload.photo_url = null;
     await sb.storage.from(PHOTO_BUCKET).remove([photoPath()]);   // best effort
+  }
+
+  // Office pictures: upload the new ones, keep the ones still on the list, and
+  // delete the files behind the ones removed. Names are unique, so no ?v= needed.
+  if (officeAdd.length || officeDrop.length) {
+    const added = [];
+    for (const [i, p] of officeAdd.entries()) {
+      const path = `${officeDir()}/${Date.now()}-${i}.jpg`;
+      const { error: upErr } = await sb.storage.from(PHOTO_BUCKET)
+        .upload(path, p.blob, { contentType: 'image/jpeg', cacheControl: '3600' });
+      if (upErr) { busy(btn, false); return toast(`An office picture did not upload: ${upErr.message}`,'err'); }
+      added.push(sb.storage.from(PHOTO_BUCKET).getPublicUrl(path).data.publicUrl);
+    }
+    payload.practice_photos = [...officeKeep, ...added];
+    const gone = officeDrop.map(storagePathOf).filter(Boolean);
+    if (gone.length) await sb.storage.from(PHOTO_BUCKET).remove(gone);   // best effort
   }
 
   const { data, error } = T?.id

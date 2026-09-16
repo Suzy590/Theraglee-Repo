@@ -171,6 +171,14 @@ read, write and remove only inside the folder named after their own id. It is
 created by the migration `therapist_photos_bucket`, which is idempotent and was
 applied to the live project on 2026-09-16.
 
+Below the profile photo, **Office photos** takes up to six optional pictures of
+the office or waiting room. They are shrunk to 1400px the same way and uploaded
+to `<auth user id>/office/<timestamp>-<n>.jpg` in the same bucket, so the same
+policies cover them; the public URLs go into `therapist_profiles.practice_photos`
+(`text[]`, already in the `therapist_directory` view), and `therapist.html` shows
+them as a gallery headed "The office" between About and Practice details.
+Removing one on the dashboard deletes its file on the next save.
+
 ## Changing the site
 
 The readable source is `site/`, and **a push to the default branch deploys it**.
