@@ -98,8 +98,13 @@ async function run(){
   document.getElementById('count').textContent =
     `${data.length} therapist${data.length===1?'':'s'}`;
 
+  const picked = V('f-ins');
   res.innerHTML = data.length ? data.map(t => {
     const initials = (t.first_name?.[0]||'') + (t.last_name?.[0]||'');
+    // The plan the visitor filtered by leads the card's list, so it is never
+    // hidden behind "+N more".
+    const ins = t.insurances || [];
+    const inNet = picked && ins.includes(picked) ? [picked, ...ins.filter(i => i !== picked)] : ins;
     const loc = (t.locations||[])[0];
     const spec = (t.top_specialties?.length ? t.top_specialties : t.specialties||[]).slice(0,3);
     return `<a class="tcard" href="therapist.html?slug=${encodeURIComponent(t.slug)}">
@@ -113,6 +118,9 @@ async function run(){
         </p>
         ${t.bio ? `<p class="muted" style="margin:0 0 8px;font-size:.93rem">${esc(String(t.bio).slice(0,150))}${t.bio.length>150?'…':''}</p>` : ''}
         <div class="chips">${spec.map(s=>`<span class="badge gray">${esc(s)}</span>`).join('')}</div>
+        ${inNet.length ? `<p class="faint" style="margin:8px 0 0;font-size:.85rem">
+          In-network with ${inNet.slice(0, 6).map(esc).join(' · ')}${
+          inNet.length > 6 ? ` · +${inNet.length - 6} more` : ''}</p>` : ''}
         ${(t.payment_methods||[]).length ? `<p class="faint" style="margin:8px 0 0;font-size:.85rem">
           Accepts ${t.payment_methods.map(esc).join(' · ')}</p>` : ''}
       </div></a>`;

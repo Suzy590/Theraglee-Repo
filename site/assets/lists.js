@@ -23,10 +23,33 @@ export const MODALITIES = [
   'Psychodynamic','Solution-focused','Somatic','Strength-based','Trauma-focused',
 ];
 
+// Insurance plans a therapist can be in-network with. Shown on the listing and
+// offered as the directory's insurance filter, so keep the names exactly as a
+// visitor would look for them.
 export const INSURANCES = [
-  'Aetna','Anthem','Blue Cross Blue Shield','Cigna','Humana','Kaiser Permanente','Medicaid',
-  'Medicare','Optum','Oscar Health','Oxford','TRICARE','UnitedHealthcare','Out of network',
-  'Self-pay only','Sliding scale available',
+  '1199SEIU','AARP','Aetna','Aetna EAP','Aetna Medicare','Aetna Student Health','All Savers',
+  'Allegiance','Ambetter',"America's Choice Provider Network (ACPN)",'AmeriHealth','Anthem',
+  'Anthem EAP','Beech Street','BHS | Behavioral Health Systems','Blue Cross','Blue Shield',
+  'BlueCross and BlueShield','Carebridge EAP','Carelon Behavioral Health',
+  'Carelon Health IPA of California (CHIPA)','CenCal','Centene','Centivo',
+  "Children's Health Insurance Program (CHIP)",'Cigna and Evernorth','Cigna EAP','Cigna Medicare',
+  'Claremont EAP','Commonwealth Care Alliance','ComPsych','Concern','Coventry','CuraLinc Healthcare',
+  'Curative','Dayforce','Evernorth EAP','First Health','Golden Rule',
+  'Government Employees Health Association (GEHA)','Health Net','HMC Healthworks','Holman Group',
+  'Humana','Humana Dual Medicare and Medicaid','Humana Medicare','Imperial Health Plan',
+  'Independence Administrators','Inland Empire Health Plan','Kaiser (Out-of-Network)',
+  'L.A. Care Health Plan','Lyra Health','Magellan','MagnaCare','Managed Health Network (MHN)',
+  'Medi-Cal','Medicaid','Medicare','MediNcrease Health Plans (MHP)','Meritain Health',
+  'MHNet Behavioral Health','Military OneSource','Modern Health','Molina Healthcare','MultiPlan',
+  'MultiPlan Private Healthcare Systems (PHCS)','Mutual of Omaha','New Directions | Lucet',
+  'Nippon Life Benefits','Northwell Direct','Optum','Oscar Health','Oxford','Partners Direct Health',
+  'Providence','Provider Network of America (PNOA)','Quest Behavioral Health','Reliant','Sagamore',
+  'Sana Benefits','Scripps Health Plan','Sharp Health Plan','Sierra Health | SHL','Surest','Sutter',
+  'TELUS Health','TRICARE','TriWest','Trustmark Benefits','Ulliance','United Medical Resources (UMR)',
+  'UnitedHealthcare / Optum EAP','UnitedHealthcare / Optum Medicaid','UnitedHealthcare / Optum Medicare',
+  'UnitedHealthcare Student Resources','UnitedHealthcare UHC | UBH','Uprise Health',
+  'Velocity National Provider Network (VNPN)','WellCare','Wellfleet','Wellpoint | Amerigroup',
+  'Workplace Options','Zelis Healthcare',
 ];
 
 // Payment methods a therapist uses in their practice and advertises on their listing.
