@@ -579,12 +579,13 @@ compliance infrastructure.
 
 It is **no longer reachable from Theraglee**: the practice dashboard tab, its
 Home benefit card and the `assign()` view have been removed, so the professional
-side has no entry point here. `site/assets/assignremind.js` stays in the repo so
-nothing has to be rebuilt later, but `site/.vercelignore` keeps it out of the
-deployment, so `/assets/assignremind.js` answers 404 on the live site. To publish
-it again, delete that line. The database gate behind it is unchanged — the
-database refuses to accept a client record, and the reminder scheduler is
-switched off.
+side has no entry point here. `site/assets/assignremind.js` and the client-facing
+`site/my-assignments.html` stay in the repo so nothing has to be rebuilt later,
+but `site/.vercelignore` keeps both out of the deployment, so
+`/assets/assignremind.js` and `/my-assignments.html` answer 404 on the live site
+(a client's old personal link no longer opens anything). To publish them again,
+delete those two lines. The database gate behind it is unchanged — the database
+refuses to accept a client record, and the reminder scheduler is switched off.
 That is deliberate — a warning someone can click past is not adequate protection
 against a real patient record landing on infrastructure with no BAA behind it.
 
