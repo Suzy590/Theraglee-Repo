@@ -48,6 +48,7 @@
 
     <div class="tabs" id="tabs" role="tablist">
       <button data-tab="today" role="tab">Today</button>
+      <button data-tab="explore" role="tab">Explore Library</button>
       <button data-tab="progress" role="tab">Progress</button>
       <button data-tab="tools" role="tab">Tools</button>
       <button data-tab="settings" role="tab">Settings</button>
@@ -76,6 +77,12 @@
         </div>
         <div id="mood-after" class="faint" style="margin-top:12px"></div>
       </div>
+    </section>
+
+    <section data-panel="explore">
+      <h2 style="margin-top:0">Explore Library</h2>
+      <p class="muted" style="max-width:56ch;margin-top:-6px">Everything on Theraglee in one place.</p>
+      <div id="explore-host" style="margin-top:22px"></div>
     </section>
 
     <section data-panel="progress">
@@ -139,6 +146,7 @@ import { library, isFavorite, favButton, statusBadge, bindLibrary } from './asse
 import { TOOLS } from './assets/discover-tools.js';
 import { SETS as TRIVIA } from './assets/trivia-sets.js';
 import { matchDetailsModal, matchSummary, matchComplete } from './assets/match.js';
+import { mountLibrary } from './assets/explore-ui.js';
 await chrome({ active:'dashboard.html' });
 const a = await requireAuth();
 const c = await contentCounts();
@@ -157,7 +165,7 @@ document.getElementById('tierbadge').textContent = tierName(a.level) + ' members
    The dashboard opens on Today. The other tabs are reached by their buttons or
    by address (dashboard.html#progress), and the address follows the tab so a
    refresh or a shared link comes back to the same one. */
-const PANELS = ['today', 'progress', 'tools', 'settings'];
+const PANELS = ['today', 'explore', 'progress', 'tools', 'settings'];
 let tab = 'today';
 function showTab(next) {
   tab = PANELS.includes(next) ? next : 'today';
@@ -167,7 +175,13 @@ function showTab(next) {
     b.classList.toggle('on', on);
     b.setAttribute('aria-selected', String(on));
   });
+  // The library is heavy, so it is drawn the first time its tab opens, not before.
+  if (tab === 'explore' && !exploreMounted) {
+    exploreMounted = true;
+    mountLibrary(document.getElementById('explore-host'), a);
+  }
 }
+let exploreMounted = false;
 document.querySelectorAll('#tabs button').forEach(b => b.addEventListener('click', () => {
   history.replaceState({}, '', '#' + b.dataset.tab); showTab(b.dataset.tab);
 }));

@@ -233,7 +233,6 @@ export async function startSessionPayment(therapistId, btn) {
 /* ---------------------------------------------------------------- chrome */
 const NAV = [
   ['Dashboard',  'dashboard.html'],   // signed-in members only; opens on its Today tab
-  ['Explore',    'explore.html'],
   ['Discover',   'discover.html'],
   ['Challenges', 'challenges.html'],
   ['Journal',    'journal.html'],
@@ -359,7 +358,7 @@ function footer() {
           therapists when you want more support.</p>
       </div>
       <div><h4>Explore</h4>
-        <a href="explore.html">Library</a><a href="discover.html">Free discovery tools</a>
+        <a href="explore.html">Explore Library</a><a href="discover.html">Free discovery tools</a>
         <a href="challenges.html">Challenges</a>
         <a href="journal.html">Journal</a><a href="articles.html">Articles</a>
         <a href="therapists.html">Find a therapist</a></div>
