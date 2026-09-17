@@ -797,7 +797,12 @@ function profile(){
             <input id="age-r2" maxlength="40" value="${esc(t.age_range_2||'')}" placeholder="e.g. 18 and up"></div>
         </div></div>
       <div class="field"><label>Who you see</label>${chipGroup('parts', PARTICIPANTS, t.participants)}</div>
-      <div class="field"><label>Languages</label>${chipGroup('langs', LANGUAGES, t.languages)}</div>
+      <div class="field"><label>Languages</label>
+        ${chipGroup('langs', LANGUAGES, t.languages)}
+        <div class="grid g3" style="margin-top:14px">
+          ${writeIns(t.languages, LANGUAGES).map((v, i) => `<div><label for="lang-c${i+1}">Your own language ${i+1}</label>
+            <input id="lang-c${i+1}" maxlength="60" value="${esc(v)}" placeholder="Not on the list? Write it in"></div>`).join('')}
+        </div></div>
       <div class="grid g2">
         <div class="field"><label for="delivery">Sessions offered *</label><select id="delivery">
           <option value="both" ${t.delivery==='both'?'selected':''}>In person and telehealth</option>
@@ -940,6 +945,8 @@ async function save(e){
   const allMods = [...new Set([...chipVals('mods'), ...['mod-c1','mod-c2','mod-c3'].map(V).filter(Boolean)])];
   // Insurance: the chips plus the write-ins.
   const allIns = [...new Set([...chipVals('ins'), ...['ins-c1','ins-c2','ins-c3'].map(V).filter(Boolean)])];
+  // Languages: the chips plus the write-ins.
+  const allLangs = [...new Set([...chipVals('langs'), ...['lang-c1','lang-c2','lang-c3'].map(V).filter(Boolean)])];
 
   const locations = [...document.querySelectorAll('[data-loc]')].map(r => ({
     address: r.querySelector('.l-address').value.trim(),
@@ -958,7 +965,7 @@ async function save(e){
     specialties: allSpecs, top_specialties: topSpecs,
     treatment_modalities: allMods, insurances: allIns,
     payment_methods: chipVals('pay'),
-    age_ranges: chipVals('ages'), participants: chipVals('parts'), languages: chipVals('langs'),
+    age_ranges: chipVals('ages'), participants: chipVals('parts'), languages: allLangs,
     age_range_1: V('age-r1') || null, age_range_2: V('age-r2') || null,
     delivery: V('delivery'), fees: V('fees') || null,
     education_school: V('edu-school') || null,

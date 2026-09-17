@@ -234,11 +234,24 @@ chosen terms on an "Ages:" line; `therapist.html` and Quick look show them as
 the Ages seen row of Practice details, with an Age ranges row after it when
 either box is filled in.
 
+### Languages
+
+The **Languages** picker on My profile offers 37 languages, alphabetized —
+`LANGUAGES` in `site/assets/lists.js`: the 34 from the owner's reference list
+plus English, Haitian Creole and Tagalog kept from the earlier list — with
+three write-in boxes after the chips. The choices, write-ins included, are
+stored in `therapist_profiles.languages` as before. `therapist.html` and Quick
+look show every one as the Languages row of Practice details; the collapsed
+directory card shows a "Languages:" line only when the therapist has a
+language other than English, listing just those. The directory's **Language**
+filter is filled from the shared list (not the write-ins) and passed to
+`search_therapists` as `p_language`, which matches on the exact stored name.
+
 ### Directory cards and Quick look
 
 A card in `therapists.html` shows the name, location and session type, a
-150-character bio snippet, up to three specialties, and the Ages, Insurance
-and Accepts lines. Clicking anywhere on it, its name, or **View profile** opens
+150-character bio snippet, up to three specialties, and the Ages, Languages
+(only languages other than English), Insurance and Accepts lines. Clicking anywhere on it, its name, or **View profile** opens
 `therapist.html`. **Quick look** expands the full profile inside the card —
 the whole bio, the office photos and the same Practice details as the profile
 page — and links through to the page for getting in touch (the contact box,

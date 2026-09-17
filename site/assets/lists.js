@@ -94,10 +94,15 @@ export const AGE_RANGES = ['Children','Teens','Young adults','Adults','Senior ad
 
 export const PARTICIPANTS = ['Individuals','Couples','Families','Groups','Children','Teens'];
 
+// Languages a therapist offers sessions in, alphabetized: the owner's reference
+// list plus English, Haitian Creole and Tagalog from the earlier list. Also the
+// directory's Language filter, so keep the names as a visitor would look for them.
 export const LANGUAGES = [
-  'English','Spanish','Mandarin','Cantonese','Tagalog','Vietnamese','Arabic','French','Korean',
-  'Russian','Portuguese','Haitian Creole','Hindi','Urdu','Polish','German','Japanese','Farsi',
-  'Italian','American Sign Language',
+  'American Sign Language (ASL)','Arabic','Armenian','Bosnian','Cantonese','Creole','Croatian',
+  'Dutch','English','Farsi','Filipino','French','German','Greek','Gujarati','Haitian Creole',
+  'Hebrew','Hindi','Hungarian','Italian','Japanese','Korean','Mandarin','Polish','Portuguese',
+  'Punjabi','Romanian','Russian','Serbian','Sinhalese','Spanish','Tagalog','Turkish','Ukrainian',
+  'Urdu','Vietnamese','Yiddish',
 ];
 
 export const CREDENTIALS = [
