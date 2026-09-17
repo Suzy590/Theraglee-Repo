@@ -261,7 +261,9 @@ export async function chrome({ active = '' } = {}) {
     const page = href.split('#')[0];
     const on = therapist ? (href.includes('#') ? here + location.hash === href : here === page)
                          : (active === href || here === href);
-    return `<a href="${href}" class="${on ? 'active' : ''}">${label}</a>`;
+    // "For Therapists" is a solid button, like the sign-in button beside it.
+    const cls = [href === 'for-therapists.html' ? 'btn sm' : '', on ? 'active' : ''].filter(Boolean).join(' ');
+    return `<a href="${href}" class="${cls}">${label}</a>`;
   }).join('');
 
   const right = a.authenticated
@@ -269,8 +271,7 @@ export async function chrome({ active = '' } = {}) {
                   <a href="admin.html" class="${here === 'admin.html' ? 'active' : ''}">Admin</a>` : ''}
        <a href="account.html" class="${here === 'account.html' ? 'active' : ''}">Account</a>
        <a class="btn sm ghost" href="#" id="signout">Sign out</a>`
-    : `<a href="${DOORS.member.signin}">Sign in</a>
-       <a class="btn sm" href="${DOORS.member.signup}">Join free</a>`;
+    : `<a class="btn sm" href="${DOORS.member.signin}">Sign in</a>`;
 
   const header = document.createElement('div');
   header.innerHTML = `
