@@ -32,7 +32,7 @@ the other.
 | Home after signing in | `dashboard.html` | `therapist-dashboard.html` |
 | Account page | `account.html` (tier, profile, privacy, inbox, history) | `account.html` shows a short therapist version (membership, sign-in and data) |
 | Plans | `pricing.html` (Free, Basic, Premium) | `for-therapists.html#membership` (one flat price); billing starts from the practice dashboard |
-| Header links | Dashboard (signed in only), For Therapists | Dashboard, Referrals, Messages, Member requests, Library, My profile, Directory |
+| Header links | Dashboard (signed in only), For Therapists; visitors also get Sign in and Join free | Dashboard, Referrals, Messages, Member requests, Library, My profile, Directory |
 
 The member dashboard opens on a **Today** tab (the daily affirmation, quote,
 tip, fun fact and journal prompt, plus the one-tap mood check-in), which is
@@ -46,8 +46,10 @@ unfinished items), **Tools** (quick links into the library) and **Settings**
 (the Match Mode and morning-email switches). Each tab has an address, for
 example `dashboard.html#progress`. The header no longer links to Today, the
 library, Discover, Challenges, Journal, Articles or the therapist directory: the
-dashboard, the landing page's explore tiles (Find a Therapist is the first) and
-the pages themselves do. `explore.html` still
+dashboard, the landing page's explore tiles (Find a Therapist is the first, and
+Create a Theraglee account the second for visitors) and the pages themselves do.
+The plans page, `pricing.html`, is reached from the lock badges, the upgrade
+prompts and the footer. `explore.html` still
 answers every existing link into it (`explore.html?type=quiz` and so on).
 
 The four sign-in and sign-up pages share one script, `site/assets/auth.js`,
