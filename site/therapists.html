@@ -124,6 +124,8 @@ async function run(){
     const inNet = picked && listed.includes(picked) ? [picked, ...listed.filter(i => i !== picked)] : listed;
     const shownIns = [...inNet.slice(0, 6), ...writeIn];
     const moreIns = Math.max(0, inNet.length - 6);
+    // English is taken as read on the card; any other language is worth a line.
+    const otherLangs = (t.languages||[]).filter(l => String(l).trim().toLowerCase() !== 'english');
     const loc = (t.locations||[])[0];
     const spec = (t.top_specialties?.length ? t.top_specialties : t.specialties||[]).slice(0,3);
     return `<div class="tcard" data-slug="${esc(t.slug)}">
@@ -139,6 +141,8 @@ async function run(){
         <div class="chips">${spec.map(s=>`<span class="badge gray">${esc(s)}</span>`).join('')}</div>
         ${(t.age_ranges||[]).length ? `<p class="faint" style="margin:8px 0 0;font-size:.85rem">
           Ages: ${t.age_ranges.map(esc).join(' · ')}</p>` : ''}
+        ${otherLangs.length ? `<p class="faint" style="margin:8px 0 0;font-size:.85rem">
+          Languages: ${otherLangs.map(esc).join(' · ')}</p>` : ''}
         ${shownIns.length ? `<p class="faint" style="margin:8px 0 0;font-size:.85rem">
           Insurance: ${shownIns.map(esc).join(' · ')}${
           moreIns ? ` · +${moreIns} more` : ''}</p>` : ''}
