@@ -241,8 +241,10 @@ the end, then three write-in boxes for plans not on the list. The choices,
 write-ins included, are stored in `therapist_profiles.insurances` (`text[]`,
 in the `therapist_directory` view since the start). `therapist.html` shows
 them as the Insurance row of Practice details; each directory card in
-`therapists.html` shows the first six after "Insurance:" and "+N more", with
-the plan the visitor filtered by moved to the front. The directory's
+`therapists.html` shows the first six listed plans after "Insurance:" and
+"+N more", with the plan the visitor filtered by moved to the front, and then
+the write-in plans, which always show rather than counting toward the six or
+hiding behind "+N more". The directory's
 **Insurance** filter is filled from the shared list (not the write-ins) and
 passed to `search_therapists` as `p_insurance`, which matches on the exact
 stored name, so the names in the list must stay exactly as visitors look for

@@ -116,9 +116,14 @@ async function run(){
     const initials = (t.first_name?.[0]||'') + (t.last_name?.[0]||'');
     const href = `therapist.html?slug=${encodeURIComponent(t.slug)}`;
     // The plan the visitor filtered by leads the card's list, so it is never
-    // hidden behind "+N more".
+    // hidden behind "+N more"; the plans the therapist wrote in (not on the
+    // shared list) always show after the listed ones, for the same reason.
     const ins = t.insurances || [];
-    const inNet = picked && ins.includes(picked) ? [picked, ...ins.filter(i => i !== picked)] : ins;
+    const listed = ins.filter(i => INSURANCES.includes(i));
+    const writeIn = ins.filter(i => !INSURANCES.includes(i));
+    const inNet = picked && listed.includes(picked) ? [picked, ...listed.filter(i => i !== picked)] : listed;
+    const shownIns = [...inNet.slice(0, 6), ...writeIn];
+    const moreIns = Math.max(0, inNet.length - 6);
     const loc = (t.locations||[])[0];
     const spec = (t.top_specialties?.length ? t.top_specialties : t.specialties||[]).slice(0,3);
     return `<div class="tcard" data-slug="${esc(t.slug)}">
@@ -132,9 +137,9 @@ async function run(){
         </p>
         ${t.bio ? `<p class="muted" style="margin:0 0 8px;font-size:.93rem">${esc(String(t.bio).slice(0,150))}${t.bio.length>150?'…':''}</p>` : ''}
         <div class="chips">${spec.map(s=>`<span class="badge gray">${esc(s)}</span>`).join('')}</div>
-        ${inNet.length ? `<p class="faint" style="margin:8px 0 0;font-size:.85rem">
-          Insurance: ${inNet.slice(0, 6).map(esc).join(' · ')}${
-          inNet.length > 6 ? ` · +${inNet.length - 6} more` : ''}</p>` : ''}
+        ${shownIns.length ? `<p class="faint" style="margin:8px 0 0;font-size:.85rem">
+          Insurance: ${shownIns.map(esc).join(' · ')}${
+          moreIns ? ` · +${moreIns} more` : ''}</p>` : ''}
         ${(t.payment_methods||[]).length ? `<p class="faint" style="margin:8px 0 0;font-size:.85rem">
           Accepts ${t.payment_methods.map(esc).join(' · ')}</p>` : ''}
         <div class="row" style="margin-top:12px;gap:8px">
