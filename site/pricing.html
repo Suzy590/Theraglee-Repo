@@ -24,6 +24,8 @@
   .plan li{padding:7px 0 7px 26px;position:relative;font-size:.93rem;color:var(--ink-2)}
   .plan li::before{content:"";position:absolute;left:2px;top:14px;width:13px;height:7px;
     border-left:2px solid var(--lime-2);border-bottom:2px solid var(--lime-2);transform:rotate(-45deg)}
+  .plan li.lead{padding-left:0;font-weight:500;color:var(--ink)}
+  .plan li.lead::before{display:none}
   .plan li.no{color:var(--faint)}
   .plan li.no::before{border-color:var(--hair)}
   .toggle{display:inline-flex;background:var(--sand);border-radius:var(--r-pill);padding:4px;gap:4px}
@@ -41,10 +43,9 @@
 <section class="section">
   <div class="wrap center" style="max-width:60ch;margin-bottom:36px">
     <div id="who-alert"></div>
-    <h1>Start free. Upgrade when it's useful.</h1>
-    <p class="muted">You can browse a lot of Theraglee without an account at all, including all
-      <a href="discover.html">360 free discovery tools</a>. Registering is free and unlocks
-      progress tracking — paid tiers add the deeper tools.</p>
+    <h1>Start free. Upgrade when you're ready for more.</h1>
+    <p class="muted">Every account starts free — no card needed. Paid memberships unlock library
+      access and deeper tools, whenever you want them.</p>
     <div class="toggle" id="cycle" role="group" aria-label="Billing period">
       <button class="on" data-i="monthly">Monthly</button>
       <button data-i="yearly">Yearly <span class="faint">· save ~17%</span></button>
@@ -53,7 +54,9 @@
 
   <div class="wrap">
     <div class="plans" id="plans"></div>
-    <p class="faint center" style="margin-top:22px" id="billing-note"></p>
+    <p class="tiers-note">Cancel anytime from your dashboard in two clicks. Your journal entries and
+      tracking history stay yours, free or paid.</p>
+    <p class="faint center" style="margin-top:10px" id="billing-note"></p>
   </div>
 </section>
 
@@ -62,7 +65,7 @@
     <h2 class="center">Feature by feature</h2>
     <div class="scroll-x" style="margin-top:26px">
       <table class="data compare">
-        <thead><tr><th>Feature</th><th>Visitor</th><th>Free</th><th>Basic</th><th>Premium</th></tr></thead>
+        <thead><tr><th>Feature</th><th>Registered Free</th><th>Basic</th><th>Premium</th></tr></thead>
         <tbody id="compare"></tbody>
       </table>
     </div>
@@ -95,10 +98,10 @@
     <h2>Questions</h2>
     <div class="stack">
       <div class="card"><h3>Do I need a card to register?</h3>
-        <p class="muted" style="margin:0">No. The Free membership never asks for one.</p></div>
+        <p class="muted" style="margin:0">No. Registered Free is $0 forever, no card required.</p></div>
       <div class="card"><h3>Can I cancel?</h3>
-        <p class="muted" style="margin:0">Any time, from your account page. You keep access until
-          the end of the period you already paid for.</p></div>
+        <p class="muted" style="margin:0">Any time, from your dashboard in two clicks. You keep access
+          until the end of the period you already paid for.</p></div>
       <div class="card"><h3>Is any of this therapy?</h3>
         <p class="muted" style="margin:0">No. Theraglee is educational and supportive only, and
           nothing here diagnoses or treats a condition. The directory is there when you want
@@ -125,90 +128,51 @@
 </main>
 
 <script type="module">
-import { chrome, sb, access, startCheckout, esc, qs, toast,
-         contentCounts, counted, suffixCount } from './assets/app.js';
-import { SETS as TRIVIA } from './assets/trivia-sets.js';
+import { chrome, sb, startCheckout, esc, qs, toast } from './assets/app.js';
+import { PLANS as TIERS } from './assets/plans.js';
 const a = await chrome({ active:'pricing.html' });
 
-const [{ data: cfgRows }, c] = await Promise.all([
-  sb.from('app_config').select('key,value'), contentCounts()]);
+const { data: cfgRows } = await sb.from('app_config').select('key,value');
 const cfg = Object.fromEntries((cfgRows||[]).map(r=>[r.key,r.value]));
 const live = cfg.stripe_enabled === 'true';
 const money = k => cfg['display_'+k] || '—';
 
 let cycle = 'monthly';
 
+// Tier names and feature lists come from assets/plans.js, the same copy the
+// landing page, dashboard and account page show. Prices come from app_config.
+const tier = (key) => TIERS.find((t) => t.key === key);
+const paid = (key) => ({
+  price: () => '$' + money(key + '_' + cycle),
+  sub: 'per ' + (cycle === 'monthly' ? 'month' : 'year'),
+});
 const PLANS = [
-  { key:'visitor', name:'Visitor', price:()=>'Free', sub:'No account',
-    cta:{label:'Try the free tools', href:'discover.html'},
-    feats:[['Hundreds of self-discovery tools with so many topics to choose from',1],['Browse the therapist directory',1],
-           ['An extensive library of mental health articles with new articles added daily',1],
-           ['Mental health quotes, tips, and fun facts',1],['New affirmations updated daily',1],
-           ['Dashboard, favorites & progress',0],['Articles sent to your inbox',0]] },
-  { key:'free', name:'Free', price:()=>'Free', sub:'Registered · no card',
-    cta:{label:'Join free', href:'signup.html'},
-    feats:[['Dashboard to track your progress',1],['Keep favorites in your dashboard',1],
-           ['Tons of journal prompts',1],['Automatic mental health articles sent to your inbox',1],
-           ['7-Day mental health challenges',1],['Mental health checklists with progress tracked',1],
-           ['Toggle on/off button on dashboard allowing therapists to reach out to YOU',1]] },
-  { key:'basic', name:'Basic', featured:true, price:()=>'$'+money('basic_'+cycle), sub:'per '+(cycle==='monthly'?'month':'year'),
-    cta:{plan:'basic'},
-    feats:[['Everything in Free',1],[counted(c.quiz,'self-assessment quizzes','Self-assessment quizzes'),1],
-           [counted(c.worksheet,'interactive worksheets','Interactive worksheets'),1],
-           ['Design challenges up to 365 days',1],['Downloadable desktop pet',1],
-           [`${TRIVIA.length} mental health trivia quizzes`,1],
-           ['Goal & mood tracking',0]] },
-  { key:'premium', name:'Premium', price:()=>'$'+money('premium_'+cycle), sub:'per '+(cycle==='monthly'?'month':'year'),
-    cta:{plan:'premium'},
-    feats:[['Everything in Basic',1],['Goal setting & progress tracking',1],['Mood tracking & patterns',1],
-           ['Mandalas to print or color online',1],['Mood-based music playlists',1],['Local resource map',1],
-           ['Personal therapist recommendations',1]] },
+  { ...tier('free'), price: () => '$0', sub: 'forever, no card required',
+    cta: { label: tier('free').cta.label, href: tier('free').cta.href } },
+  { ...tier('basic'),   ...paid('basic'),   cta: { plan: 'basic' } },
+  { ...tier('premium'), ...paid('premium'), cta: { plan: 'premium' } },
 ];
 
-const COMPARE = [
-  ['Hundreds of self-discovery tools with so many topics to choose from', 0],
-  ['Therapist directory search', 0],
-  ['An extensive library of mental health articles with new articles added daily', 0],
-  ['Mental health quotes, tips, and fun facts', 0],
-  ['New affirmations updated daily', 0],
-  ['Dashboard to track your progress', 1],
-  ['Favorites kept in your dashboard', 1],
-  ['Daily content personalized to you', 1],
-  ['Journal prompts & private journal', 1],
-  ['Mental health articles sent to your inbox', 1],
-  ['7-day mental health challenges', 1],
-  ['Checklists with progress tracked', 1],
-  ['Theraglee Match Mode: let therapists reach out to you', 1],
-  [suffixCount('Self-assessment quizzes', c.quiz), 2],
-  [suffixCount('Interactive worksheets', c.worksheet), 2],
-  ['Custom challenges up to 365 days', 2],
-  ['Downloadable desktop pet', 2],
-  [suffixCount('Mental health trivia quizzes', TRIVIA.length), 2],
-  ['Goal setting & progress tracking', 3],
-  ['Mood tracking & patterns', 3],
-  ['Mandalas to print or color online', 3],
-  ['Mood-based music playlists', 3],
-  ['Local mental health resource map', 3],
-  ['Personalized therapist recommendations', 3],
-];
+// Every feature with the lowest tier that includes it, for the table below.
+const COMPARE = TIERS.flatMap((t) =>
+  t.feats.filter((f) => !/^Everything in /.test(f)).map((f) => [f, t.level]));
 
 function render(){
   document.getElementById('plans').innerHTML = PLANS.map(p=>{
-    const mine = (a.level===0 && p.key==='visitor') ||
-                 (a.level===1 && p.key==='free') ||
-                 (a.level===2 && p.key==='basic') ||
-                 (a.level===3 && p.key==='premium');
+    const mine = a.level === p.level;
     const cta = p.cta.plan
       ? (mine ? `<a class="btn ghost block" href="account.html">Your current plan</a>`
               : `<button class="btn block ${p.featured?'':'ghost'}" data-plan="${p.cta.plan}">
-                   ${a.level >= (p.key==='basic'?2:3) ? 'Switch plan' : 'Choose '+p.name}</button>`)
-      : `<a class="btn ${p.featured?'':'ghost'} block" href="${p.cta.href}">${mine?'You are here':p.cta.label}</a>`;
+                   ${a.level > p.level ? 'Switch plan' : 'Go ' + p.name}</button>`)
+      : (mine ? `<a class="btn ghost block" href="account.html">Your current plan</a>`
+              : a.level > p.level ? `<span class="btn ghost block" style="cursor:default;opacity:.7">Included in your plan</span>`
+              : `<a class="btn ghost block" href="${p.cta.href}">${esc(p.cta.label)}</a>`);
     return `<div class="plan ${p.featured?'featured':''}">
       ${p.featured?'<span class="flag">Most popular</span>':''}
-      <h3>${p.name}</h3>
+      <h3>${esc(p.name)}</h3>
       <div class="price">${p.price()}</div>
       <small class="faint">${p.sub}</small>
-      <ul>${p.feats.map(([t,on])=>`<li class="${on?'':'no'}">${esc(t)}</li>`).join('')}</ul>
+      <ul>${p.feats.map((f)=>`<li class="${/^Everything in /.test(f)?'lead':''}">${esc(f)}</li>`).join('')}</ul>
       ${cta}</div>`;
   }).join('');
 
@@ -232,7 +196,7 @@ document.querySelectorAll('#cycle button').forEach(b=>b.addEventListener('click'
 }));
 
 document.getElementById('compare').innerHTML = COMPARE.map(([label,min])=>
-  `<tr><td>${esc(label).replace('Theraglee Match Mode','<strong>Theraglee Match Mode</strong>')}</td>${[0,1,2,3].map(l=>
+  `<tr><td>${esc(label).replace('Theraglee Match Mode','<strong>Theraglee Match Mode</strong>')}</td>${[1,2,3].map(l=>
     `<td class="${l>=min?'yes':'no'}">${l>=min?'✓':'—'}</td>`).join('')}</tr>`).join('');
 
 render();
