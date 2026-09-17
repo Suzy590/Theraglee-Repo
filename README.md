@@ -38,7 +38,7 @@ supabase/
                        identity, connect, session payments) — see docs/stripe.md
   migrations/          Schema changes that go with them
 documents/
-  index.html           Browsable library of all 563 documents
+  index.html           Browsable library of all 568 documents
   CONTENT-HEALTH.md    Source-data defects found while building
   challenges/ articles/ checklists/ journal-prompts/ quizzes/ worksheets/
 ```
@@ -107,7 +107,7 @@ chromium --headless --no-pdf-header-footer \
 
 | File | Source table | Rows |
 |---|---|---|
-| `articles.json` | `articles` | 47 (five more every day — see `docs/articles.md`) |
+| `articles.json` | `articles` | 52 (five more every day — see `docs/articles.md`) |
 | `checklists.json` | `checklists` | 4 |
 | `challenges.json` | `challenge_templates` + `challenge_days` | 3 (67 days) |
 | `worksheets.json` | `worksheets` | 186 |
@@ -116,7 +116,7 @@ chromium --headless --no-pdf-header-footer \
 | `therapist-resources.json` | `therapist_resources` (the clinician library on the therapist dashboard; not rendered into `documents/`) | 250 (five more of every kind and five on each of eighteen topics every day — see `docs/therapist-resources.md`) |
 
 The 372 journal prompts are grouped into 11 themed collections at build time
-(keyword rules live in `THEMES` in the generator), which is why 563 documents come
+(keyword rules live in `THEMES` in the generator), which is why 568 documents come
 out of 884 source rows.
 
 `quizzes.txt` is a compact pipe-delimited format rather than JSON — `Q|` a quiz,
