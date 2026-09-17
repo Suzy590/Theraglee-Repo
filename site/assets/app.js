@@ -231,13 +231,11 @@ export async function startSessionPayment(therapistId, btn) {
 }
 
 /* ---------------------------------------------------------------- chrome */
+// Discover, the library, challenges, the journal, articles, the therapist
+// directory and the membership plans are reached from the member dashboard,
+// the landing page's explore tiles and the pages themselves, not from the header.
 const NAV = [
   ['Dashboard',  'dashboard.html'],   // signed-in members only; opens on its Today tab
-  ['Discover',   'discover.html'],
-  ['Challenges', 'challenges.html'],
-  ['Journal',    'journal.html'],
-  ['Articles',   'articles.html'],
-  ['Therapists', 'therapists.html'],
   ['For Therapists', 'for-therapists.html'],
 ];
 // A signed-in therapist gets the practice, not the member library.
@@ -271,8 +269,7 @@ export async function chrome({ active = '' } = {}) {
                   <a href="admin.html" class="${here === 'admin.html' ? 'active' : ''}">Admin</a>` : ''}
        <a href="account.html" class="${here === 'account.html' ? 'active' : ''}">Account</a>
        <a class="btn sm ghost" href="#" id="signout">Sign out</a>`
-    : `<a href="pricing.html" class="${here === 'pricing.html' ? 'active' : ''}">Membership</a>
-       <a href="${DOORS.member.signin}">Sign in</a>
+    : `<a href="${DOORS.member.signin}">Sign in</a>
        <a class="btn sm" href="${DOORS.member.signup}">Join free</a>`;
 
   const header = document.createElement('div');

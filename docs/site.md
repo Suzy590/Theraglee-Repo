@@ -32,18 +32,24 @@ the other.
 | Home after signing in | `dashboard.html` | `therapist-dashboard.html` |
 | Account page | `account.html` (tier, profile, privacy, inbox, history) | `account.html` shows a short therapist version (membership, sign-in and data) |
 | Plans | `pricing.html` (Free, Basic, Premium) | `for-therapists.html#membership` (one flat price); billing starts from the practice dashboard |
-| Header links | Dashboard (signed in only), Discover, Challenges, Journal, Articles, Therapists | Dashboard, Referrals, Messages, Member requests, Library, My profile, Directory |
+| Header links | Dashboard (signed in only), For Therapists; visitors also get Sign in and Join free | Dashboard, Referrals, Messages, Member requests, Library, My profile, Directory |
 
 The member dashboard opens on a **Today** tab (the daily affirmation, quote,
 tip, fun fact and journal prompt, plus the one-tap mood check-in), which is
 what a member sees first after signing in. Its other tabs are **Explore
 Library** (the whole library with search and filters, the same browser as
-`explore.html`, drawn from `site/assets/explore-ui.js`), **Progress**
+`explore.html`, drawn from `site/assets/explore-ui.js`), **Discover** (the 360
+free discovery tools with search and topic chips, the same browser as
+`discover.html`, drawn from `site/assets/discover-ui.js`), **Progress**
 (the week's counts, challenges in progress, favorites, saved for later and
 unfinished items), **Tools** (quick links into the library) and **Settings**
 (the Match Mode and morning-email switches). Each tab has an address, for
-example `dashboard.html#progress`. The daily picks and the Explore link used to
-appear on the landing page as well; they no longer do. `explore.html` still
+example `dashboard.html#progress`. The header no longer links to Today, the
+library, Discover, Challenges, Journal, Articles or the therapist directory: the
+dashboard, the landing page's explore tiles (Find a Therapist is the first, and
+Create a Theraglee account the second for visitors) and the pages themselves do.
+The plans page, `pricing.html`, is reached from the lock badges, the upgrade
+prompts and the footer. `explore.html` still
 answers every existing link into it (`explore.html?type=quiz` and so on).
 
 The four sign-in and sign-up pages share one script, `site/assets/auth.js`,

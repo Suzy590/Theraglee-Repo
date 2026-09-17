@@ -299,8 +299,12 @@ const a = await chrome();
 
 /* ---- What would you like to explore today? ----
    [label, blurb, where it opens, tier needed, icon]. Tier 0 is open to everyone,
-   1 needs a free account, 2 is Basic and 3 is Premium (see TIERS in app.js). */
+   1 needs a free account, 2 is Basic and 3 is Premium (see TIERS in app.js).
+   The sign-up tile is for visitors; a member already has an account. */
 const EXPLORE = [
+  ['Find a Therapist',                'Browse licensed clinicians by location, insurance and specialty. No account needed.', 'therapists.html', 0, '✚'],
+  ...(a.authenticated ? [] : [
+  ['Create a Theraglee account',      'Free to start, no card needed. Upgrade to Basic or Premium whenever you like.', 'signup.html', 0, '☺']]),
   ['Self-discovery tools',            'Short, interactive ways to notice your own patterns.', 'discover.html',                 0, '◈'],
   ['Mental Health Articles',          'New mental health reads added daily.',               'articles.html',                 0, '▣'],
   ['Daily tips & affirmations',       'A quote, a tip, a fun fact and an affirmation, personalized to you.', 'dashboard.html#today', 1, '✦'],
