@@ -157,6 +157,7 @@ import { SETS as TRIVIA } from './assets/trivia-sets.js';
 import { matchDetailsModal, matchSummary, matchComplete } from './assets/match.js';
 import { mountLibrary } from './assets/explore-ui.js';
 import { mountDiscover } from './assets/discover-ui.js';
+import { loadPrices, tierCards, PLANS_INTRO, PLANS_NOTE } from './assets/plans.js';
 await chrome({ active:'dashboard.html' });
 const a = await requireAuth();
 const c = await contentCounts();
@@ -413,15 +414,13 @@ document.getElementById('quick').innerHTML = quick.map(([label, href, need, ownG
     ${locked ? `<span class="badge lock">${tierName(need)}</span>` : '<span class="meta">Open</span>'}</a>`;
 }).join('');
 
-/* ---- upsell ---- */
+/* ---- upsell: the same three tiers as the landing page (assets/plans.js) ---- */
 if (a.level < 3) {
-  const nextTier = a.level < 2 ? 'Basic' : 'Premium';
-  document.getElementById('upsell').innerHTML = `<div class="card pad-lg center">
-    <h3>There's more in ${nextTier}</h3>
-    <p class="muted">${a.level < 2
-      ? `${counted(c.quiz,'quizzes')}, ${counted(c.worksheet,'worksheets')}, ${TRIVIA.length} mental health trivia quizzes, and challenges you design yourself — up to a full year.`
-      : `Goal tracking, mood patterns, mandalas to print or color online, playlists and the local resource map.`}</p>
-    <a class="btn" href="pricing.html">Compare memberships</a></div>`;
+  document.getElementById('upsell').innerHTML = `
+    <h2 style="margin:0 0 6px">${esc(PLANS_INTRO.title)}</h2>
+    <p class="muted" style="margin:0 0 24px">${esc(PLANS_INTRO.lede)}</p>
+    ${tierCards({ prices: await loadPrices(sb), level: a.level })}
+    <p class="tiers-note">${esc(PLANS_NOTE)}</p>`;
 }
 }
 </script>

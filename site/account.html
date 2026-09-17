@@ -32,9 +32,11 @@ import { chrome, sb, requireAuth, access, clearAccess, esc, toast, busy, qs,
 import { MEMBER_ISSUES } from './assets/lists.js';
 import { SETS as TRIVIA } from './assets/trivia-sets.js';
 import { matchDetailsModal, matchSummary, matchComplete, MATCH_BLURB } from './assets/match.js';
+import { loadPrices, tierCards, PLANS_INTRO, PLANS_NOTE } from './assets/plans.js';
 await chrome({ active:'account.html' });
 let a = await requireAuth();
 const c = await contentCounts();
+const prices = await loadPrices(sb);   // display prices for the tier cards
 if (a) {
 const root = document.getElementById('root');
 // A therapist account has no member tier: it gets its own, shorter account page.
@@ -89,6 +91,12 @@ function membership(){
         </div>
       </div>
     </div>
+
+    ${a.level < 3 ? `
+    <h2 style="margin-top:34px">${esc(PLANS_INTRO.title)}</h2>
+    <p class="muted">${esc(PLANS_INTRO.lede)}</p>
+    ${tierCards({ prices, level: a.level })}
+    <p class="tiers-note">${esc(PLANS_NOTE)}</p>` : ''}
 
     <h2 style="margin-top:34px">What you have access to</h2>
     <div class="grid g3">

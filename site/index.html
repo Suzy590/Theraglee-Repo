@@ -185,6 +185,19 @@
     </div>
   </section>
 
+  <section class="section" id="memberships" aria-labelledby="memberships-title">
+    <div class="wrap">
+      <div class="center" style="max-width:62ch;margin:0 auto 36px">
+        <h2 id="memberships-title">Start free. Upgrade when you're ready for more.</h2>
+        <p class="muted">Every account starts free — no card needed. Paid memberships unlock library
+          access and deeper tools, whenever you want them.</p>
+      </div>
+      <div id="tiers-home"><div class="skeleton" style="height:320px"></div></div>
+      <p class="tiers-note">Cancel anytime from your dashboard in two clicks. Your journal entries and
+        tracking history stay yours, free or paid.</p>
+    </div>
+  </section>
+
   <section class="match" id="match-mode" aria-labelledby="match-title">
     <div class="glow-a"></div><div class="glow-b"></div>
     <div class="wrap">
@@ -288,14 +301,22 @@
         diagnoses anything, and no quiz result is a clinical finding. If something in your life
         needs real care, the directory is there — and if you are in crisis, please call or text
         <a href="tel:988">988</a>.</p>
-      <a class="btn lg" href="signup.html">Create my free account</a>
+      <div class="row" style="justify-content:center">
+        <a class="btn lg" href="signup.html">Create my free account</a>
+        <a class="btn lg ghost ink-border" href="pricing.html">See paid memberships</a>
+      </div>
     </div>
   </section>
 </main>
 
 <script type="module">
-import { chrome, esc, tierName, modal } from './assets/app.js';
+import { chrome, sb, esc, tierName, modal } from './assets/app.js';
+import { loadPrices, tierCards } from './assets/plans.js';
 const a = await chrome();
+
+/* ---- Membership tiers (copy and fallback prices live in assets/plans.js) ---- */
+document.getElementById('tiers-home').innerHTML =
+  tierCards({ prices: await loadPrices(sb), level: a.level });
 
 /* ---- What would you like to explore today? ----
    [label, blurb, where it opens, tier needed, icon]. Tier 0 is open to everyone,
