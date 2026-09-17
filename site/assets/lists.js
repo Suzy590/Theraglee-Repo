@@ -88,9 +88,9 @@ export const PAYMENT_METHODS = [
   'Health Savings Account','Mastercard','PayPal','Venmo','Visa','Wire','Zelle',
 ];
 
-export const AGE_RANGES = [
-  'Children (under 12)','Teens (13–17)','Young adults (18–25)','Adults (26–64)','Older adults (65+)',
-];
+// The Ages seen chips. The specific ages a therapist sees go in the two
+// optional age-range boxes under them (age_range_1 and age_range_2).
+export const AGE_RANGES = ['Children','Teens','Young adults','Adults','Senior adults'];
 
 export const PARTICIPANTS = ['Individuals','Couples','Families','Groups','Children','Teens'];
 
