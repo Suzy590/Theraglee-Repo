@@ -781,7 +781,11 @@ function profile(){
       <div class="field"><label>Insurance accepted</label>
         <div class="help" style="margin:0 0 8px">The insurance plans you accept. They show on your
           listing, and visitors can filter the directory by them.</div>
-        ${chipGroup('ins', INSURANCES, t.insurances)}</div>
+        ${chipGroup('ins', INSURANCES, t.insurances)}
+        <div class="grid g3" style="margin-top:14px">
+          ${writeIns(t.insurances, INSURANCES).map((v, i) => `<div><label for="ins-c${i+1}">Your own insurance ${i+1}</label>
+            <input id="ins-c${i+1}" maxlength="60" value="${esc(v)}" placeholder="Not on the list? Write it in"></div>`).join('')}
+        </div></div>
       <div class="field"><label>Ages seen</label>${chipGroup('ages', AGE_RANGES, t.age_ranges)}</div>
       <div class="field"><label>Who you see</label>${chipGroup('parts', PARTICIPANTS, t.participants)}</div>
       <div class="field"><label>Languages</label>${chipGroup('langs', LANGUAGES, t.languages)}</div>
@@ -925,6 +929,8 @@ async function save(e){
   const topSpecs = [...document.querySelectorAll('#spec .chip.top')].map(c => c.dataset.v);
   // Treatment modalities: the chips plus the write-ins.
   const allMods = [...new Set([...chipVals('mods'), ...['mod-c1','mod-c2','mod-c3'].map(V).filter(Boolean)])];
+  // Insurance: the chips plus the write-ins.
+  const allIns = [...new Set([...chipVals('ins'), ...['ins-c1','ins-c2','ins-c3'].map(V).filter(Boolean)])];
 
   const locations = [...document.querySelectorAll('[data-loc]')].map(r => ({
     address: r.querySelector('.l-address').value.trim(),
@@ -941,7 +947,7 @@ async function save(e){
     license_number: V('lic'), license_type: V('ltype') || null,
     license_states: chipVals('states'),
     specialties: allSpecs, top_specialties: topSpecs,
-    treatment_modalities: allMods, insurances: chipVals('ins'),
+    treatment_modalities: allMods, insurances: allIns,
     payment_methods: chipVals('pay'),
     age_ranges: chipVals('ages'), participants: chipVals('parts'), languages: chipVals('langs'),
     delivery: V('delivery'), fees: V('fees') || null,
