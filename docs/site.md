@@ -234,17 +234,19 @@ already returned, so opening it makes no further request.
 
 ### Insurance accepted
 
-The **Insurance accepted** picker on My profile lists 104 plans — `INSURANCES`
-in `site/assets/lists.js`, taken from the owner's reference list — plus
-"Self-pay only" and "Sliding scale available" at the end, and stores
-the choices in `therapist_profiles.insurances` (`text[]`, in the
-`therapist_directory` view since the start). `therapist.html` shows them as
-the Insurance row of Practice details; each directory card in `therapists.html`
-shows the first six after "Insurance:" and "+N more", with the plan the visitor
-filtered by moved to the front. The
-directory's **Insurance** filter is filled from the same list and passed to
-`search_therapists` as `p_insurance`, which matches on the exact stored name,
-so the names in the list must stay exactly as visitors look for them.
+The **Insurance accepted** picker on My profile lists 103 plans — `INSURANCES`
+in `site/assets/lists.js`, taken from the owner's reference list (1199SEIU was
+dropped on request) — plus "Self-pay only" and "Sliding scale available" at
+the end, then three write-in boxes for plans not on the list. The choices,
+write-ins included, are stored in `therapist_profiles.insurances` (`text[]`,
+in the `therapist_directory` view since the start). `therapist.html` shows
+them as the Insurance row of Practice details; each directory card in
+`therapists.html` shows the first six after "Insurance:" and "+N more", with
+the plan the visitor filtered by moved to the front. The directory's
+**Insurance** filter is filled from the shared list (not the write-ins) and
+passed to `search_therapists` as `p_insurance`, which matches on the exact
+stored name, so the names in the list must stay exactly as visitors look for
+them.
 
 ### Payment methods
 

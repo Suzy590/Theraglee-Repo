@@ -54,7 +54,7 @@ export const MODALITIES = [
 // offered as the directory's insurance filter, so keep the names exactly as a
 // visitor would look for them.
 export const INSURANCES = [
-  '1199SEIU','AARP','Aetna','Aetna EAP','Aetna Medicare','Aetna Student Health','All Savers',
+  'AARP','Aetna','Aetna EAP','Aetna Medicare','Aetna Student Health','All Savers',
   'Allegiance','Ambetter',"America's Choice Provider Network (ACPN)",'AmeriHealth','Anthem',
   'Anthem EAP','Anthem Medicare','Beech Street','BHS | Behavioral Health Systems','Blue Cross',
   'Blue Shield',
