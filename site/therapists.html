@@ -137,6 +137,8 @@ async function run(){
         </p>
         ${t.bio ? `<p class="muted" style="margin:0 0 8px;font-size:.93rem">${esc(String(t.bio).slice(0,150))}${t.bio.length>150?'…':''}</p>` : ''}
         <div class="chips">${spec.map(s=>`<span class="badge gray">${esc(s)}</span>`).join('')}</div>
+        ${(t.age_ranges||[]).length ? `<p class="faint" style="margin:8px 0 0;font-size:.85rem">
+          Ages: ${t.age_ranges.map(esc).join(' · ')}</p>` : ''}
         ${shownIns.length ? `<p class="faint" style="margin:8px 0 0;font-size:.85rem">
           Insurance: ${shownIns.map(esc).join(' · ')}${
           moreIns ? ` · +${moreIns} more` : ''}</p>` : ''}
@@ -177,6 +179,7 @@ function quickLook(card, t){
   const opening = panel.hidden;
   if (opening && !panel.innerHTML) {
     const list = (arr) => (arr||[]).length ? arr.map(esc).join(', ') : '—';
+    const ageRanges = [t.age_range_1, t.age_range_2].filter(Boolean);
     const locs = (t.locations||[]).map(l => [l.address, l.city, l.state, l.zip].filter(Boolean).join(', '));
     panel.innerHTML = `
       ${t.bio ? `<h4>About</h4>
@@ -192,7 +195,8 @@ function quickLook(card, t){
         <dt>Fees</dt><dd>${esc(t.fees||'—')}</dd>
         <dt>Payment</dt><dd>${list(t.payment_methods)}</dd>
         <dt>Sees</dt><dd>${list(t.participants)}</dd>
-        <dt>Ages</dt><dd>${list(t.age_ranges)}</dd>
+        <dt>Ages seen</dt><dd>${list(t.age_ranges)}</dd>
+        ${ageRanges.length ? `<dt>Age ranges</dt><dd>${ageRanges.map(esc).join(', ')}</dd>` : ''}
         <dt>Languages</dt><dd>${list(t.languages)}</dd>
         <dt>Licensed in</dt><dd>${list(t.license_states)}</dd>
         <dt>Education</dt><dd>${esc(t.education||'—')}</dd>

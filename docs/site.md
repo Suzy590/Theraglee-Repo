@@ -220,11 +220,25 @@ one-line Education row for a profile that has only the old column); the
 directory's Quick look keeps the one-line form, and the collapsed card shows
 none of it.
 
+### Ages seen
+
+The **Ages seen** chips on My profile are Children, Teens, Young adults, Adults
+and Senior adults (`AGE_RANGES` in `site/assets/lists.js`, stored in
+`therapist_profiles.age_ranges` as before; migration `therapist_age_ranges`
+renamed the earlier bracketed values, "Adults (26–64)" and the like, to these).
+Under the chips are two optional boxes, Age range 1 and Age range 2 (40
+characters each), for the specific ages the therapist sees, like "6–12" or
+"18 and up"; they are stored in `age_range_1` and `age_range_2` and appended
+to the `therapist_directory` view. The collapsed directory card shows the
+chosen terms on an "Ages:" line; `therapist.html` and Quick look show them as
+the Ages seen row of Practice details, with an Age ranges row after it when
+either box is filled in.
+
 ### Directory cards and Quick look
 
 A card in `therapists.html` shows the name, location and session type, a
-150-character bio snippet, up to three specialties, and the Insurance and
-Accepts lines. Clicking anywhere on it, its name, or **View profile** opens
+150-character bio snippet, up to three specialties, and the Ages, Insurance
+and Accepts lines. Clicking anywhere on it, its name, or **View profile** opens
 `therapist.html`. **Quick look** expands the full profile inside the card —
 the whole bio, the office photos and the same Practice details as the profile
 page — and links through to the page for getting in touch (the contact box,

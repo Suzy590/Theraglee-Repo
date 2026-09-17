@@ -57,6 +57,8 @@ if (!t) {
   const initials = ((t.first_name?.[0]||'') + (t.last_name?.[0]||'')).toUpperCase();
   const top = t.top_specialties || [];
   const list = (arr) => (arr||[]).length ? arr.map(esc).join(', ') : '—';
+  // The optional specific ages seen, shown under the Ages seen terms.
+  const ageRanges = [t.age_range_1, t.age_range_2].filter(Boolean);
   const locs = (t.locations||[]).map(l => [l.address, l.city, l.state, l.zip].filter(Boolean).join(', '));
 
   root.innerHTML = `
@@ -101,7 +103,8 @@ if (!t) {
           <dt>Fees</dt><dd>${esc(t.fees||'—')}</dd>
           <dt>Payment</dt><dd>${list(t.payment_methods)}</dd>
           <dt>Sees</dt><dd>${list(t.participants)}</dd>
-          <dt>Ages</dt><dd>${list(t.age_ranges)}</dd>
+          <dt>Ages seen</dt><dd>${list(t.age_ranges)}</dd>
+          ${ageRanges.length ? `<dt>Age ranges</dt><dd>${ageRanges.map(esc).join(', ')}</dd>` : ''}
           <dt>Languages</dt><dd>${list(t.languages)}</dd>
           ${t.education_school || t.education_degree || t.education_year ? `
           <dt>School</dt><dd>${esc(t.education_school||'—')}</dd>
