@@ -41,25 +41,6 @@
   .up{animation:fadeUp .8s cubic-bezier(.22,1,.36,1) both}
   @keyframes halo{0%{box-shadow:0 0 0 0 rgba(106,178,30,.55)}70%{box-shadow:0 0 0 7px rgba(106,178,30,0)}100%{box-shadow:0 0 0 0 rgba(106,178,30,0)}}
   .dot{width:8px;height:8px;border-radius:50%;background:var(--lime-2);animation:halo 2.4s ease-out infinite}
-  .today{background:var(--paper);border:1px solid var(--hair);border-radius:var(--r-lg);
-    padding:30px;box-shadow:var(--shadow-2);max-width:640px;margin:0 auto}
-  .today-head{display:flex;flex-direction:column;align-items:center;gap:9px;
-    text-align:center;padding-bottom:20px}
-  .today .quote{font-family:var(--serif);font-style:italic;font-size:1.45rem;
-    line-height:1.35;color:var(--ink);margin:0}
-  .today .by{color:var(--faint);font-size:.875rem;margin:9px 0 0}
-  .today-list{border-top:1px solid var(--hair)}
-  .today-list>div{padding:18px 0;border-bottom:1px solid var(--hair)}
-  .today-list>div:last-child{border-bottom:0}
-  .today-k{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;
-    font-weight:600;color:var(--faint);margin-bottom:6px}
-  .today-list p{margin:0;color:var(--ink-2)}
-  .today-list p.aff{font-family:var(--serif);font-style:italic;font-size:1.14rem;
-    line-height:1.4;color:var(--green)}
-  .today-cta{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:auto;padding-top:24px}
-  /* Two columns: today's card takes the left third, the explore menu the right two thirds. */
-  .today-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:26px;align-items:stretch}
-  .today-row .today{max-width:none;margin:0;display:flex;flex-direction:column}
   .explore-plug{background:var(--paper);border:1px solid var(--hair);border-radius:var(--r-lg);
     padding:30px;box-shadow:var(--shadow-2);display:flex;flex-direction:column}
   .explore-plug h2{margin:0 0 6px;font-size:1.55rem;line-height:1.2}
@@ -72,11 +53,6 @@
   .explore-grid .tile .meta{display:block;margin-top:3px;line-height:1.35}
   .explore-grid .tile .badge.lock{margin-top:7px;font-size:.68rem;padding:2px 9px}
   .explore-plug .fine{display:block;margin-top:auto;padding-top:16px;color:var(--faint);font-size:.85rem;text-align:center}
-  @media(max-width:900px){
-    .today-row{grid-template-columns:1fr}
-    .today-row .today{max-width:640px;margin:0 auto}
-    .explore-plug{max-width:640px;margin:0 auto;width:100%}
-  }
   /* Theraglee Match Mode showcase: a deep green band, a big switch that flips
      to ON as the section scrolls into view, and the benefits for both sides. */
   .match{position:relative;overflow:hidden;background:var(--green-deep);color:#fff;padding:90px 0}
@@ -195,26 +171,17 @@
 
   <section class="section tight">
     <div class="wrap">
-      <div class="today-row">
-        <div class="today" id="today">
-          <div class="today-head">
-            <span class="badge">Today on Theraglee</span>
-            <span class="faint" id="today-date"></span>
-          </div>
-          <div class="skeleton" style="height:96px"></div>
+      <section class="explore-plug" aria-labelledby="explore-title">
+        <h2 id="explore-title">What would you like to explore today?</h2>
+        <p class="muted">Tap anything below. Some tools need a free account, and a few come with a
+          paid membership — the label on each tile tells you which.</p>
+        <div class="explore-grid" id="explore-grid">
+          <div class="skeleton" style="height:72px"></div>
+          <div class="skeleton" style="height:72px"></div>
+          <div class="skeleton" style="height:72px"></div>
         </div>
-        <aside class="explore-plug" aria-labelledby="explore-title">
-          <h2 id="explore-title">What would you like to explore today?</h2>
-          <p class="muted">Tap anything below. Some tools need a free account, and a few come with a
-            paid membership — the label on each tile tells you which.</p>
-          <div class="explore-grid" id="explore-grid">
-            <div class="skeleton" style="height:72px"></div>
-            <div class="skeleton" style="height:72px"></div>
-            <div class="skeleton" style="height:72px"></div>
-          </div>
-          <small class="fine" id="explore-fine"></small>
-        </aside>
-      </div>
+        <small class="fine" id="explore-fine"></small>
+      </section>
     </div>
   </section>
 
@@ -327,7 +294,7 @@
 </main>
 
 <script type="module">
-import { chrome, sb, esc, tierName, modal } from './assets/app.js';
+import { chrome, esc, tierName, modal } from './assets/app.js';
 const a = await chrome();
 
 /* ---- What would you like to explore today? ----
@@ -336,7 +303,7 @@ const a = await chrome();
 const EXPLORE = [
   ['Self-discovery tools',            'Short, interactive ways to notice your own patterns.', 'discover.html',                 0, '◈'],
   ['Mental Health Articles',          'New mental health reads added daily.',               'articles.html',                 0, '▣'],
-  ['Daily tips & affirmations',       'A quote, a tip, a fun fact and an affirmation, personalized to you.', 'dashboard.html', 1, '✦'],
+  ['Daily tips & affirmations',       'A quote, a tip, a fun fact and an affirmation, personalized to you.', 'dashboard.html#today', 1, '✦'],
   ['374 journal prompts',             'One a day, or pick your own. Entries stay private.',  'journal.html',                  1, '✎'],
   ['Mental health checklists',        'Work through them with your progress tracked.',      'explore.html?type=checklist',   1, '✓'],
   ['7-day & custom challenges',       'Start with a free week. Members go up to a year.',   'challenges.html',               1, '◷'],
@@ -415,46 +382,6 @@ document.getElementById('explore-fine').innerHTML =
   : a.level < 3
     ? 'Anything marked <strong>Basic</strong> or <strong>Premium</strong> is part of a paid membership. <a href="pricing.html">Compare memberships</a>'
     : 'Everything here is included in your Premium membership.';
-
-document.getElementById('today-date').textContent =
-  new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
-
-const host = document.getElementById('today');
-
-// Four fresh pieces every day. daily_pick seeds off the calendar date, so the
-// whole card turns over at midnight and everyone sees the same set.
-const KINDS = ['quote', 'tip', 'fun_fact', 'affirmation'];
-const picked = Object.fromEntries(await Promise.all(KINDS.map(async (k) => {
-  const { data } = await sb.rpc('daily_pick', { p_kind: k });
-  return [k, data?.[0] || null];
-})));
-
-const dateLabel = new Date().toLocaleDateString(undefined,
-  { weekday: 'long', month: 'long', day: 'numeric' });
-
-const row = (label, item, cls = '') => item
-  ? `<div><span class="today-k">${label}</span>
-       <p class="${cls}">${esc(item.body)}</p></div>`
-  : '';
-
-host.innerHTML = `
-  <div class="today-head">
-    <span class="badge">Today on Theraglee</span>
-    <span class="faint">${dateLabel}</span>
-  </div>
-  <div class="today-list">
-    ${picked.quote ? `<div>
-      <span class="today-k">Daily Quote</span>
-      <p class="quote">“${esc(picked.quote.body)}”</p>
-      <p class="by">— ${esc(picked.quote.author || 'Unknown')}</p>
-    </div>` : ''}
-    ${row('Try today', picked.tip)}
-    ${row('Did you know', picked.fun_fact)}
-    ${row('Today\'s affirmation', picked.affirmation, 'aff')}
-  </div>
-  <div class="today-cta">
-    <a class="btn sm" href="signup.html">Want these in your inbox each day?</a>
-  </div>`;
 </script>
 </body>
 </html>

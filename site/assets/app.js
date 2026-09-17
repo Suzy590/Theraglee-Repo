@@ -232,7 +232,7 @@ export async function startSessionPayment(therapistId, btn) {
 
 /* ---------------------------------------------------------------- chrome */
 const NAV = [
-  ['Today',      'dashboard.html'],
+  ['Dashboard',  'dashboard.html'],   // signed-in members only; opens on its Today tab
   ['Explore',    'explore.html'],
   ['Discover',   'discover.html'],
   ['Challenges', 'challenges.html'],
@@ -258,7 +258,9 @@ export async function chrome({ active = '' } = {}) {
   const therapist = a.authenticated && a.profile?.role === 'therapist';
   const admin = a.authenticated && a.profile?.role === 'admin';
 
-  const links = (therapist ? THERAPIST_NAV : NAV).map(([label, href]) => {
+  // A visitor has no dashboard yet, so the header does not offer one.
+  const memberNav = a.authenticated ? NAV : NAV.filter(([, href]) => href !== 'dashboard.html');
+  const links = (therapist ? THERAPIST_NAV : memberNav).map(([label, href]) => {
     const page = href.split('#')[0];
     const on = therapist ? (href.includes('#') ? here + location.hash === href : here === page)
                          : (active === href || here === href);
