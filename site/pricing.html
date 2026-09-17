@@ -142,12 +142,13 @@ let cycle = 'monthly';
 // Tier names and feature lists come from assets/plans.js, the same copy the
 // landing page, dashboard and account page show. Prices come from app_config.
 const tier = (key) => TIERS.find((t) => t.key === key);
+// price and sub are functions so they follow the monthly/yearly toggle.
 const paid = (key) => ({
   price: () => '$' + money(key + '_' + cycle),
-  sub: 'per ' + (cycle === 'monthly' ? 'month' : 'year'),
+  sub: () => 'per ' + (cycle === 'monthly' ? 'month' : 'year'),
 });
 const PLANS = [
-  { ...tier('free'), price: () => '$0', sub: 'forever, no card required',
+  { ...tier('free'), price: () => '$0', sub: () => 'forever, no card required',
     cta: { label: tier('free').cta.label, href: tier('free').cta.href } },
   { ...tier('basic'),   ...paid('basic'),   cta: { plan: 'basic' } },
   { ...tier('premium'), ...paid('premium'), cta: { plan: 'premium' } },
@@ -171,7 +172,7 @@ function render(){
       ${p.featured?'<span class="flag">Most popular</span>':''}
       <h3>${esc(p.name)}</h3>
       <div class="price">${p.price()}</div>
-      <small class="faint">${p.sub}</small>
+      <small class="faint">${p.sub()}</small>
       <ul>${p.feats.map((f)=>`<li class="${/^Everything in /.test(f)?'lead':''}">${esc(f)}</li>`).join('')}</ul>
       ${cta}</div>`;
   }).join('');
