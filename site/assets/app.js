@@ -231,13 +231,11 @@ export async function startSessionPayment(therapistId, btn) {
 }
 
 /* ---------------------------------------------------------------- chrome */
+// Discover, the library, challenges, the journal, articles and the therapist
+// directory are reached from the member dashboard, the landing page's explore
+// tiles and the pages themselves, not from the header.
 const NAV = [
   ['Dashboard',  'dashboard.html'],   // signed-in members only; opens on its Today tab
-  ['Discover',   'discover.html'],
-  ['Challenges', 'challenges.html'],
-  ['Journal',    'journal.html'],
-  ['Articles',   'articles.html'],
-  ['Therapists', 'therapists.html'],
   ['For Therapists', 'for-therapists.html'],
 ];
 // A signed-in therapist gets the practice, not the member library.
