@@ -154,6 +154,14 @@ psychologists through a different board with its own lookup; those have a
 function use when the license type is PsyD, PhD or EdD. A state with no row
 falls back to a search link in the admin screen.
 
+### Short bio
+
+The **Short bio** box on My profile takes up to 1,400 characters. The box
+stops accepting text at that length and shows a live count under it, the
+save refuses a longer one, and `therapist_profiles.bio` has a matching check
+constraint (migration `therapist_bio_limit`), so the limit holds however the
+value arrives.
+
 ### Profile photos
 
 The **My profile** tab takes a JPG or PNG from the therapist's computer or
