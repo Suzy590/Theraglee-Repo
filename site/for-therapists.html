@@ -84,6 +84,21 @@
     background:var(--paper);border:1px solid var(--hair);font-size:.85rem;color:var(--ink-2)}
   .lib-chip b{font-weight:600;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--green)}
   @media (max-width:820px){.lib-top{grid-template-columns:minmax(0,1fr)}}
+  /* Founding-member price panel under the hero buttons. */
+  .founder{margin-top:24px;background:var(--green-deep);color:#fff;border-radius:var(--r-lg);
+    padding:24px 26px;box-shadow:var(--shadow-2);position:relative;overflow:hidden}
+  .founder::after{content:"";position:absolute;right:-110px;top:-110px;width:300px;height:300px;
+    border-radius:50%;background:radial-gradient(closest-side,rgba(141,198,29,.5),rgba(141,198,29,0));pointer-events:none}
+  .founder>*{position:relative}
+  .founder-kicker{display:inline-block;padding:4px 12px;border-radius:var(--r-pill);background:var(--lime);
+    color:var(--ink);font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+  .founder-price{display:flex;align-items:baseline;gap:12px;margin:14px 0 8px;flex-wrap:wrap}
+  .founder-price s{color:rgba(255,255,255,.55);font-size:1.35rem;font-weight:300}
+  .founder-price b{font-size:2.9rem;font-weight:300;letter-spacing:-.03em;line-height:1;color:var(--lime)}
+  .founder-price small{color:rgba(255,255,255,.8);font-size:.95rem}
+  .founder p{margin:0;color:rgba(255,255,255,.92);font-size:1.02rem;line-height:1.5}
+  .founder p strong{color:#fff;font-weight:600}
+  .founder .founder-fine{margin-top:12px;font-size:.82rem;color:rgba(255,255,255,.62)}
 </style>
 </head>
 <body>
@@ -101,6 +116,15 @@
         <a class="btn lg ghost" href="#membership">See the price</a>
       </div>
       <p class="faint" style="margin-top:14px">License verified before you go live. Cancel any time.</p>
+      <div class="founder" id="founder" role="note">
+        <span class="founder-kicker">Founding member offer</span>
+        <div class="founder-price">
+          <s id="founder-regular" hidden></s>
+          <b id="founder-rate"></b><small>/month, locked in</small>
+        </div>
+        <p id="founder-pitch"></p>
+        <p class="founder-fine" id="founder-fine"></p>
+      </div>
     </div>
     <div class="card pad-lg">
       <h3 style="margin-bottom:16px">What's included</h3>
@@ -340,6 +364,7 @@
         </div>
         <div class="price" id="th-price" style="font-size:2.5rem;font-weight:300;letter-spacing:-.03em;line-height:1;margin:12px 0 2px">—</div>
         <p class="faint" id="th-note"></p>
+        <p class="muted" id="th-founder" style="font-size:.92rem"></p>
         <a class="btn lg block" href="#start">List your practice</a>
         <p class="faint" style="margin-top:12px">License verification required. Cancel any time.
           Billing starts from your practice dashboard once your account exists.</p>
@@ -421,7 +446,7 @@ document.getElementById('libcount').innerHTML = (cat||[]).length
      + `<div><b>${total}</b><span>in total</span></div>`)
   : '<div><b>—</b><span>library loading</span></div>';
 
-// The price comes from the admin screen, like the member plans.
+// The regular price comes from the admin screen, like the member plans.
 const { data: cfgRows } = await sb.from('app_config').select('key,value')
   .in('key', ['display_therapist_monthly','display_therapist_yearly']);
 const cfg = Object.fromEntries((cfgRows||[]).map(r=>[r.key,r.value]));
@@ -433,6 +458,30 @@ if (cfg.display_therapist_monthly) {
 } else {
   document.getElementById('th-note').textContent = 'Price shown once payments are switched on.';
 }
+
+// Founding-member offer: the one place to change the rate, the number of
+// spots and the deadline. It fills the panel under the hero buttons and the
+// line under the membership price.
+const FOUNDING = { rate: 20, spots: 150, deadline: 'December 31, 2026' };
+document.getElementById('founder-rate').textContent = `$${FOUNDING.rate}`;
+document.getElementById('founder-pitch').innerHTML =
+  `Be one of the first <strong>${FOUNDING.spots} therapists</strong> to join by
+   <strong>${esc(FOUNDING.deadline)}</strong> and lock in your monthly rate at
+   <strong>$${FOUNDING.rate}</strong> for as long as you keep your membership.`;
+if (cfg.display_therapist_monthly) {
+  const reg = document.getElementById('founder-regular');
+  reg.textContent = `$${cfg.display_therapist_monthly}`; reg.hidden = false;
+  document.getElementById('founder-fine').textContent =
+    `Regular rate: $${cfg.display_therapist_monthly}/month` +
+    (cfg.display_therapist_yearly ? `, or $${cfg.display_therapist_yearly} a year.` : '.') +
+    ' Founding members keep the locked-in monthly rate as long as their membership stays active.';
+} else {
+  document.getElementById('founder-fine').textContent =
+    'Founding members keep the locked-in monthly rate as long as their membership stays active.';
+}
+document.getElementById('th-founder').innerHTML =
+  `<strong>Founding members:</strong> $${FOUNDING.rate}/month locked in for the first
+   ${FOUNDING.spots} therapists who join by ${esc(FOUNDING.deadline)}.`;
 
 const box = document.getElementById('cta-box');
 if (!a.authenticated) {
