@@ -10,7 +10,9 @@ export const isActive = (status: string | null | undefined): boolean =>
   !!status && (ACTIVE_STATUSES as readonly string[]).includes(status);
 
 export type PlanKey = "basic" | "premium" | "therapist";
-export type Interval = "monthly" | "yearly";
+/** `founding` is the therapist founding-member rate: monthly billing at a
+ *  locked-in price, sold only while the offer is open (see `foundingOffer`). */
+export type Interval = "monthly" | "yearly" | "founding";
 
 /**
  * The three paid plans. `taxCode` is the Stripe Tax product tax code each
@@ -19,27 +21,93 @@ export type Interval = "monthly" | "yearly";
  *   txcd_10103000  Software as a service (SaaS) — business use
  */
 export const PLANS: Record<PlanKey, {
-  monthly: string; yearly: string; audience: "member" | "therapist"; taxCode: string;
+  monthly: string; yearly: string; founding?: string; audience: "member" | "therapist"; taxCode: string;
 }> = {
   basic:     { monthly: "price_basic_monthly",     yearly: "price_basic_yearly",     audience: "member",    taxCode: "txcd_10103001" },
   premium:   { monthly: "price_premium_monthly",   yearly: "price_premium_yearly",   audience: "member",    taxCode: "txcd_10103001" },
-  therapist: { monthly: "price_therapist_monthly", yearly: "price_therapist_yearly", audience: "therapist", taxCode: "txcd_10103000" },
+  therapist: { monthly: "price_therapist_monthly", yearly: "price_therapist_yearly",
+               founding: "price_therapist_founding", audience: "therapist", taxCode: "txcd_10103000" },
 };
 
 export const isPlanKey = (k: unknown): k is PlanKey =>
   typeof k === "string" && Object.prototype.hasOwnProperty.call(PLANS, k);
 
-/** app_config key holding the Stripe price id for a plan + interval. */
-export const priceKeyFor = (plan: PlanKey, interval: Interval): string =>
-  interval === "yearly" ? PLANS[plan].yearly : PLANS[plan].monthly;
+export const isInterval = (k: unknown): k is Interval =>
+  k === "monthly" || k === "yearly" || k === "founding";
+
+/**
+ * app_config key holding the Stripe price id for a plan + interval. Returns
+ * null for a combination that does not exist (only therapists have a
+ * founding rate).
+ */
+export const priceKeyFor = (plan: PlanKey, interval: Interval): string | null =>
+  interval === "yearly" ? PLANS[plan].yearly
+  : interval === "founding" ? (PLANS[plan].founding ?? null)
+  : PLANS[plan].monthly;
 
 /** Reverse lookup: which plan does this price id belong to? */
 export function planForPrice(config: Record<string, string>, priceId: string | null | undefined): PlanKey | null {
   if (!priceId) return null;
   for (const plan of Object.keys(PLANS) as PlanKey[]) {
-    if (config[PLANS[plan].monthly] === priceId || config[PLANS[plan].yearly] === priceId) return plan;
+    const p = PLANS[plan];
+    const keys = [p.monthly, p.yearly, ...(p.founding ? [p.founding] : [])];
+    if (keys.some((k) => config[k] === priceId)) return plan;
   }
   return null;
+}
+
+/* ------------------------------------------------------ Founding offer */
+
+/**
+ * The therapist founding-member offer, as the admin screen stores it:
+ *   founding_enabled            'true' | 'false'  — the switch
+ *   price_therapist_founding    the Stripe price id (monthly, the locked-in rate)
+ *   display_therapist_founding  the dollar amount shown on the site
+ *   founding_spots              how many therapists may take it ('' = no cap)
+ *   founding_deadline           last day to join, YYYY-MM-DD ('' = no deadline)
+ *
+ * `open` is what the site and the checkout act on. `closedBecause` says why
+ * it is not open: `off` (switch), `no_price` (nothing pasted yet) or
+ * `expired` (deadline passed). The cap on spots is enforced separately by
+ * the checkout, which counts live subscriptions on the founding price.
+ */
+export interface FoundingOffer {
+  open: boolean;
+  closedBecause: "off" | "no_price" | "expired" | null;
+  priceId: string;
+  rate: string;
+  spots: number | null;
+  deadline: string;
+}
+
+/** Parses YYYY-MM-DD as the end of that day in UTC; null when unset or malformed. */
+export function deadlineEnd(deadline: string | null | undefined): Date | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec((deadline ?? "").trim());
+  if (!m) return null;
+  const d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3], 23, 59, 59, 999));
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+export function foundingOffer(config: Record<string, string>, now: Date = new Date()): FoundingOffer {
+  const priceId = (config.price_therapist_founding ?? "").trim();
+  const spotsRaw = parseInt(config.founding_spots ?? "", 10);
+  const spots = Number.isFinite(spotsRaw) && spotsRaw > 0 ? spotsRaw : null;
+  const deadline = (config.founding_deadline ?? "").trim();
+  const end = deadlineEnd(deadline);
+
+  let closedBecause: FoundingOffer["closedBecause"] = null;
+  if (config.founding_enabled !== "true") closedBecause = "off";
+  else if (!priceId) closedBecause = "no_price";
+  else if (end && now.getTime() > end.getTime()) closedBecause = "expired";
+
+  return {
+    open: closedBecause === null,
+    closedBecause,
+    priceId,
+    rate: (config.display_therapist_founding ?? "").trim(),
+    spots,
+    deadline,
+  };
 }
 
 /** The subset of a Stripe Subscription the sync logic needs. */

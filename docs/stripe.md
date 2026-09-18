@@ -183,6 +183,31 @@ Each price has an ID starting `price_`. Paste the six IDs into
 `/admin.html` → **Stripe setup**, and check the shown prices in the same screen
 match. Save.
 
+#### The founding-member offer (optional)
+
+A discounted *monthly* therapist rate for the first therapists who join, sold
+only while the offer is open. Therapists who take it keep the rate for as long
+as their membership stays active, because Stripe keeps a subscription on the
+price it started with.
+
+1. In the Dashboard, open **Theraglee Therapist membership** and add a third
+   price: recurring, monthly, the discounted amount (for example $20).
+2. Copy its price ID into `/admin.html` → **Stripe setup** → **Founding member
+   offer**. Fill in the amount shown on the site, the number of spots (blank
+   for no limit) and the last day to join as `YYYY-MM-DD` (blank for no
+   deadline). Tick **Offer the founding member rate** and Save.
+
+While the offer is open, `for-therapists.html` shows the founding panel and the
+practice dashboard's Membership tab shows a **Founding member** button next to
+the regular monthly and yearly ones. The offer closes on its own when the
+deadline passes or the spots run out (the checkout counts live subscriptions on
+the founding price in Stripe), and immediately when the switch is turned off.
+An admin can test the founding checkout while the switch is off.
+
+One thing to know: if a founding member later switches to the yearly plan in
+the billing portal, they move to the yearly price and give up the locked-in
+rate. The dashboard says so next to the button.
+
 ### 5. Point Stripe at the webhook
 
 Stripe Dashboard → **Developers → Webhooks → Add endpoint**.
@@ -303,6 +328,8 @@ All in `app_config`, all editable from `/admin.html`:
 | `identity_required` | ID check is optional. | A listing cannot publish without a passed ID check. |
 | `connect_enabled` | No payouts setup, no "Pay for a session". | Therapists can onboard and take payments. |
 | `platform_fee_percent`, `platform_fee_min_cents` | | Theraglee's share of a session payment. |
+| `founding_enabled` | The founding-member rate is neither shown nor sold. | The offer shows on the therapist pages and checkout sells it, until `founding_deadline` passes or `founding_spots` are taken. |
+| `price_therapist_founding`, `display_therapist_founding`, `founding_spots`, `founding_deadline` | | The founding price ID, the amount shown, the cap (blank = none) and the last day to join as `YYYY-MM-DD` (blank = none). |
 
 ## What is stored where
 
@@ -322,6 +349,11 @@ verified or paid-out from the browser.
 
 ## If something goes wrong
 
+- **"The founding-member offer is not open right now"** or **"has ended"** —
+  the `founding_enabled` switch is off, no founding price is pasted, or the
+  deadline has passed. **"All founding-member spots are taken"** — Stripe
+  already has `founding_spots` live subscriptions on the founding price; raise
+  the number or clear it to keep selling.
 - **"Payments are not switched on yet"** — the `stripe_enabled` switch is off
   (or, for sessions, `connect_enabled`). Admins bypass the first.
 - **"No Stripe price is set for …"** — a price ID is missing in the admin screen.

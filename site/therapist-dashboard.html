@@ -67,6 +67,7 @@ import { chrome, sb, requireAuth, access, clearAccess, esc, toast, busy, fmtDate
          modal, openPortal, startCheckout, startIdentity, connectAction, callStripeFn,
          FN, qs } from './assets/app.js';
 import { matchSummary } from './assets/match.js';
+import { foundingOffer } from './assets/plans.js';
 import { SPECIALTIES, MODALITIES, INSURANCES, AGE_RANGES, PARTICIPANTS,
          LANGUAGES, CREDENTIALS, STATES, PAYMENT_METHODS } from './assets/lists.js';
 await chrome();
@@ -1070,10 +1071,16 @@ async function membership(){
       : Promise.resolve({ data: [] }),
     sb.from('app_config').select('key,value')
       .in('key', ['identity_required','connect_enabled','platform_fee_percent',
-                  'display_therapist_monthly','display_therapist_yearly']),
+                  'display_therapist_monthly','display_therapist_yearly','founding_enabled',
+                  'price_therapist_founding','display_therapist_founding','founding_spots',
+                  'founding_deadline']),
   ]);
   const cfg = Object.fromEntries((cfgRows||[]).map(r=>[r.key,r.value]));
   const p = a.profile;
+  // The founding-member rate shows only while the admin has the offer open
+  // (or to the admin, so it can be tested before the switch is on).
+  const offer = foundingOffer(cfg);
+  const founding = (offer.open || (p.role === 'admin' && offer.priceId)) && offer.rate;
 
   const idStatus = T?.identity_status || 'unverified';
   const idLabel = { unverified:'Not started', pending:'Being checked', verified:'Verified',
@@ -1094,12 +1101,19 @@ async function membership(){
           <span class="muted">${fmtDate(p.current_period_end)}</span></div>` : ''}
         <div class="row">
           ${paid ? `<button class="btn ghost" id="portal">Manage membership</button>`
-                 : `<button class="btn" id="sub">Start monthly${
+                 : `${founding ? `<button class="btn" id="sub-founding">Founding member · $${esc(offer.rate)}/month</button>` : ''}
+                    <button class="btn ${founding ? 'ghost' : ''}" id="sub">${founding ? 'Regular monthly' : 'Start monthly'}${
                       cfg.display_therapist_monthly ? ' · $' + esc(cfg.display_therapist_monthly) + '/month' : ''}</button>
                     <button class="btn ghost" id="sub-yearly">Yearly${
                       cfg.display_therapist_yearly ? ' · $' + esc(cfg.display_therapist_yearly) + '/year' : ''}</button>`}
         </div>
       </div>
+      ${!paid && founding ? `<p class="muted" style="margin:14px 0 0;font-size:.93rem">
+        <strong>Founding member offer${offer.open ? '' : ' (off — visible to admins only)'}:</strong>
+        $${esc(offer.rate)} a month, locked in for as long as your membership stays active${
+        offer.spots ? `, for the first ${offer.spots} therapists` : ''}${
+        offer.deadlineText ? ` who join by ${esc(offer.deadlineText)}` : ''}.
+        Switching to the yearly plan later gives up the locked-in rate.</p>` : ''}
       ${paid ? '' : `<p class="faint" style="margin:14px 0 0">One flat membership for licensed
         professionals, separate from the member plans. It publishes your listing once your license
         is verified, and opens the clinician library and Match Mode. Cancel any time.
@@ -1181,6 +1195,7 @@ async function membership(){
     </div>`);
 
   document.getElementById('portal')?.addEventListener('click', e => openPortal(e.target));
+  document.getElementById('sub-founding')?.addEventListener('click', e => startCheckout('therapist','founding',e.target));
   document.getElementById('sub')?.addEventListener('click', e => startCheckout('therapist','monthly',e.target));
   document.getElementById('sub-yearly')?.addEventListener('click', e => startCheckout('therapist','yearly',e.target));
   document.getElementById('idv')?.addEventListener('click', e => startIdentity(e.target));

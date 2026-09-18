@@ -71,6 +71,39 @@ export async function loadPrices(sb) {
   return prices;
 }
 
+/**
+ * The therapist founding-member offer, from the same app_config keys the
+ * admin screen writes (founding_enabled, price_therapist_founding,
+ * display_therapist_founding, founding_spots, founding_deadline). Mirrors
+ * foundingOffer() in supabase/functions/_shared/billing.ts — keep the two in
+ * step. The server is the one that decides at checkout; this only chooses
+ * what the page shows.
+ */
+export function foundingOffer(cfg, now = new Date()) {
+  const priceId = (cfg.price_therapist_founding || '').trim();
+  const spotsRaw = parseInt(cfg.founding_spots || '', 10);
+  const spots = Number.isFinite(spotsRaw) && spotsRaw > 0 ? spotsRaw : null;
+  const deadline = (cfg.founding_deadline || '').trim();
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(deadline);
+  const end = m ? new Date(Date.UTC(+m[1], +m[2] - 1, +m[3], 23, 59, 59, 999)) : null;
+
+  let closedBecause = null;
+  if (cfg.founding_enabled !== 'true') closedBecause = 'off';
+  else if (!priceId) closedBecause = 'no_price';
+  else if (end && now.getTime() > end.getTime()) closedBecause = 'expired';
+
+  return {
+    open: closedBecause === null,
+    closedBecause,
+    priceId,
+    rate: (cfg.display_therapist_founding || '').trim(),
+    spots,
+    deadline,
+    // "December 31, 2026" for the page; '' when there is no deadline.
+    deadlineText: end ? end.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' }) : '',
+  };
+}
+
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g,
   (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
