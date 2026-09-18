@@ -365,27 +365,30 @@ gated by tier, so Basic and Premium have them too:
 | Articles sent to your inbox | the `daily-digest` Edge Function, below | `profiles.daily_email` |
 | 7-day mental health challenges | `challenge_templates` (the 7-day one is `min_level = 1`); Free can also design a 7-day one | `min_level` |
 | Checklists with progress tracked | 4 `checklists` at `min_level = 1`, `checklist_progress` + `item_progress` | `min_level`, RLS `own rows` |
-| Theraglee Match Mode (dashboard switch: let therapists reach out) | `profiles.visible_to_therapists`, toggled on `dashboard.html` and `account.html`; the details therapists see are asked for in `assets/match.js` | `member_opted_in()` |
+| Theraglee Match Mode (dashboard switch: let therapists reach out) | `profiles.visible_to_therapists`, toggled on `dashboard.html` and `account.html`; the details therapists see are asked for in `assets/match.js`; blocks in `member_blocks` | `member_opted_in()`, `member_blocked()` |
 
-## Theraglee Match Mode is anonymous until the member replies
+## Theraglee Match Mode is pseudonymous until the member replies
 
 A member who switches Match Mode on is asked, right then, for the things a
-therapist gets to see: gender, age, the broad topics they want help with (the
-same `profiles.issues` that shape daily content), whether they want in-person or
-telehealth sessions, and their zip code. Therapists read one line per member,
-such as "Male, 39 · seeks help with anxiety · seeking in-person sessions · near
-90210". No name, ever, on that screen.
+therapist gets to see: an age range, the broad topics they want to work on (the
+same `profiles.issues` that shape daily content), whether they prefer in-person
+or video sessions, and their zip code, of which therapists see only the first
+three digits. Therapists read one line per member, such as "35–44 · seeks help
+with anxiety · seeking video sessions · in the 902xx area". No name, no gender,
+no exact age and no exact location on that screen. The wording members agree to
+is in `docs/match-mode-consent.md`.
 
 | Piece | Where |
 |---|---|
-| The details | `profiles.match_gender`, `match_age`, `match_delivery`, plus `issues` and `zip` |
+| The details | `profiles.match_age_range`, `match_delivery`, plus `issues` and `zip` (`match_gender` and `match_age` are kept but no longer shown or asked for) |
 | The window that asks for them, and the one-line summary | `site/assets/match.js` (`matchDetailsModal`, `matchSummary`) |
-| What a therapist can read | the `member_discovery` view: gender, age, delivery, issues, zip, `already_contacted`, `has_replied`. No name column. |
+| What a therapist can read | the `member_discovery` view: `age_range`, `delivery`, `issues`, `area`, `already_contacted`, `has_replied`. No name, gender, age or zip column, and members who blocked the viewing therapist are left out. |
+| Blocking a therapist | `member_blocks`, written from the member's Inbox on the account page. `member_blocked()` keeps a blocked therapist out of the view and out of `therapist_outreach`, even after a reply. |
 | A therapist's message | `therapist_outreach` (unchanged) |
 | A member's reply | `outreach_replies`. `member_name` is required by a check constraint: the real name travels only here, and only to that therapist. |
 | A follow-up from the therapist | Another `therapist_outreach` row. `member_replied_to()` lets the insert through even if the member has since switched Match Mode off. |
 | The email to the therapist | Trigger `outreach_reply_alert` posts to the `match-reply-alert` Edge Function through pg_net with `app_secrets.match_hook_key`; the function emails the therapist's contact address (else their sign-in email) through Resend and records `notified_at` / `notify_error` on the reply. Needs the same `RESEND_API_KEY` secret as the digest. |
-| Migrations | `supabase/migrations/20260913200000_match_mode_anonymous.sql`, `supabase/migrations/20260914210000_match_reply_alert.sql` |
+| Migrations | `supabase/migrations/20260913200000_match_mode_anonymous.sql`, `supabase/migrations/20260914210000_match_reply_alert.sql`, `supabase/migrations/20260918150000_match_mode_pseudonymous.sql` |
 
 `profiles.full_name` is now just what the dashboard greets the member by; the
 sign-up form asks for "what should we call you" and marks it optional.

@@ -232,17 +232,19 @@ function privacy(){
             know you are interested in them reaching out to you to set up an appointment for
             therapy. You don't have to contact them — they contact you. When you turn the switch
             ON, we ask you for a few details, and that is all Theraglee therapists in your area
-            can see: your gender, your age, the broad topics you would like to work on, whether
-            you want in-person or telehealth sessions, and your zip code. Something like
-            "Male, 39 · seeks help with anxiety · seeking in-person sessions". Not your name.
-            Theraglee therapists contact you by sending a message to your Theraglee inbox on
-            your dashboard, and you decide whether to answer. If you do reply, you give that one
-            therapist your real name with your reply, so they know who they are talking to. They
-            never see your email, your journal, or anything you have worked on in your Theraglee
-            dashboard. The toggle switch is OFF by default, and you can turn it OFF at any time
-            to become invisible to Theraglee therapists again.</p></div>
+            can see: a pseudonymous profile with your age range, the broad topics you want to
+            work on (like anxiety or burnout), whether you prefer in-person, video, or either, and
+            your general location so they know you're nearby. Something like
+            "35–44 · seeks help with anxiety · seeking video sessions · in the 902xx area". Not
+            your name, and not your exact location. Theraglee therapists contact you by sending a
+            message to your Theraglee inbox, and you decide whether to answer. If you do reply,
+            you'll be prompted to share your real name, and it goes to that one therapist only.
+            They never see your email address, your journal, your quiz results, your worksheet
+            results, or anything else in your private dashboard. The toggle switch is OFF by
+            default, one tap hides your profile again whenever you like, and you can block any
+            therapist with one tap from your Inbox.</p></div>
         <div class="card"><h3>Why do I give my real name when I reply?</h3>
-          <p class="muted" style="margin:0">Browsing and being found stays anonymous. Booking
+          <p class="muted" style="margin:0">Browsing and being found stays pseudonymous. Booking
             therapy does not: a therapist needs to know who they are arranging an appointment
             with. So the moment you choose to answer a therapist, your reply carries your real
             name. It goes to that therapist only, and only because you chose to write back.</p></div>
@@ -260,13 +262,15 @@ function privacy(){
 
 async function inbox(){
   const host = document.getElementById('body');
-  const [{ data: sent }, { data: replies }] = await Promise.all([
+  const [{ data: sent }, { data: replies }, { data: blocks }] = await Promise.all([
     sb.from('therapist_outreach')
       .select('*, therapist_profiles(first_name,last_name,credentials,slug)')
       .eq('member_id', a.profile.id).order('created_at', { ascending:true }),
     sb.from('outreach_replies').select('*')
       .eq('member_id', a.profile.id).order('created_at', { ascending:true }),
+    sb.from('member_blocks').select('therapist_id').eq('member_id', a.profile.id),
   ]);
+  const blocked = new Set((blocks || []).map(b => b.therapist_id));
 
   // One thread per therapist: their messages and your replies, oldest first.
   const threads = new Map();
@@ -288,15 +292,19 @@ async function inbox(){
   host.innerHTML = `
     <h2>Messages from therapists</h2>
     <p class="muted">Only therapists you allowed to reach you by turning on <strong>Theraglee Match
-      Mode</strong>, under Privacy. They do not know your name. If you reply, your reply carries
-      your real name to that one therapist, so they know who they will be booking with.</p>
+      Mode</strong>, under Privacy. They see your pseudonymous profile, not your name. If you
+      reply, your reply carries your real name to that one therapist, so they know who they will
+      be booking with. Block any therapist with one tap and they can no longer see or message
+      you.</p>
     ${list.length ? list.map(([tid, t]) => {
       const th = t.therapist;
       const replied = t.items.some(i => i.from === 'you');
+      const isBlocked = blocked.has(tid);
       return `<div class="card" style="margin-top:14px" data-thread="${esc(tid)}">
         <div class="spread">
           <strong>${esc(th.first_name||'')} ${esc(th.last_name||'')}${th.credentials?', '+esc(th.credentials):''}</strong>
-          ${replied ? '<span class="badge">You replied</span>' : '<span class="badge gray">Waiting for you</span>'}</div>
+          ${isBlocked ? '<span class="badge lock">Blocked</span>'
+            : replied ? '<span class="badge">You replied</span>' : '<span class="badge gray">Waiting for you</span>'}</div>
         <div class="stack" style="margin-top:12px">${t.items.map(i => `
           <div style="padding:12px 14px;border-radius:var(--r-sm);background:${i.from==='you'?'var(--soft)':'var(--sand)'}">
             <div class="spread"><span class="faint">${i.from==='you' ? 'You, as ' + esc(i.name) : 'Therapist'}</span>
@@ -304,7 +312,10 @@ async function inbox(){
             <p class="muted" style="margin:6px 0 0;white-space:pre-wrap">${esc(i.text)}</p></div>`).join('')}</div>
         <div class="row" style="margin-top:12px">
           ${th.slug?`<a class="btn sm ghost" href="therapist.html?slug=${esc(th.slug)}">View their profile</a>`:''}
-          <button class="btn sm" data-reply="${esc(tid)}">${replied ? 'Reply again' : 'Reply with my name'}</button>
+          ${isBlocked
+            ? `<button class="btn sm ghost" data-unblock="${esc(tid)}">Unblock</button>`
+            : `<button class="btn sm" data-reply="${esc(tid)}">${replied ? 'Reply again' : 'Reply with my name'}</button>
+               <button class="btn sm ghost" data-block="${esc(tid)}">Block this therapist</button>`}
         </div>
         <form class="reply" data-form="${esc(tid)}" hidden style="margin-top:16px">
           <div class="notice" style="margin-bottom:12px">Your reply goes to this therapist with your
@@ -326,6 +337,23 @@ async function inbox(){
   host.querySelectorAll('[data-reply]').forEach(b => b.onclick = () => {
     const f = host.querySelector(`[data-form="${b.dataset.reply}"]`);
     f.hidden = false; b.hidden = true; f.querySelector('input').focus();
+  });
+  // One tap blocks: the therapist stops seeing this member and can no longer write to them.
+  host.querySelectorAll('[data-block]').forEach(b => b.onclick = async () => {
+    busy(b, true, 'Blocking…');
+    const { error } = await sb.from('member_blocks')
+      .insert({ member_id: a.profile.id, therapist_id: b.dataset.block });
+    busy(b, false);
+    if (error) return toast(error.message, 'err');
+    toast('Blocked. This therapist can no longer see or message you.', 'ok'); inbox();
+  });
+  host.querySelectorAll('[data-unblock]').forEach(b => b.onclick = async () => {
+    busy(b, true, 'Unblocking…');
+    const { error } = await sb.from('member_blocks').delete()
+      .eq('member_id', a.profile.id).eq('therapist_id', b.dataset.unblock);
+    busy(b, false);
+    if (error) return toast(error.message, 'err');
+    toast('Unblocked.', 'ok'); inbox();
   });
   host.querySelectorAll('[data-cancel]').forEach(b => b.onclick = () => {
     host.querySelector(`[data-form="${b.dataset.cancel}"]`).hidden = true;

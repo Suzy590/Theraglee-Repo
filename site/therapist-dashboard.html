@@ -269,8 +269,8 @@ async function home(){
         <div class="spread"><h3 style="margin:0">Member requests</h3>
           ${waiting ? `<span class="badge">${waiting} waiting</span>` : '<span class="badge gray">None waiting</span>'}</div>
         <p class="muted" style="margin:10px 0 0">Members who switched on <strong>Theraglee Match
-          Mode</strong> want a therapist to reach out. You see a short anonymous line about each
-          one, and can send them a message. A member who replies gives you their real
+          Mode</strong> want a therapist to reach out. You see a short pseudonymous profile for
+          each one, and can send them a message. A member who replies gives you their real
           name.${liveListing ? '' : ' Reaching out needs a live listing.'}</p>
         ${unreadReplies ? `<p class="muted" style="margin:8px 0 0"><strong>${unreadReplies} new
           ${unreadReplies===1?'reply':'replies'}</strong> from members waiting for you.</p>` : ''}
@@ -457,10 +457,11 @@ async function members(){
   render(`
     <h2>Members who have toggled ON <strong>Theraglee Match Mode</strong></h2>
     <p class="muted">Theraglee members who switched on <strong>Theraglee Match Mode</strong>. Each one
-      is anonymous: you see their gender, age, what they want help with, whether they want
-      in-person or telehealth sessions, and their zip code. Never a name or an email address, and
-      never anything they have written in their journal. A member who answers your message gives
-      you their real name with the reply.</p>
+      is pseudonymous: you see their age range, the broad topics they want to work on, whether they
+      prefer in-person, video, or either, and their general area. Never a name, an exact location
+      or an email address, and never anything they have written in their journal. A member who
+      answers your message gives you their real name with the reply. A member can block you at any
+      time; you then stop seeing them and cannot write to them.</p>
     ${!liveListing ? `<div class="notice warn">Your listing has to be live before you can
       reach out.</div>` : ''}
 
@@ -473,7 +474,7 @@ async function members(){
             <span class="faint">${fmtDate(t.items.at(-1).at)}</span></div>
           <p class="faint" style="margin:4px 0 0">${rows.some(r => r.id === mid)
             ? esc(line(rows.find(r => r.id === mid)))
-            : 'Has since switched Match Mode off. You can still answer this conversation.'}</p>
+            : 'Has since switched Match Mode off or blocked you. If they only switched it off, you can still answer this conversation.'}</p>
           <div class="stack" style="margin-top:12px">${t.items.map(i => `
             <div style="padding:12px 14px;border-radius:var(--r-sm);background:${i.from==='you'?'var(--sand)':'var(--soft)'}">
               <div class="spread"><span class="faint">${i.from==='you' ? 'You' : esc(i.name)}</span>
@@ -494,7 +495,7 @@ async function members(){
         <div class="chips" style="margin:12px 0">${
           (m.issues||[]).map(i=>`<span class="badge">${esc(i)}</span>`).join('')
           || '<span class="faint">No topics listed</span>'}</div>
-        <p class="faint" style="margin:0">${m.zip?'Near '+esc(m.zip):'Area not shared'}
+        <p class="faint" style="margin:0">${m.area?'In the '+esc(m.area)+' area':'Area not shared'}
           · joined ${fmtDate(m.created_at)}</p>
         <button class="btn sm" style="margin-top:14px" data-reach="${m.id}"
           ${(!liveListing || m.already_contacted)?'disabled':''}>
@@ -519,14 +520,16 @@ async function members(){
       const { error } = await sb.from('therapist_outreach')
         .insert({ therapist_id: T.id, member_id: memberId, message: msg });
       busy(e.target, false);
+      // The database refuses a message to a member who blocked this therapist.
+      if (error?.code === '42501') return toast('This member has ended the conversation.','err');
       if (error) return toast(error.message,'err');
       back.remove(); toast('Message sent.','ok'); members();
     };
   };
 
   document.querySelectorAll('[data-reach]').forEach(b => b.onclick = () => send(b.dataset.reach,
-    `They see this in their Theraglee inbox along with a link to your profile. They stay anonymous
-     until they choose to reply. Keep it short and warm.`,
+    `They see this in their Theraglee inbox along with a link to your profile. They stay
+     pseudonymous until they choose to reply. Keep it short and warm.`,
     'Hello — I work with anxiety and sleep, and I have space on Tuesdays…'));
   document.querySelectorAll('[data-followup]').forEach(b => b.onclick = () => send(b.dataset.followup,
     `A reply to ${esc(b.dataset.name)}. It lands in their Theraglee inbox.`,
