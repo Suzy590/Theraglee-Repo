@@ -99,6 +99,9 @@
   .founder p{margin:0;color:rgba(255,255,255,.92);font-size:1.02rem;line-height:1.5}
   .founder p strong{color:#fff;font-weight:600}
   .founder .founder-fine{margin-top:12px;font-size:.82rem;color:rgba(255,255,255,.62)}
+  .founder .founder-cta{margin-top:18px}
+  .founder .founder-more{background:transparent;color:#fff;border-color:rgba(255,255,255,.45)}
+  .founder .founder-more:hover{background:rgba(255,255,255,.12);color:#fff;border-color:#fff}
 </style>
 </head>
 <body>
@@ -124,6 +127,10 @@
         </div>
         <p id="founder-pitch"></p>
         <p class="founder-fine" id="founder-fine"></p>
+        <div class="row founder-cta">
+          <a class="btn lime lg" href="therapist-signup.html?plan=founding">Become a founding member</a>
+          <a class="btn lg founder-more" href="founding-members.html">Learn more</a>
+        </div>
       </div>
     </div>
     <div class="card pad-lg">
@@ -490,7 +497,8 @@ if (offer.open && offer.rate) {
                   offer.deadlineText ? `who join by ${esc(offer.deadlineText)}` : ''].filter(Boolean).join(' ');
   document.getElementById('th-founder').innerHTML =
     `<strong>Founding members:</strong> $${esc(offer.rate)}/month locked in${limits ? ' ' + limits : ''}.
-     Choose it from your practice dashboard.`;
+     <a href="therapist-signup.html?plan=founding">Become a founding member</a> or
+     <a href="founding-members.html">learn more</a>.`;
 } else {
   document.getElementById('founder').style.display = 'none';
   document.getElementById('th-founder').hidden = true;

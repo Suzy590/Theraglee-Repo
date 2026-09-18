@@ -91,6 +91,17 @@ if (a.profile.role !== 'therapist' && a.profile.role !== 'admin') {
 
 let T = a.therapist || null;
 let tab = location.hash.replace('#','') || (T ? 'home' : 'profile');
+
+// Arrived from the founding-member sign-up: open the Membership tab with the
+// founding option pointed out. The sign-up page passes ?plan=founding, and
+// also leaves a note in localStorage for the email-confirmation route, which
+// lands here without any address parameters.
+let wantFounding = qs('plan') === 'founding';
+try {
+  if (localStorage.getItem('theraglee_plan') === 'founding') wantFounding = true;
+  localStorage.removeItem('theraglee_plan');
+} catch {}
+if (wantFounding) { tab = 'membership'; history.replaceState({}, '', 'therapist-dashboard.html#membership'); }
 let unread = 0;
 let unreadReplies = 0;
 
@@ -1091,8 +1102,21 @@ async function membership(){
   const connectOn = cfg.connect_enabled === 'true';
   const feeDollars = T?.session_fee_cents ? String(Math.round(T.session_fee_cents / 100)) : '';
 
+  // One-time pointer for an account that chose the founding rate at sign-up.
+  const foundingHello = wantFounding && !paid
+    ? (founding
+        ? `<div class="notice" style="margin-top:16px"><strong>Welcome. You chose the founding member
+             rate.</strong> Click <strong>Founding member · $${esc(offer.rate)}/month</strong> below to start it${
+             offer.spots || offer.deadlineText ? ' while it lasts' : ''}. Your listing publishes once your
+             license is verified.</div>`
+        : `<div class="notice warn" style="margin-top:16px"><strong>The founding member offer is no longer
+             available.</strong> The regular membership is below.</div>`)
+    : '';
+  wantFounding = false;
+
   render(`
     <h2>Therapist membership</h2>
+    ${foundingHello}
     <div class="card" style="margin-top:16px">
       <div class="spread">
         <div><strong>Status</strong><br>
