@@ -175,9 +175,13 @@ products:
 
 | Product | Prices | Tax code (Step 7) |
 |---|---|---|
-| Theraglee Basic | monthly, yearly | *Software as a service (SaaS) – personal use* (`txcd_10103001`) |
+| Theraglee Basic | monthly, yearly | *Software as a service (SaaS) – personal use* (`txcd_10103000`) |
 | Theraglee Premium | monthly, yearly | same |
-| Theraglee Therapist membership | monthly, yearly | *Software as a service (SaaS) – business use* (`txcd_10103000`) |
+| Theraglee Therapist membership | monthly, yearly | *Software as a service (SaaS) – business use* (`txcd_10103001`) |
+
+Pick the plain *SaaS* codes, not the *SaaS – electronic download* ones
+(`txcd_10103100` / `txcd_10103101`): those assume the buyer downloads an app,
+and Theraglee runs in the browser.
 
 Each price has an ID starting `price_`. Paste the six IDs into
 `/admin.html` → **Stripe setup**, and check the shown prices in the same screen
