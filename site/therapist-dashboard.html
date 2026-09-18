@@ -684,6 +684,7 @@ function locRow(l){
 let photoFile = null;      // the shrunk JPEG to upload
 let photoRemoved = false;  // the therapist asked to take their photo down
 const PHOTO_BUCKET = 'therapist-photos';
+const BIO_MAX = 1400; // characters in the Short bio; therapist_profiles.bio checks the same
 const photoPath = () => `${a.profile.id}/photo.jpg`;
 
 // Office pictures (optional, up to OFFICE_MAX): the saved ones the therapist is
@@ -744,7 +745,8 @@ function profile(){
           ${['Female','Male','Non-binary'].map(g=>`<option ${t.gender===g?'selected':''}>${g}</option>`).join('')}</select></div>
       </div>
       <div class="field"><label for="bio">Short bio</label>
-        <textarea id="bio" placeholder="How you work, who you work with, what a first session is like.">${esc(t.bio||'')}</textarea></div>
+        <textarea id="bio" maxlength="${BIO_MAX}" placeholder="How you work, who you work with, what a first session is like.">${esc(t.bio||'')}</textarea>
+        <div class="help" id="bio-count"></div></div>
       <div class="field"><label for="photo">Profile photo</label>
         <div class="photo-pick">
           <div class="photo-preview" id="photo-preview">${t.photo_url
@@ -882,6 +884,9 @@ function profile(){
 
   ['states','mods','ins','ages','parts','langs','pay'].forEach(wireChips);
   wireSpecChips();
+  const bio = document.getElementById('bio'), bioCount = document.getElementById('bio-count');
+  const countBio = () => { bioCount.textContent = `${bio.value.length.toLocaleString()} of ${BIO_MAX.toLocaleString()} characters`; };
+  bio.addEventListener('input', countBio); countBio();
   document.getElementById('addloc').onclick = () =>
     document.getElementById('locs').insertAdjacentHTML('beforeend', locRow({}));
   document.getElementById('pform').addEventListener('submit', save);
@@ -949,6 +954,7 @@ async function save(e){
   if (!V('lic')) return toast('License number is required.','err');
   if (!chipVals('states').length) return toast('Select at least one state of licensure.','err');
   if (!V('cemail')) return toast('Add the email where messages should go.','err');
+  if (V('bio').length > BIO_MAX) return toast(`Keep your short bio to ${BIO_MAX.toLocaleString()} characters.`,'err');
   const gradYear = V('edu-year');
   if (gradYear && !(/^\d{4}$/.test(gradYear) && Number(gradYear) >= 1900 && Number(gradYear) <= new Date().getFullYear()))
     return toast('Enter the year you graduated as four digits, like 2007.','err');
