@@ -115,6 +115,14 @@ The site is deployed by Vercel straight from this repository: the project is
 linked to `Suzy590/Theraglee-Repo` with **`site/` as the root directory**, so a
 push to the default branch deploys it. There is no longer a manual step.
 
+If a push does not show up on the site, check <https://www.vercel-status.com>
+first. During a Vercel incident (for example "Elevated Errors Triggering
+Deployments" on September 18, 2026) the push is simply missed, and Vercel does
+not replay it once the incident is over. To get the site current again, merge
+or push another commit to the production branch, or in the Vercel dashboard
+use *Deployments → Create Deployment* and pick the branch. *Redeploy* on an
+older deployment rebuilds that older commit, so it does not help.
+
 > **Prerequisite, now done:** the Vercel GitHub App must have access to
 > `Suzy590/Theraglee-Repo`. It is already installed on the account (that is how
 > `assignremind` deploys) but is scoped to selected repositories, so this one has
