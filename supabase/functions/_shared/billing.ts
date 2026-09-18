@@ -17,16 +17,17 @@ export type Interval = "monthly" | "yearly" | "founding";
 /**
  * The three paid plans. `taxCode` is the Stripe Tax product tax code each
  * product should carry in the Dashboard:
- *   txcd_10103001  Software as a service (SaaS) — personal use
- *   txcd_10103000  Software as a service (SaaS) — business use
+ *   txcd_10103000  Software as a service (SaaS) — personal use
+ *   txcd_10103001  Software as a service (SaaS) — business use
+ * (Not the "electronic download" variants txcd_10103100/101: nothing is downloaded.)
  */
 export const PLANS: Record<PlanKey, {
   monthly: string; yearly: string; founding?: string; audience: "member" | "therapist"; taxCode: string;
 }> = {
-  basic:     { monthly: "price_basic_monthly",     yearly: "price_basic_yearly",     audience: "member",    taxCode: "txcd_10103001" },
-  premium:   { monthly: "price_premium_monthly",   yearly: "price_premium_yearly",   audience: "member",    taxCode: "txcd_10103001" },
+  basic:     { monthly: "price_basic_monthly",     yearly: "price_basic_yearly",     audience: "member",    taxCode: "txcd_10103000" },
+  premium:   { monthly: "price_premium_monthly",   yearly: "price_premium_yearly",   audience: "member",    taxCode: "txcd_10103000" },
   therapist: { monthly: "price_therapist_monthly", yearly: "price_therapist_yearly",
-               founding: "price_therapist_founding", audience: "therapist", taxCode: "txcd_10103000" },
+               founding: "price_therapist_founding", audience: "therapist", taxCode: "txcd_10103001" },
 };
 
 export const isPlanKey = (k: unknown): k is PlanKey =>
