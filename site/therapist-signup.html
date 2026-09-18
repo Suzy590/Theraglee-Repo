@@ -11,6 +11,18 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
 <link rel="stylesheet" href="assets/styles.css">
+<style>
+  /* The founding-member banner, shown when the page opens with ?plan=founding. */
+  .founding-note{background:var(--green-deep);color:#fff;border-radius:var(--r);padding:18px 20px;
+    margin-bottom:22px;box-shadow:var(--shadow-1)}
+  .founding-note .kicker{display:inline-block;padding:3px 11px;border-radius:var(--r-pill);background:var(--lime);
+    color:var(--ink);font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+  .founding-note .rate{display:flex;align-items:baseline;gap:8px;margin:10px 0 6px}
+  .founding-note .rate b{font-size:2rem;font-weight:300;letter-spacing:-.03em;line-height:1;color:var(--lime)}
+  .founding-note .rate small{color:rgba(255,255,255,.8)}
+  .founding-note p{margin:0;font-size:.93rem;color:rgba(255,255,255,.9);line-height:1.5}
+  .founding-note p a{color:#fff;text-decoration:underline}
+</style>
 </head>
 <body>
 <main class="section">
@@ -20,6 +32,8 @@
       <h1 style="font-size:2rem;margin-top:14px">Create your therapist account</h1>
       <p class="muted">List your practice, get verified, and see exactly what Theraglee brings you.</p>
     </div>
+
+    <div id="founding-banner" hidden></div>
 
     <div class="card pad-lg">
       <div id="alert"></div>
@@ -32,13 +46,13 @@
         <li>Create your account (about a minute).</li>
         <li>Fill in your profile: license, specialties, insurances, fees, locations.</li>
         <li>We verify your license with your state board.</li>
-        <li>Start your membership and publish. Referrals are counted from day one.</li>
+        <li id="next-step-4">Start your membership and publish. Referrals are counted from day one.</li>
       </ol>
     </div>
     <p class="center muted" style="margin-top:22px">
       Already have a therapist account? <a href="therapist-login.html">Sign in</a>
     </p>
-    <p class="center faint" style="margin-top:8px">
+    <p class="center faint" style="margin-top:8px" id="price-line">
       One flat membership, billed monthly or yearly. Cancel any time.
       <a href="for-therapists.html">See everything it includes</a>.
     </p>
@@ -49,10 +63,52 @@
 </main>
 
 <script type="module">
-import { chrome } from './assets/app.js';
+import { chrome, sb, esc, qs } from './assets/app.js';
 import { authPage } from './assets/auth.js';
+import { foundingOffer } from './assets/plans.js';
 await chrome();
-await authPage({ audience: 'therapist', mode: 'signup' });
+
+// Opened from a "Become a founding member" button (?plan=founding): show the
+// founding rate up top, remember the choice, and send the new account to the
+// Membership tab with the founding option waiting. The offer itself (rate,
+// spots, deadline, on/off) comes from the admin screen, and the checkout is
+// what finally decides whether it can still be sold.
+let next;
+if (qs('plan') === 'founding') {
+  const { data: rows } = await sb.from('app_config').select('key,value')
+    .in('key', ['founding_enabled','price_therapist_founding','display_therapist_founding',
+                'founding_spots','founding_deadline','display_therapist_monthly','display_therapist_yearly']);
+  const cfg = Object.fromEntries((rows||[]).map(r=>[r.key,r.value]));
+  const offer = foundingOffer(cfg);
+  const box = document.getElementById('founding-banner');
+  box.hidden = false;
+  if (offer.open && offer.rate) {
+    const who = offer.spots ? `the first ${offer.spots} therapists` : 'founding members';
+    const by = offer.deadlineText ? ` who join by ${esc(offer.deadlineText)}` : '';
+    box.innerHTML = `<div class="founding-note" role="note">
+      <span class="kicker">Founding member offer</span>
+      <div class="rate"><b>$${esc(offer.rate)}</b><small>/month, locked in for as long as your membership stays active</small></div>
+      <p>For ${who}${by}. Create your account below, and the founding rate will be waiting on
+        your practice dashboard, one click away. <a href="founding-members.html">How the offer works</a>.</p></div>`;
+    document.getElementById('next-step-4').textContent =
+      `Start your founding membership at $${offer.rate}/month and publish. Referrals are counted from day one.`;
+    document.getElementById('price-line').innerHTML =
+      `Founding member rate: $${esc(offer.rate)}/month, locked in while your membership stays active` +
+      (cfg.display_therapist_monthly ? ` (regular rate $${esc(cfg.display_therapist_monthly)}/month)` : '') +
+      `. Cancel any time. <a href="for-therapists.html">See everything it includes</a>.`;
+    try { localStorage.setItem('theraglee_plan', 'founding'); } catch {}
+    next = 'therapist-dashboard.html?plan=founding#membership';
+  } else {
+    const why = offer.closedBecause === 'expired' ? 'has ended' : 'is not open right now';
+    box.innerHTML = `<div class="notice warn" style="margin-bottom:22px">
+      <strong>The founding member offer ${why}.</strong>${cfg.display_therapist_monthly
+        ? ` Therapist membership is $${esc(cfg.display_therapist_monthly)}/month` +
+          (cfg.display_therapist_yearly ? ` or $${esc(cfg.display_therapist_yearly)} a year` : '') + '.'
+        : ''} You can still create your account below.</div>`;
+  }
+}
+
+await authPage({ audience: 'therapist', mode: 'signup', next });
 </script>
 </body>
 </html>

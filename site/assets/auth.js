@@ -15,11 +15,14 @@ const homeName = (aud) => aud === 'therapist' ? 'practice dashboard' : 'dashboar
  * Draws the form into `#auth` and wires it up.
  *   audience  'member' | 'therapist'   which door this page is
  *   mode      'signin' | 'signup'
+ *   next      optional page on this site to land on afterwards (else ?next=)
  */
-export async function authPage({ audience, mode }) {
+export async function authPage({ audience, mode, next: nextGiven }) {
   const door = DOORS[audience];
   const up = mode === 'signup';
-  const next = safeNext(qs('next'));
+  // A page may choose the destination itself (the founding-member sign-up
+  // does); otherwise it comes from ?next= on the address.
+  const next = safeNext(nextGiven ?? qs('next'));
   const host = $('#auth');
 
   const alertBox = (msg, kind = 'err') => $('#alert').innerHTML =
