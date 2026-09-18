@@ -270,6 +270,21 @@ async function billing(){
     ${row('display_therapist_monthly','Therapist — monthly','29')}
     ${row('display_therapist_yearly','Therapist — yearly','290')}
 
+    <h2 style="margin-top:34px">Founding member offer</h2>
+    <p class="muted" style="max-width:64ch">A discounted <em>monthly</em> therapist rate for the
+      first therapists who join. In Stripe, add it as a third price on the therapist membership
+      product, then paste its ID here. Therapists who take it keep the rate for as long as their
+      membership stays active, even after the offer closes. The switch below turns the offer on and
+      off across the site; the deadline and the number of spots close it on their own.</p>
+    ${row('price_therapist_founding','Founding — Stripe price ID','price_…')}
+    ${row('display_therapist_founding','Founding — monthly price shown','20')}
+    ${row('founding_spots','Spots (blank = no limit)','150')}
+    ${row('founding_deadline','Last day to join (YYYY-MM-DD, blank = none)','2026-12-31')}
+    <div class="stack" style="margin-top:12px">
+      ${toggle('founding_enabled','Offer the founding member rate',
+        'Shows the offer on the For Therapists page and a "Founding member" button on the practice dashboard, and lets checkout sell it. Admins can test the checkout while this is off.')}
+    </div>
+
     <h2 style="margin-top:34px">Session payments (Stripe Connect)</h2>
     ${row('platform_fee_percent','Theraglee keeps (%)','10')}
     ${row('platform_fee_min_cents','…but never less than (cents)','100')}

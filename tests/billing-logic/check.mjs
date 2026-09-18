@@ -6,8 +6,9 @@
 // Exits non-zero on the first failed assertion.
 import assert from "node:assert/strict";
 import {
-  connectStatus, identityStatusFor, isActive, isStaleSubscription, isValidSessionFee,
-  planForPrice, platformFee, priceKeyFor, safeReturnOrigin, subscriptionPatch,
+  connectStatus, deadlineEnd, foundingOffer, identityStatusFor, isActive, isInterval,
+  isStaleSubscription, isValidSessionFee, planForPrice, platformFee, priceKeyFor,
+  safeReturnOrigin, subscriptionPatch,
 } from "../../supabase/functions/_shared/billing.ts";
 
 let n = 0;
@@ -24,20 +25,88 @@ test("isActive mirrors sub_active()", () => {
 test("price keys follow the admin screen's names", () => {
   assert.equal(priceKeyFor("basic", "monthly"), "price_basic_monthly");
   assert.equal(priceKeyFor("therapist", "yearly"), "price_therapist_yearly");
+  assert.equal(priceKeyFor("therapist", "founding"), "price_therapist_founding");
+  // Only therapists have a founding rate.
+  assert.equal(priceKeyFor("basic", "founding"), null);
+  assert.equal(priceKeyFor("premium", "founding"), null);
+});
+
+test("isInterval accepts the three billing choices and nothing else", () => {
+  assert.equal(isInterval("monthly"), true);
+  assert.equal(isInterval("yearly"), true);
+  assert.equal(isInterval("founding"), true);
+  assert.equal(isInterval("weekly"), false);
+  assert.equal(isInterval(undefined), false);
 });
 
 const cfg = {
   price_basic_monthly: "price_b_m", price_basic_yearly: "price_b_y",
   price_premium_monthly: "price_p_m", price_premium_yearly: "",
   price_therapist_monthly: "price_t_m", price_therapist_yearly: "price_t_y",
+  price_therapist_founding: "price_t_f",
 };
 
 test("planForPrice finds the plan for a price id and ignores blanks", () => {
   assert.equal(planForPrice(cfg, "price_b_y"), "basic");
   assert.equal(planForPrice(cfg, "price_p_m"), "premium");
   assert.equal(planForPrice(cfg, "price_t_y"), "therapist");
+  assert.equal(planForPrice(cfg, "price_t_f"), "therapist");
   assert.equal(planForPrice(cfg, ""), null);
   assert.equal(planForPrice(cfg, "price_unknown"), null);
+  // A blank founding price never matches an empty id.
+  assert.equal(planForPrice({ ...cfg, price_therapist_founding: "" }, ""), null);
+});
+
+test("deadlineEnd is the end of the day, UTC, and rejects junk", () => {
+  assert.equal(deadlineEnd("2026-12-31").toISOString(), "2026-12-31T23:59:59.999Z");
+  assert.equal(deadlineEnd(" 2026-12-31 ").toISOString(), "2026-12-31T23:59:59.999Z");
+  assert.equal(deadlineEnd(""), null);
+  assert.equal(deadlineEnd(null), null);
+  assert.equal(deadlineEnd("12/31/2026"), null);
+  assert.equal(deadlineEnd("soon"), null);
+});
+
+const founding = (over = {}) => ({
+  founding_enabled: "true", price_therapist_founding: "price_t_f",
+  display_therapist_founding: "20", founding_spots: "150", founding_deadline: "2026-12-31",
+  ...over,
+});
+const before = new Date("2026-09-18T12:00:00Z");
+const after = new Date("2027-01-01T00:00:00Z");
+
+test("the founding offer is open only with the switch on, a price, and time left", () => {
+  const open = foundingOffer(founding(), before);
+  assert.equal(open.open, true);
+  assert.equal(open.closedBecause, null);
+  assert.equal(open.priceId, "price_t_f");
+  assert.equal(open.rate, "20");
+  assert.equal(open.spots, 150);
+  assert.equal(open.deadline, "2026-12-31");
+
+  const off = foundingOffer(founding({ founding_enabled: "false" }), before);
+  assert.equal(off.open, false);
+  assert.equal(off.closedBecause, "off");
+  assert.equal(foundingOffer(founding({ founding_enabled: "" }), before).closedBecause, "off");
+  assert.equal(foundingOffer({}, before).closedBecause, "off");
+
+  const noPrice = foundingOffer(founding({ price_therapist_founding: "  " }), before);
+  assert.equal(noPrice.open, false);
+  assert.equal(noPrice.closedBecause, "no_price");
+
+  const expired = foundingOffer(founding(), after);
+  assert.equal(expired.open, false);
+  assert.equal(expired.closedBecause, "expired");
+  // Still open on the last day itself.
+  assert.equal(foundingOffer(founding(), new Date("2026-12-31T23:00:00Z")).open, true);
+});
+
+test("a blank deadline never expires and a blank or bad cap means no cap", () => {
+  assert.equal(foundingOffer(founding({ founding_deadline: "" }), after).open, true);
+  assert.equal(foundingOffer(founding({ founding_deadline: "whenever" }), after).open, true);
+  assert.equal(foundingOffer(founding({ founding_spots: "" }), before).spots, null);
+  assert.equal(foundingOffer(founding({ founding_spots: "0" }), before).spots, null);
+  assert.equal(foundingOffer(founding({ founding_spots: "lots" }), before).spots, null);
+  assert.equal(foundingOffer(founding({ founding_spots: " 25 " }), before).spots, 25);
 });
 
 const sub = (over = {}) => ({

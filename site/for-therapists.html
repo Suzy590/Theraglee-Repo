@@ -434,6 +434,7 @@
 
 <script type="module">
 import { chrome, sb, esc } from './assets/app.js';
+import { foundingOffer } from './assets/plans.js';
 const a = await chrome();
 
 const LABEL = { worksheet:'Worksheets', cbt:'CBT', act:'ACT', dbt:'DBT',
@@ -446,9 +447,11 @@ document.getElementById('libcount').innerHTML = (cat||[]).length
      + `<div><b>${total}</b><span>in total</span></div>`)
   : '<div><b>—</b><span>library loading</span></div>';
 
-// The regular price comes from the admin screen, like the member plans.
+// The regular price and the founding-member offer both come from the admin
+// screen, like the member plans.
 const { data: cfgRows } = await sb.from('app_config').select('key,value')
-  .in('key', ['display_therapist_monthly','display_therapist_yearly']);
+  .in('key', ['display_therapist_monthly','display_therapist_yearly','founding_enabled',
+              'price_therapist_founding','display_therapist_founding','founding_spots','founding_deadline']);
 const cfg = Object.fromEntries((cfgRows||[]).map(r=>[r.key,r.value]));
 if (cfg.display_therapist_monthly) {
   document.getElementById('th-price').innerHTML =
@@ -459,29 +462,39 @@ if (cfg.display_therapist_monthly) {
   document.getElementById('th-note').textContent = 'Price shown once payments are switched on.';
 }
 
-// Founding-member offer: the one place to change the rate, the number of
-// spots and the deadline. It fills the panel under the hero buttons and the
-// line under the membership price.
-const FOUNDING = { rate: 20, spots: 150, deadline: 'December 31, 2026' };
-document.getElementById('founder-rate').textContent = `$${FOUNDING.rate}`;
-document.getElementById('founder-pitch').innerHTML =
-  `Be one of the first <strong>${FOUNDING.spots} therapists</strong> to join by
-   <strong>${esc(FOUNDING.deadline)}</strong> and lock in your monthly rate at
-   <strong>$${FOUNDING.rate}</strong> for as long as you keep your membership.`;
-if (cfg.display_therapist_monthly) {
-  const reg = document.getElementById('founder-regular');
-  reg.textContent = `$${cfg.display_therapist_monthly}`; reg.hidden = false;
-  document.getElementById('founder-fine').textContent =
-    `Regular rate: $${cfg.display_therapist_monthly}/month` +
-    (cfg.display_therapist_yearly ? `, or $${cfg.display_therapist_yearly} a year.` : '.') +
-    ' Founding members keep the locked-in monthly rate as long as their membership stays active.';
+// Founding-member offer. The rate, the number of spots, the deadline and the
+// on/off switch all live on the admin screen (Stripe setup tab). When the
+// offer is off, has no price yet, or its deadline has passed, the panel under
+// the hero buttons and the line under the membership price are hidden.
+const offer = foundingOffer(cfg);
+if (offer.open && offer.rate) {
+  const who = offer.spots ? `Be one of the first <strong>${offer.spots} therapists</strong> to join`
+                          : 'Join';
+  const by = offer.deadlineText ? ` by <strong>${esc(offer.deadlineText)}</strong>` : '';
+  document.getElementById('founder-rate').textContent = `$${offer.rate}`;
+  document.getElementById('founder-pitch').innerHTML =
+    `${who}${by} and lock in your monthly rate at <strong>$${esc(offer.rate)}</strong>
+     for as long as you keep your membership.`;
+  if (cfg.display_therapist_monthly) {
+    const reg = document.getElementById('founder-regular');
+    reg.textContent = `$${cfg.display_therapist_monthly}`; reg.hidden = false;
+    document.getElementById('founder-fine').textContent =
+      `Regular rate: $${cfg.display_therapist_monthly}/month` +
+      (cfg.display_therapist_yearly ? `, or $${cfg.display_therapist_yearly} a year.` : '.') +
+      ' Founding members keep the locked-in monthly rate as long as their membership stays active.';
+  } else {
+    document.getElementById('founder-fine').textContent =
+      'Founding members keep the locked-in monthly rate as long as their membership stays active.';
+  }
+  const limits = [offer.spots ? `for the first ${offer.spots} therapists` : '',
+                  offer.deadlineText ? `who join by ${esc(offer.deadlineText)}` : ''].filter(Boolean).join(' ');
+  document.getElementById('th-founder').innerHTML =
+    `<strong>Founding members:</strong> $${esc(offer.rate)}/month locked in${limits ? ' ' + limits : ''}.
+     Choose it from your practice dashboard.`;
 } else {
-  document.getElementById('founder-fine').textContent =
-    'Founding members keep the locked-in monthly rate as long as their membership stays active.';
+  document.getElementById('founder').style.display = 'none';
+  document.getElementById('th-founder').hidden = true;
 }
-document.getElementById('th-founder').innerHTML =
-  `<strong>Founding members:</strong> $${FOUNDING.rate}/month locked in for the first
-   ${FOUNDING.spots} therapists who join by ${esc(FOUNDING.deadline)}.`;
 
 const box = document.getElementById('cta-box');
 if (!a.authenticated) {
