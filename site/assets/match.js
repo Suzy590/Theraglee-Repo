@@ -26,7 +26,7 @@ const SESSION_LINE = {
 export const sessionLabel = (k) => SESSION_LINE[k] || '';
 const rangeLabel = (r) => r ? String(r).replace('-', '–') : '';
 
-/* The general area a therapist sees: the first three digits of the zip code. */
+/* The only location a therapist sees: the first three digits of the zip code. */
 export const areaOf = (zip) => (/^\d{5}/.test(zip || '') ? zip.slice(0, 3) + 'xx' : '');
 
 /* True once the member has answered everything the window asks for. */
@@ -56,10 +56,10 @@ function listWords(words) {
 
 /* The short explanation under every Match Mode switch. */
 export const MATCH_BLURB = `Let therapists reach out to you. Verified therapists see a pseudonymous
-  profile, never your name: your age range, the broad topics you want to work on, whether you
-  prefer in-person, video, or either, and your general location so they know you're nearby.
-  They message your Theraglee inbox. Your real name goes to a therapist only if you choose to
-  reply to them, and you can block any therapist with one tap.`;
+  profile, never your name: your age range, the broad topics you want to work on, whether you prefer
+  in-person, video, or either, and the first three digits of your zip code so they know you're
+  nearby. They message your Theraglee inbox. Your real name goes to a therapist only if you choose
+  to reply to them, and you can block any therapist with one tap.`;
 
 /* Ask for the details, save them, and switch Match Mode on.
    Resolves with the saved fields, or null if the member closed the window. */
@@ -95,8 +95,8 @@ export function matchDetailsModal(p, { editing = false } = {}) {
 
       <div class="field"><label for="mm-zip">Zip code</label>
         <input id="mm-zip" type="text" inputmode="numeric" maxlength="10" value="${esc(p.zip||'')}" placeholder="5 digits">
-        <div class="help">Therapists see only the first three digits, as a general area, so they know
-          you're nearby. Your exact zip code stays private.</div></div>
+        <div class="help">Therapists see only the first three digits of your zip code, so they know
+          you're nearby. Your full zip code stays private.</div></div>
 
       <div class="notice" id="mm-preview" style="margin-bottom:16px"></div>
 

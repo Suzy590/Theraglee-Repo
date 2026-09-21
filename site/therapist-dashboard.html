@@ -295,7 +295,7 @@ async function home(){
         'Calls, messages, website clicks, shares and profile views, with the previous period alongside.',
         state(true, 'Included', ''))}
       ${benefit('#members', 'Theraglee Match Mode',
-        'Reach out to members who asked to be contacted, instead of waiting to be found. They stay anonymous until they reply.',
+        'Reach out to members who asked to be contacted, instead of waiting to be found. They stay pseudonymous until they reply.',
         state(liveListing, 'Ready', 'Needs a live listing'))}
       ${benefit('#library', 'Clinician library',
         `${libTotal || 'Dozens of'} worksheets and CBT, ACT, DBT, couples, kids and game exercises, printable with guidance.`,
@@ -456,12 +456,12 @@ async function members(){
 
   render(`
     <h2>Members who have toggled ON <strong>Theraglee Match Mode</strong></h2>
-    <p class="muted">Theraglee members who switched on <strong>Theraglee Match Mode</strong>. Each one
-      is pseudonymous: you see their age range, the broad topics they want to work on, whether they
-      prefer in-person, video, or either, and their general area. Never a name, an exact location
-      or an email address, and never anything they have written in their journal. A member who
-      answers your message gives you their real name with the reply. A member can block you at any
-      time; you then stop seeing them and cannot write to them.</p>
+    <p class="muted">Theraglee members who switched on <strong>Theraglee Match Mode</strong>. Each
+      one is pseudonymous: you see their age range, the broad topics they want to work on, whether
+      they prefer in-person, video, or either, and the first three digits of their zip code. Never a
+      name, an exact location or an email address, and never anything they have written in their
+      journal. A member who answers your message gives you their real name with the reply. A member
+      can block you at any time; you then stop seeing them and cannot write to them.</p>
     ${!liveListing ? `<div class="notice warn">Your listing has to be live before you can
       reach out.</div>` : ''}
 

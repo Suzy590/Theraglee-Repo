@@ -13,8 +13,8 @@ request.
 > **Theraglee Match Mode** lets verified therapists in your area reach out to
 > you. They see a **pseudonymous profile**, never your name: your age range,
 > the broad topics you want to work on (like anxiety or burnout), whether you
-> prefer in-person, video, or either, and your general location so they know
-> you're nearby.
+> prefer in-person, video, or either, and the first three digits of your zip
+> code so they know you're nearby.
 >
 > Your name stays private until you decide otherwise. If you choose to reply to
 > a therapist, your reply includes your real name — only then, and only to
@@ -30,7 +30,7 @@ request.
 | Age range | `profiles.match_age_range`, one of `18-24`, `25-34`, `35-44`, `45-54`, `55-64`, `65+` | "35–44" |
 | Broad topics | `profiles.issues`, the same topics that shape daily content | "seeks help with anxiety and burnout" |
 | Session preference | `profiles.match_delivery`: `in_person`, `telehealth` (video) or `both` | "seeking video sessions" |
-| General location | the first three digits of `profiles.zip`, exposed by the view as `area` | "in the 902xx area" |
+| First three digits of the zip code | `left(profiles.zip, 3)`, exposed by the view as `area` | "in the 902xx area" |
 
 Nothing else. The view has no name, gender, age, zip, email or content column.
 
