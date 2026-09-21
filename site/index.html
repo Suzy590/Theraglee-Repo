@@ -206,6 +206,16 @@
   }
   .band{background:var(--paper);border-top:1px solid var(--hair);border-bottom:1px solid var(--hair)}
   @media(prefers-reduced-motion:reduce){.ray,.w,.up,.dot{animation:none!important}}
+  .inbox{background:var(--paper);border-top:1px solid var(--hair)}
+  .inbox h2{font-weight:400;letter-spacing:-.02em;margin-bottom:.3em}
+  .inbox p.muted{max-width:46ch;margin:0 auto}
+  .inbox-form{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:24px auto 0;max-width:520px}
+  .inbox-form input{flex:1 1 260px;min-width:0;padding:12px 16px;border:1px solid var(--hair);
+    border-radius:100px;background:#fff;font:inherit;color:var(--ink)}
+  .inbox-form input:focus{outline:2px solid var(--brand);outline-offset:1px}
+  .inbox-form .btn{flex:0 0 auto}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+    clip:rect(0,0,0,0);white-space:nowrap;border:0}
 </style>
 </head>
 <body>
@@ -416,10 +426,26 @@
       </div>
     </div>
   </section>
+
+  <section class="section inbox" id="inbox">
+    <div class="wrap narrow center">
+      <h2>Not ready for an account? Start with your inbox.</h2>
+      <p class="muted">One free mental-health tool every Sunday morning. Try them at your own
+        pace — no account, no card.</p>
+      <form id="inbox-form" class="inbox-form" novalidate>
+        <label class="sr-only" for="inbox-email">Email address</label>
+        <input id="inbox-email" type="email" name="email" autocomplete="email" required
+               placeholder="you@example.com" spellcheck="false">
+        <button class="btn" id="inbox-send" type="submit">Send me the tools</button>
+      </form>
+      <p class="faint" id="inbox-note" style="margin-top:12px">No spam, ever. Unsubscribe anytime
+        with one click.</p>
+    </div>
+  </section>
 </main>
 
 <script type="module">
-import { chrome, sb, esc, tierName, modal } from './assets/app.js';
+import { chrome, sb, esc, tierName, modal, FN, SUPABASE_KEY, busy, toast } from './assets/app.js';
 import { loadPrices, tierCards } from './assets/plans.js';
 const a = await chrome();
 
@@ -516,6 +542,37 @@ document.getElementById('explore-fine').innerHTML =
   : a.level < 3
     ? 'Anything marked <strong>Basic</strong> or <strong>Premium</strong> is part of a paid membership. <a href="pricing.html">Compare memberships</a>'
     : 'Everything here is included in your Premium membership.';
+
+/* ---- "Start with your inbox": the Sunday tool email, no account needed ----
+   Posts to the tool-signup Edge Function, which adds the address to the list
+   and sends the first tool straight away. */
+document.getElementById('inbox-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const field = document.getElementById('inbox-email');
+  const btn   = document.getElementById('inbox-send');
+  const note  = document.getElementById('inbox-note');
+  const email = field.value.trim();
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+    return toast('Please enter an email address we can send to.', 'err');
+  }
+  busy(btn, true, 'Sending…');
+  try {
+    const res = await fetch(`${FN}/tool-signup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', apikey: SUPABASE_KEY },
+      body: JSON.stringify({ email, source: 'homepage' }),
+    });
+    const out = await res.json().catch(() => ({}));
+    busy(btn, false);
+    if (!res.ok) return toast(out.message || 'That did not go through. Please try again.', 'err');
+    field.value = '';
+    note.textContent = out.message || 'Check your inbox — your first tool is on its way.';
+    toast('You are on the list.', 'ok');
+  } catch {
+    busy(btn, false);
+    toast('That did not go through. Please check your connection and try again.', 'err');
+  }
+});
 </script>
 </body>
 </html>
