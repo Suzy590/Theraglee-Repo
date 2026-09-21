@@ -1,0 +1,16 @@
+# Theraglee — https://theraglee.com
+# Everything public is crawlable. The pages left out below are either private to
+# one account, behind a sign-in, or a redirect target with nothing to index.
+
+User-agent: *
+Allow: /
+
+Disallow: /account.html
+Disallow: /dashboard.html
+Disallow: /admin.html
+Disallow: /therapist-dashboard.html
+Disallow: /login.html
+Disallow: /therapist-login.html
+Disallow: /my-assignments.html
+
+Sitemap: https://theraglee.com/sitemap.xml

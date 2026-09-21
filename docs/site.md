@@ -17,6 +17,7 @@ Moving the domain off HostGator is written up step by step in
 | Database + logins | Members, therapists, all content, all progress. | Supabase project `oekqzuguruyqkafsqhos` |
 | Payments | Stripe: Checkout, billing portal, Tax, Identity, Radar, Connect. See [`stripe.md`](stripe.md). | `supabase/functions/`, deployed as Supabase Edge Functions |
 | Hosting | Serves the site. | Vercel project `theraglee-site` |
+| Search landing pages | Real HTML at `/tools/...` and `/articles/...`, plus `sitemap.xml` and `robots.txt`, so the library is indexable. See [`seo.md`](seo.md). | `data/seo-pages.json`, `tools/build_seo_pages.py` |
 | Domain | `theraglee.com`. | Registered at Network Solutions, served by Vercel |
 
 ## Two front doors: members and therapists

@@ -1,0 +1,227 @@
+{
+  "_comment": "Source rows for tools/build_seo_pages.py. Each entry becomes one indexable page at site/<path>/index.html, plus one <url> in site/sitemap.xml. Never hand-edit the generated HTML.",
+  "site": "https://theraglee.com",
+  "pages": [
+    {
+      "path": "tools/anxiety-quiz",
+      "title": "Anxiety Quiz: A Five-Minute Self-Check — Theraglee",
+      "description": "A short anxiety check-in you can take in about five minutes. Not a diagnosis, just a structured way to notice where anxiety shows up for you, with free reading and next steps.",
+      "h1": "Anxiety quiz: a five-minute check-in on how anxiety shows up for you",
+      "intro": "Theraglee's anxiety check-ins are short, plain-language quizzes that help you notice where anxiety actually turns up in your day: in your body, before a decision, in a room full of people, or in the hours before something you are dreading. None of them diagnose anything or screen you for a condition. They exist to put words to something that usually stays vague.",
+      "blocks": [
+        {
+          "h2": "Which check-in fits what you are noticing",
+          "html": "<p>Anxiety does not feel the same for everyone, so there is more than one check-in. Pick the one that sounds closest to your week.</p><ul><li><a href=\"/quiz.html?slug=anxiety-in-your-body\">Where Anxiety Lives in Your Body</a> — for a jaw that will not unclench, a stomach that drops, shoulders up by your ears.</li><li><a href=\"/quiz.html?slug=anticipatory-anxiety\">The Dread Before Things</a> — for the hours or days of dread before an appointment, a flight, a conversation.</li><li><a href=\"/quiz.html?slug=social-anxiety-check-in\">Social Anxiety Check-In</a> — for the replaying afterward, the rehearsing beforehand, the exits you plan on the way in.</li><li><a href=\"/quiz.html?slug=anxiety-in-decisions\">Anxiety in Your Decisions</a> — for the choices you keep circling, and the ones you avoid by not choosing.</li></ul>"
+        },
+        {
+          "h2": "What you get at the end",
+          "html": "<p>Each check-in ends with a short written read-back: what your answers point to, in ordinary language, with a few specific things to try. Your answers are saved to your own dashboard so you can take the same check-in again in a month and see what moved. Nothing you answer is shown to anyone else.</p>"
+        },
+        {
+          "h2": "This is not a diagnosis",
+          "html": "<p>Theraglee does not diagnose, screen for, assess for, or treat any condition, and a check-in here is not a clinical instrument. If anxiety is getting in the way of work, sleep, or the people you care about, that is worth taking to a licensed therapist. If you are in crisis, call or text <strong>988</strong> in the United States for the Suicide and Crisis Lifeline, or text HOME to <strong>741741</strong>. If you are in danger, call 911.</p>"
+        },
+        {
+          "h2": "Free things to read first",
+          "html": "<p>Every article on Theraglee is free with a free account, no card needed. These three are the ones people open most when anxiety is loud:</p><ul><li><a href=\"/article.html?slug=five-ways-to-come-back-to-the-present-when-anxiety-spikes\">Five Ways to Come Back to the Present When Anxiety Spikes</a></li><li><a href=\"/article.html?slug=the-anger-under-your-anxiety\">The Anger Under Your Anxiety</a></li><li><a href=\"/article.html?slug=stress-or-burnout-how-to-tell-the-difference\">Stress or Burnout: How to Tell the Difference</a></li></ul>"
+        }
+      ],
+      "related": {
+        "h2": "Where to go next",
+        "items": [
+          { "label": "CBT thought record worksheet", "href": "/tools/cbt-thought-record", "note": "Write down an anxious thought and test it against the evidence." },
+          { "label": "Journal prompts for burnout", "href": "/tools/journal-prompts-burnout", "note": "When the anxiety is really exhaustion wearing a different coat." },
+          { "label": "How to find a therapist", "href": "/articles/how-to-find-a-therapist", "note": "What the license letters mean, what to ask, what it costs." },
+          { "label": "Browse the article library", "href": "/articles.html", "note": "Free with any account. Five new reads every day." }
+        ]
+      },
+      "faq": [
+        { "q": "Is the Theraglee anxiety quiz a diagnosis?", "a": "No. It is a self-reflection check-in, not a clinical screener, and it does not diagnose or rule out any condition. Only a licensed clinician can diagnose anxiety." },
+        { "q": "How long does it take?", "a": "About five minutes. You can stop partway through and pick it up later from your dashboard." },
+        { "q": "Who can see my answers?", "a": "Only you. Quiz answers live in your private dashboard. Therapists never see them, even if you switch on Theraglee Match Mode." },
+        { "q": "Do I need to pay?", "a": "The check-ins are part of the Basic membership. Reading is free: every Theraglee article is free with a free account, and no card is needed to join." }
+      ]
+    },
+    {
+      "path": "tools/depression-quiz",
+      "title": "Depression Quiz: A Low-Mood Self-Check — Theraglee",
+      "description": "A short low-mood check-in, written in plain language. It is not a depression screener and it does not diagnose. Use it to notice patterns, then decide whether to talk to someone.",
+      "h1": "Depression quiz: a low-mood check-in, not a diagnosis",
+      "intro": "People search for a depression quiz when something has gone flat and they want a name for it. Theraglee's low-mood check-ins will not give you a diagnosis, because a quiz cannot honestly give anyone one. What they can do is help you see the shape of a low patch: how long it has been going on, what it is touching, and what tends to lift it even slightly.",
+      "blocks": [
+        {
+          "h2": "Read this first if things are bad right now",
+          "html": "<p>If you are thinking about harming yourself, please do not start with a quiz. Call or text <strong>988</strong> in the United States for the Suicide and Crisis Lifeline, or text HOME to <strong>741741</strong>. If you are in danger, call 911. These are free, confidential, and open around the clock.</p>"
+        },
+        {
+          "h2": "The check-ins",
+          "html": "<ul><li><a href=\"/quiz.html?slug=low-mood-check-in\">Low Mood Check-In</a> — the main one: how long, how heavy, and what it is reaching into.</li><li><a href=\"/quiz.html?slug=reading-your-own-mood\">Reading Your Own Mood</a> — for when you cannot tell tired from sad from numb.</li><li><a href=\"/quiz.html?slug=the-sleep-and-mood-link\">The Sleep and Mood Link</a> — because a low mood and a bad month of sleep are often the same story.</li><li><a href=\"/quiz.html?slug=asking-for-support-when-low\">Asking for Support When You Are Low</a> — for the part where you know who to text and do not text them.</li></ul>"
+        },
+        {
+          "h2": "Why we will not call it a screener",
+          "html": "<p>Formal depression screeners are clinical instruments, scored and interpreted by people trained to do it, usually alongside a conversation and a history. Handing you a number out of context can do real harm in both directions: it can frighten someone who is having a hard fortnight, and it can reassure someone who needs help now. Theraglee does not diagnose, screen for, assess for, or treat any condition. These check-ins give you language and a pattern, not a verdict.</p>"
+        },
+        {
+          "h2": "What a low patch is worth taking to someone",
+          "html": "<p>A rough rule people find useful: if it has lasted more than two weeks, if it is touching more than one part of your life, or if the things that normally lift you have stopped working, that is worth a conversation with a licensed therapist. You do not have to be in crisis to deserve one.</p>"
+        }
+      ],
+      "related": {
+        "h2": "Where to go next",
+        "items": [
+          { "label": "How to find a therapist", "href": "/articles/how-to-find-a-therapist", "note": "A step-by-step guide, including what it costs and what to ask." },
+          { "label": "Anxiety quiz", "href": "/tools/anxiety-quiz", "note": "Low mood and anxiety travel together more often than not." },
+          { "label": "CBT thought record worksheet", "href": "/tools/cbt-thought-record", "note": "For the thoughts that show up on the worst days." },
+          { "label": "Find a therapist", "href": "/therapists.html", "note": "Browse the directory of licensed clinicians." }
+        ]
+      },
+      "faq": [
+        { "q": "Can an online quiz tell me if I have depression?", "a": "No. No online quiz can diagnose depression, including this one. A diagnosis comes from a licensed clinician who can take a history and talk with you." },
+        { "q": "What does the Theraglee low-mood check-in actually do?", "a": "It asks about how long the low patch has lasted, what it is affecting, and what shifts it, then gives you a plain-language read-back and a few things to try." },
+        { "q": "Is it private?", "a": "Yes. Your answers stay in your own dashboard. No therapist sees them, and Theraglee never sells or shares consumer health data." },
+        { "q": "What should I do if the result worries me?", "a": "Talk to a licensed therapist. If you are thinking of harming yourself, call or text 988 in the United States now." }
+      ]
+    },
+    {
+      "path": "tools/cbt-thought-record",
+      "title": "CBT Thought Record Worksheet — Theraglee",
+      "description": "A printable CBT thought record worksheet, plus a plain-English walkthrough of each column and a worked example. Catch the thought, check the evidence, write a fairer version.",
+      "h1": "CBT thought record worksheet",
+      "intro": "A thought record is the most-used worksheet in cognitive behavioral therapy, and it is not complicated: you catch a thought that made you feel worse, write down what was actually happening, and check the thought against the evidence instead of against your mood. Doing it on paper matters. Thoughts that feel airtight in your head tend to get looser once they have to sit still in a column.",
+      "blocks": [
+        {
+          "h2": "The seven columns, in plain English",
+          "html": "<ol><li><strong>Situation.</strong> Where you were and what happened, in one line. Facts a camera could have caught, not interpretations.</li><li><strong>Mood.</strong> One or two words, and a number out of 100 for how strong it was.</li><li><strong>Automatic thought.</strong> The sentence that went through your head. Write it exactly, including the harsh version.</li><li><strong>Evidence for it.</strong> What genuinely supports that thought.</li><li><strong>Evidence against it.</strong> What does not fit. This column is usually the hardest and the most useful.</li><li><strong>A fairer thought.</strong> Not a cheerful one. One that accounts for both columns above.</li><li><strong>Mood again.</strong> The same words, a new number. Even a drop of ten points counts.</li></ol>"
+        },
+        {
+          "h2": "A worked example",
+          "html": "<p><strong>Situation:</strong> Sent a message to a friend at 9am. No reply by 6pm.<br><strong>Mood:</strong> Anxious, 75.<br><strong>Automatic thought:</strong> \"She is annoyed with me and I have ruined it.\"<br><strong>Evidence for:</strong> She usually answers the same day. Our last call felt a bit short.<br><strong>Evidence against:</strong> She told me last week that work is brutal until Friday. She has gone quiet for two days before and it meant nothing. Nothing in my message was unkind.<br><strong>A fairer thought:</strong> \"The silence probably belongs to her week, not to me. If it is still quiet on Saturday I will ask.\"<br><strong>Mood again:</strong> Anxious, 40.</p>"
+        },
+        {
+          "h2": "How to actually use it",
+          "html": "<p>Fill one in close to the moment if you can, because the thought is easier to catch while it is still warm. Aim for a handful over a week rather than one perfect one. The point is not any single record; it is that after a dozen you start recognizing your own repeat offenders while they are happening.</p><p>The Theraglee version is fillable online and saves to your dashboard, so the record builds up over time: <a href=\"/worksheet.html?slug=thought-record-worksheet\">open the Thought Record Worksheet</a>.</p>"
+        },
+        {
+          "h2": "If you are working with a therapist",
+          "html": "<p>Bring the records. A therapist reading four of your real thought records learns more about the pattern in five minutes than they could from a long description of it. If you do not have a therapist yet, our guide on <a href=\"/articles/how-to-find-a-therapist\">how to find a therapist</a> covers where to start.</p>"
+        }
+      ],
+      "related": {
+        "h2": "Where to go next",
+        "items": [
+          { "label": "Anxiety quiz", "href": "/tools/anxiety-quiz", "note": "Find out where anxiety tends to land for you." },
+          { "label": "Journal prompts for burnout", "href": "/tools/journal-prompts-burnout", "note": "Twelve prompts for the flat, depleted kind of week." },
+          { "label": "Depression quiz", "href": "/tools/depression-quiz", "note": "A low-mood check-in, written carefully." },
+          { "label": "The worksheet library", "href": "/explore.html", "note": "186 worksheets across CBT, ACT, DBT and more." }
+        ]
+      },
+      "faq": [
+        { "q": "What is a CBT thought record?", "a": "A worksheet that takes one distressing thought and walks it through seven columns: the situation, your mood, the automatic thought, the evidence for and against it, a fairer thought, and your mood afterward." },
+        { "q": "How often should I fill one in?", "a": "A handful across a week works better than one perfect one. Fill it in close to the moment, while the thought is still fresh." },
+        { "q": "Do I need a therapist to use one?", "a": "No. Thought records are commonly used on their own. They are also one of the most useful things you can bring to a therapist if you have one." },
+        { "q": "Is the Theraglee thought record printable?", "a": "It is fillable online and saves to your private dashboard, so you can look back over past records. The worksheet library is part of the Basic membership." }
+      ]
+    },
+    {
+      "path": "tools/journal-prompts-burnout",
+      "title": "12 Journal Prompts for Burnout — Theraglee",
+      "description": "Twelve journal prompts for burnout, written for the flat and depleted kind of week rather than the busy kind. Free to read, with a burnout check-in and related worksheets.",
+      "h1": "12 journal prompts for burnout",
+      "intro": "Most journal prompts assume you have energy to reflect. Burnout is the condition of not having that, which is why the usual gratitude questions land so badly when you are in it. These twelve are written for the flat weeks: short, concrete, and answerable in three lines when three lines is all you have.",
+      "blocks": [
+        {
+          "h2": "Noticing where you actually are",
+          "html": "<ol><li>What did today cost you that yesterday did not?</li><li>Name the last time you felt genuinely rested. Not asleep. Rested.</li><li>Which part of your week are you already dreading, and when did it start being like that?</li><li>If someone described your month back to you without using the word \"busy\", what word would they use?</li></ol>"
+        },
+        {
+          "h2": "Finding what is draining it",
+          "html": "<ol start=\"5\"><li>What are you doing out of habit that nobody would notice if you stopped?</li><li>Which task takes ten minutes and which one only feels like it does? Write both down and compare.</li><li>Who gets your best attention right now, and who is getting what is left?</li><li>What have you said yes to this month that you would say no to if asked today?</li></ol>"
+        },
+        {
+          "h2": "Finding what is left",
+          "html": "<ol start=\"9\"><li>What is one thing that still works — small, unglamorous, reliable?</li><li>When did you last do something badly and it was fine?</li><li>What would the next two weeks look like if you were allowed to do the minimum?</li><li>What is the first thing you would put down, if you were told you had to put one thing down?</li></ol>"
+        },
+        {
+          "h2": "How to use them without making it another task",
+          "html": "<p>Pick one. Not four. Set a timer for five minutes and stop when it goes, even mid-sentence, especially mid-sentence. Burnout gets worse when recovery turns into another thing you are failing at, so an unfinished answer is a finished session.</p><p>The <a href=\"/journal.html\">Theraglee journal</a> keeps your entries private to your account and gives you a fresh prompt whenever you want one.</p>"
+        },
+        {
+          "h2": "Is it burnout or is it something else",
+          "html": "<p>Burnout, ordinary stress, and a low mood all feel similar from the inside and want different things from you. <a href=\"/article.html?slug=stress-or-burnout-how-to-tell-the-difference\">Stress or Burnout: How to Tell the Difference</a> is free to read and lays out where the line usually sits. If it has gone on for months, or if it has followed you into the parts of your life that are supposed to be the rest, that is worth taking to a therapist.</p>"
+        }
+      ],
+      "related": {
+        "h2": "Where to go next",
+        "items": [
+          { "label": "Burnout Check-In", "href": "/quiz.html?slug=burnout-check-in", "note": "A short check-in on how far along it has gotten." },
+          { "label": "A Burnout Map: What Each Part Is Protecting", "href": "/worksheet.html?slug=burnout-map-what-it-protects", "note": "A worksheet for the parts of you that are holding the line." },
+          { "label": "CBT thought record worksheet", "href": "/tools/cbt-thought-record", "note": "For the \"I should be handling this better\" thought." },
+          { "label": "How to find a therapist", "href": "/articles/how-to-find-a-therapist", "note": "If it has outlasted a long weekend and a good sleep." }
+        ]
+      },
+      "faq": [
+        { "q": "Do journal prompts help with burnout?", "a": "They help you see where the drain is coming from, which is usually the hard part. They are not a substitute for changing the load or for professional support when burnout has gone on for months." },
+        { "q": "How long should I spend on one?", "a": "Five minutes on one prompt. Stopping mid-sentence is fine and often better than finishing." },
+        { "q": "Is the Theraglee journal private?", "a": "Yes. Journal entries stay in your own account. No therapist can see them, including when Theraglee Match Mode is switched on." },
+        { "q": "What is the difference between burnout and stress?", "a": "Stress is usually too much, and it eases when the load does. Burnout is what is left after too much went on too long, and rest alone often does not touch it." }
+      ]
+    },
+    {
+      "path": "articles/how-to-find-a-therapist",
+      "title": "How to Find a Therapist: A Step-by-Step Guide — Theraglee",
+      "description": "What the license letters mean, how much therapy costs, where to look, what to ask on a first call, and what to do when nobody has openings. A practical US guide.",
+      "h1": "How to find a therapist",
+      "intro": "Finding a therapist is mostly an administrative problem wearing an emotional one's clothes. The hard part is rarely deciding you want help; it is the directories, the voicemail, the insurance page that does not load, and the ten people who are not taking clients. Here is the whole process, in the order you will actually hit it.",
+      "blocks": [
+        {
+          "h2": "1. The license letters, decoded",
+          "html": "<p>In the United States you will mostly meet four kinds of clinician. Any of them can do good talk therapy, and the letters matter less than the fit.</p><ul><li><strong>LPC / LPCC / LMHC</strong> — licensed professional or mental health counselor. Master's level, trained specifically in counseling.</li><li><strong>LCSW / LICSW</strong> — licensed clinical social worker. Master's level, often the strongest on the practical scaffolding around a life, not only what is inside it.</li><li><strong>LMFT</strong> — licensed marriage and family therapist. Trained to treat the relationship or the family as the thing in the room, not only the individual.</li><li><strong>PsyD / PhD psychologist</strong> — doctoral level, and the ones who can do formal psychological testing.</li></ul><p>A <strong>psychiatrist</strong> (MD or DO) is a different job: they prescribe and manage medication, and many do not do weekly talk therapy at all. Plenty of people see both.</p>"
+        },
+        {
+          "h2": "2. Decide in person, video, or either",
+          "html": "<p>Deciding this first cuts the search down enormously. Video opens up your whole state instead of your neighborhood, and it is the difference between a session and no session on a week with no childcare. In person is worth the travel for some people and some kinds of work. Either is a perfectly good answer, and saying so widens your options rather than narrowing them.</p><p>One rule that surprises people: your therapist generally has to be licensed in the state where <em>you</em> are sitting during the session, not where they are.</p>"
+        },
+        {
+          "h2": "3. What it costs, honestly",
+          "html": "<p>Out of pocket, a private-practice session in most of the United States runs roughly 100 to 250 dollars, higher in expensive metros and for doctoral-level clinicians. Three things bring that down, and all three are worth asking about directly:</p><ul><li><strong>In-network.</strong> You pay a copay. Call the number on your insurance card and ask for in-network outpatient mental health providers taking new patients.</li><li><strong>Out-of-network reimbursement.</strong> You pay in full, the therapist gives you a superbill, and your plan pays part of it back. Ask your plan what percentage, and whether the deductible applies.</li><li><strong>Sliding scale.</strong> Many therapists hold a few reduced-fee slots. You have to ask; almost nobody advertises them.</li></ul>"
+        },
+        {
+          "h2": "4. Where to look",
+          "html": "<p>Work more than one channel at once, because response rates are low everywhere.</p><ul><li>Your insurer's provider directory, for the copay path.</li><li>A public directory of licensed clinicians, like <a href=\"/therapists.html\">the Theraglee directory</a>, where every listing is license-verified against a state board before it goes live.</li><li>Your doctor, who often keeps a short list of people they actually refer to.</li><li>If you are employed, your EAP. It is usually a handful of free sessions and a fast way in.</li><li>Community mental health centers and university training clinics, which are the most reliable low-cost options and are routinely overlooked.</li></ul>"
+        },
+        {
+          "h2": "5. Let them come to you instead",
+          "html": "<p>The part people find hardest is the cold outreach: leaving voicemails and waiting. <strong>Theraglee Match Mode</strong> turns that around. You flip a switch on your dashboard and verified therapists in your area can see a pseudonymous profile — your age range, the broad topics you want to work on, whether you prefer in-person, video, or either, and the first three digits of your zip code so they know you are nearby. They message your Theraglee inbox. Your name stays private unless you choose to reply, and you can block any therapist with one tap. It is free with any account. <a href=\"/signup.html\">Create a free account</a> to switch it on.</p>"
+        },
+        {
+          "h2": "6. What to ask on the first call",
+          "html": "<p>Most first contacts are a free ten or fifteen minute call. Five questions get you most of the way:</p><ol><li>Have you worked with people bringing what I am bringing?</li><li>What does a typical session with you look like?</li><li>What do you charge, and do you have any sliding-scale slots?</li><li>What is your availability, and how far out is your waitlist?</li><li>How do you handle it if this turns out not to be a fit?</li></ol><p>You are also listening to something the answers do not contain: whether you can imagine talking to this person on a bad day.</p>"
+        },
+        {
+          "h2": "7. Giving it a fair trial, and changing your mind",
+          "html": "<p>Three or four sessions is the usual guidance before judging a fit, because the first one is largely history-taking and almost nobody feels a click in it. That said, if you dread going, or feel judged, or find yourself managing their feelings instead of yours, that is information and it arrives early. Leaving a therapist is a normal professional event, not a betrayal. \"I do not think this is the right fit, thank you\" is a complete sentence, and a good therapist will often hand you two names on the way out.</p>"
+        },
+        {
+          "h2": "8. When nobody has openings",
+          "html": "<p>This is common and it is not a sign you are searching wrong. Ask to be put on waitlists — plural, and say yes to all of them. Ask each person you speak to for two names, since clinicians know who has space. Widen to video across your whole state. Try the training clinics. And if you are getting worse while you wait, call or text <strong>988</strong> in the United States for the Suicide and Crisis Lifeline, or text HOME to <strong>741741</strong>. Waiting for an opening is not the same as having no options tonight.</p>"
+        }
+      ],
+      "related": {
+        "h2": "Where to go next",
+        "items": [
+          { "label": "Browse the directory", "href": "/therapists.html", "note": "License-verified clinicians, searchable by area and specialty." },
+          { "label": "Create a free account", "href": "/signup.html", "note": "Turn on Theraglee Match Mode and let therapists reach out to you." },
+          { "label": "Anxiety quiz", "href": "/tools/anxiety-quiz", "note": "Useful language to bring to a first session." },
+          { "label": "CBT thought record worksheet", "href": "/tools/cbt-thought-record", "note": "One of the most useful things to bring a new therapist." }
+        ]
+      },
+      "faq": [
+        { "q": "How much does therapy cost in the United States?", "a": "Roughly 100 to 250 dollars a session out of pocket in most of the country, more in expensive metros. In-network insurance reduces it to a copay, out-of-network plans often reimburse part of it, and many therapists keep a few sliding-scale slots that are not advertised." },
+        { "q": "What is the difference between an LCSW, an LPC and an LMFT?", "a": "All three are master's-level licensed therapists who can do talk therapy. Social workers (LCSW) are often strongest on the practical scaffolding around a life, counselors (LPC) are trained specifically in counseling, and marriage and family therapists (LMFT) are trained to work with the relationship or family as a unit." },
+        { "q": "Does my therapist have to be licensed in my state?", "a": "Generally yes, in the state where you are physically sitting during the session, not where the therapist is." },
+        { "q": "How many sessions before I know if a therapist is right for me?", "a": "Three or four. The first is mostly history-taking. That said, dreading the sessions or feeling judged is useful information much earlier than that." },
+        { "q": "What if no therapist has any openings?", "a": "Join several waitlists at once, ask everyone you speak to for two more names, widen the search to video across your whole state, and try university training clinics and community mental health centers." }
+      ]
+    }
+  ]
+}
