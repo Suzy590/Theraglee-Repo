@@ -54,6 +54,15 @@ python3 tools/build_seo_pages.py
 
 `docs/seo.md` is the guide.
 
+The free tool list the Sunday email draws from is generated too, from the
+browser's own copy in `site/assets/discover-tools.js`:
+
+```bash
+node tools/discover_tools_sql.mjs
+```
+
+`docs/weekly-tool-email.md` is the guide.
+
 ## `site/` is deployed verbatim
 
 A push to the default branch deploys `site/` via Vercel, and every file in it is
