@@ -41,6 +41,19 @@ python3 tools/build_documents.py
 Change `tools/build_documents.py` (or the source rows in `data/`), then re-run
 it and commit the regenerated output.
 
+## The search landing pages are generated
+
+`site/tools/`, `site/articles/` and `site/sitemap.xml` are built from
+`data/seo-pages.json`, and the FAQ structured data on `site/index.html` and
+`site/for-therapists.html` is rebuilt from the questions visible on those pages.
+Never hand-edit that output:
+
+```bash
+python3 tools/build_seo_pages.py
+```
+
+`docs/seo.md` is the guide.
+
 ## `site/` is deployed verbatim
 
 A push to the default branch deploys `site/` via Vercel, and every file in it is
