@@ -404,15 +404,16 @@ const quick = [
   ['Mental health trivia', 'trivia.html', 2, true],
   ['Goals & tracking', 'goals.html', 3],
   ['Mandalas', 'mandalas.html', 3],
-  ['Find a therapist', 'therapists.html', 0],
+  ['Find a therapist', 'therapists.html', 0, false, 'Search the Theraglee directory for therapists in your area'],
 ];
 /* A tile flagged `ownGate` opens its page even when locked, because that page makes its
-   own upgrade ask. Every other locked tile goes straight to the plans. */
-document.getElementById('quick').innerHTML = quick.map(([label, href, need, ownGate]) => {
+   own upgrade ask. Every other locked tile goes straight to the plans.
+   The last slot is an optional line under the title; tiles without one just say `Open`. */
+document.getElementById('quick').innerHTML = quick.map(([label, href, need, ownGate, note]) => {
   const locked = a.level < need;
   return `<a class="tile ${locked?'locked':''}" href="${locked && !ownGate ? 'pricing.html' : href}">
     <h3 style="font-size:.98rem">${esc(label)}</h3>
-    ${locked ? `<span class="badge lock">${tierName(need)}</span>` : '<span class="meta">Open</span>'}</a>`;
+    ${locked ? `<span class="badge lock">${tierName(need)}</span>` : `<span class="meta">${esc(note || 'Open')}</span>`}</a>`;
 }).join('');
 
 /* ---- upsell: the same three tiers as the landing page (assets/plans.js) ---- */
