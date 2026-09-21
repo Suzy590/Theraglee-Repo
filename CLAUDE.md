@@ -76,6 +76,15 @@ in `supabase/migrations/`. Change them here, run
 edit a function in the Supabase Dashboard, or the next deploy will overwrite it.
 `docs/stripe.md` is the guide.
 
+## Checklists grow by two a day
+
+Every checklist carries a description — one or two sentences on what that
+checklist is designed to accomplish — and two new ones on new themes are added
+every day, never repeating a list the library already has. The repo copy is
+`data/checklists.json`; check it with `node tests/checklists-fixture/check.mjs`,
+generate the SQL with `python3 tools/checklists_sql.py`, and follow
+`docs/checklists.md` for the daily routine and the writing rules.
+
 ## Articles are free, and five arrive every day
 
 Every article is `min_level = 0` (the database enforces it). The repo copy is

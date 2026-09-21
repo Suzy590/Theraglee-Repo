@@ -1,6 +1,6 @@
-# Applies each day's content SQL (articles, clinician-library resources for
-# therapists, and the free discovery tools the Sunday email draws from) to the
-# Supabase project when a routine pushes it (each
+# Applies each day's content SQL (articles, checklists, clinician-library
+# resources for therapists, and the free discovery tools the Sunday email draws
+# from) to the Supabase project when a routine pushes it (each
 # day's session pushes its own claude/... branch), so the site gets the content
 # even when the session that wrote it had no database access.
 #
@@ -16,12 +16,13 @@ on:
     branches: ['claude/**']
     paths:
       - 'supabase/migrations/*_articles_*.sql'
+      - 'supabase/migrations/*_checklists_*.sql'
       - 'supabase/migrations/*_therapist_resources_*.sql'
       - 'supabase/migrations/*_discover_tools_*.sql'
   workflow_dispatch:
     inputs:
       all:
-        description: Apply every article and clinician-library migration, not just the ones in the last push
+        description: Apply every article, checklist and clinician-library migration, not just the ones in the last push
         type: boolean
         default: false
 
@@ -41,13 +42,13 @@ jobs:
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         run: |
           if [ "$ALL" = "true" ]; then
-            files=$(ls supabase/migrations/*_articles_*.sql supabase/migrations/*_therapist_resources_*.sql supabase/migrations/*_discover_tools_*.sql | sort)
+            files=$(ls supabase/migrations/*_articles_*.sql supabase/migrations/*_checklists_*.sql supabase/migrations/*_therapist_resources_*.sql supabase/migrations/*_discover_tools_*.sql | sort)
           elif [ -n "$BEFORE" ] && git cat-file -e "$BEFORE" 2>/dev/null; then
             # A later push to a branch: only the files this push added or changed.
-            files=$(git diff --name-only "$BEFORE" HEAD -- 'supabase/migrations/*_articles_*.sql' 'supabase/migrations/*_therapist_resources_*.sql' 'supabase/migrations/*_discover_tools_*.sql' | sort)
+            files=$(git diff --name-only "$BEFORE" HEAD -- 'supabase/migrations/*_articles_*.sql' 'supabase/migrations/*_checklists_*.sql' 'supabase/migrations/*_therapist_resources_*.sql' 'supabase/migrations/*_discover_tools_*.sql' | sort)
           else
             # The first push of a new branch: the files it adds on top of the default branch.
-            files=$(git diff --name-only "origin/$DEFAULT_BRANCH...HEAD" -- 'supabase/migrations/*_articles_*.sql' 'supabase/migrations/*_therapist_resources_*.sql' 'supabase/migrations/*_discover_tools_*.sql' | sort)
+            files=$(git diff --name-only "origin/$DEFAULT_BRANCH...HEAD" -- 'supabase/migrations/*_articles_*.sql' 'supabase/migrations/*_checklists_*.sql' 'supabase/migrations/*_therapist_resources_*.sql' 'supabase/migrations/*_discover_tools_*.sql' | sort)
           fi
           echo "files<<EOF" >> "$GITHUB_OUTPUT"; echo "$files" >> "$GITHUB_OUTPUT"; echo "EOF" >> "$GITHUB_OUTPUT"
           echo "Will apply:"; echo "$files"
@@ -67,4 +68,5 @@ jobs:
             psql "$DB_URL" -v ON_ERROR_STOP=1 -q -f "$f"
           done
           psql "$DB_URL" -Atc "select count(*) || ' articles, all at min_level ' || min(min_level) || '-' || max(min_level) from public.articles"
+          psql "$DB_URL" -Atc "select count(*) || ' checklists, every one with a description: ' || count(description) from public.checklists"
           psql "$DB_URL" -Atc "select count(*) || ' clinician-library resources across ' || count(distinct kind) || ' kinds' from public.therapist_resources"
