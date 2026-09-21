@@ -41,6 +41,7 @@ if (!prompt) {
   const { data } = await sb.rpc('daily_pick', { p_kind: 'journal_prompt' });
   prompt = data?.[0] || null;
 }
+let lastPrompt = prompt;
 
 async function entries(){
   const { data } = await sb.from('journal_entries').select('*')
@@ -57,7 +58,9 @@ function paint(list){
         ${prompt ? `<div class="prompt-box" id="pbox">${esc(prompt.body)}</div>
           <div class="row" style="margin:10px 0 18px">
             <button class="btn sm ghost" id="newprompt">Give me another prompt</button>
-            <button class="btn sm ghost" id="freewrite">Write freely instead</button></div>` : ''}
+            <button class="btn sm ghost" id="freewrite">Write freely instead</button></div>`
+          : lastPrompt ? `<div class="row" style="margin:10px 0 18px">
+            <button class="btn sm ghost" id="useprompt">Back to the prompt</button></div>` : ''}
         <div class="field"><label for="title">Title <span class="faint">(optional)</span></label>
           <input id="title" type="text" placeholder="A word for today"></div>
         <div class="field"><label for="body">Your entry</label>
@@ -100,10 +103,13 @@ function paint(list){
 
   document.getElementById('newprompt')?.addEventListener('click', async () => {
     const { data } = await sb.rpc('daily_pick', { p_kind:'journal_prompt', p_seed: Math.floor(Math.random()*9999) });
-    if (data?.[0]) { prompt = data[0]; document.getElementById('pbox').textContent = prompt.body; }
+    if (data?.[0]) { prompt = data[0]; lastPrompt = prompt; document.getElementById('pbox').textContent = prompt.body; }
   });
   document.getElementById('freewrite')?.addEventListener('click', () => {
-    prompt = null; paint(list);
+    lastPrompt = prompt; prompt = null; paint(list);
+  });
+  document.getElementById('useprompt')?.addEventListener('click', () => {
+    prompt = lastPrompt; paint(list);
   });
 }
 
