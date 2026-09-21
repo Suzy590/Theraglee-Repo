@@ -180,7 +180,9 @@ function profile(){
           a therapist your real name only when you reply to one from your inbox.</div></div>
       <div class="field"><label for="zip">Zip code</label>
         <input id="zip" value="${esc(p.zip||'')}" inputmode="numeric">
-        <div class="help">Used to find nearby therapists and resources. Never shown publicly.</div></div>
+        <div class="help">Used to find nearby therapists and resources. Never shown publicly. If you
+          switch on <strong>Theraglee Match Mode</strong> under Privacy, therapists see the first
+          three digits only.</div></div>
       <div class="field"><label>What are you working on?</label>
         <div class="chips" id="issues">${MEMBER_ISSUES.map(i=>
           `<button type="button" class="chip ${(p.issues||[]).includes(i)?'on':''}" data-v="${esc(i)}">${esc(i)}</button>`).join('')}</div>
