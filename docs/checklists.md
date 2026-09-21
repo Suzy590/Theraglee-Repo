@@ -49,10 +49,16 @@ imported from the original Word documents and set to the day's date at
 
 ## The daily routine
 
-A scheduled routine ("Theraglee daily checklists", created 2026-09-21) starts a
-fresh session every day at 16:00 UTC (noon Eastern), writes two new checklists
-on two themes the library does not have yet, and merges its own pull request.
-Nothing is needed from the owner.
+A scheduled routine ("Theraglee daily checklists", created 2026-09-21) runs every
+day at 16:00 UTC (noon Eastern) and writes two new checklists on two themes the
+library does not have yet. It fires into the session that set it up, so it has
+the Supabase connection and can put the day's rows in the database itself.
+
+**The database step is the one that reaches members.** `site/checklist.html` and
+the library read from the `checklists` table, so the two new checklists are live
+as soon as the migration is applied, whether or not the day's pull request has
+been merged. The pull request keeps the repo copy, the counts and the printable
+documents in step; it waits for the owner to merge.
 
 Each day's session:
 
@@ -68,8 +74,13 @@ Each day's session:
 6. Runs `python3 tools/build_documents.py` and bumps the checklist counts in
    `README.md` and `docs/site.md`.
 7. Commits to its own `claude/...` branch, pushes, opens a draft pull request
-   titled `Daily checklists for <YYYY-MM-DD>`, and — once the checks are green
-   and there is no conflict — marks it ready and merges it.
+   titled `Daily checklists for <YYYY-MM-DD>`, and watches it: if a check fails
+   it fixes it and pushes again. The owner merges it.
+
+To have each day's pull request merge itself the way the daily articles run
+does, add that step to the routine's instructions from the Routines list on
+claude.ai — a Claude Code session in auto mode is not allowed to write a
+merge-without-review step into a routine.
 
 If a day is missed the next day does not double up; the library simply gets two
 that day.
