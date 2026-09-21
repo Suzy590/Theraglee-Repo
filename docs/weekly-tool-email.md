@@ -89,10 +89,16 @@ node tools/discover_tools_sql.mjs
 ```
 
 That rewrites `supabase/migrations/20260921050100_discover_tools_seed.sql` as an
-upsert on slug. Pushing it to a `claude/**` branch applies it, because
-`.github/workflows/apply-content-migrations.yml` watches
-`*_discover_tools_*.sql` alongside the articles and the clinician library.
-Never edit the generated migration by hand.
+upsert on slug, so applying it twice is harmless. Never edit it by hand.
+
+`.github/workflows/apply-content-migrations.yml` now watches
+`*_discover_tools_*.sql` alongside the articles and the clinician library, so a
+push to a `claude/**` branch will apply it **once the `SUPABASE_DB_URL` secret
+is set**. It is not set today: the workflow exits early with a notice and
+applies nothing, which is why it has been finishing green without doing any
+work. Until the secret is added under *Settings → Secrets and variables →
+Actions*, a new tool has to be applied with the Supabase CLI or by running the
+generated file against the database by hand.
 
 ## What it needs to work
 
