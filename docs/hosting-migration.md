@@ -329,22 +329,33 @@ Once HostGator is gone you can also drop the now-dead records: `mail`, `ftp`,
 
 ## Step 8 — Setting up @theraglee.com email
 
-Nothing currently sends or receives on this domain — the MX record points at
-HostGator's shared mail server, but no mailbox has been used. So there is no
-email cutover risk in this migration, and no rush.
+**This is now its own document: [`email.md`](email.md).** Follow that rather
+than this section, which is kept only for the history.
 
-When you do want it, pick a host **before** canceling HostGator so there is no
-gap. Reasonable options:
+The nameserver move in step 7 removed every email record along with the rest
+of the zone, so `hello@theraglee.com` now bounces and the app's own
+`notifications@theraglee.com` is unverified in Resend. Neither was working
+before the migration either — the old `MX` record pointed at a HostGator
+mailbox nobody used — so nothing was lost, but nothing carried over.
+
+The host chosen is **Google Workspace** for the inbox, alongside the Resend
+setup the app already expects. The options that were weighed:
 
 | Option | Cost | Good for |
 |---|---|---|
-| **Cloudflare Email Routing** | Free | Forwarding `hello@theraglee.com` → your Hotmail. Receive only — sending as the domain needs something else. |
-| **Zoho Mail** | Free tier (1 domain) | A real mailbox on your own domain, cheaply. |
-| **Google Workspace** | ~$7/user/mo | The familiar option; best if you want Docs/Drive too. |
-| **Fastmail** | ~$5/user/mo | Clean, no ads, good with custom domains. |
+| **Google Workspace** | ~$7/user/mo | Chosen. A real mailbox, familiar, easy DKIM. |
+| **Microsoft 365** | ~$6/user/mo | Equivalent; Outlook rather than Gmail. |
+| **Zoho Mail** | Free tier (1 domain) | A real mailbox at no cost, but webmail only. |
+| **Forwarding** (ImprovMX) | Free | Receive only — replies come from your own address. |
 
-Whichever you choose, set its `MX`, `SPF` and `DKIM` records, and tighten
-`_dmarc` from `p=none` to `p=quarantine` once you have confirmed mail flows.
+Cloudflare Email Routing was on this list before step 7 and is no longer an
+option: it requires Cloudflare's nameservers, and those are now Vercel's.
+
+To see what is still missing at any point:
+
+```bash
+python3 tools/check_email_dns.py
+```
 
 ---
 
@@ -378,6 +389,24 @@ the team ID `team_cHW24er3QiSNFbZw2mOuaoga`, or by the team slug
 exactly like an account with nothing in it. It is not. The projects are
 `theraglee-web` (git-linked, current), `theraglee-site` (the old unlinked
 upload-based project) and `theraglee` (a stale first attempt).
+
+Two further wrinkles found while setting up email, both worth knowing before
+planning work that depends on them:
+
+- **Each endpoint accepts a different identifier, and they are opposites.**
+  Listing *projects* works only with the slug `scanchol-7878` (the username),
+  as above. Listing *domains* is the reverse: it works with the team ID
+  `team_cHW24er3QiSNFbZw2mOuaoga` **or** the team slug
+  `scanchol-7878s-projects`, and returns an empty list for `scanchol-7878`.
+  Whichever identifier just worked, expect it to fail on the next endpoint —
+  an empty result here means "wrong identifier" far more often than "nothing
+  there".
+- **The Vercel connection is read-only for DNS.** Reads succeed — domains,
+  projects, zone status. Every attempt to write a record returns
+  `401 unauthorized: You are not allowed to access this endpoint`, with the
+  team scope and without it. So adding DNS records is a third task that
+  cannot be done from a Claude session and has to be done in the dashboard,
+  alongside the two listed above.
 
 ## A note on what gets published
 

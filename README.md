@@ -153,6 +153,14 @@ served; `site/.vercelignore` excludes `*.md` as a backstop.
 Moving the domain from HostGator to Vercel is written up in
 [`docs/hosting-migration.md`](docs/hosting-migration.md).
 
+### Email
+
+`hello@theraglee.com` and the app's own `notifications@theraglee.com` both
+depend on DNS records that the nameserver move removed and nothing has
+replaced, so neither works today. [`docs/email.md`](docs/email.md) is the
+setup guide, and `python3 tools/check_email_dns.py` reports which records are
+still missing.
+
 ### Payments
 
 Memberships, sales tax, therapist identity checks, fraud screening and session
