@@ -366,7 +366,7 @@ gated by tier, so Basic and Premium have them too:
 | Tons of journal prompts | 374 `daily_content` rows of kind `journal_prompt`, `journal.html` | `min_level = 1` |
 | Articles sent to your inbox | the `daily-digest` Edge Function, below | `profiles.daily_email` |
 | 7-day mental health challenges | `challenge_templates` (the 7-day one is `min_level = 1`); Free can also design a 7-day one | `min_level` |
-| Checklists with progress tracked | 6 `checklists` at `min_level = 1`, two more added every day, `checklist_progress` + `item_progress` | `min_level`, RLS `own rows` |
+| Checklists with progress tracked | 8 `checklists` at `min_level = 1`, two more added every day, `checklist_progress` + `item_progress` | `min_level`, RLS `own rows` |
 | Theraglee Match Mode (dashboard switch: let therapists reach out) | `profiles.visible_to_therapists`, toggled on `dashboard.html` and `account.html`; the details therapists see are asked for in `assets/match.js`; blocks in `member_blocks` | `member_opted_in()`, `member_blocked()` |
 
 ## Theraglee Match Mode is pseudonymous until the member replies
@@ -495,7 +495,7 @@ Most of it was imported from the Word documents in the parent folder:
 - 312 self-assessment quizzes (1,503 questions, 1,247 result bands; 62 imported, 250 written for the site — see below)
 - 374 journal prompts
 - 186 interactive worksheets (16 imported, 170 written for the site — see below)
-- 6 checklists, with two more added every day — see [`checklists.md`](checklists.md)
+- 8 checklists, with two more added every day — see [`checklists.md`](checklists.md)
 - 3 challenges (two 30-day, one free 7-day)
 - 77 articles, free to everyone, with five more published every day — see [`articles.md`](articles.md)
 - 200 mandalas to print or color online (drawn in the browser from a seed)
