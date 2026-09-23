@@ -333,13 +333,13 @@ Once HostGator is gone you can also drop the now-dead records: `mail`, `ftp`,
 than this section, which is kept only for the history.
 
 The nameserver move in step 7 removed every email record along with the rest
-of the zone, so `hello@theraglee.com` now bounces and the app's own
-`notifications@theraglee.com` is unverified in Resend. Neither was working
-before the migration either — the old `MX` record pointed at a HostGator
-mailbox nobody used — so nothing was lost, but nothing carried over.
+of the zone. Neither address was working before the migration either — the
+old `MX` record pointed at a HostGator mailbox nobody used — so nothing was
+lost, but nothing carried over.
 
-The host chosen is **Google Workspace** for the inbox, alongside the Resend
-setup the app already expects. The options that were weighed:
+**Both were set up from scratch on 2026-09-23 and now work.** Google
+Workspace holds the inbox; Resend sends the app's own mail. The options that
+were weighed for the inbox:
 
 | Option | Cost | Good for |
 |---|---|---|
@@ -351,7 +351,7 @@ setup the app already expects. The options that were weighed:
 Cloudflare Email Routing was on this list before step 7 and is no longer an
 option: it requires Cloudflare's nameservers, and those are now Vercel's.
 
-To see what is still missing at any point:
+To verify the records at any point:
 
 ```bash
 python3 tools/check_email_dns.py
