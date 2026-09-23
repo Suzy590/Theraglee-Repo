@@ -155,11 +155,11 @@ Moving the domain from HostGator to Vercel is written up in
 
 ### Email
 
-`hello@theraglee.com` and the app's own `notifications@theraglee.com` both
-depend on DNS records that the nameserver move removed and nothing has
-replaced, so neither works today. [`docs/email.md`](docs/email.md) is the
-setup guide, and `python3 tools/check_email_dns.py` reports which records are
-still missing.
+`hello@theraglee.com` is a Google Workspace mailbox, and the app's own
+`notifications@theraglee.com` sends through Resend; both are live, with SPF,
+DKIM and DMARC in place. [`docs/email.md`](docs/email.md) records how it is
+put together and how to redo it, and `python3 tools/check_email_dns.py`
+verifies the records against live DNS.
 
 ### Payments
 
