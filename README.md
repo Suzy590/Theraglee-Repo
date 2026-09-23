@@ -113,7 +113,7 @@ chromium --headless --no-pdf-header-footer \
 | `worksheets.json` | `worksheets` | 186 |
 | `quizzes.txt` | `quizzes` + `quiz_questions` + `quiz_bands` | 312 (1,503 q, 1,247 bands) |
 | `journal-prompts.txt` | `daily_content` where `kind = 'journal_prompt'` | 372 |
-| `therapist-resources.json` | `therapist_resources` (the clinician library on the therapist dashboard; not rendered into `documents/`) | 250 (five more of every kind and five on each of eighteen topics every day — see `docs/therapist-resources.md`) |
+| `therapist-resources.json` | `therapist_resources` (the clinician library on the therapist dashboard; not rendered into `documents/`) | 375 (five more of every kind and five on each of eighteen topics every day — see `docs/therapist-resources.md`) |
 
 The 372 journal prompts are grouped into 11 themed collections at build time
 (keyword rules live in `THEMES` in the generator), which is why 597 documents come
