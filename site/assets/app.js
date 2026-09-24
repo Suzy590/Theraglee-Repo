@@ -234,7 +234,7 @@ export async function startSessionPayment(therapistId, btn) {
 /* ---------------------------------------------------------------- chrome */
 // Discover, the library, challenges, the journal, articles, the therapist
 // directory and the membership plans are reached from the member dashboard,
-// the landing page's explore tiles and the pages themselves, not from the header.
+// the landing page's feature showcase and the pages themselves, not from the header.
 const NAV = [
   ['Dashboard',  'dashboard.html'],   // signed-in members only; opens on its Today tab
   ['For Therapists', 'for-therapists.html'],
@@ -250,7 +250,7 @@ const THERAPIST_NAV = [
   ['Directory',       'therapists.html'],
 ];
 
-export async function chrome({ active = '' } = {}) {
+export async function chrome({ active = '', showcase = true } = {}) {
   const a = await access();
   const here = location.pathname.split('/').pop() || 'index.html';
   const therapist = a.authenticated && a.profile?.role === 'therapist';
@@ -290,9 +290,11 @@ export async function chrome({ active = '' } = {}) {
 
   // The feature showcase sits under the header on every page a member or
   // visitor sees. The therapist pages (practice dashboard, sign-in, sign-up)
-  // are the other front door, so they go without.
+  // are the other front door, so they go without, and a page that places the
+  // strip itself (the landing page puts it in the explore section) passes
+  // `showcase: false`.
   const therapistPages = [DOORS.therapist.home, DOORS.therapist.signin, DOORS.therapist.signup];
-  if (!therapistPages.includes(here)) mountShowcase(a, $('.topbar'));
+  if (showcase && !therapistPages.includes(here)) mountShowcase(a, $('.topbar'));
 
   $('#burger')?.addEventListener('click', (e) => {
     const l = $('#navlinks'); l.classList.toggle('open');

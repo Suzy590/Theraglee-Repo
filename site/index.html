@@ -128,13 +128,6 @@
     padding:30px;box-shadow:var(--shadow-2);display:flex;flex-direction:column}
   .explore-plug h2{margin:0 0 6px;font-size:1.55rem;line-height:1.2}
   .explore-plug>.muted{margin:0}
-  .explore-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-top:18px}
-  .explore-grid .tile{flex-direction:row;align-items:flex-start;gap:10px;padding:14px;text-decoration:none;color:inherit}
-  .explore-grid .tile .ico{flex:0 0 32px;height:32px;border-radius:10px;background:var(--soft);
-    display:grid;place-items:center;color:var(--green);font-size:.95rem}
-  .explore-grid .tile h3{font-size:.95rem;padding-right:0;line-height:1.25}
-  .explore-grid .tile .meta{display:block;margin-top:3px;line-height:1.35}
-  .explore-grid .tile .badge.lock{margin-top:7px;font-size:.68rem;padding:2px 9px}
   .explore-plug .fine{display:block;margin-top:auto;padding-top:16px;color:var(--faint);font-size:.85rem;text-align:center}
   /* Theraglee Match Mode showcase: a deep green band, a big switch that flips
      to ON as the section scrolls into view, and the benefits for both sides. */
@@ -268,11 +261,7 @@
         <h2 id="explore-title">What would you like to explore today?</h2>
         <p class="muted">Tap anything below. Some tools need a free account, and a few come with a
           paid membership — the label on each tile tells you which.</p>
-        <div class="explore-grid" id="explore-grid">
-          <div class="skeleton" style="height:72px"></div>
-          <div class="skeleton" style="height:72px"></div>
-          <div class="skeleton" style="height:72px"></div>
-        </div>
+        <div id="explore-grid" class="skeleton" style="height:230px;margin-top:18px"></div>
         <small class="fine" id="explore-fine"></small>
       </section>
     </div>
@@ -445,78 +434,19 @@
 </main>
 
 <script type="module">
-import { chrome, sb, esc, tierName, modal, FN, SUPABASE_KEY, busy, toast } from './assets/app.js';
+import { chrome, sb, FN, SUPABASE_KEY, busy, toast } from './assets/app.js';
 import { loadPrices, tierCards } from './assets/plans.js';
-const a = await chrome();
+import { mountShowcase } from './assets/showcase.js';
+// The feature showcase goes in the explore section below, not under the header.
+const a = await chrome({ showcase: false });
 
 /* ---- Membership tiers (copy and fallback prices live in assets/plans.js) ---- */
 document.getElementById('tiers-home').innerHTML =
   tierCards({ prices: await loadPrices(sb), level: a.level });
 
 /* ---- What would you like to explore today? ----
-   [label, blurb, where it opens, tier needed, icon]. Tier 0 is open to everyone,
-   1 needs a free account, 2 is Basic and 3 is Premium (see TIERS in app.js).
-   The sign-up tile is for visitors; a member already has an account. */
-const EXPLORE = [
-  ['Find a Therapist',                'Browse licensed clinicians by location, insurance and specialty. No account needed.', 'therapists.html', 0, '✚'],
-  ...(a.authenticated ? [] : [
-  ['Create a Theraglee account',      'Free to start, no card needed. Upgrade to Basic or Premium whenever you like.', 'signup.html', 0, '☺']]),
-  ['Self-discovery tools',            'Short, interactive ways to notice your own patterns.', 'discover.html',                 0, '◈'],
-  ['Mental Health Articles',          'New mental health reads added daily.',               'articles.html',                 0, '▣'],
-  ['Daily tips & affirmations',       'A quote, a tip, a fun fact and an affirmation, personalized to you.', 'dashboard.html#today', 1, '✦'],
-  ['374 journal prompts',             'One a day, or pick your own. Entries stay private.',  'journal.html',                  1, '✎'],
-  ['Mental health checklists',        'Work through them with your progress tracked.',      'explore.html?type=checklist',   1, '✓'],
-  ['Themed daily challenges',         'Pick a theme, choose 7 days to a year, check off one small to-do a day.', 'challenges.html', 1, '◷'],
-  ['Self-assessment quizzes',         'Scored and explained — never diagnostic.',           'explore.html?type=quiz',        2, '◎'],
-  ['Interactive worksheets',          'Thought records, values maps, self-compassion letters.', 'explore.html?type=worksheet', 2, '▤'],
-  ['Mental health trivia',            '150 quizzes to test what you know.',                 'trivia.html',                   2, '✧'],
-  ['Download a desktop pet',          'Meet Pip, a small companion for your screen.',       'pet.html',                      2, '☺'],
-  ['Goal tracking',                   'Set what you\'re aiming for and track your progress.', 'goals.html',                 3, '⚑'],
-  ['Mood tracking',                   'Log how you feel and see your patterns over time.',  'goals.html#mood',               3, '♡'],
-  ['Mood-based music playlists',      'Music matched to how you feel right now.',           'goals.html#music',              3, '♫'],
-  ['Local mental health resource map','Find support near you.',                             'goals.html#map',                3, '⌖'],
-  ['Mandalas to print or color',      'Print one for your pencils, or color it online.',    'mandalas.html',                 3, '❋'],
-];
-
-// Where a tile sends someone. Open tools go straight there. A locked tool sends a
-// visitor to sign-up (and back to the tool afterward); a signed-in member whose
-// tier is too low gets an upgrade prompt instead (see the click handler below).
-const exploreHref = (href, need) =>
-  a.level >= need ? href
-  : !a.authenticated ? `signup.html?next=${encodeURIComponent(href)}`
-  : 'pricing.html';
-
-const grid = document.getElementById('explore-grid');
-grid.innerHTML = EXPLORE.map(([label, blurb, href, need, ico]) => {
-  const locked = a.level < need;
-  return `<a class="tile ${locked ? 'locked' : ''}" href="${exploreHref(href, need)}"
-      data-need="${need}" data-label="${esc(label)}">
-    <span class="ico" aria-hidden="true">${ico}</span>
-    <span>
-      <h3>${esc(label)}</h3>
-      <span class="meta">${esc(blurb)}</span>
-      ${locked ? `<span class="badge lock">${esc(tierName(need))}</span>` : ''}
-    </span></a>`;
-}).join('');
-
-// Signed in, but the tool is above their tier: prompt them to upgrade.
-grid.addEventListener('click', (e) => {
-  const tile = e.target.closest('a.tile.locked');
-  if (!tile || !a.authenticated) return;
-  e.preventDefault();
-  const need = Number(tile.dataset.need);
-  modal(`
-    <span class="badge lock">${esc(tierName(need))} membership</span>
-    <h2 style="margin:14px 0 8px">Upgrade to ${esc(tierName(need))} to open this</h2>
-    <p class="muted">You tapped <strong>${esc(tile.dataset.label)}</strong>. That's a
-      ${esc(tierName(need))} tool, and you're on the ${esc(tierName(a.level))} plan right now.
-      Upgrade any time, and cancel just as easily.</p>
-    <div class="row" style="margin-top:18px">
-      <a class="btn" href="pricing.html">See membership options</a>
-      <button class="btn ghost" type="button" id="explore-later">Not now</button>
-    </div>`, { onOpen: (back) =>
-      back.querySelector('#explore-later').addEventListener('click', () => back.remove()) });
-});
+   The feature showcase (assets/showcase.js), in place of the section's loading box. */
+mountShowcase(a, document.getElementById('explore-grid'), { replace: true, embedded: true });
 
 /* ---- Match Mode switch ----
    Flips to ON the first time it scrolls into view, and anyone can tap it to
