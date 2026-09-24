@@ -38,7 +38,7 @@ supabase/
                        identity, connect, session payments) — see docs/stripe.md
   migrations/          Schema changes that go with them
 documents/
-  index.html           Browsable library of all 599 documents
+  index.html           Browsable library of all 604 documents
   CONTENT-HEALTH.md    Source-data defects found while building
   challenges/ articles/ checklists/ journal-prompts/ quizzes/ worksheets/
 ```
@@ -107,7 +107,7 @@ chromium --headless --no-pdf-header-footer \
 
 | File | Source table | Rows |
 |---|---|---|
-| `articles.json` | `articles` | 77 (five more every day — see `docs/articles.md`) |
+| `articles.json` | `articles` | 82 (five more every day — see `docs/articles.md`) |
 | `checklists.json` | `checklists` | 10 (two more every day — see `docs/checklists.md`) |
 | `challenges.json` | `challenge_templates` + `challenge_days` | 3 (67 days) |
 | `worksheets.json` | `worksheets` | 186 |
@@ -116,8 +116,8 @@ chromium --headless --no-pdf-header-footer \
 | `therapist-resources.json` | `therapist_resources` (the clinician library on the therapist dashboard; not rendered into `documents/`) | 250 (five more of every kind and five on each of eighteen topics every day — see `docs/therapist-resources.md`) |
 
 The 372 journal prompts are grouped into 11 themed collections at build time
-(keyword rules live in `THEMES` in the generator), which is why 599 documents come
-out of 960 source rows (the journal prompt rows collapse into 11 collections).
+(keyword rules live in `THEMES` in the generator), which is why 604 documents come
+out of 965 source rows (the journal prompt rows collapse into 11 collections).
 
 `quizzes.txt` is a compact pipe-delimited format rather than JSON — `Q|` a quiz,
 `P|` a question, `O|value|label` an option, `B|min|max|label|interpretation` a
@@ -155,11 +155,11 @@ Moving the domain from HostGator to Vercel is written up in
 
 ### Email
 
-`hello@theraglee.com` and the app's own `notifications@theraglee.com` both
-depend on DNS records that the nameserver move removed and nothing has
-replaced, so neither works today. [`docs/email.md`](docs/email.md) is the
-setup guide, and `python3 tools/check_email_dns.py` reports which records are
-still missing.
+`hello@theraglee.com` is a Google Workspace mailbox, and the app's own
+`notifications@theraglee.com` sends through Resend; both are live, with SPF,
+DKIM and DMARC in place. [`docs/email.md`](docs/email.md) records how it is
+put together and how to redo it, and `python3 tools/check_email_dns.py`
+verifies the records against live DNS.
 
 ### Payments
 

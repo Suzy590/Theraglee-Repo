@@ -16,26 +16,37 @@ below.
 
 ## Where things stand
 
-The nameservers for `theraglee.com` moved to Vercel (see
-`docs/hosting-migration.md`). That move took every old record with it,
-including the email ones, and **nothing has replaced them yet**. So today:
+**Both halves are set up and working, as of 2026-09-23.** Every record below
+is live, and every check the script can make from outside reports `ok`.
 
-- Mail sent to `hello@theraglee.com` **bounces**. It does not go to spam, it
-  does not sit in a queue — the sender gets a failure notice. That address is
-  printed in 24 places across the site, so anyone who has tried to contact
-  Theraglee has been turned away.
-- The app's email is **unauthenticated**. The Resend records were never
-  added, so `notifications@theraglee.com` is not verified and anything it
-  sends will be rejected or land in spam.
+| | Provider | Address | State |
+|---|---|---|---|
+| Your inbox | Google Workspace Business Starter | `hello@theraglee.com` | Sends and receives |
+| The site's email | Resend, region `us-east-1` | `notifications@theraglee.com` | Verified |
 
-Run this at any point to see the live state:
+`notifications@` is also an alias on the `hello` mailbox, so when a member
+hits Reply on the daily email their message lands in the inbox instead of
+bouncing.
+
+What it costs and how it is scoped:
+
+- Google Workspace Business Starter, one user, $8.40 per month. The alias is
+  free and does not count as a second user.
+- Resend's free tier, 3,000 messages a month. The daily digest and the Sunday
+  email are nowhere near it.
+- The Resend API key is restricted to **sending**, on `theraglee.com` only.
+  `assignremind.com` shares that Resend account, and this key cannot send as
+  it.
+
+Run this at any point to confirm the records are still right:
 
 ```bash
 python3 tools/check_email_dns.py
 ```
 
 It reads public DNS, not this repo, so it tells you what the rest of the
-world sees.
+world sees. Everything below is the record of how this was set up — follow it
+again if the domain ever moves or a record is lost.
 
 ## A word on why there are so many records
 
@@ -185,8 +196,8 @@ land in your inbox.
 
 ## Part 2 — The site's own email (Resend)
 
-The code already sends through Resend — see `supabase/functions/` — but the
-domain was never verified there, so none of it works today.
+The code sends through Resend — see `supabase/functions/`. The domain is
+verified there now; these are the steps that got it there.
 
 1. Sign in at `resend.com` and go to **Domains → Add Domain**.
 2. Enter `theraglee.com`.
@@ -211,7 +222,8 @@ Verifying the domain lets Resend send. The functions also need an API key, or
 they return `email_not_configured` and send nothing:
 
 - Set **`RESEND_API_KEY`** on the Supabase project, under *Edge Functions →
-  Secrets*.
+  Secrets*. This is done: the key in place is scoped to sending on
+  `theraglee.com`.
 - `MAIL_FROM` is optional; it defaults to
   `Theraglee <notifications@theraglee.com>`.
 
@@ -260,8 +272,37 @@ tests:
   Gmail, use **Show original**, and confirm `SPF`, `DKIM` and `DMARC` all say
   **PASS**.
 
-For the app's side, trigger one of the Edge Functions in dry-run mode and
-confirm it no longer answers `email_not_configured`.
+For the app's side, **a dry run proves nothing.** `daily-digest` only checks
+for `RESEND_API_KEY` when `dry_run` is false:
+
+```ts
+if (!dryRun && !Deno.env.get("RESEND_API_KEY")) { ... }
+```
+
+so a dry run answers happily whether or not the key is set. Use a path that
+really sends:
+
+- **Easiest.** Put an address into the "Start with your inbox" box on the
+  homepage. `tool-signup` is public and sends the first tool straight away,
+  so one real message goes out through Resend. Unsubscribing is one click,
+  and signing up twice is safe.
+- **Then read the result back**, which is more reliable than watching an
+  inbox:
+
+  ```sql
+  select status, error, created_at
+  from tool_email_sends
+  order by created_at desc
+  limit 5;
+  ```
+
+  `status = 'sent'` means Resend accepted the message. `status = 'failed'`
+  puts the reason in `error`.
+
+- **For the digest specifically**, `daily-digest` takes a `user_id` in the
+  POST body and then emails only that person, skipping the once-a-day rule —
+  it exists so the owner can test against their own inbox. It needs an
+  `x-digest-key` header matching `app_secrets.digest_key`.
 
 ---
 
@@ -290,11 +331,44 @@ and the failures are invisible from your side.
 |---|---|
 | Mail to `hello@` bounces | Record 2 missing, or the Workspace user doesn't exist yet |
 | Replies to the digest bounce | The `notifications` alias was never added (Part 1, Step 6) |
-| Your mail lands in spam | DKIM (record 4) added but **Start authentication** never clicked |
+| Your mail lands in spam, authentication passes | A new domain with no sending history. See below — there is nothing to fix |
+| Your mail lands in spam, DKIM fails | DKIM (record 4) added but **Start authentication** never clicked |
 | SPF shows `PERMERROR` | Two TXT records starting with `v=spf1`. Delete one |
 | Resend won't verify | Wrong region in record 6, or not enough time has passed |
 | App sends nothing, no error mail | `RESEND_API_KEY` not set on Supabase — DNS is not the problem |
 | Site went down | A website record was edited. See `docs/hosting-migration.md` |
+
+### Spam at a new domain is not a misconfiguration
+
+The first messages from this domain landed in Outlook's junk folder, and the
+headers on one of them looked like this:
+
+```
+spf=pass      smtp.mailfrom=send.theraglee.com
+dkim=pass     header.d=theraglee.com
+dkim=pass     header.d=amazonses.com
+dmarc=pass    header.from=theraglee.com
+compauth=pass reason=100
+```
+
+Everything passed, `compauth=pass reason=100` being the strongest verdict
+Microsoft issues. The message was junked anyway, because `theraglee.com` had
+been sending for a matter of hours and Outlook distrusts senders it does not
+recognize.
+
+**Check the headers before changing anything.** If they read like the above,
+the setup is right and no record will improve it. What does:
+
+- Time, and sending consistently rather than in bursts.
+- Recipients marking a message **Not junk**. This is the strongest signal
+  there is, and the only fast one.
+- Tightening `_dmarc` to `p=quarantine` once both senders are confirmed —
+  see above. Microsoft gives some weight to an enforced policy.
+
+Reputation builds from volume, and this domain sends very little, so expect
+it to take weeks rather than days. Read the headers rather than the folder:
+the folder reflects a stranger's caution, the headers reflect whether the
+setup is correct.
 
 ## Once the mailbox exists
 
