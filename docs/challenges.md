@@ -67,9 +67,7 @@ for the first twenty, and the day's date at 17:00:00+00:00 for everything since.
 A scheduled routine ("Theraglee daily challenges", created 2026-09-24) runs
 every day at 17:00 UTC (1 pm Eastern) and writes two new themes the library
 does not have yet. It fires into the session that set it up, so it has the
-Supabase connection and puts the day's rows in the database itself. It also
-merges its own pull request once the checks are green, because the owner asked
-that this run need nothing from them.
+Supabase connection and puts the day's rows in the database itself.
 
 **The database step is the one that reaches members.** `site/challenges.html`
 reads the themes from the database, so the two new ones are live as soon as
@@ -91,8 +89,18 @@ Each day's session:
    thirty `challenge_days` rows each.
 6. Runs `python3 tools/build_documents.py` and bumps the challenge counts in
    `README.md` and `docs/site.md`.
-7. Commits to its own `claude/...` branch, pushes, opens a pull request titled
-   `Daily challenges for <YYYY-MM-DD>`, waits for the checks, and merges it.
+7. Commits to its own `claude/...` branch, pushes, opens a draft pull request
+   titled `Daily challenges for <YYYY-MM-DD>`, and watches it: if a check fails
+   it fixes it and pushes again. The owner merges it.
+
+The owner asked for each day's pull request to merge itself, the way the daily
+articles run does. A Claude Code session in auto mode is not allowed to write
+a merge-without-review step into a routine, so that step is added by hand:
+open the Routines list on claude.ai, edit "Theraglee daily challenges", and
+replace steps 9 to 11 with the merge steps from the "Theraglee daily articles"
+routine (open the pull request, wait for green checks, mark it ready for
+review, merge it with the merge method "merge", and tell the owner nothing is
+needed from them).
 
 If a day is missed the next day does not double up; the library simply gets two
 that day.
