@@ -109,7 +109,7 @@ chromium --headless --no-pdf-header-footer \
 |---|---|---|
 | `articles.json` | `articles` | 87 (five more every day — see `docs/articles.md`) |
 | `checklists.json` | `checklists` | 10 (two more every day — see `docs/checklists.md`) |
-| `challenges.json` | `challenge_templates` + `challenge_days` | 20 themes (600 daily to-dos; two more themes every day — see `docs/challenges.md`) |
+| `challenges.json` | `challenge_templates` + `challenge_days` | 20 themes (365 daily to-dos each, 7,300 in all; two more themes every day — see `docs/challenges.md`) |
 | `worksheets.json` | `worksheets` | 186 |
 | `quizzes.txt` | `quizzes` + `quiz_questions` + `quiz_bands` | 312 (1,503 q, 1,247 bands) |
 | `journal-prompts.txt` | `daily_content` where `kind = 'journal_prompt'` | 372 |

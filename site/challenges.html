@@ -43,9 +43,9 @@ import { chrome, sb, esc, qs, tierName, toast, busy, fmtDate, modal, unlockHref 
 const a = await chrome({ active:'challenges.html' });
 const root = document.getElementById('root');
 
-/* A challenge is a theme with a bank of daily to-dos. The member picks how
-   long it runs; day d shows to-do (d - 1) mod bank length, so a run longer
-   than the bank goes back to the top and keeps going. */
+/* A challenge is a theme with 365 daily to-dos. The member picks how long it
+   runs (7 to 365 days) and day d shows to-do d. Runs longer than the bank only
+   happen for a theme that predates the full year; those go back to the top. */
 const LENGTHS = [7, 21, 30, 90, 120, 150, 180, 365];
 const CUSTOM = { min: 8, max: 364 };
 const FREE_CAP = 7;   // the database enforces this too (guard_challenge_length)
@@ -55,7 +55,7 @@ const pad = (n) => String(n).padStart(2, '0');
 const localISO = (d = new Date()) => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 const parseDay = (iso) => { const [y,m,d] = String(iso).slice(0,10).split('-').map(Number); return new Date(y, m-1, d); };
 const addDays = (date, n) => { const x = new Date(date); x.setDate(x.getDate() + n); return x; };
-const taskFor = (bank, d) => bank.length ? bank[(d - 1) % bank.length] : null;
+const taskFor = (bank, d) => bank.length ? (bank[d - 1] ?? bank[(d - 1) % bank.length]) : null;
 const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
 
 async function view(){
@@ -96,51 +96,32 @@ async function viewIndex(){
           <span class="meta">${n} of ${c.total_days} days · started ${fmtDate(c.started_on)}${c.archived?' · archived':''}</span>
         </a>`; }).join('')}</div>` : ''}
 
-    <div class="spread" style="margin-top:40px">
-      <h2 style="margin:0">Pick a theme</h2>
-      <button class="btn ghost" id="custom">Design your own</button>
+    <h2 style="margin-top:40px">Pick a theme</h2>
+    <div class="field" style="margin-top:14px;max-width:48ch">
+      <label for="q">Search the themes</label>
+      <input id="q" type="search" placeholder="Try “gratitude”, “sleep”, “worry”…" autocomplete="off">
     </div>
-    <div class="grid g3" style="margin-top:18px">${(cat||[]).map(r=>`
+    <p class="faint" id="count"></p>
+    <div class="grid g3" id="themes" style="margin-top:14px"></div>
+    <p class="faint" style="margin-top:32px;max-width:64ch">${NOTICE}</p>`;
+
+  const themes = (cat || []).map(r => ({ r, text: [r.title, r.description, r.category, ...(r.tags||[])].join(' ').toLowerCase() }));
+  const grid = document.getElementById('themes'), count = document.getElementById('count'), q = document.getElementById('q');
+  function paintThemes(){
+    const words = q.value.toLowerCase().split(/\s+/).filter(Boolean);
+    const hits = themes.filter(t => words.every(w => t.text.includes(w)));
+    grid.innerHTML = hits.map(({ r }) => `
       <a class="tile" href="challenges.html?template=${encodeURIComponent(r.slug)}">
         <p class="theme">${esc(r.category||'Challenge')}</p>
         <h3>${esc(r.title)}</h3>
         <p class="meta" style="color:var(--muted)">${esc(r.description||'')}</p>
-      </a>`).join('')}</div>
-    ${cat?.length ? '' : '<div class="empty">The themes are on their way. Check back soon.</div>'}
-    <p class="faint" style="margin-top:32px;max-width:64ch">${NOTICE}</p>`;
-
-  document.getElementById('custom').addEventListener('click', customFlow);
-}
-
-function customFlow(){
-  if (!a.authenticated) { location.href = 'login.html?next=challenges.html'; return; }
-  const cap = a.level >= 2 ? 365 : FREE_CAP;
-  const back = modal(`
-    <h2>Design your own challenge</h2>
-    <p class="muted">${a.level>=2
-      ? 'Choose any length up to 365 days, then write a to-do for each day as you go.'
-      : 'On the Free membership you can build a 7-day challenge. Basic and Premium go up to 365.'}</p>
-    <div class="field"><label for="ct">What are you calling it?</label>
-      <input id="ct" type="text" placeholder="e.g. My sleep reset"></div>
-    <div class="field"><label for="cd">How many days? (1–${cap})</label>
-      <input id="cd" type="number" min="1" max="${cap}" value="${Math.min(7,cap)}"></div>
-    ${a.level<2?'<div class="notice warn">Want longer than 7 days? <a href="pricing.html">See Basic</a>.</div>':''}
-    <div class="row" style="margin-top:18px;justify-content:flex-end">
-      <button class="btn ghost" id="cancel">Cancel</button>
-      <button class="btn" id="create">Create</button></div>`);
-  back.querySelector('#cancel').onclick = () => back.remove();
-  back.querySelector('#create').onclick = async (e) => {
-    const title = back.querySelector('#ct').value.trim();
-    const days  = Number(back.querySelector('#cd').value);
-    if (!title) return toast('Give it a name first.','err');
-    if (!(days >= 1 && days <= cap)) return toast(`Choose between 1 and ${cap} days.`,'err');
-    busy(e.target, true, 'Creating…');
-    const { data, error } = await sb.from('user_challenges')
-      .insert({ user_id: a.profile.id, title, total_days: days }).select().single();
-    busy(e.target, false);
-    if (error) return toast(error.message,'err');
-    location.href = 'challenges.html?open=' + data.id;
-  };
+      </a>`).join('');
+    if (!themes.length) grid.innerHTML = '<div class="empty">The themes are on their way. Check back soon.</div>';
+    else if (!hits.length) grid.innerHTML = `<div class="empty">Nothing matches “${esc(q.value)}”. Try a different word, or clear the search to see every theme.</div>`;
+    count.textContent = words.length ? `${hits.length} of ${themes.length} themes` : `${themes.length} themes, two more added every day`;
+  }
+  q.addEventListener('input', paintThemes);
+  paintThemes();
 }
 
 /* --------------------------------------------------------- a theme */
@@ -181,20 +162,15 @@ async function viewTemplate(slug){
 
     <div class="card" style="margin-top:22px">
       <h3 style="margin:0">How many days?</h3>
-      <p class="muted" style="margin:6px 0 0">${canLong
-        ? 'Pick a length, or type your own between 8 and 364 days.'
-        : 'Free members run any theme for 7 days. Basic and Premium pick any length up to a year.'}</p>
-      <div class="lengths" id="lengths">${LENGTHS.map(n => {
-        const locked = !canLong && n > FREE_CAP;
-        return locked
-          ? `<a class="chip lock" href="pricing.html" title="Basic and Premium">${n} days <span class="badge lock">Basic</span></a>`
-          : `<button class="chip ${n===chosen?'on':''}" data-n="${n}">${n} days</button>`;
-      }).join('')}</div>
-      ${canLong ? `<div class="customrow">
+      <p class="muted" style="margin:6px 0 0">Pick a length, or type your own between ${CUSTOM.min} and ${CUSTOM.max} days.${canLong ? '' :
+        ' Free members run any theme for 7 days; Basic and Premium choose any length up to a year.'}</p>
+      <div class="lengths" id="lengths">${LENGTHS.map(n =>
+        `<button class="chip ${n===chosen?'on':''}" data-n="${n}">${n} days${!canLong && n > FREE_CAP ? ' <span class="badge lock">Basic</span>' : ''}</button>`
+      ).join('')}</div>
+      <div class="customrow">
         <label for="custom-n" class="muted">Custom:</label>
         <input id="custom-n" type="number" min="${CUSTOM.min}" max="${CUSTOM.max}" placeholder="${CUSTOM.min}–${CUSTOM.max}">
-        <span class="faint">days</span></div>`
-      : `<div class="notice warn" style="margin-top:12px">Want 21 days to a full year? <a href="pricing.html">See Basic</a>.</div>`}
+        <span class="faint">days${!canLong ? ' (Basic and Premium)' : ''}</span></div>
       <div class="row" style="margin-top:18px;align-items:center;gap:14px">
         <button class="btn" id="start">Start a 7-day challenge</button>
         <span class="faint" id="ends"></span></div>
@@ -204,8 +180,7 @@ async function viewTemplate(slug){
     <p class="muted">The first week, to give you a feel for it. Each day is one small thing.</p>
     ${bank.slice(0, 7).map((task, i) => `<div class="day"><div class="n">${i+1}</div>
       <div class="task">${esc(task)}</div></div>`).join('')}
-    ${bank.length > 7 ? `<p class="faint">…and ${bank.length - 7} more. A run longer than ${bank.length} days goes
-      back to the first to-do and keeps going, so a 90-day challenge visits each one about ${Math.round(90/bank.length)} times.</p>` : ''}
+    ${bank.length > 7 ? `<p class="faint">…and ${bank.length - 7} more, a different one for every day${bank.length >= 365 ? ' of a full year' : ''}.</p>` : ''}
     <p class="faint" style="margin-top:28px">${NOTICE}</p>
     </div>`;
 
@@ -217,24 +192,47 @@ async function viewTemplate(slug){
     ends.textContent = `Starts today and ends ${fmtDate(addDays(parseDay(localISO()), chosen - 1))}.`;
     root.querySelectorAll('#lengths .chip[data-n]').forEach(c => c.classList.toggle('on', Number(c.dataset.n) === chosen));
   }
-  root.querySelectorAll('#lengths .chip[data-n]').forEach(c => c.addEventListener('click', () => {
-    chosen = Number(c.dataset.n);
-    if (customIn) customIn.value = '';
+  // A Free member who picks more than a week is shown what Basic adds, and the
+  // choice snaps back to 7 days. The database refuses the longer run anyway.
+  function upgradePrompt(n){
+    const back = modal(`
+      <span class="badge lock">Basic membership</span>
+      <h2 style="margin-top:14px">Longer challenges come with Basic</h2>
+      <p class="muted">On the Free membership a challenge runs for 7 days. Basic and Premium members choose any length
+        up to a full year, so a ${n}-day run of this theme is one upgrade away. It is quick to set up and just as easy to cancel.</p>
+      <div class="row" style="margin-top:18px;justify-content:flex-end">
+        <button class="btn ghost" id="stay">Stay with 7 days</button>
+        <a class="btn" href="pricing.html">See membership options</a></div>`);
+    back.querySelector('#stay').onclick = () => back.remove();
+  }
+  function choose(n, fromCustom = false){
+    if (!canLong && n > FREE_CAP) {
+      upgradePrompt(n);
+      chosen = FREE_CAP;
+      if (fromCustom) customIn.value = '';
+    } else chosen = n;
+    if (!fromCustom) customIn.value = '';
     paintChoice();
-  }));
-  customIn?.addEventListener('input', () => {
+  }
+  root.querySelectorAll('#lengths .chip[data-n]').forEach(c => c.addEventListener('click', () => choose(Number(c.dataset.n))));
+  customIn.addEventListener('change', () => {
     const n = Number(customIn.value);
-    if (n >= CUSTOM.min && n <= CUSTOM.max) { chosen = n; paintChoice(); }
+    if (customIn.value === '') return;
+    if (!(n >= CUSTOM.min && n <= CUSTOM.max)) { toast(`A custom length is between ${CUSTOM.min} and ${CUSTOM.max} days.`, 'err'); customIn.value = ''; return; }
+    choose(n, true);
+  });
+  customIn.addEventListener('input', () => {
+    const n = Number(customIn.value);
+    if (n >= CUSTOM.min && n <= CUSTOM.max && (canLong || n <= FREE_CAP)) { chosen = n; paintChoice(); }
   });
   paintChoice();
 
   startBtn.addEventListener('click', async (e) => {
     if (!a.authenticated) { location.href = 'login.html?next=' + encodeURIComponent('challenges.html?template='+slug); return; }
-    const custom = customIn && customIn.value !== '';
-    if (custom && !(Number(customIn.value) >= CUSTOM.min && Number(customIn.value) <= CUSTOM.max)) {
+    if (customIn.value !== '' && !(Number(customIn.value) >= CUSTOM.min && Number(customIn.value) <= CUSTOM.max)) {
       return toast(`A custom length is between ${CUSTOM.min} and ${CUSTOM.max} days.`, 'err');
     }
-    if (!canLong && chosen > FREE_CAP) return toast('Challenges longer than 7 days come with Basic.', 'err');
+    if (!canLong && chosen > FREE_CAP) return upgradePrompt(chosen);
     busy(e.target, true, 'Starting…');
     const { data, error } = await sb.from('user_challenges').insert({
       user_id: a.profile.id, template_id: t.id, title: t.title, total_days: chosen,
@@ -260,8 +258,8 @@ async function viewRun(id){
     ]);
     theme = t; bank = (days||[]).map(d => d.task);
   }
-  const custom = !bank.length;                 // "Design your own", or a retired theme
-  const plan = run.custom_days || [];          // the member's own to-dos, by day
+  const custom = !bank.length;                 // a run from before themes, or a retired theme
+  const plan = run.custom_days || [];          // that run's own to-dos, by day
   const { data: prog } = await sb.from('user_challenge_progress')
     .select('day, completed_on').eq('user_challenge_id', run.id);
   const done = new Map((prog||[]).map(r => [r.day, r.completed_on]));
@@ -310,7 +308,7 @@ async function viewRun(id){
     <a class="faint" href="challenges.html">← All challenges</a>
     <div class="spread" style="margin-top:12px;align-items:flex-start">
       <div>
-        ${theme?.category ? `<p class="theme">${esc(theme.category)} · ${N} days</p>` : `<p class="theme">Your own challenge · ${N} days</p>`}
+        ${theme?.category ? `<p class="theme">${esc(theme.category)} · ${N} days</p>` : `<p class="theme">Challenge · ${N} days</p>`}
         <h1 style="margin:0">${esc(run.title)}</h1>
         ${theme?.description ? `<p class="muted" style="margin-top:8px">${esc(theme.description)}</p>` : ''}
       </div>

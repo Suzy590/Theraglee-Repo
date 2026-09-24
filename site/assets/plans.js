@@ -42,7 +42,7 @@ export const PLANS = [
       'Every mental health quiz',
       'Interactive mental health worksheets',
       'Mental health trivia',
-      'Challenges up to a full year, and design your own',
+      'Challenges up to a full year',
       'Downloadable desktop pet',
     ],
     cta: { label: 'Go Basic', href: 'pricing.html' } },

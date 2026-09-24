@@ -16,10 +16,9 @@ const LAUNCH_DAY = '2026-09-24';
 const LAUNCH_COUNT = 20;
 const PER_DAY = 2;
 
-// A challenge carries at least this many to-dos, so the 7-, 21- and 30-day
-// runs never repeat one. Longer runs go through the bank again from the top.
-export const MIN_TASKS = 30;
-export const MAX_TASKS = 60;
+// A challenge carries one to-do for every day of a full year, so a member who
+// picks any length from 7 to 365 days sees a different to-do each day.
+export const TASKS = 365;
 
 // Tags are the same controlled vocabulary the worksheets, articles and
 // checklists use, so one search box covers the whole library.
@@ -118,8 +117,8 @@ for (const c of CH) {
     if (new Set(c.tags).size !== c.tags.length) err(c, 'repeated tag');
   }
 
-  if (!Array.isArray(c.tasks) || c.tasks.length < MIN_TASKS || c.tasks.length > MAX_TASKS) {
-    err(c, `needs ${MIN_TASKS} to ${MAX_TASKS} to-dos, has ${Array.isArray(c.tasks) ? c.tasks.length : 0}`);
+  if (!Array.isArray(c.tasks) || c.tasks.length !== TASKS) {
+    err(c, `needs exactly ${TASKS} to-dos, one for every day of a year, has ${Array.isArray(c.tasks) ? c.tasks.length : 0}`);
   } else {
     const seen = new Set();
     for (const [i, t] of c.tasks.entries()) {
@@ -130,7 +129,7 @@ for (const c of CH) {
       if (t.length > 220) err(c, `${where} is ${t.length} characters, wanted 220 or fewer — one small thing`);
       if (!/^[A-Z"“]/.test(t)) err(c, `${where} should start with a capital letter`);
       if (!/[.?!][”’"']?$/.test(t)) err(c, `${where} should end with a period, a question mark or an exclamation point`);
-      if (/\bday \d+\b/i.test(t)) err(c, `${where} names a day number — to-dos are reused at any length, so they never say which day they are`);
+      if (/\bday \d+\b/i.test(t)) err(c, `${where} names a day number — a to-do never says which day it is`);
       const k = taskKey(t);
       if (seen.has(k)) err(c, `${where} repeats an earlier to-do in the same challenge`);
       seen.add(k);
