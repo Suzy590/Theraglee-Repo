@@ -1,9 +1,11 @@
 # Challenges — themed, any length, two new themes every day
 
-A challenge is a **theme** with a bank of daily to-dos: "Fostering Gratitude",
-"Slowing Down the Mental Chatter", "Redirecting Unhelpful Thoughts". A member
-picks a theme, chooses **how many days** it runs (7, 21, 30, 90, 120, 150, 180,
-365, or a custom number from 8 to 364), and then sees one to-do for each day.
+A challenge is a **theme** with 365 daily to-dos, one for every day of a year:
+"Fostering Gratitude", "Slowing Down the Mental Chatter", "Redirecting
+Unhelpful Thoughts". A member searches or browses the themes, picks one,
+chooses **how many days** it runs (7, 21, 30, 90, 120, 150, 180, 365, or a
+custom number from 8 to 364), and then sees one to-do for each day, day one
+first.
 They check a day off once it is done, and the page shows how it is going: 48 of
 180 completed, which day today is, how many are still to do, how many were
 checked off in the last seven days, and when the last day falls. There are no
@@ -19,18 +21,19 @@ every page says so.
 
 | Piece | Where | How |
 |---|---|---|
-| Browsing the themes | `content_catalog` (kind `challenge`), `site/challenges.html` | open to visitors; the view is readable signed out |
+| Browsing and searching the themes | `content_catalog` (kind `challenge`), `site/challenges.html`; the search box matches title, description, theme and tags in the browser | open to visitors; the view is readable signed out |
 | Reading a theme's to-dos and starting it | `challenge_templates` + `challenge_days` | `min_level = 1`: every registered member, every theme |
-| How long it runs | `user_challenges.total_days` | Free members run any theme for 7 days; Basic and Premium choose any length up to 365. `guard_challenge_length()` on `user_challenges` refuses a longer run from a Free member, whatever the page sends. |
+| How long it runs | `user_challenges.total_days` | Free members run any theme for 7 days; Basic and Premium choose any length up to 365. A Free member who picks a longer length is shown what Basic adds and snapped back to 7, and `guard_challenge_length()` on `user_challenges` refuses a longer run from a Free member whatever the page sends. |
 | Ticking a day | `user_challenge_progress` (one row per run, per day, with `completed_on`) | RLS `own rows` |
-| Which to-do a day shows | the page: day *d* shows to-do `(d - 1) mod N` of the theme's *N* | so a 90-day run of a 30-to-do theme visits each to-do three times |
-| Design your own | `user_challenges` with no `template_id`; the member writes `custom_days` as they go | same length rule |
+| Which to-do a day shows | the page: day *d* shows to-do *d* | a 90-day run sees the first 90 of the 365 |
+| Runs from before themes | `user_challenges` with no `template_id` and their own `custom_days` | still open and tickable; "design your own" is no longer offered |
+| Archiving or removing a run | the challenge page and the "Yours" list on `site/challenges.html` | archive keeps the record off the active list; remove deletes the `user_challenges` row and, by cascade, its ticks, after a confirmation |
 | The dashboard | "Challenges in progress" on `site/dashboard.html` | `n of N days` per active run |
 | Print-ready copy | `documents/challenges/<slug>.html`, the whole bank numbered | built by `tools/build_documents.py` |
 
 `challenge_templates.total_days` is the **size of the bank** (how many
-`challenge_days` rows the theme has), not a run length; the run length lives on
-`user_challenges`. Every theme carries a description, one or two sentences on
+`challenge_days` rows the theme has, 365), not a run length; the run length
+lives on `user_challenges`. Every theme carries a description, one or two sentences on
 what it is designed to accomplish, because that is what a member reads on the
 tile before choosing it.
 
@@ -87,7 +90,7 @@ Each day's session:
 4. Generates the day's migration with `tools/challenges_sql.py --since <today>`
    and applies it to the database.
 5. Confirms with a query that both slugs are in `challenge_templates` with
-   thirty `challenge_days` rows each.
+   365 `challenge_days` rows each.
 6. Runs `python3 tools/build_documents.py` and bumps the challenge counts in
    `README.md` and `docs/site.md`.
 7. Commits to its own `claude/...` branch, pushes, opens a pull request titled
@@ -124,15 +127,16 @@ The check enforces the shape; this is the intent behind it.
 - **The description is one or two sentences** (15 to 55 words) on what the
   challenge is designed to accomplish and who it is for. It never repeats the
   title.
-- **Thirty to-dos** (the check allows up to sixty). Each is one small action a
-  member could do that day, written as an instruction: 20 to 220 characters,
+- **Exactly 365 to-dos**, one for every day of a year. Each is one small action
+  a member could do that day, written as an instruction: 20 to 220 characters,
   starts with a capital, ends with a period or a question mark. "Write down
   three things that went right today, however small." Never "reflect on
-  gratitude".
-- **The to-dos stand alone and in any order.** Days cycle when a run is longer
-  than the bank, so a to-do never says "day 12" or "yesterday you…". The last
-  one or two can look back over "this challenge", because the member reaches
-  them at the end of any length that fits the bank.
+  gratitude". Vary the verbs, the settings (home, work, outside, with people,
+  alone), the times of day and the seasons, so a year-long run does not feel
+  repetitive; no two to-dos open with the same six words.
+- **The to-dos stand alone.** A member may run 7 days or 200, so a to-do never
+  says "day 12" or "yesterday you…". An occasional "look back over this
+  challenge so far" is fine anywhere in the list.
 - **Every to-do is new.** The check refuses a to-do that already appears in any
   other challenge, and two challenges that share a quarter of their to-dos. Two
   themes can be close (worry and grounding) as long as the to-dos differ.

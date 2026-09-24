@@ -184,8 +184,8 @@ def render_challenge(c: dict) -> str:
         eyebrow=f'{c.get("category") or "Challenge"} Challenge',
         title=c["title"],
         standfirst=c.get("description") or "One small thing a day. That is the whole method.",
-        deck=(f"{len(tasks)} daily to-dos. Run it for a week, a month or a year: "
-              "one to-do a day, and when you reach the end of the list, start again at the top."),
+        deck=(f"{len(tasks)} daily to-dos, one for every day of a year. Run it for a "
+              "week, a month or the whole year: one small thing a day."),
         meta=meta,
     )
     body += ('\n  <section class="section">\n'
