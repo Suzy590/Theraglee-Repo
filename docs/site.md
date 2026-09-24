@@ -532,7 +532,7 @@ Most of it was imported from the Word documents in the parent folder:
 - 12 checklists, with two more added every day — see [`checklists.md`](checklists.md)
 - 20 themed challenges (365 daily to-dos each), with two more themes added every day — see [`challenges.md`](challenges.md)
 - 87 articles, free to everyone, with five more published every day — see [`articles.md`](articles.md)
-- 200 mandalas to print or color online (drawn in the browser from a seed)
+- 242 mandalas to print or color online (drawn in the browser from a seed): 200 round, 42 shaped like animals, plants and symbols
 - 150 mental health trivia quizzes (1,500 questions), written for the site rather than imported
 - 140 daily items — affirmations, tips, fun facts, quotes
 
@@ -666,9 +666,11 @@ check. Never change an id once it has shipped.
 
 ## Mandalas: print or color online
 
-`site/mandalas.html` is the Premium coloring page. The gallery shows the 200
+`site/mandalas.html` is the Premium coloring page. The gallery shows the 242
 mandalas from the `mandalas` table (12 from launch, 188 added in
-`20260909000000_more_mandalas.sql`); each card has **Color online** (opens
+`20260909000000_more_mandalas.sql`, and 42 shaped ones added in
+`20260924180000_shaped_mandalas.sql`), with filters for All, Round, Animals,
+Plants and Symbols; each card has **Color online** (opens
 `?slug=`) and **Print**, which prints that one figure blank on a single page.
 **Print all (blank)** prints the whole set, one per page.
 
@@ -681,6 +683,8 @@ shapes are the guide.
 | File | What it holds |
 |---|---|
 | `site/assets/mandala.js` | Draws a figure from its `seed`. Every closed shape, including the band between two rings, is a region with a stable `data-i` index and a ring group in `data-g`. `colorable()` gives hand-drawn SVG in the `svg` column the same treatment. |
+| `site/assets/mandala-shapes.js` | The outlines a shaped mandala is drawn inside (a butterfly, an owl, a tulip, a heart; 21 in all). Each is a list of parts: `back` and `front` parts are plain colorable shapes (legs, a stem, eyes), and the `pattern` parts are filled with the mandala's rings, centered on the shape's `heart`. A row's `shape` column names one; null is a round mandala. |
+| `supabase/migrations/20260924180000_shaped_mandalas.sql` | The `shape` column, the 42 shaped rows, and `shared_mandala_coloring()` returning the shape. |
 | `site/assets/coloring.js` | The coloring itself: the palette, the tap handler, whole-ring fills, undo, PNG export. Works on any SVG whose shapes carry `.rg` and `data-i`. |
 | `supabase/migrations/20260908170000_mandala_colorings.sql` | The `mandala_colorings` table, so a half-finished coloring follows a member across devices. |
 | `supabase/migrations/20260908230000_mandala_sharing.sql` | `share_token` on `mandala_colorings` and the three sharing functions. |
@@ -705,7 +709,12 @@ browser's own share sheet with the picture attached.
 
 Because the figure is drawn from its seed, changing `mandala.js` changes what
 every member sees and can move the region indexes a saved coloring points at.
-Treat the drawing order in `mandala()` as a data contract.
+Treat the drawing order in `mandala()` as a data contract, and the outlines in
+`mandala-shapes.js` too: add a new outline rather than reshaping one a row
+uses. `node tests/mandala-fixture/check.mjs` fails if any shipped figure draws
+differently. In a shaped mandala, only pattern shapes that clearly show inside
+the outline (and not under an eye or an ear) become regions, so every region
+can be tapped and a coloring can reach Completed.
 
 ## The desktop pet
 
