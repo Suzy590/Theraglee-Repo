@@ -12841,5 +12841,5199 @@
    "habits"
   ],
   "created_at": "2026-09-16T15:00:00+00:00"
+ },
+ {
+  "slug": "life-roles-balance-wheel",
+  "title": "Life Roles Balance Wheel",
+  "kind": "worksheet",
+  "summary": "A wheel diagram where a client rates how balanced work, family, health and other life roles feel right now.",
+  "goal": "Use it to open a conversation about which roles are running on empty and what to shift first.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "20 minutes",
+  "body_md": "The client rates satisfaction in six to eight roles — partner, parent, worker, friend, self-care and so on — on a scale from zero to ten, marks each on a spoke of the wheel, then connects the points. An uneven wheel becomes the starting point for talking about which roles are quietly being neglected and what the client is willing to change first. Bring it back in a later session to see what moved.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "List the roles you want to rate (work, parent, partner, friend, health, and so on)"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Which role scored the lowest, and what does that tell you?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Which role scored the highest, and what is going right there?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What is one small change you could make in the lowest-scoring role this week?"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What would need to be true for the wheel to look more balanced?"
+   }
+  ],
+  "tags": [
+   "work-life balance",
+   "self-monitoring",
+   "goal setting"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "motivation-readiness-ruler",
+  "title": "Motivation Readiness Ruler",
+  "kind": "worksheet",
+  "summary": "A 0-10 scale a client marks twice, once for how important a change feels and once for how confident they feel making it.",
+  "goal": "Use it to locate exactly where ambivalence about a change is sitting so you can work there.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "10 minutes",
+  "body_md": "The client marks importance and confidence separately on two zero-to-ten lines, then explains why the number is not one point lower — that answer holds their own reasons for change, which land better coming from them than from you. A low confidence score with high importance points straight at where to focus the next few sessions.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The change you are considering"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "How important does this change feel right now, 0 to 10?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Why is that number not one point lower?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "How confident do you feel you could make this change, 0 to 10?"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What would move that confidence number up by one point?"
+   }
+  ],
+  "tags": [
+   "motivational interviewing",
+   "ambivalence",
+   "self-monitoring"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "cue-anchored-routine-sheet",
+  "title": "Cue-Anchored Routine Sheet",
+  "kind": "worksheet",
+  "summary": "Attaches a new habit to a routine the client already does automatically, rather than a fresh time slot.",
+  "goal": "Use it to make a new habit easier to start by borrowing momentum from an existing one.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "One week",
+  "body_md": "The client names a habit already running on autopilot — making coffee, brushing teeth, sitting down at a desk — and attaches the new behavior right after it: “after I pour my coffee, I will write down three tasks.” Anchoring to an existing cue removes the need to remember a new time, which is usually where habit plans fall apart. Review which anchors held and which need a different cue.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The new habit you want to build"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "An existing routine that happens reliably, every day"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Your plan: “After I ___, I will ___”"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What might interrupt this plan, and what is the backup?"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "How did the anchor hold up this week?"
+   }
+  ],
+  "tags": [
+   "habits",
+   "behavioral",
+   "goal setting"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "transition-readiness-checklist",
+  "title": "Transition Readiness Checklist",
+  "kind": "worksheet",
+  "summary": "Walks a client through the practical and emotional pieces of an upcoming life change before it arrives.",
+  "goal": "Use it to surface what a client has already prepared for a transition and what still needs attention.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Useful ahead of a move, a job change, a divorce finalizing, a retirement or any date the client has been counting down to. The checklist separates practical items (paperwork, logistics, people to notify) from emotional ones (what they are grieving, what they are relieved to leave, who they will lean on) so neither gets crowded out by the other. Revisit it as the date gets closer.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What is changing, and when?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Practical steps still outstanding"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What you expect to miss"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What you expect to be relieved to leave behind"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "Who you can lean on in the first weeks after"
+   },
+   {
+    "id": "f5",
+    "type": "textarea",
+    "label": "One thing that would make the transition feel less abrupt"
+   }
+  ],
+  "tags": [
+   "transitions",
+   "life review",
+   "planning"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "weekly-self-care-menu",
+  "title": "Weekly Self-Care Menu",
+  "kind": "worksheet",
+  "summary": "A client-built menu of restorative activities sorted by how much time and energy each one takes.",
+  "goal": "Use it to give a client options that fit a five-minute gap as well as a free afternoon.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "20 minutes",
+  "body_md": "Self-care plans that only list big-ticket items — a spa day, a weekend away — rarely get used on an ordinary Tuesday. The client instead sorts activities into three columns by time cost: five minutes, thirty minutes, and a half day, so there is always something on the menu that fits the moment. Pin it somewhere visible and check in on which column gets used most.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Five-minute options"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Thirty-minute options"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Half-day options"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What usually stops you from using this list?"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "Which column did you actually use this week?"
+   }
+  ],
+  "tags": [
+   "self-care",
+   "burnout",
+   "planning"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "should-statements-audit",
+  "title": "Should Statements Audit",
+  "kind": "cbt",
+  "summary": "Lists the self-imposed ‘should’ rules a client is carrying and tests each one for whose voice it is in.",
+  "goal": "Use it to loosen rigid self-imposed rules that are driving guilt or resentment.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "20 minutes",
+  "body_md": "‘Should’ statements often turn out to be inherited rather than chosen — a parent’s standard, an old boss’s expectation, a cultural message never examined. The client lists their current shoulds, then for each one traces where it came from and rates how much it still serves them. A rule that scores low on ‘still serves me’ is a candidate for rewriting into a preference instead of a demand.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "A ‘should’ statement you catch yourself using often"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Where do you think this rule came from?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What happens inside you when you break this rule?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "How well does this rule actually serve you now, and why?"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "Rewrite it as a preference rather than a demand"
+   }
+  ],
+  "tags": [
+   "thinking traps",
+   "core beliefs",
+   "self-criticism"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "prediction-accuracy-tracker",
+  "title": "Prediction Accuracy Tracker",
+  "kind": "cbt",
+  "summary": "A running log comparing what a client predicted would happen against what actually happened.",
+  "goal": "Use it to build evidence, one entry at a time, that anxious predictions overstate the odds.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "Ongoing",
+  "body_md": "Before a feared situation, the client writes down the specific prediction and how certain they feel of it. Afterward they log what actually happened and re-rate their certainty. Kept over a few weeks, the pattern usually does more to shift belief than any single conversation could, because the client is looking at their own track record rather than taking your word for it.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The situation you are about to face"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Your specific prediction"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "How certain are you, 0 to 100 percent?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What actually happened"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "Was your prediction right, partly right, or wrong?"
+   }
+  ],
+  "tags": [
+   "behavioral experiment",
+   "anxiety",
+   "evidence log"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "selective-attention-log",
+  "title": "Selective Attention Log",
+  "kind": "cbt",
+  "summary": "Tracks moments a client noticed only the negative in a situation that also held neutral or positive evidence.",
+  "goal": "Use it to show a client what their attention is filtering out, not just what it lets through.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "10 minutes",
+  "body_md": "After a hard moment, the client writes down what they noticed first, then goes back and lists what else was actually present — a compliment that got skipped past, a thing that went fine, a neutral fact read as bad news. The point is not that the negative did not happen, but that attention narrowed around it. Over several entries, a pattern of what the filter tends to catch usually shows up.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The moment and what you noticed first"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What else was actually present that you skipped past"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Why do you think your attention went where it did?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What would you notice first if you were in a good mood?"
+   }
+  ],
+  "tags": [
+   "thinking traps",
+   "self-monitoring",
+   "core CBT"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "core-belief-timeline",
+  "title": "Core Belief Timeline",
+  "kind": "cbt",
+  "summary": "Maps when a long-held belief about the self first took shape and what has fed it since.",
+  "goal": "Use it to trace a core belief back to its origin instead of treating it as simply true.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "The client draws a line from childhood to now and marks moments that seem to have built the belief — an early message, a repeated comparison, a formative event — alongside moments that contradicted it and got waved away. Seeing the belief as something assembled over time, rather than a fact about them, is often the first crack in it. Pair with ongoing evidence-gathering work.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The core belief you are examining"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "The earliest moment you can trace it to"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Other moments along the way that reinforced it"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Moments that contradicted it — what happened to those?"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "Whose voice does this belief sound like?"
+   }
+  ],
+  "tags": [
+   "core beliefs",
+   "schema",
+   "self-esteem"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "graded-task-ladder",
+  "title": "Graded Task Ladder",
+  "kind": "cbt",
+  "summary": "Breaks one overwhelming task into small enough steps that the first one is almost too easy to skip.",
+  "goal": "Use it to get a stalled task moving again by lowering the size of the first step, not the standard.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "20 minutes",
+  "body_md": "The client names the task that has been avoided, then works backward to a first step small enough to complete in under five minutes — opening the document, not writing the report. Each rung of the ladder should feel only slightly harder than the one before it. Momentum, not motivation, is the target: the ladder exists to be climbed on a day motivation is nowhere in sight.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The task you have been avoiding"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Step 1 — small enough to do in under five minutes"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Step 2"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Step 3"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "Step 4"
+   },
+   {
+    "id": "f5",
+    "type": "textarea",
+    "label": "What will you do right after finishing step 1, to keep going?"
+   }
+  ],
+  "tags": [
+   "procrastination",
+   "behavioral activation",
+   "task initiation"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "tug-of-war-with-the-monster",
+  "title": "Tug-of-War With the Monster",
+  "kind": "act",
+  "summary": "A classic ACT metaphor sheet: pulling harder against a painful feeling only pulls the client closer to it.",
+  "goal": "Use it to introduce the idea that dropping the rope, not winning, is what loosens a struggle.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "15 minutes",
+  "body_md": "The client pictures a tug-of-war against a monster representing an unwanted feeling, with a pit between them. Pulling harder does not create distance — it only tightens the rope. The move that changes anything is dropping the rope altogether, which does not make the monster disappear but ends the exhausting pull. Use it to open a conversation about where a client keeps pulling instead of dropping the rope.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What is the monster on the other end of your rope?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "How hard have you been pulling, and for how long?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What has pulling harder actually gotten you?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What would dropping the rope look like this week?"
+   }
+  ],
+  "tags": [
+   "metaphor",
+   "acceptance",
+   "struggle"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "raisin-moment-practice",
+  "title": "Raisin Moment Practice",
+  "kind": "act",
+  "summary": "A short sensory exercise, noticing one small object fully, used to teach present-moment attention.",
+  "goal": "Use it to give a client a concrete, repeatable way to practice noticing rather than thinking about.",
+  "audience": [
+   "Adults",
+   "Teens",
+   "Groups"
+  ],
+  "duration": "Ten minutes",
+  "body_md": "The client spends a few slow minutes with one small object — a raisin, a coin, a leaf — noticing texture, weight, smell and sound before doing anything else with it. The exercise is not about the object; it is a rehearsal for bringing that same quality of attention to a meal, a conversation or a walk later. Debrief what pulled attention away and how many times it was brought back.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The object you practiced with"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What did you notice that you would normally miss?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "How many times did your mind wander, and to where?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Where else could you practice this kind of attention this week?"
+   }
+  ],
+  "tags": [
+   "mindfulness",
+   "present moment",
+   "core ACT"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "values-versus-goals-sorter",
+  "title": "Values Versus Goals Sorter",
+  "kind": "act",
+  "summary": "Sorts a client’s list of ‘things I want’ into values, which are directions, and goals, which are destinations.",
+  "goal": "Use it to separate an ongoing direction from a one-time finish line so values survive an unmet goal.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "20 minutes",
+  "body_md": "A goal can be reached and closed — get the job, finish the degree. A value cannot, because it is a direction rather than a destination, like ‘being a supportive parent.’ The client sorts their list into the two columns and, for each goal, names the value underneath it. When a goal falls through, the value is still there to act on, which keeps a setback from feeling like the whole thing collapsed.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "List the things you have been striving for"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Sort each into Goal (can be finished) or Value (ongoing direction)"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "For each goal, what value sits underneath it?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "If this goal fell through tomorrow, how could you still act on the value?"
+   }
+  ],
+  "tags": [
+   "values",
+   "goal setting",
+   "core ACT"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "cost-of-control-log",
+  "title": "Cost of Control Log",
+  "kind": "act",
+  "summary": "Tracks what a client gives up each time they work hard to avoid or control an unwanted feeling.",
+  "goal": "Use it to add up the real cost of control efforts that have not actually worked.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "Ongoing",
+  "body_md": "Every time a client cancels a plan, avoids a conversation or numbs out to keep a feeling away, something else gets spent — time, a relationship, a step toward something that mattered. The log tracks the control effort and its price side by side. Over several entries the total cost usually becomes more persuasive than any argument that the avoidance is not working.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What you did to avoid or control the feeling"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "The feeling you were trying to avoid"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What did it cost you — time, a relationship, an opportunity?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Did the feeling actually go away, or come back?"
+   }
+  ],
+  "tags": [
+   "acceptance",
+   "avoidance",
+   "workability"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "values-aligned-weekly-planner",
+  "title": "Values-Aligned Weekly Planner",
+  "kind": "act",
+  "summary": "A weekly planner where each scheduled block gets tagged with the value it serves.",
+  "goal": "Use it to make values visible in an ordinary week instead of living only as a list.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "One week",
+  "body_md": "Alongside the usual weekly grid, each planned block gets a one-word tag naming the value it moves toward — connection, health, creativity, and so on. At the end of the week the client can see which values actually got time and which stayed on paper only. It is less a productivity tool than a mirror on where a week’s hours actually went.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Your top three to five values right now"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "This week’s planned blocks and the value each one serves"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Which value got the least time this week?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "One block you could add next week for that value"
+   }
+  ],
+  "tags": [
+   "values",
+   "committed action",
+   "planning"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "building-mastery-activity-log",
+  "title": "Building Mastery Activity Log",
+  "kind": "dbt",
+  "summary": "Logs one activity a day that builds a sense of competence, chosen slightly harder than what feels easy.",
+  "goal": "Use it to build emotional resilience through a steady sense that hard things are possible.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "Ongoing",
+  "body_md": "Building mastery is the DBT emotion regulation skill of doing something that takes real effort and doing it well, on purpose, to build a reserve of confidence before it is needed. The client picks one activity a day slightly harder than their comfort level and logs it along with how it felt to complete. Pick activities that are genuinely achievable — mastery, not failure, is the point.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Today’s mastery activity"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Why is this slightly harder than easy for you?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "How did it feel to complete it?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What will tomorrow’s activity be?"
+   }
+  ],
+  "tags": [
+   "emotion regulation",
+   "building mastery",
+   "skills"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "pros-and-cons-before-acting-card",
+  "title": "Pros and Cons Before Acting Card",
+  "kind": "dbt",
+  "summary": "A DBT distress tolerance card weighing the pros and cons of tolerating a crisis versus acting on the urge.",
+  "goal": "Use it to slow a client down long enough to weigh both paths before either one is taken.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "Five minutes",
+  "body_md": "In a crisis moment, weighing pros and cons on the spot rarely happens on its own. The card walks through four boxes filled out ahead of time and reread in the moment: the pros of tolerating the distress, the cons of tolerating it, the pros of acting on the urge, and the cons of acting on it. Reading all four before moving keeps the decision from being made on the first box alone.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The urge or crisis this card is for"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Pros of tolerating the distress without acting"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Cons of tolerating the distress without acting"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Pros and cons of acting on the urge instead"
+   }
+  ],
+  "tags": [
+   "distress tolerance",
+   "crisis",
+   "skills"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "objectives-priorities-worksheet",
+  "title": "Objectives Priorities Worksheet",
+  "kind": "dbt",
+  "summary": "Has a client rank getting their objective, keeping the relationship and keeping self-respect before a hard conversation.",
+  "goal": "Use it to pick the right script before, not after, a conversation that could go several ways.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "15 minutes",
+  "body_md": "Before a request or a boundary conversation, priorities are rarely equal: sometimes getting the outcome matters most, sometimes preserving the relationship does, sometimes it is walking away with self-respect intact. Ranking the three ahead of time changes how the conversation gets approached — pushing hard for an outcome reads differently than protecting a relationship above all. Use before scripting the actual conversation.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The conversation you are preparing for"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Rank: getting the outcome, keeping the relationship, keeping self-respect"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What does that ranking change about how you will approach it?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What would you be willing to give up to protect your top priority?"
+   }
+  ],
+  "tags": [
+   "interpersonal effectiveness",
+   "DEAR MAN",
+   "boundaries"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "willingness-versus-willfulness-sheet",
+  "title": "Willingness Versus Willfulness Sheet",
+  "kind": "dbt",
+  "summary": "Sorts a client’s recent responses to a hard reality into willing (working with it) and willful (fighting it).",
+  "goal": "Use it to show a client the difference between accepting a reality and giving up on changing it.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "20 minutes",
+  "body_md": "Willingness is doing what the moment calls for, even reluctantly; willfulness is refusing to do what works because it feels unfair that it has to be done at all. Neither is about liking the situation. The client sorts a few recent responses to a hard reality into these two columns and looks at which one tends to move things forward and which tends to keep them stuck.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The hard reality you are responding to"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "A recent response that was willful (fighting it)"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "A recent response that was willing (working with it)"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Which column tends to move things forward for you?"
+   }
+  ],
+  "tags": [
+   "radical acceptance",
+   "willingness",
+   "skills"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "riding-the-wave-practice",
+  "title": "Riding the Wave Practice",
+  "kind": "dbt",
+  "summary": "Tracks an intense emotion’s rise and fall to show a client that feelings peak and pass without action.",
+  "goal": "Use it to build tolerance for a feeling by watching it move rather than acting to make it stop.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "30 minutes",
+  "body_md": "The client rates the intensity of a strong emotion every few minutes without doing anything to change it, plotting the numbers as the wave rises, peaks and comes back down. Most intense emotions pass within twenty to thirty minutes if nothing is done to prolong them. Seeing the actual shape of the wave on paper is often more convincing than being told the feeling will pass.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The emotion you are riding out, and what triggered it"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Intensity at the start, 0 to 10"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Intensity every five minutes after that"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What did you notice about how the wave moved?"
+   }
+  ],
+  "tags": [
+   "emotion regulation",
+   "mindfulness",
+   "distress tolerance"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "financial-values-conversation-guide",
+  "title": "Financial Values Conversation Guide",
+  "kind": "couples",
+  "summary": "Structured prompts for a couple to talk about what money means to each of them before talking numbers.",
+  "goal": "Use it to surface each partner’s money history before a budget conversation turns into a fight.",
+  "audience": [
+   "Couples"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Money fights are often values fights wearing a budget’s clothes — one partner equates saving with safety, the other equates spending with freedom, and neither realizes the other has a coherent logic. Each partner answers the prompts separately first, then reads answers aloud without interrupting. The goal of the first pass is understanding each other’s money story, not agreeing on a plan.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Partner A: what did money mean in the home you grew up in?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Partner B: what did money mean in the home you grew up in?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Partner A: what does spending money on yourself feel like?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Partner B: what does spending money on yourself feel like?"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "One thing you learned about your partner’s money story"
+   }
+  ],
+  "tags": [
+   "Gottman",
+   "communication",
+   "money"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "in-law-boundaries-sheet",
+  "title": "In-Law Boundaries Sheet",
+  "kind": "couples",
+  "summary": "Has each partner name where extended family involvement feels supportive and where it feels intrusive.",
+  "goal": "Use it to get a couple presenting a united front to extended family instead of negotiating in front of them.",
+  "audience": [
+   "Couples"
+  ],
+  "duration": "20 minutes",
+  "body_md": "Conflict about in-laws usually hides an unresolved question about which family unit comes first now. Each partner separately marks where extended family involvement feels welcome and where it crosses a line, then the two compare lists and draft one shared boundary to bring to the family together — never one partner enforcing it against the other’s relative alone.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Partner A: where does extended family involvement feel supportive?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Partner A: where does it feel intrusive?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Partner B: where does extended family involvement feel supportive?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Partner B: where does it feel intrusive?"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "One boundary you will hold together, as a team"
+   }
+  ],
+  "tags": [
+   "boundaries",
+   "family",
+   "communication"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "desire-discrepancy-conversation-guide",
+  "title": "Desire Discrepancy Conversation Guide",
+  "kind": "couples",
+  "summary": "A low-pressure structure for a couple with mismatched desire to talk about it without either partner feeling blamed.",
+  "goal": "Use it to open a stuck conversation about differing desire without it turning into a scorecard.",
+  "audience": [
+   "Couples"
+  ],
+  "duration": "Full session",
+  "body_md": "Mismatched desire is one of the more avoided couples topics because it so easily turns into blame in either direction. The guide has each partner describe what desire feels tied to for them — connection, stress, body image, timing — before either one raises frequency at all, so the conversation starts with understanding instead of a number. Best run in session first before being sent home.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Partner A: what does feeling desired usually depend on for you?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Partner B: what does feeling desired usually depend on for you?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What gets in the way most often for each of you?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "One thing each partner could do that would help, without pressure"
+   }
+  ],
+  "tags": [
+   "intimacy",
+   "communication",
+   "Gottman"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "blended-family-roles-sheet",
+  "title": "Blended Family Roles Sheet",
+  "kind": "couples",
+  "summary": "Has each adult in a blended family name what role they are actually playing versus what they assumed they would.",
+  "goal": "Use it to make unspoken assumptions about a stepparent’s role explicit before they cause conflict.",
+  "audience": [
+   "Couples",
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Stepparent role confusion — disciplinarian, friend, bystander — is a common source of blended-family friction, often because nobody ever agreed on it out loud. Each adult writes the role they think they are playing and the role they think the children see them playing; differences between those columns are usually where the tension lives. Bring the children’s perspective in separately when appropriate.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Adult 1: what role do you think you are playing day to day?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Adult 2: what role do you think you are playing day to day?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What role do you think the children actually see each of you in?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Where do those roles clash, and what would help?"
+   }
+  ],
+  "tags": [
+   "family",
+   "communication",
+   "boundaries"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "long-distance-connection-planner",
+  "title": "Long-Distance Connection Planner",
+  "kind": "couples",
+  "summary": "Helps a couple living apart schedule the kinds of connection that a shared home usually provides by default.",
+  "goal": "Use it to replace the incidental closeness of shared space with something deliberate.",
+  "audience": [
+   "Couples"
+  ],
+  "duration": "20 minutes",
+  "body_md": "Couples sharing a home get connection almost by accident — a hallway conversation, a shared meal. Distance removes that, and video calls alone rarely replace it. The planner has the couple name specific kinds of connection they are missing — parallel activity, physical affection, daily check-ins, a plan for the next visit — and schedule a concrete way to approximate each one.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What kind of closeness do you miss most from being together?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "One way you could approximate it this week, apart"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "How often will you check in, and how?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "When is your next time together, and what will you protect for it?"
+   }
+  ],
+  "tags": [
+   "connection",
+   "rituals",
+   "communication"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "friendship-skills-practice-cards",
+  "title": "Friendship Skills Practice Cards",
+  "kind": "kids",
+  "summary": "Role-play cards a parent and child act out together, practicing one small friendship skill at a time.",
+  "goal": "Use it to rehearse a specific social skill in a low-stakes setting before the child needs it at school.",
+  "audience": [
+   "Children"
+  ],
+  "duration": "15 minutes",
+  "body_md": "Each card names one small scenario — joining a game already in progress, handling being left out, taking a turn — and the parent role-plays it with the child, switching roles so the child gets to practice both sides. Keep each round short and end on one the child pulled off well. The parent notes which scenarios still feel hardest so those get more practice.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Which scenario did you practice today?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What did you try saying or doing?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What felt easy about it?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What felt hard about it?"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "Parent: which scenario should you practice again next time?"
+   }
+  ],
+  "tags": [
+   "social skills",
+   "children",
+   "play"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "growth-mindset-garden-craft",
+  "title": "Growth Mindset Garden Craft",
+  "kind": "kids",
+  "summary": "A child plants a paper garden where mistakes become seeds that grow into things learned.",
+  "goal": "Use it to give a young perfectionist a hands-on way to see a mistake as the start of something, not an ending.",
+  "audience": [
+   "Children"
+  ],
+  "duration": "20 minutes",
+  "body_md": "The child draws or cuts out a garden bed and, each time a mistake comes up in session or at home, adds a paper seed labeled with what the mistake was. Over following sessions, seeds that the child has learned something from get a flower drawn on top. The garden grows messier before it grows prettier, which is the point: mistakes are what the garden is made of, not weeds pulled out of it.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What mistake will you plant as a seed today?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What did this mistake teach you?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Which seeds in your garden have grown into flowers?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Parent: which seed are you proud of your child for planting?"
+   }
+  ],
+  "tags": [
+   "perfectionism",
+   "children",
+   "growth mindset"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "family-feelings-check-in-chart",
+  "title": "Family Feelings Check-In Chart",
+  "kind": "kids",
+  "summary": "A visual chart the whole family uses at dinner to name one feeling each, in a few words or a color.",
+  "goal": "Use it to normalize naming feelings out loud as an ordinary family habit, not a special occasion.",
+  "audience": [
+   "Children",
+   "Adults"
+  ],
+  "duration": "Five minutes daily",
+  "body_md": "Posted somewhere the family gathers, the chart gives everyone — parents included — a fast way to name a feeling with a word or a color rather than a full explanation. A rule of no follow-up questions unless the person offers more keeps it low-pressure enough that kids keep using it. Over time it becomes easier for a child to bring up a harder feeling because naming small ones is already routine.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Today’s feeling, in one word or color: Family Member 1"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Today’s feeling, in one word or color: Family Member 2"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Today’s feeling, in one word or color: Family Member 3"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Did anyone want to say more about theirs?"
+   }
+  ],
+  "tags": [
+   "emotion identification",
+   "family",
+   "routines"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "team-family-motto-poster",
+  "title": "Team Family Motto Poster",
+  "kind": "kids",
+  "summary": "The family designs and decorates a shared motto that names how they want to treat each other.",
+  "goal": "Use it to give a family a shared, visible reminder they helped write themselves.",
+  "audience": [
+   "Children",
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Rather than a rule handed down, the family brainstorms together what they want to be known for — ‘we try again’, ‘we listen first’ — and votes on a short motto everyone had a hand in. Decorating and posting it somewhere visible matters as much as the words: a motto the kids helped design gets referenced far more often than a poster of house rules that arrived already finished.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What words or phrases did each person suggest?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Which one did the family choose, and why?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "How will you decorate the poster?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Where will it go, and who will remind the family to look at it?"
+   }
+  ],
+  "tags": [
+   "family",
+   "children",
+   "routines"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "sibling-peace-treaty-worksheet",
+  "title": "Sibling Peace Treaty Worksheet",
+  "kind": "kids",
+  "summary": "Siblings draft a simple, decorated agreement about how they will handle disagreements between them.",
+  "goal": "Use it to give siblings language for conflict that a parent did not write for them.",
+  "audience": [
+   "Children"
+  ],
+  "duration": "20 minutes",
+  "body_md": "With a parent facilitating rather than dictating, siblings each name one thing that bothers them about fighting with the other and one thing they are willing to try differently. The ‘treaty’ gets written in the children’s own words and decorated like a real document, which gives it more weight than a verbal rule ever manages. Revisit and revise it as needed rather than treating it as final.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Sibling 1: what bothers you most about our fights?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Sibling 2: what bothers you most about our fights?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Sibling 1: one thing I will try differently"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Sibling 2: one thing I will try differently"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "How will we handle it if the treaty gets broken?"
+   }
+  ],
+  "tags": [
+   "family",
+   "children",
+   "repair"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "strengths-bingo",
+  "title": "Strengths Bingo",
+  "kind": "game",
+  "summary": "A bingo card of character strengths where a group fills a square each time they spot that strength in someone.",
+  "goal": "Use it to get a group noticing and naming strengths in each other out loud.",
+  "audience": [
+   "Groups",
+   "Children",
+   "Teens"
+  ],
+  "duration": "20 minutes",
+  "body_md": "Each square names a strength — patience, humor, honesty, creativity — and players mark it when they see a group member display it during the session or activity, then say so out loud before marking the square. It turns strength-spotting into something active rather than a static list, and the debrief usually surfaces strengths a member did not know others noticed in them.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Which square did you fill first, and who earned it?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Which strength did you notice in yourself today?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Which strength surprised you to hear named about you?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What was it like to be the one naming strengths out loud?"
+   }
+  ],
+  "tags": [
+   "strengths",
+   "group",
+   "play"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "scenario-freeze-frame",
+  "title": "Scenario Freeze Frame",
+  "kind": "game",
+  "summary": "A group acts out a hard scenario, freezes on cue, and the group discusses the character’s options from there.",
+  "goal": "Use it to practice recognizing choice points inside a conflict before it escalates further.",
+  "audience": [
+   "Groups",
+   "Teens"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Two group members act out a scenario — a disagreement, a tempting shortcut, a tense conversation — and the facilitator calls ‘freeze’ at a turning point. The group discusses what the character could do next and why, then the scene resumes with a chosen option played out. Freezing mid-scene, rather than only debriefing after, keeps the choice point concrete instead of abstract.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What scenario did you act out?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Where did the group call freeze, and what was happening?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What options did the group come up with?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Which option did you choose to play out, and how did it go?"
+   }
+  ],
+  "tags": [
+   "group",
+   "play",
+   "decisions"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "the-support-web-game",
+  "title": "The Support Web Game",
+  "kind": "game",
+  "summary": "A group passes a ball of yarn while naming someone who supports them, building a visible web of connection.",
+  "goal": "Use it to make a group’s web of support visible and concrete rather than an idea talked about.",
+  "audience": [
+   "Groups"
+  ],
+  "duration": "20 minutes",
+  "body_md": "Standing in a circle, each person holds the string, names a person or source of support in their life, and tosses the ball to someone else while keeping hold of their strand — building a literal web across the group. The debrief looks at how tangled and connected the web became, and what it felt like to be one strand holding the others up. A classic group-therapy opener for talking about support networks.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Who or what did you name as support?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What did the web look like by the end?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What was it like to hold a strand that others depended on?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Who in your life outside this room could you add to your own web?"
+   }
+  ],
+  "tags": [
+   "support",
+   "group",
+   "connection"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "coping-skills-jeopardy",
+  "title": "Coping Skills Jeopardy",
+  "kind": "game",
+  "summary": "A quiz-style game where teams answer coping-skills questions across categories for points.",
+  "goal": "Use it to review a group’s coping skills vocabulary in a competitive, low-pressure format.",
+  "audience": [
+   "Groups",
+   "Teens"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Categories might include Grounding, Distress Tolerance, and Thinking Traps, with point values tied to difficulty. Teams buzz in to answer, and correct answers include a quick real example, not just the definition, so the game reinforces application rather than memorization. Works well as a mid-course review of skills covered so far.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Which category did your team pick first, and why?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "A question your team got right — what was the skill?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "A question your team missed — what is the right answer?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Which skill do you want to practice more after playing?"
+   }
+  ],
+  "tags": [
+   "coping skills",
+   "group",
+   "play"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "pass-the-story-coping-chain",
+  "title": "Pass the Story Coping Chain",
+  "kind": "game",
+  "summary": "A group builds one collaborative story, each person adding a line where the character uses a coping skill.",
+  "goal": "Use it to practice naming coping strategies out loud inside a low-pressure, playful format.",
+  "audience": [
+   "Groups",
+   "Children",
+   "Teens"
+  ],
+  "duration": "20 minutes",
+  "body_md": "One person starts a story with a character facing a stressful moment; each following person adds one line, and every third turn the added line has to include the character using a coping skill. The story usually gets funnier and stranger as it goes, which is part of the point — coping skills get rehearsed without the exercise feeling like a worksheet. Debrief which skills came up most.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What was the story about?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Which coping skills showed up in the story?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Which one would you actually use yourself?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What made this easier or harder than just listing skills?"
+   }
+  ],
+  "tags": [
+   "coping skills",
+   "group",
+   "play"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "orienting-to-now-practice",
+  "title": "Orienting to Now Practice",
+  "kind": "worksheet",
+  "summary": "A grounding worksheet that has a client name concrete present-day details to signal to the body that the danger has passed.",
+  "goal": "Use it to interrupt a flashback or a flooded moment by anchoring attention in the present.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "Ten minutes",
+  "body_md": "The client lists concrete facts that could only be true right now — today’s date, the room they are in, three things they can see — to help the body register that the present is not the past. Run it first in session so the client has felt it work before trying it alone. If distress escalates toward a crisis, the client’s safety plan and 988 (call or text) are the next step, not this worksheet.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Today’s date and where you are right now"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Three things you can see around you"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "One thing that reminds you this is not then"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "How did your body feel before and after this practice?"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "If distress keeps rising, who or what do you turn to next?"
+   }
+  ],
+  "tags": [
+   "PTSD and trauma",
+   "grounding",
+   "safety planning"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "then-versus-now-thought-sort",
+  "title": "Then Versus Now Thought Sort",
+  "kind": "cbt",
+  "summary": "Sorts intrusive trauma-related thoughts into a ‘made sense then’ column and a ‘not true now’ column.",
+  "goal": "Use it to separate a survival belief that was accurate then from its accuracy now.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "20 minutes",
+  "body_md": "Beliefs formed to survive a dangerous situation — ‘nobody is safe’, ‘I have to stay alert’ — made sense at the time and can outlast the danger. The client sorts current intrusive thoughts into what made sense then versus what is actually true now, without needing to describe the event itself. The sort itself, not the story behind it, is the therapeutic move.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "A thought that shows up often"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Made sense then — why?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "True now — yes or no, and why?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What is actually true about your safety today?"
+   }
+  ],
+  "tags": [
+   "PTSD and trauma",
+   "thinking traps",
+   "psychoeducation"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "making-room-for-the-alarm",
+  "title": "Making Room for the Alarm",
+  "kind": "act",
+  "summary": "An acceptance practice for making room for the body’s alarm sensations without fighting or fixing them.",
+  "goal": "Use it to reduce the added suffering that comes from fighting the body’s alarm response itself.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "15 minutes",
+  "body_md": "Trauma often leaves the body’s alarm system primed to fire even when nothing dangerous is happening. Fighting the alarm — trying to force it off — tends to make it louder. The client practices making room for the sensation, breathing around it rather than against it, while doing one small values-aligned action anyway. No detail of the original event is needed for this practice to work.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Where do you notice the alarm in your body?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What is your usual move against it — fight, flee, numb?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Practice making room for it for one minute — what did you notice?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What is one small action you could still take with the alarm present?"
+   }
+  ],
+  "tags": [
+   "PTSD and trauma",
+   "acceptance",
+   "grounding"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "paired-muscle-relaxation-for-hyperarousal",
+  "title": "Paired Muscle Relaxation for Hyperarousal",
+  "kind": "dbt",
+  "summary": "A brief muscle tension-and-release sequence used to bring down physical hyperarousal after a trauma trigger.",
+  "goal": "Use it to give the body a fast, physical off-ramp when hyperarousal has already taken over.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "Ten minutes",
+  "body_md": "When a trigger has already activated the body — racing heart, tight chest, restlessness — talking is often the wrong first move. The client tenses one muscle group hard for five seconds, then releases, moving through the body head to feet, pairing each release with a slow exhale. The physical shift usually needs to happen before any cognitive work can land. Practice it calm first, before it is needed in a spike.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Where in your body do you feel the activation first?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Rate the intensity before starting, 0 to 10"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Which muscle groups did you tense and release?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Rate the intensity after, 0 to 10"
+   }
+  ],
+  "tags": [
+   "PTSD and trauma",
+   "distress tolerance",
+   "regulation"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "trauma-informed-partner-support-plan",
+  "title": "Trauma-Informed Partner Support Plan",
+  "kind": "couples",
+  "summary": "A plan a couple builds together for what actually helps when one partner is triggered, made in a calm moment.",
+  "goal": "Use it to give a supporting partner a concrete plan instead of guessing what helps in the moment.",
+  "audience": [
+   "Couples"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Built when both partners are calm, this plan names what the triggered partner finds helpful — space, a specific phrase, physical touch or its absence — and what to avoid, such as pressing for details or minimizing. The supporting partner is not asked to understand the trauma itself, only to follow the plan the way it is written. Revisit and adjust the plan as the couple learns more about what helps.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Partner A: what helps you most when you are triggered?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Partner A: what makes it worse?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Partner B: what do you need to hear or do to feel useful in that moment?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "A phrase either of you can use to signal ‘I need the plan right now’"
+   }
+  ],
+  "tags": [
+   "PTSD and trauma",
+   "support",
+   "safety planning"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "anxiety-fuel-log",
+  "title": "Anxiety Fuel Log",
+  "kind": "worksheet",
+  "summary": "Tracks daily habits, sleep, caffeine, avoidance and reassurance-seeking, that tend to raise or lower anxiety.",
+  "goal": "Use it to find the everyday inputs a client can adjust rather than only the anxious thoughts.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "One week",
+  "body_md": "Anxiety is shaped by more than thoughts — sleep debt, caffeine, skipped meals and avoidance all raise the baseline. The client logs a few of these inputs alongside a daily anxiety rating for a week or two, then looks for the inputs that track most closely with the highs and lows. Small changes to inputs are often easier for a client to start with than changing the anxious thoughts directly.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Hours of sleep last night"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Caffeine today"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Any avoidance today, and of what?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Overall anxiety today, 0 to 10"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What pattern are you starting to notice?"
+   }
+  ],
+  "tags": [
+   "anxiety",
+   "self-monitoring",
+   "psychoeducation"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "what-if-ladder",
+  "title": "What If Ladder",
+  "kind": "cbt",
+  "summary": "Arranges a client’s catastrophic ‘what if’ thoughts from mild to most feared and tests each in turn.",
+  "goal": "Use it to work through a chain of anxious predictions instead of getting stuck on the worst one.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "20 minutes",
+  "body_md": "Anxious thinking often runs a chain — ‘what if I’m late’ leads to ‘what if I get fired’ leads to ‘what if I lose everything’ — and the client’s attention snags on the worst link. Laying the chain out as a ladder lets each link get examined for how likely it actually is, one rung at a time, rather than reacting to the whole chain at once.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Your starting worry"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What if that happens — then what?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What if that happens — then what?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "How likely is the worst rung, realistically?"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What would you actually do if the worst rung happened?"
+   }
+  ],
+  "tags": [
+   "anxiety",
+   "thinking traps",
+   "catastrophizing"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "worry-weather-forecast",
+  "title": "Worry Weather Forecast",
+  "kind": "act",
+  "summary": "Reframes anxious thoughts as changeable weather passing through, rather than a forecast of what will happen.",
+  "goal": "Use it to build distance from anxious thoughts by treating them as weather, not fact.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "Five minutes daily",
+  "body_md": "The client names today’s ‘mental weather’ — stormy, foggy, clear with a few clouds — as a way of holding anxious thoughts lightly rather than as literal predictions. Weather always passes, which is the point: today’s storm is not tomorrow’s forecast. Use it as a quick daily check-in that builds defusion without needing a long exercise each time.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Today’s mental weather report"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What thoughts came with that weather?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What would you do today even with this weather present?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "How did the weather change by the end of the day?"
+   }
+  ],
+  "tags": [
+   "anxiety",
+   "defusion",
+   "core ACT"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "anxiety-opposite-action-card",
+  "title": "Anxiety Opposite Action Card",
+  "kind": "dbt",
+  "summary": "Applies the DBT opposite action skill to anxiety by naming the urge to avoid and the opposite move.",
+  "goal": "Use it to interrupt avoidance before it has a chance to reinforce the anxiety further.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "Ongoing",
+  "body_md": "When the urge from anxiety does not fit the actual level of danger — a normal meeting, not a real threat — DBT’s opposite action skill has the client identify the avoidance urge and do the opposite, fully, with matching body language. Half-hearted opposite action tends not to work; the client practices approaching all the way in, not just partway.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The situation and the anxious urge to avoid"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Does the urge actually fit the danger here?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "The opposite action, described fully"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "How did it go when you did the opposite action all the way?"
+   }
+  ],
+  "tags": [
+   "anxiety",
+   "opposite action",
+   "emotion regulation"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "worry-backpack-unpacking-craft",
+  "title": "Worry Backpack Unpacking Craft",
+  "kind": "kids",
+  "summary": "A child draws a backpack full of worries, then ‘unpacks’ one at a time to decide which ones to carry today.",
+  "goal": "Use it to help a child sort worries into ones to carry and ones to set down for now.",
+  "audience": [
+   "Children"
+  ],
+  "duration": "20 minutes",
+  "body_md": "The child draws or writes each worry as an item inside a backpack, then takes them out one at a time and sorts them into ‘carry today’ and ‘set down for now’ piles with the parent’s help. Not every worry needs solving in one sitting; the craft gives a child physical practice choosing which one gets attention right now. Keep the ‘set down’ worries somewhere to revisit later, not just dismissed.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Draw your worry backpack — what worries are inside?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Pick one worry to unpack first — what is it?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Carry today or set down for now?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Parent: which worry will you check back in on tomorrow?"
+   }
+  ],
+  "tags": [
+   "anxiety",
+   "children",
+   "worry"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "low-energy-day-menu",
+  "title": "Low-Energy Day Menu",
+  "kind": "worksheet",
+  "summary": "A pre-planned list of very low-effort activities a client can turn to on the hardest, lowest-energy days.",
+  "goal": "Use it to have a plan ready before a low day arrives, when planning feels hardest.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "15 minutes",
+  "body_md": "Depression tends to be worst exactly when the energy to make a plan is lowest, so the menu gets built on a better day for use on a worse one. Every item should take five minutes or less and require almost no decision-making — open the curtains, drink a glass of water, text one person a single emoji. The goal on a hard day is doing one item, not several.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Five very low-effort items for your menu"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Where will you keep this list so you can find it on a bad day?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "On a hard day, which item did you manage?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "How did doing even that one thing change the day?"
+   }
+  ],
+  "tags": [
+   "depression",
+   "behavioral activation",
+   "planning"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "effort-versus-mood-log",
+  "title": "Effort Versus Mood Log",
+  "kind": "cbt",
+  "summary": "Tests the belief ‘I’ll do it once I feel like it’ by comparing outcomes when action came before mood.",
+  "goal": "Use it to challenge the assumption that motivation has to arrive before action can start.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "One week",
+  "body_md": "Depression often convinces a client that mood has to improve before action is possible, but the reverse is usually more reliable: action first, mood follows. The client logs a few activities attempted, noting whether they waited to feel like it first or acted anyway, and rates mood before and after either way. Most people find the ‘acted anyway’ entries score better than they expected.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The activity"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Did you wait to feel like it, or act first?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Mood before, 0 to 10"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Mood after, 0 to 10"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What does this entry tell you about waiting for motivation?"
+   }
+  ],
+  "tags": [
+   "depression",
+   "behavioral activation",
+   "core CBT"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "values-in-the-fog-practice",
+  "title": "Values in the Fog Practice",
+  "kind": "act",
+  "summary": "Helps a client name one values-aligned action to take even while depression makes everything feel flat.",
+  "goal": "Use it to keep values-based action moving even when a client cannot access much feeling at all.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "20 minutes",
+  "body_md": "Depression can flatten access to feeling, including the satisfaction that usually rewards action, which is why waiting to ‘want to’ rarely works. The client names a value that still matters even in the fog and picks one small action in that direction, doing it without expecting to feel much yet. The action counts whether or not it produces a feeling — feeling can catch up later.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "A value that still matters, even now"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "One small action in that direction you could take today"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Did you take the action? What happened?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Did you expect to feel something — did you?"
+   }
+  ],
+  "tags": [
+   "depression",
+   "values",
+   "committed action"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "emotional-numbing-check-in",
+  "title": "Emotional Numbing Check-In",
+  "kind": "dbt",
+  "summary": "A brief check-in for noticing emotional numbness and using one small sensory cue to reconnect.",
+  "goal": "Use it to interrupt numbness with a small, deliberate sensory anchor rather than forcing a feeling.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "Five minutes",
+  "body_md": "Depression sometimes shows up less as sadness than as numbness — nothing registers much at all. Rather than trying to force a feeling, the client uses one deliberate sensory input — cold water on the wrists, a strong scent, bright light — and simply notices whatever small response shows up, without judging it as too small to count. Track what tends to work over several tries.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What did numbness feel like today?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Which sensory cue did you try?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What, if anything, did you notice afterward?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Which cues seem to work best for you so far?"
+   }
+  ],
+  "tags": [
+   "depression",
+   "emotion regulation",
+   "self-soothing"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "pleasant-memory-trivia",
+  "title": "Pleasant Memory Trivia",
+  "kind": "game",
+  "summary": "A group game where members take turns sharing and guessing details of each other’s pleasant memories.",
+  "goal": "Use it to get a group actively recalling and sharing positive memories rather than only naming problems.",
+  "audience": [
+   "Groups"
+  ],
+  "duration": "20 minutes",
+  "body_md": "Each member shares a brief pleasant memory without saying when or where it happened; the group asks yes-or-no questions to guess details, turning recall into an active game rather than a static list. Depression narrows access to positive memory, so practicing retrieval, even playfully, is the point, not just hearing the memory once. Debrief which memories were hardest to think of.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The pleasant memory you shared (briefly, for yourself)"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What questions did the group ask to guess details?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "How hard was it to think of a pleasant memory today?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What did you notice hearing others’ memories?"
+   }
+  ],
+  "tags": [
+   "depression",
+   "group",
+   "play"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "time-blindness-check-card",
+  "title": "Time Blindness Check Card",
+  "kind": "cbt",
+  "summary": "Compares a client’s time estimate for a task against the clock, building awareness of time blindness.",
+  "goal": "Use it to make the gap between estimated and actual time visible instead of assumed.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "Ongoing",
+  "body_md": "Many people with ADHD consistently misjudge how long tasks take, in either direction, without realizing it, a pattern often called time blindness. The client estimates a task’s length before starting, times it, and logs both. Seeing the actual gap over several entries is usually more convincing than being told to ‘plan better,’ and it gives concrete numbers to pad future estimates with.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The task"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Your time estimate before starting"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Actual time it took"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "How far off was your estimate?"
+   }
+  ],
+  "tags": [
+   "ADHD",
+   "time management",
+   "self-monitoring"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "interest-based-values-bridge",
+  "title": "Interest-Based Values Bridge",
+  "kind": "act",
+  "summary": "Bridges a boring but necessary task to a value that actually matters, to help follow-through stick.",
+  "goal": "Use it when interest alone will not carry a task, by connecting it to something the client values.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "15 minutes",
+  "body_md": "Motivation for many people with ADHD tracks interest more than importance, so a necessary-but-boring task can stall no matter how much it matters on paper. The client names the task, then traces a line to a value it actually serves — even a dull filing task can connect to ‘being someone people can rely on.’ The bridge will not make the task interesting, but it gives a reason worth returning to when attention drifts.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The boring task you keep avoiding"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What value does finishing this actually serve?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "How does it feel to name that connection?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What is the smallest next step toward it?"
+   }
+  ],
+  "tags": [
+   "ADHD",
+   "values",
+   "task initiation"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "fidget-toolkit-planner",
+  "title": "Fidget Toolkit Planner",
+  "kind": "kids",
+  "summary": "A child tests a few fidget or movement tools and tracks which ones actually help them focus.",
+  "goal": "Use it to find which sensory tools genuinely help a child’s focus rather than guessing.",
+  "audience": [
+   "Children"
+  ],
+  "duration": "One week",
+  "body_md": "Not every fidget tool helps every child, and some become a distraction rather than a support. Over a week, the child tries a different tool each day — a squeeze ball, a standing option, a chewable, a doodle pad — during a homework or focus task, and rates with the parent how well it worked. The goal is a short list of two or three tools worth keeping on hand, not a full collection.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Today’s tool"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What task were you using it during?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Did it help you focus? How much?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Parent: keep this tool on the list — yes or no?"
+   }
+  ],
+  "tags": [
+   "ADHD",
+   "children",
+   "self-monitoring"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "attention-scavenger-hunt",
+  "title": "Attention Scavenger Hunt",
+  "kind": "game",
+  "summary": "A timed scavenger hunt game that rewards sustained visual attention rather than speed alone.",
+  "goal": "Use it to practice sustained attention in a format that feels like play, not a demand.",
+  "audience": [
+   "Children",
+   "Groups"
+  ],
+  "duration": "15 minutes",
+  "body_md": "Players search a room or a picture for a list of hidden items within a time limit, then compare finds and talk about what helped them keep scanning versus what pulled their attention away. Because the challenge is built into the game rather than assigned as a task, sustained attention gets practiced without the usual resistance that comes with ‘focus on this.’ Debrief what strategies helped.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What items were you hunting for?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What helped you keep searching when it got hard?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What pulled your attention away?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What would help you focus even longer next time?"
+   }
+  ],
+  "tags": [
+   "ADHD",
+   "play",
+   "group"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "executive-function-support-agreement",
+  "title": "Executive Function Support Agreement",
+  "kind": "couples",
+  "summary": "A couple negotiates concrete ways one partner can support executive function without becoming a parent figure.",
+  "goal": "Use it to turn ‘just be more organized’ into specific, agreed support both partners are comfortable with.",
+  "audience": [
+   "Couples"
+  ],
+  "duration": "30 minutes",
+  "body_md": "When one partner has ADHD, the other can drift into a caretaking or nagging role without either partner choosing it on purpose, which usually breeds resentment on both sides. The worksheet has each partner name specific supports that would actually help — a shared calendar, a standing reminder, first-refusal on reminders rather than repeated ones — and what would feel like being parented instead of supported.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "ADHD partner: what kind of support actually helps you?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "ADHD partner: what crosses into feeling like being parented?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Other partner: what would make offering support feel less exhausting?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "One specific support you will both try this week"
+   }
+  ],
+  "tags": [
+   "ADHD",
+   "support",
+   "communication"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "high-risk-situation-map",
+  "title": "High-Risk Situation Map",
+  "kind": "worksheet",
+  "summary": "Maps the places, people and times that tend to raise the risk of substance use, before they arrive.",
+  "goal": "Use it to plan around high-risk situations instead of relying on willpower in the moment.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "20 minutes",
+  "body_md": "Urges rarely arrive at random — certain places, people, times of day or emotional states raise the odds substantially. The client maps their own pattern across these categories and, for each high-risk item, names one concrete plan: avoid it, bring support, or have an exit ready. The map becomes something to check before a risky weekend or event, not just an after-the-fact reflection.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Places that raise your risk"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "People that raise your risk"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Times or situations that raise your risk"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "For your top risk, what is your plan?"
+   }
+  ],
+  "tags": [
+   "addiction",
+   "relapse prevention",
+   "planning"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "urge-curve-prediction-sheet",
+  "title": "Urge Curve Prediction Sheet",
+  "kind": "cbt",
+  "summary": "Has a client predict, then track, how long an urge actually lasts to challenge the sense that it never will.",
+  "goal": "Use it to build evidence that urges peak and fall within a predictable window.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "Ongoing",
+  "body_md": "In the grip of an urge, it can feel permanent, which makes giving in seem like the only way out. Before it fades, the client predicts how long the urge will last; afterward they log the actual time. Most urges peak and fall within twenty to forty-five minutes if nothing is done to feed them. A few logged entries usually do more to shift the belief than being told urges pass.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What triggered the urge?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Predicted length of the urge"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Actual length before it faded"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What did you do while riding it out?"
+   }
+  ],
+  "tags": [
+   "addiction",
+   "urges",
+   "self-monitoring"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "values-over-urges-card",
+  "title": "Values Over Urges Card",
+  "kind": "act",
+  "summary": "A pocket card linking one specific value to the moment an urge to use substances shows up.",
+  "goal": "Use it to give a client a values-based reason to reach for in the exact moment an urge appears.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "Ten minutes",
+  "body_md": "In the moment an urge appears, abstract commitments are hard to access, so the card keeps it concrete: one value, one reason it matters, written in the client’s own words, small enough to carry. The point is not to argue the urge away but to have something values-based ready to read in the ten seconds before a decision gets made either way.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The value you want on this card"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Why does this value matter to you, in your own words?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Where will you keep this card?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Did you read it during an urge this week? What happened?"
+   }
+  ],
+  "tags": [
+   "addiction",
+   "values",
+   "urges"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "urge-distress-tolerance-menu",
+  "title": "Urge Distress Tolerance Menu",
+  "kind": "dbt",
+  "summary": "A menu of quick distress tolerance skills a client picks from specifically when an urge to use is strong.",
+  "goal": "Use it to have several fast options ready instead of one plan that might not fit the moment.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "Ongoing",
+  "body_md": "Not every distress tolerance skill fits every urge moment — sometimes intense sensation helps (TIPP), sometimes distraction does, sometimes it is simply calling someone. The client builds a short menu of their own best options ahead of time and picks whichever fits the moment an urge hits, rather than trying to remember a whole skill set under pressure.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Your top three to five go-to skills for an urge moment"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Which one did you use this week?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Did it help — how much, 0 to 10?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Any skill to add or drop from the menu?"
+   }
+  ],
+  "tags": [
+   "addiction",
+   "distress tolerance",
+   "urges"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "supporting-without-enabling-worksheet",
+  "title": "Supporting Without Enabling Worksheet",
+  "kind": "couples",
+  "summary": "Helps a partner tell the difference between supportive help and behavior that enables continued substance use.",
+  "goal": "Use it to give a supporting partner concrete lines between helping and enabling.",
+  "audience": [
+   "Couples"
+  ],
+  "duration": "Full session",
+  "body_md": "Partners of someone working on substance use often want to help and are unsure where support turns into covering for, lending money toward, or minimizing continued use. Each partner separately lists actions that feel supportive and actions that feel like enabling, then the two compare lists together, ideally with the clinician present for the first pass rather than doing it alone at home.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Using partner: what kind of support actually helps you?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Supporting partner: what have you done that might be enabling?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What is one boundary the supporting partner needs to hold?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What support can continue without crossing into enabling?"
+   }
+  ],
+  "tags": [
+   "addiction",
+   "support",
+   "boundaries"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "anger-repair-timeline",
+  "title": "Anger Repair Timeline",
+  "kind": "worksheet",
+  "summary": "Tracks how long it actually takes to repair after an outburst, and what shortens or lengthens that time.",
+  "goal": "Use it to make the repair process itself, not just the outburst, something a client can improve.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "Ongoing",
+  "body_md": "An outburst is often treated as the whole event, but what happens in the hours and days after, an apology, a return to normal, rebuilt trust, matters just as much and is more within a client’s control. The client logs how long repair took after a recent episode and what specific action seemed to shorten it, building a record of what actually helps repair move faster next time.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The episode"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What did you do to start repair, and when?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "How long did it take before things felt normal again?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What seemed to speed up or slow down the repair?"
+   }
+  ],
+  "tags": [
+   "anger management",
+   "repair",
+   "self-monitoring"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "fairness-assumption-check",
+  "title": "Fairness Assumption Check",
+  "kind": "cbt",
+  "summary": "Tests the ‘this is unfair’ thought that often sits underneath anger, against the actual facts available.",
+  "goal": "Use it to slow down the jump from perceived unfairness straight to an angry reaction.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "20 minutes",
+  "body_md": "Anger often runs on an assumption of unfairness or a broken rule that felt certain in the moment but was never checked. The client writes the fairness assumption behind a recent angry moment, then lists what evidence actually supports it and what other explanation could also fit. This is not about deciding the client was wrong to be angry, only about slowing the jump from assumption to reaction.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The moment and the anger it triggered"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What rule or fairness assumption felt broken?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What evidence actually supports that?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What is another explanation that could also fit?"
+   }
+  ],
+  "tags": [
+   "anger management",
+   "thinking traps",
+   "core beliefs"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "anger-wise-mind-pause-card",
+  "title": "Anger Wise Mind Pause Card",
+  "kind": "dbt",
+  "summary": "A pause card that walks a client from emotion mind toward wise mind in the middle of an anger spike.",
+  "goal": "Use it to interrupt the jump from trigger straight to reaction with one deliberate pause.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "Five minutes",
+  "body_md": "In an anger spike, emotion mind can take over fast, driving a reaction before wise mind gets a say. The card walks through a short sequence: notice the spike, name it as emotion mind, take one slow breath, and ask what wise mind would add to what emotion mind is saying. It will not stop the anger, but it buys the seconds needed for a choice instead of a reflex.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What triggered the spike?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What was emotion mind saying?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "After the pause, what did wise mind add?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What did you do instead of the first reaction?"
+   }
+  ],
+  "tags": [
+   "anger management",
+   "wise mind",
+   "skills"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "anger-thermometer-countdown",
+  "title": "Anger Thermometer Countdown",
+  "kind": "kids",
+  "summary": "A thermometer chart where a child marks rising anger levels and picks a matching cool-down move at each one.",
+  "goal": "Use it to give a child a specific action tied to each level of anger, not just one plan for all of it.",
+  "audience": [
+   "Children"
+  ],
+  "duration": "20 minutes",
+  "body_md": "Rather than one cool-down strategy for all of anger, the thermometer has a different move at each level — deep breaths at a low simmer, a break in another room at a rolling boil, telling a grown-up before it reaches the top. The child and parent build the chart together on a calm day, then practice recognizing which level they are at before choosing the matching move.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What does level 1 (a little annoyed) feel like in your body?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What move do you use at level 1?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What does level 3 (really mad) feel like?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What move do you use at level 3?"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "Parent: which level did you notice today, and did the move help?"
+   }
+  ],
+  "tags": [
+   "anger management",
+   "children",
+   "regulation"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "cool-down-countdown-relay",
+  "title": "Cool-Down Countdown Relay",
+  "kind": "game",
+  "summary": "A relay game where each turn a player demonstrates a cool-down skill before passing to the next player.",
+  "goal": "Use it to rehearse quick cool-down skills as a group, in a format that stays playful, not preachy.",
+  "audience": [
+   "Children",
+   "Teens",
+   "Groups"
+  ],
+  "duration": "20 minutes",
+  "body_md": "Players take turns drawing a card naming a mild frustration and, before passing the turn along, demonstrating one cool-down skill on the spot — counting breaths, a shoulder shrug release, a short walk to a marker and back. Keeping it fast-paced and a little silly lowers the resistance kids and teens often have to anger skills practiced outside of an actual angry moment.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Which frustration card did you draw?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Which cool-down skill did you demonstrate?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Which skill from the game felt most natural to you?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Which one would you actually reach for when really angry?"
+   }
+  ],
+  "tags": [
+   "anger management",
+   "group",
+   "play"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "certainty-seeking-cost-log",
+  "title": "Certainty Seeking Cost Log",
+  "kind": "worksheet",
+  "summary": "Logs how much time checking, researching or mentally reviewing actually costs in a day.",
+  "goal": "Use it to make the time cost of certainty-seeking visible instead of hidden inside a normal day.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "One week",
+  "body_md": "Checking, researching and mental reviewing can eat far more of a day than a client realizes because each instance feels small on its own. The log tracks time spent on these certainty-seeking behaviors across a day or two, then totals it up. Seeing the number in minutes or hours often does more to motivate change than a general sense that ‘it’s a lot.’",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The certainty-seeking behavior"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "How long did it take?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Did it actually bring more certainty, or just relief that faded?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Total time today spent this way"
+   }
+  ],
+  "tags": [
+   "OCD",
+   "self-monitoring",
+   "checking"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "thought-action-fusion-check",
+  "title": "Thought-Action Fusion Check",
+  "kind": "cbt",
+  "summary": "Tests the belief that having a thought is as significant as acting on it, a common thread in intrusive thoughts.",
+  "goal": "Use it to separate the fact of having a thought from any claim about what it means.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "20 minutes",
+  "body_md": "A thought crossing the mind and a thought reflecting intent or character are not the same thing, but intrusive thoughts can feel otherwise in the moment. The client writes the thought, then separately answers whether having it means they want it, and whether having it makes them a worse person. Most clients land on ‘having a thought is not the same as choosing it’ once it is laid out this plainly.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The intrusive thought"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Does having this thought mean you want it to happen? Why or why not?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Does having it say something bad about your character? Why or why not?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What would you tell a friend who had this same thought?"
+   }
+  ],
+  "tags": [
+   "OCD",
+   "thinking traps",
+   "intrusive thoughts"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "sticky-thought-defusion-drill",
+  "title": "Sticky Thought Defusion Drill",
+  "kind": "act",
+  "summary": "A defusion drill for ‘sticky’ intrusive thoughts that keep returning no matter how often they are dismissed.",
+  "goal": "Use it to change a client’s relationship to a sticky thought rather than trying to make it stop.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "Ten minutes",
+  "body_md": "Trying to push a sticky thought away tends to make it stick harder. The client instead practices noticing the thought and labeling it out loud — ‘I’m having the sticky thought that...’ — without arguing with it or trying to resolve it. The drill does not aim to make the thought go away; it aims to make having it feel less urgent and less like an emergency each time.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The sticky thought"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Say it with the label: ‘I’m having the sticky thought that...’"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What is your urge right after — to check, to argue, to avoid?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What did you do instead of following the urge?"
+   }
+  ],
+  "tags": [
+   "OCD",
+   "defusion",
+   "intrusive thoughts"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "uncertainty-tolerance-practice-log",
+  "title": "Uncertainty Tolerance Practice Log",
+  "kind": "dbt",
+  "summary": "Logs small, deliberate practice sitting with uncertainty instead of resolving it through checking or reassurance.",
+  "goal": "Use it to build tolerance for not knowing, one small deliberate exposure at a time.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "Ongoing",
+  "body_md": "OCD tends to promise that one more check or one more reassurance will finally bring certainty, which keeps the cycle going. The client picks one small, low-stakes moment of uncertainty to leave unresolved on purpose — an unchecked lock, an unanswered what-if — and logs how the discomfort moved without the usual resolving behavior. Start small; the skill is tolerance, not bravado.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The uncertainty you left unresolved on purpose"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Urge to check or seek reassurance, 0 to 10, at the start"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "How did the urge change over time without acting on it?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What did you learn from sitting with it?"
+   }
+  ],
+  "tags": [
+   "OCD",
+   "distress tolerance",
+   "uncertainty"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "sticky-thought-jar-craft",
+  "title": "Sticky Thought Jar Craft",
+  "kind": "kids",
+  "summary": "A child writes down sticky, repeating thoughts and puts them in a jar labeled ‘thoughts, not facts’.",
+  "goal": "Use it to give a child a physical way to set aside a sticky thought without needing to act on it.",
+  "audience": [
+   "Children"
+  ],
+  "duration": "Ongoing",
+  "body_md": "The child decorates a small jar and labels it ‘thoughts, not facts.’ When a sticky, repeating thought shows up, they write or draw it on a slip of paper and post it in the jar instead of checking, asking, or doing the thing the thought demands. The parent helps track how many slips go in the jar and celebrates moments a thought went in the jar instead of being acted on.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What sticky thought showed up today?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Did it go in the jar instead of being acted on?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "How did it feel to let the thought sit in the jar?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Parent: how many slips went in the jar this week?"
+   }
+  ],
+  "tags": [
+   "OCD",
+   "children",
+   "externalizing"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "panic-symptom-reality-check-sheet",
+  "title": "Panic Symptom Reality Check Sheet",
+  "kind": "worksheet",
+  "summary": "Lists panic sensations next to what is actually happening in the body, to counter fear of imminent danger.",
+  "goal": "Use it to replace a catastrophic reading of panic symptoms with an accurate physiological one.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "20 minutes",
+  "body_md": "A racing heart during panic can feel like a heart attack, and tight breathing can feel like suffocation, even though both are the body’s alarm system doing exactly what it is built to do. The sheet lists common panic sensations next to a plain explanation of what is actually happening physiologically. Reviewing it outside of an attack, when the fear is not active, helps it stick for use during one.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "A panic sensation you experience"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What does it feel like is happening?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What is actually happening in the body?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "How does knowing that change the sensation’s intensity?"
+   }
+  ],
+  "tags": [
+   "panic attacks",
+   "psychoeducation",
+   "formulation"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "panic-attack-duration-tracker",
+  "title": "Panic Attack Duration Tracker",
+  "kind": "cbt",
+  "summary": "Tracks how long a panic attack actually lasts against how long it felt like it would last.",
+  "goal": "Use it to build evidence that panic attacks peak and pass within a predictable window.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "Ongoing",
+  "body_md": "In the middle of an attack, it can feel endless, which fuels the fear that drives it higher. The client notes the start time, the estimated feared duration, and the actual time it took to come back down. Most panic attacks peak within ten minutes and pass within twenty to thirty. A logged history of actual durations is often more convincing than being told this in the moment.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Start time"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "How long did it feel like it would last?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Actual time until it came back down"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What helped it pass?"
+   }
+  ],
+  "tags": [
+   "panic attacks",
+   "self-monitoring",
+   "psychoeducation"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "willing-passenger-panic-practice",
+  "title": "Willing Passenger Panic Practice",
+  "kind": "act",
+  "summary": "Practices letting panic sensations be present in the background while still doing a values-based activity.",
+  "goal": "Use it to keep panic sensations from automatically canceling a client’s plans.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "20 minutes",
+  "body_md": "The instinct during panic is to stop everything until the sensations pass, which can end up shrinking a client’s life around avoiding the next attack. The practice has the client name one activity that matters and do it with the panic sensations present, treating them as an unwelcome passenger rather than the driver. The sensations are not fought or denied, just not obeyed as an order to stop.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The activity that matters to you"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What sensations showed up while doing it?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Did you keep going anyway? What happened?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What did this practice teach you about the sensations’ actual power?"
+   }
+  ],
+  "tags": [
+   "panic attacks",
+   "acceptance",
+   "willingness"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "paced-exhale-panic-card",
+  "title": "Paced Exhale Panic Card",
+  "kind": "dbt",
+  "summary": "A breathing card with a longer exhale than inhale, used right at the first sign of a panic attack.",
+  "goal": "Use it to slow the body’s alarm response at the earliest moment an attack is building.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "Five minutes daily",
+  "body_md": "A longer exhale than inhale signals the body’s calming system to engage, which can blunt a panic attack before it fully builds. The client practices a count of in for four, out for six, several times a day when calm so the pattern is already familiar, then reaches for it at the very first sign of an attack rather than waiting until it has taken over.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Practiced today, calm — how many rounds?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Did you notice early signs of an attack this week?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Did you use the breathing pattern? What happened?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "How does the pattern feel different practiced calm versus in a spike?"
+   }
+  ],
+  "tags": [
+   "panic attacks",
+   "breathing",
+   "distress tolerance"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "first-response-card-for-partners",
+  "title": "First Response Card for Partners",
+  "kind": "couples",
+  "summary": "A short, agreed script a partner uses in the first moments of noticing a panic attack starting.",
+  "goal": "Use it so a supporting partner has an agreed first move instead of improvising under pressure.",
+  "audience": [
+   "Couples"
+  ],
+  "duration": "20 minutes",
+  "body_md": "The first response to a partner’s panic attack matters — some reactions help, others unintentionally add pressure (‘calm down,’ repeated questions). Built together outside of an attack, the card names the exact first move the supporting partner should make and a short phrase to say, agreed on in advance so neither partner is guessing in the moment.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Partner having attacks: what is genuinely helpful right at the start?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Partner having attacks: what makes it worse?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Supporting partner: what will your first move be?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "The agreed phrase you will say"
+   }
+  ],
+  "tags": [
+   "panic attacks",
+   "support",
+   "communication"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "parent-battery-check",
+  "title": "Parent Battery Check",
+  "kind": "worksheet",
+  "summary": "Has a parent rate their own capacity before reacting, since the same behavior lands differently depending on it.",
+  "goal": "Use it to help a parent notice their own state before choosing a response, not just the child’s behavior.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "Five minutes",
+  "body_md": "The same misbehavior can get a very different response depending on how depleted the parent already is, which children usually cannot see and parents often do not track. Before responding to a flashpoint, the parent rates their own battery level and considers whether the plan they are about to use matches a low-battery day or assumes a full one. Sometimes the answer is simply to pause before responding at all.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Your battery level right now, 0 to 10"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What is happening with your child?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What response were you about to use?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Does that response fit your current battery level?"
+   }
+  ],
+  "tags": [
+   "parenting",
+   "self-monitoring",
+   "regulation"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "child-behavior-reframe-sheet",
+  "title": "Child Behavior Reframe Sheet",
+  "kind": "cbt",
+  "summary": "Tests a parent’s interpretation of a child’s behavior against other explanations that could also fit.",
+  "goal": "Use it to loosen an interpretation of a child’s behavior that is fueling a parent’s own anger.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "15 minutes",
+  "body_md": "‘He’s doing this on purpose’ and ‘she can’t handle this right now’ point to very different parental responses, even for the same behavior. The parent writes down their current read of a repeated frustrating behavior, then lists at least one other explanation that fits the facts equally well — a skill gap, an unmet need, a developmental stage. The goal is a wider set of options, not necessarily a kinder one.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The behavior"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Your current interpretation of why they do it"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "One other explanation that fits equally well"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Which interpretation would you rather respond from?"
+   }
+  ],
+  "tags": [
+   "parenting",
+   "thinking traps",
+   "core beliefs"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "parenting-values-compass-check",
+  "title": "Parenting Values Compass Check",
+  "kind": "act",
+  "summary": "Compares the parent a client wants to be with how they actually showed up in a recent hard moment.",
+  "goal": "Use it to close the gap between parenting values and a moment-to-moment reaction without shame.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "20 minutes",
+  "body_md": "In a hard parenting moment, values are easy to lose track of under stress. The client names the kind of parent they want to be — patient, present, firm and warm — then looks honestly at a recent hard moment and how close it landed to that. The point is not guilt over the gap but using it to choose what to try differently next time, values still intact.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The kind of parent you want to be, in a few words"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "A recent hard moment — what actually happened?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "How close did that land to the parent you want to be?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What would help you close that gap next time?"
+   }
+  ],
+  "tags": [
+   "parenting",
+   "values",
+   "self-compassion"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "parenting-team-huddle-sheet",
+  "title": "Parenting Team Huddle Sheet",
+  "kind": "couples",
+  "summary": "A short, regular check-in where co-parents align on approach before the next flashpoint, not during it.",
+  "goal": "Use it to get co-parents on the same page ahead of time instead of negotiating in front of the child.",
+  "audience": [
+   "Couples"
+  ],
+  "duration": "Ten minutes",
+  "body_md": "Disagreeing about parenting in front of a child undermines both parents and confuses the child about which rule holds. The huddle is a short, regular check-in, five minutes, not a summit, where co-parents name one upcoming flashpoint and agree on the approach in advance, so a united response is ready before the moment arrives rather than improvised during it.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "An upcoming flashpoint you expect this week"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Parent A’s usual approach to it"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Parent B’s usual approach to it"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "The approach you are agreeing to use together"
+   }
+  ],
+  "tags": [
+   "parenting",
+   "family",
+   "communication"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "grown-up-and-me-feelings-match",
+  "title": "Grown-Up and Me Feelings Match",
+  "kind": "kids",
+  "summary": "A matching game where parent and child each guess what feeling fits a shared family moment from the week.",
+  "goal": "Use it to build a shared feelings vocabulary between parent and child through play, not lecture.",
+  "audience": [
+   "Children",
+   "Adults"
+  ],
+  "duration": "15 minutes",
+  "body_md": "Parent and child each write down a few moments from the week on separate cards, then take turns guessing what feeling the other person had in that moment before comparing notes. Parents are often surprised by what a child actually felt, and children enjoy getting to ‘guess’ a grown-up’s feelings for once. Keep it playful; being wrong is part of the game, not a failure.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "A moment from this week (child)"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What feeling do you think the grown-up had? (child guesses)"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "A moment from this week (parent)"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What feeling do you think the child had? (parent guesses)"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What did you learn about each other’s feelings?"
+   }
+  ],
+  "tags": [
+   "parenting",
+   "children",
+   "emotion identification"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "new-parent-reality-versus-expectation-sheet",
+  "title": "New Parent Reality Versus Expectation Sheet",
+  "kind": "worksheet",
+  "summary": "Compares what a new parent expected postpartum life to feel like against what it has actually been.",
+  "goal": "Use it to name the gap between expectation and reality without treating the gap as a personal failure.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "20 minutes",
+  "body_md": "New-parent expectations are often shaped by curated images and other people’s highlight reels, and the gap between that and an actual postpartum reality can quietly feed shame. The client writes what they expected next to what has actually happened, in a few key areas — sleep, bonding, identity, support — and names the gap plainly rather than treating it as evidence something is wrong with them.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What did you expect this stage to feel like?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What has it actually felt like?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Where is the biggest gap?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What would help close that gap, even a little?"
+   }
+  ],
+  "tags": [
+   "perinatal and postpartum",
+   "expectations",
+   "self-compassion"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "postpartum-guilt-thought-log",
+  "title": "Postpartum Guilt Thought Log",
+  "kind": "cbt",
+  "summary": "A thought log built around the specific guilt thoughts that show up often in the postpartum period.",
+  "goal": "Use it to examine postpartum guilt thoughts with the same rigor as any other automatic thought.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "15 minutes",
+  "body_md": "‘I should be enjoying this more’ and ‘a good parent wouldn’t feel this way’ are common postpartum automatic thoughts that rarely get the same scrutiny other anxious or depressive thoughts get, because they can feel like facts about being a bad parent. The client logs the thought, the evidence for and against it, and a more balanced alternative, the same way any other thought record works.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The guilt thought"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Evidence that supports it"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Evidence against it"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "A more balanced thought"
+   }
+  ],
+  "tags": [
+   "perinatal and postpartum",
+   "guilt",
+   "thinking traps"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "good-enough-parent-practice",
+  "title": "Good Enough Parent Practice",
+  "kind": "act",
+  "summary": "Practices holding a perfectionistic new-parent standard more lightly, in favor of a workable ‘good enough’.",
+  "goal": "Use it to loosen an all-or-nothing new-parent standard that is driving exhaustion or guilt.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "15 minutes",
+  "body_md": "New parents often carry an unspoken standard of doing everything right, which nothing in an actual postpartum period can meet. The client names the standard, then practices noticing it as a thought — ‘I’m having the thought that a good parent would...’ — rather than a rule, and identifies what ‘good enough’ would actually look like today instead of the unreachable ideal.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The standard you are holding yourself to"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Say it as a thought: ‘I’m having the thought that...’"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What would ‘good enough’ look like today instead?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What gets easier if ‘good enough’ is actually enough?"
+   }
+  ],
+  "tags": [
+   "perinatal and postpartum",
+   "self-compassion",
+   "defusion"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "postpartum-please-check",
+  "title": "Postpartum PLEASE Check",
+  "kind": "dbt",
+  "summary": "Adapts the DBT PLEASE skill to newborn care, where sleep and eating rarely follow a normal schedule.",
+  "goal": "Use it to track basic physical needs realistically, given what newborn care actually allows.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "Five minutes",
+  "body_md": "PLEASE, treating physical illness, eating, avoiding mood-altering substances, sleep and exercise, assumes a baseline that newborn care regularly disrupts, especially sleep. Rather than aiming for an ideal, the client tracks what was realistically possible each day and names one small thing that is actually within reach, given a newborn’s schedule, not an adult’s.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Sleep today — how much, in whatever pieces it came in"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Did you eat something today? What?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Any physical symptoms you are ignoring?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "One realistic thing you could add tomorrow, given the baby’s schedule"
+   }
+  ],
+  "tags": [
+   "perinatal and postpartum",
+   "PLEASE",
+   "vulnerability"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "postpartum-labor-rebalance-sheet",
+  "title": "Postpartum Labor Rebalance Sheet",
+  "kind": "couples",
+  "summary": "A concrete worksheet for rebalancing night wakings and household tasks after a birth, not just talking about it.",
+  "goal": "Use it to turn a vague ‘we should split things more evenly’ into a specific, written plan.",
+  "audience": [
+   "Couples"
+  ],
+  "duration": "20 minutes",
+  "body_md": "Vague agreements to ‘share more’ tend to dissolve under exhaustion, while a specific written plan holds up better. The couple lists the recurring tasks of the newborn period — night wakings, feeding, household chores, outside support coordination — and assigns or alternates each one concretely, revisiting the plan every couple of weeks as things change fast in this period.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "List the recurring tasks of this period"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Who currently does most of each, and how does that feel?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "How will you split or alternate each task going forward?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "When will you revisit this plan?"
+   }
+  ],
+  "tags": [
+   "perinatal and postpartum",
+   "relationship issues",
+   "communication"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "self-worth-sources-inventory",
+  "title": "Self-Worth Sources Inventory",
+  "kind": "worksheet",
+  "summary": "Inventories where a client’s current sense of worth comes from, and where they would rather it come from.",
+  "goal": "Use it to make an unexamined source of self-worth, often achievement or approval, visible and open to change.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "20 minutes",
+  "body_md": "Self-worth quietly tied to performance, appearance or others’ approval tends to feel shaky, because all three can be taken away or withheld. The client lists what their worth currently seems to depend on, then names what they would rather it be grounded in instead — effort, values, character. The gap between the two lists becomes a direction to work toward, not a verdict on the client.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What does your sense of worth currently seem to depend on?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What happens to your worth when that thing dips or disappears?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What would you rather your worth be grounded in?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "One way to practice grounding worth there this week"
+   }
+  ],
+  "tags": [
+   "self-esteem",
+   "values",
+   "self-compassion"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "compliment-deflection-log",
+  "title": "Compliment Deflection Log",
+  "kind": "cbt",
+  "summary": "Tracks moments a client deflected or dismissed a compliment, and practices simply accepting it instead.",
+  "goal": "Use it to interrupt the automatic habit of arguing with positive feedback.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "Ongoing",
+  "body_md": "Deflecting a compliment — ‘oh, it was nothing,’ ‘anyone could have done it’ — can become so automatic that a client stops registering positive feedback at all. The log tracks compliments received, the automatic deflection, and a practiced alternative response of simply saying thank you without qualifying it. Even a client who does not believe the compliment yet can practice the behavior of accepting it.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The compliment you received"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What did you automatically say or think?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What would ‘just saying thank you’ have sounded like?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Did you practice accepting it this week? What happened?"
+   }
+  ],
+  "tags": [
+   "self-esteem",
+   "self-criticism",
+   "core CBT"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "self-as-context-strengths-practice",
+  "title": "Self-As-Context Strengths Practice",
+  "kind": "act",
+  "summary": "Uses the observing-self perspective to notice a harsh self-verdict without becoming fused with it.",
+  "goal": "Use it to give a client distance from a self-critical verdict by practicing the observer’s view.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "15 minutes",
+  "body_md": "The part of a person that notices a thought is not the same as the thought itself — the observing self watching ‘I’m worthless’ is not, itself, worthless. The client practices stepping back to that observer position when a harsh self-verdict shows up, noticing the verdict rather than being it. This is a stance to practice repeatedly, not a one-time insight that resolves the verdict.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The self-verdict that showed up"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "From the observer’s seat, what do you notice about having this thought?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Is the observer the same thing as the verdict, or something that notices it?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What changed, stepping back to notice rather than agreeing?"
+   }
+  ],
+  "tags": [
+   "self-esteem",
+   "self-as-context",
+   "defusion"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "kindness-toward-myself-mirror-craft",
+  "title": "Kindness Toward Myself Mirror Craft",
+  "kind": "kids",
+  "summary": "A child decorates a mirror frame with kind phrases to read to themselves, practiced daily with a parent.",
+  "goal": "Use it to build a habit of self-kindness through repetition, before a child can explain why it matters.",
+  "audience": [
+   "Children"
+  ],
+  "duration": "15 minutes",
+  "body_md": "The child chooses a few kind phrases — ‘I am learning,’ ‘mistakes are okay,’ ‘I am proud of me’ — and decorates a small mirror frame or card with them, placing it somewhere they will see it daily, like a bathroom mirror. The parent practices saying the phrases along with the child at first, since children often need to hear kindness modeled before they can offer it to themselves.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What kind phrases did you pick?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Where will you keep your mirror or card?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Did you say your phrases today? How did it feel?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Parent: did you practice saying them together?"
+   }
+  ],
+  "tags": [
+   "self-esteem",
+   "children",
+   "self-compassion"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "two-truths-and-a-strength",
+  "title": "Two Truths and a Strength",
+  "kind": "game",
+  "summary": "A group icebreaker where each person shares two true strengths and one exaggerated one for others to guess.",
+  "goal": "Use it to get a group naming their own strengths out loud in a low-pressure, playful format.",
+  "audience": [
+   "Groups",
+   "Teens",
+   "Adults"
+  ],
+  "duration": "20 minutes",
+  "body_md": "Each player shares three statements about their own strengths, two true and one exaggerated, and the group guesses which is the stretch. Naming strengths about oneself can feel uncomfortable for a group working on self-esteem, and the playful framing lowers that discomfort enough that most people can do it without much hesitation. Debrief what it felt like to claim a strength out loud.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Your two true strengths"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Your one exaggerated strength"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What did the group guess, and did they get it right?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What was it like to say a real strength about yourself?"
+   }
+  ],
+  "tags": [
+   "self-esteem",
+   "group",
+   "play"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "social-safety-behaviors-checklist",
+  "title": "Social Safety Behaviors Checklist",
+  "kind": "worksheet",
+  "summary": "Lists the subtle safety behaviors a client uses in social situations, as targets to gradually drop.",
+  "goal": "Use it to name the small self-protective habits that quietly keep social anxiety in place.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "20 minutes",
+  "body_md": "Safety behaviors in social anxiety are often subtle enough to go unnoticed — rehearsing a line beforehand, avoiding eye contact, over-explaining, gripping a drink to look occupied. Each one feels protective but also prevents the client from learning the situation would have gone fine without it. The client lists their own behaviors and picks one to drop, on purpose, in a low-stakes situation first.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Safety behaviors you use in social situations"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Which one feels hardest to drop?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Pick one low-stakes situation to try dropping it"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What happened when you dropped it?"
+   }
+  ],
+  "tags": [
+   "social anxiety",
+   "safety behaviors",
+   "exposure"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "spotlight-effect-check",
+  "title": "Spotlight Effect Check",
+  "kind": "cbt",
+  "summary": "Tests the belief that others notice a client’s mistakes or anxiety as much as it feels like they do.",
+  "goal": "Use it to gather evidence against the assumption that everyone is watching as closely as it feels.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "15 minutes",
+  "body_md": "Social anxiety tends to inflate how much other people are actually noticing — a mistake that feels glaring to the person who made it is often missed entirely by everyone else, who are usually thinking about themselves. The client predicts how many people will notice a small slip before a situation, then checks afterward what evidence there actually was that anyone did.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The situation and the slip you are worried about"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Prediction: how many people will notice?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What actually happened — any evidence anyone noticed?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What does the gap between prediction and evidence tell you?"
+   }
+  ],
+  "tags": [
+   "social anxiety",
+   "thinking traps",
+   "behavioral experiment"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "give-skills-social-practice-card",
+  "title": "GIVE Skills Social Practice Card",
+  "kind": "dbt",
+  "summary": "Adapts the DBT GIVE skill into a short script for practicing one low-stakes social interaction at a time.",
+  "goal": "Use it to pair an interpersonal skill with graded social exposure instead of avoiding the interaction entirely.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "15 minutes",
+  "body_md": "GIVE, being gentle, showing interest, validating, and using an easy manner, gives a client something concrete to focus on that is not their own anxiety symptoms. The card pairs one GIVE element with a specific low-stakes interaction to try this week, shifting attention outward onto the skill rather than inward onto self-monitoring, which tends to fuel the anxiety further.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The low-stakes interaction you will practice"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Which GIVE element will you focus on?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What did you notice about your anxiety during it?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "How did focusing on the skill change where your attention went?"
+   }
+  ],
+  "tags": [
+   "social anxiety",
+   "GIVE",
+   "interpersonal effectiveness"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "one-new-hello-chart",
+  "title": "One New Hello Chart",
+  "kind": "kids",
+  "summary": "A daily chart where a child tracks saying hello to just one person, building social approach one small step at a time.",
+  "goal": "Use it to build social approach skill gradually, starting from the smallest possible step.",
+  "audience": [
+   "Children"
+  ],
+  "duration": "Ongoing",
+  "body_md": "For a socially anxious child, a whole conversation can feel out of reach, but saying one hello usually does not. The chart tracks just that, one hello to one person a day, checked off with a sticker, without any pressure for the interaction to go further. Small, repeated wins build a track record the child can point to, which matters more than any single successful conversation.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Who did you say hello to today?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What did that feel like before you did it?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What did it feel like after?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Parent: sticker earned — yes or no?"
+   }
+  ],
+  "tags": [
+   "social anxiety",
+   "children",
+   "exposure"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "icebreaker-ladder-game",
+  "title": "Icebreaker Ladder Game",
+  "kind": "game",
+  "summary": "A group game climbing from very low-stakes to slightly harder icebreaker questions, one rung at a time.",
+  "goal": "Use it to practice graded social exposure inside a group in a structured, predictable format.",
+  "audience": [
+   "Groups",
+   "Teens"
+  ],
+  "duration": "20 minutes",
+  "body_md": "Questions start as low-stakes as possible, a favorite color, a favorite food, and climb gradually toward slightly more personal ones as the group warms up, giving socially anxious members a predictable, low-pressure ramp instead of an unpredictable jump straight into deep sharing. Anyone can pass on a rung and try it again later, which keeps the exposure graded rather than forced.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Which rung did you find hardest?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Did you pass on any question, and try it again later?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What helped you answer as the questions got more personal?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What did you notice about the group as the game went on?"
+   }
+  ],
+  "tags": [
+   "social anxiety",
+   "group",
+   "exposure"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "grief-anniversary-planning-sheet",
+  "title": "Grief Anniversary Planning Sheet",
+  "kind": "worksheet",
+  "summary": "Plans ahead for an anniversary, holiday or other date that tends to bring grief back to the surface.",
+  "goal": "Use it so a hard date is met with a plan instead of arriving unprepared.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "20 minutes",
+  "body_md": "Anniversaries, birthdays and holidays after a loss often hit harder than expected, even when the date has been circled on the calendar for weeks. The client plans ahead of time what they want the day to include — a ritual, time alone, company, avoiding a particular place — rather than deciding in the moment when grief may already be running the day.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The upcoming date and what it marks"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What do you want this day to include?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What do you want to avoid on this day?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Who, if anyone, do you want with you?"
+   }
+  ],
+  "tags": [
+   "grief and loss",
+   "planning",
+   "anniversary reactions"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "grief-guilt-thought-record",
+  "title": "Grief Guilt Thought Record",
+  "kind": "cbt",
+  "summary": "A thought record built around the guilt thoughts that often follow a loss, tested the same as any other.",
+  "goal": "Use it to examine grief-related guilt thoughts with the same rigor as any other automatic thought.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "20 minutes",
+  "body_md": "‘I should have called more’ or ‘I could have caught it sooner’ are common after a loss and rarely get examined the way an anxious thought would, because guilt can feel like proof of love rather than a thought worth questioning. The client logs the guilt thought, the evidence for and against it, and a more balanced version, treating it as a thought like any other.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The guilt thought"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Evidence that supports it"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Evidence against it"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "A more balanced version of the thought"
+   }
+  ],
+  "tags": [
+   "grief and loss",
+   "guilt",
+   "thinking traps"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "carrying-it-forward-practice",
+  "title": "Carrying It Forward Practice",
+  "kind": "act",
+  "summary": "An acceptance practice for carrying grief forward alongside continued values-based living, not instead of it.",
+  "goal": "Use it to counter the belief that moving toward life again means leaving grief, or the person, behind.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "20 minutes",
+  "body_md": "Grief and continuing to live do not have to trade off against each other, though it can feel that way, as if enjoying something again is a kind of forgetting. The client practices naming both at once: the loss that is still carried, and one values-based action taken anyway, in the same breath. The aim is not resolution but making room for both to be true together.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What are you still carrying from this loss?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "A value that still matters to you"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "One action in that direction you could take, carrying the loss with you"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What comes up when you imagine doing both at once?"
+   }
+  ],
+  "tags": [
+   "grief and loss",
+   "acceptance",
+   "values"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "grieving-differently-together-sheet",
+  "title": "Grieving Differently Together Sheet",
+  "kind": "couples",
+  "summary": "Helps a couple grieving the same loss understand why they are grieving in different ways and on different timelines.",
+  "goal": "Use it to stop divergent grieving styles from being read as one partner caring less.",
+  "audience": [
+   "Couples"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Two people grieving the same loss rarely grieve identically — one partner may want to talk often, the other may need quiet or activity, and each can misread the other’s style as not caring enough. Each partner describes their own grieving style and what they need from the other, and both name one thing they can stop assuming about the other’s grief once they hear this.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Partner A: how does your grief usually show up?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Partner A: what do you need from your partner right now?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Partner B: how does your grief usually show up?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Partner B: what do you need from your partner right now?"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "One assumption about each other’s grief you are ready to drop"
+   }
+  ],
+  "tags": [
+   "grief and loss",
+   "relationship issues",
+   "support"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "feelings-about-goodbye-storybook-craft",
+  "title": "Feelings About Goodbye Storybook Craft",
+  "kind": "kids",
+  "summary": "A child makes a simple illustrated booklet about their loss, in their own words and pictures, with a parent nearby.",
+  "goal": "Use it to give a child a concrete, contained way to tell their own story about the loss, at their own pace.",
+  "audience": [
+   "Children"
+  ],
+  "duration": "Ongoing",
+  "body_md": "Children often process loss in pieces rather than one conversation, and a small illustrated booklet gives them somewhere to put those pieces over time rather than needing to say everything at once. The parent stays nearby to help with words but lets the child lead the pictures and the pace, adding pages over days or weeks rather than finishing in one sitting.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What happened, in your own words or pictures"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What you miss most"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "A happy memory to include"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Who helps you when you feel sad about it"
+   }
+  ],
+  "tags": [
+   "grief and loss",
+   "children",
+   "narrative"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "relationship-pattern-history-sheet",
+  "title": "Relationship Pattern History Sheet",
+  "kind": "worksheet",
+  "summary": "Has a client trace a recurring relationship pattern across several relationships, not just the current one.",
+  "goal": "Use it to show a client a pattern is theirs to work on, not just a feature of one difficult partner.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "A pattern that shows up across several relationships, always the one who chases, always drawn to someone unavailable, always the one who goes quiet first, is more useful to examine than one blamed entirely on the current partner. The client lists past and current relationships and marks where the pattern shows up in each, then considers what role they tend to play in keeping it going.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The pattern you keep noticing"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Where did it show up in past relationships?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Where does it show up now?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What is your part in keeping the pattern going?"
+   }
+  ],
+  "tags": [
+   "relationship issues",
+   "pattern",
+   "self-monitoring"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "mind-reading-check-for-relationships",
+  "title": "Mind-Reading Check for Relationships",
+  "kind": "cbt",
+  "summary": "Tests an assumption about a partner’s thoughts or intentions against what they actually said when asked.",
+  "goal": "Use it to interrupt the habit of assuming a partner’s intent instead of checking it directly.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "Ongoing",
+  "body_md": "‘They didn’t text back because they’re losing interest’ is a guess dressed up as a fact, and relationships absorb a lot of friction from guesses like it going unchecked. The client writes the assumption, rates how certain they feel, then actually asks the partner and logs the real answer. Comparing the guess to the answer over a few entries usually reveals how often the guess was simply wrong.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The assumption about your partner’s thoughts or intent"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "How certain did you feel, 0 to 100 percent?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What did they actually say when you asked?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "How far off was the assumption?"
+   }
+  ],
+  "tags": [
+   "relationship issues",
+   "thinking traps",
+   "communication"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "committed-relationship-values-check",
+  "title": "Committed Relationship Values Check",
+  "kind": "act",
+  "summary": "Practices willingness to sit with discomfort, an awkward conversation, being vulnerable, in service of the relationship.",
+  "goal": "Use it when avoiding discomfort is quietly costing a client the relationship closeness they say they want.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "15 minutes",
+  "body_md": "Avoiding an awkward conversation or staying guarded to sidestep discomfort often costs more closeness than the discomfort itself would have. The client names a relationship value, honesty, closeness, repair, and one uncomfortable action that would actually serve it, then practices willingness to feel the discomfort rather than waiting for it to go away first.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "A relationship value that matters to you"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What uncomfortable action would actually serve it?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What discomfort shows up when you imagine doing it?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Are you willing to feel that, in service of the value?"
+   }
+  ],
+  "tags": [
+   "relationship issues",
+   "values",
+   "willingness"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "relationship-check-the-facts-sheet",
+  "title": "Relationship Check the Facts Sheet",
+  "kind": "dbt",
+  "summary": "Applies DBT’s check the facts skill to a relationship conflict interpretation before reacting to it.",
+  "goal": "Use it to test whether a reaction to a partner’s words actually fits the facts of what was said.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "15 minutes",
+  "body_md": "An emotional reaction to a partner’s comment sometimes fits the facts and sometimes runs ahead of them, shaped by past hurts more than the present moment. The client writes exactly what was said, their interpretation of it, and the emotion that followed, then checks whether the interpretation is the only one that fits the actual words. Where it does not, a different response usually becomes available.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What was actually said, word for word if possible"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Your interpretation of it"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "The emotion that followed, and its intensity"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Is your interpretation the only one that fits the facts?"
+   }
+  ],
+  "tags": [
+   "relationship issues",
+   "check the facts",
+   "emotion regulation"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "repeated-argument-autopsy",
+  "title": "Repeated Argument Autopsy",
+  "kind": "couples",
+  "summary": "Has a couple analyze the structure of a recurring argument, how it starts, escalates and ends, rather than its content.",
+  "goal": "Use it to interrupt a recurring argument’s pattern once both partners can see its shape.",
+  "audience": [
+   "Couples"
+  ],
+  "duration": "30 minutes",
+  "body_md": "The same argument often repeats not because the topic keeps changing but because the structure never does, a familiar opening line, a predictable escalation, the same ending. Each partner separately describes the pattern’s stages, then the two compare notes and name the exact moment where a different move could change the outcome. Working on the structure tends to help more than re-litigating the last instance.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Partner A: how does this argument usually start?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Partner B: how does this argument usually start?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "How does it usually escalate, and how does it usually end?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Where is the one moment a different move could change it?"
+   }
+  ],
+  "tags": [
+   "relationship issues",
+   "conflict",
+   "pattern"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "safety-signal-card",
+  "title": "Safety Signal Card",
+  "kind": "worksheet",
+  "summary": "A card naming a client’s own signals of safety in the present, built for quick reference during distress.",
+  "goal": "Use it to give a client something concrete pointing to present safety, ready before it is needed.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "15 minutes",
+  "body_md": "Built on a calm day, the card lists specific, personal signals that the present is safe — a locked door, a trusted person’s number, a phrase that has worked before. It does not ask for any account of what happened; it works entirely in the present tense. If distress escalates toward a crisis, 988 (call or text) and the client’s own safety plan come next, not this card alone.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "A place that feels safe to you right now"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "A person you can reach out to"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "A phrase or reminder that has helped before"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Where will you keep this card?"
+   }
+  ],
+  "tags": [
+   "sexual abuse",
+   "safety planning",
+   "PTSD and trauma"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "self-blame-versus-responsibility-sheet",
+  "title": "Self-Blame Versus Responsibility Sheet",
+  "kind": "cbt",
+  "summary": "Separates a client’s self-blame from where responsibility actually sits, without needing the details of what happened.",
+  "goal": "Use it to loosen self-blame that has settled somewhere it does not belong.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "20 minutes",
+  "body_md": "Self-blame after sexual abuse often attaches to choices the client made, what they wore, where they were, what they said, as though those choices caused the abuse. The client can name the self-blaming thought and test it against a simple question: who chose to cause harm? The exercise works without any account of the abuse itself; it stays with the thought, not the story.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "A self-blaming thought you carry"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What choice does it blame you for?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Who actually chose to cause harm?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What would you say to someone else carrying this same blame?"
+   }
+  ],
+  "tags": [
+   "sexual abuse",
+   "self-blame",
+   "shame"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "reclaiming-choice-practice",
+  "title": "Reclaiming Choice Practice",
+  "kind": "act",
+  "summary": "Practices noticing small present-day choices a client has, to rebuild a sense of agency at their own pace.",
+  "goal": "Use it to rebuild a felt sense of choice in the present, without needing to revisit the past.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "15 minutes",
+  "body_md": "Abuse involves choice being taken away, and rebuilding a felt sense of agency can matter as much as any other part of healing, entirely apart from processing what happened. The practice has the client notice small, real choices available right now, what to eat, when to rest, who to see, and name each one as evidence that choice is theirs again. No account of the abuse itself is needed for this to work.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "A small choice you made today"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "How did it feel to notice it as your choice?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What is one more choice available to you this week?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What does having choice again mean to you?"
+   }
+  ],
+  "tags": [
+   "sexual abuse",
+   "acceptance",
+   "safety planning"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "body-safety-grounding-card",
+  "title": "Body Safety Grounding Card",
+  "kind": "dbt",
+  "summary": "A grounding sequence for the body-based distress that can follow sexual abuse, without revisiting any details.",
+  "goal": "Use it to bring the body back to a felt sense of safety when distress spikes.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "Ten minutes",
+  "body_md": "Distress after sexual abuse can show up first in the body, tension, disconnection, a racing heart, before any thought is even named. The card walks through a short, body-based grounding sequence: feet on the floor, hands on a solid surface, a slow count of the breath. It works without any narrative content and can be practiced calm, in session, before it is needed elsewhere.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Where do you notice the distress in your body first?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Feet on the floor — what do you notice?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Hands on a solid surface — what do you notice?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Rate the distress before and after this sequence"
+   }
+  ],
+  "tags": [
+   "sexual abuse",
+   "grounding",
+   "distress tolerance"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "trusted-grown-ups-map",
+  "title": "Trusted Grown-Ups Map",
+  "kind": "kids",
+  "summary": "A child maps the trusted grown-ups they could go to if something felt wrong or unsafe.",
+  "goal": "Use it to build a child’s concrete list of safe adults to turn to, before it is ever needed.",
+  "audience": [
+   "Children"
+  ],
+  "duration": "15 minutes",
+  "body_md": "The child draws or names a small circle of trusted grown-ups, at home, at school, in the family, they could go to if something ever felt wrong or unsafe, without needing to describe any specific worry to complete the map. Clinician note: if a child discloses anything during this or any session, follow your setting’s mandated reporting duties promptly, before continuing any other work.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Draw or name your trusted grown-ups"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "How could you find each one if you needed to?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What could you say to a grown-up if something felt wrong?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Parent or caregiver: is this map somewhere the child can remember it?"
+   }
+  ],
+  "tags": [
+   "sexual abuse",
+   "children",
+   "safety planning"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "coping-skills-audit-by-situation",
+  "title": "Coping Skills Audit by Situation",
+  "kind": "worksheet",
+  "summary": "Sorts a client’s coping skills by which situations they actually work best in, rather than one skill for all.",
+  "goal": "Use it to match a coping skill to the situation instead of reaching for the same one every time.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "20 minutes",
+  "body_md": "A skill that works well for a racing mind at 2am may do nothing for a tense conversation at work, and clients often keep reaching for the same familiar skill regardless of fit. The client sorts their current coping skills by situation type, physical activation, racing thoughts, interpersonal conflict, low energy, building a reference to pull from instead of one default.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Skills that help with physical activation (racing heart, tension)"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Skills that help with racing or looping thoughts"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Skills that help in interpersonal conflict"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Skills that help on low-energy days"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "Which situation type do you have the fewest skills for?"
+   }
+  ],
+  "tags": [
+   "coping skills",
+   "self-monitoring",
+   "planning"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "workable-coping-sort",
+  "title": "Workable Coping Sort",
+  "kind": "act",
+  "summary": "Sorts coping behaviors into those that move a client toward their values and those that only move away from pain.",
+  "goal": "Use it to notice which coping strategies build a life a client wants, not just relieve a moment.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "20 minutes",
+  "body_md": "Two coping behaviors can both bring short-term relief while pointing in opposite directions, one toward a life the client actually wants, the other only away from discomfort with nothing gained. The client sorts a list of their current coping behaviors into these two columns and looks at which column they reach for most, then considers where one ‘away from’ behavior could shift toward a ‘toward’ one.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Coping behaviors that move you toward something you value"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Coping behaviors that only move you away from discomfort"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Which column do you reach for most?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "One ‘away from’ behavior you could shift toward a value"
+   }
+  ],
+  "tags": [
+   "coping skills",
+   "values",
+   "workability"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "skills-chain-backup-plan",
+  "title": "Skills Chain Backup Plan",
+  "kind": "dbt",
+  "summary": "Plans a second and third coping skill in advance, in case the first choice does not work in the moment.",
+  "goal": "Use it so a client has a next move ready instead of stalling when the first skill falls short.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "15 minutes",
+  "body_md": "A single coping plan can leave a client stuck if the first skill they reach for does not work in the moment, which can feel like the whole plan failing rather than one option not fitting. The client plans a short chain, first skill, then a backup, then a third, ahead of time, so there is always a next move ready rather than starting from scratch mid-distress.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Your first-choice skill for this kind of moment"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Backup skill if the first one does not work"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Third option if neither works"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Which one did you actually end up using, and how far down the chain?"
+   }
+  ],
+  "tags": [
+   "coping skills",
+   "planning",
+   "distress tolerance"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "calm-down-card-deck-craft",
+  "title": "Calm-Down Card Deck Craft",
+  "kind": "kids",
+  "summary": "A child illustrates a small deck of cards, one coping skill per card, to shuffle through when upset.",
+  "goal": "Use it to give a child a hands-on deck of options they made themselves and can physically shuffle through.",
+  "audience": [
+   "Children"
+  ],
+  "duration": "Ongoing",
+  "body_md": "The child draws one coping skill per card, blowing bubbles, squeezing a pillow, counting to ten, asking for a hug, building a small deck over several sessions. When upset, the child (or parent, at first) shuffles through the deck to pick one to try, which turns ‘use a coping skill’ into a concrete, game-like action instead of an abstract instruction to remember.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What coping skill is on today’s new card?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Draw a picture for it"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Which card did you pick the last time you were upset?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Did it help? Parent: what did you notice?"
+   }
+  ],
+  "tags": [
+   "coping skills",
+   "children",
+   "self-soothing"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "skill-or-bluff",
+  "title": "Skill or Bluff",
+  "kind": "game",
+  "summary": "A guessing game where players describe a coping skill, real or invented, and the group votes on which it is.",
+  "goal": "Use it to review real coping skills while keeping the format playful and a little competitive.",
+  "audience": [
+   "Groups",
+   "Teens"
+  ],
+  "duration": "20 minutes",
+  "body_md": "Each player describes a coping skill with a straight face, some real, some invented on the spot, and the group votes on whether it is genuine or a bluff, earning a point for a correct guess either way. The debrief sorts out which described skills were real and worth remembering, folding review into a game that plays more like a party game than a therapy exercise.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The skill you described — real or a bluff?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Did the group guess correctly?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Which real skills came up that you want to remember?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Which bluff skill was the funniest?"
+   }
+  ],
+  "tags": [
+   "coping skills",
+   "group",
+   "play"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "safe-zone-shrinking-map",
+  "title": "Safe Zone Shrinking Map",
+  "kind": "worksheet",
+  "summary": "Maps how a client’s everyday ‘safe zone’ of places and activities has shrunk as a specific fear grew.",
+  "goal": "Use it to show a client how much territory avoidance has quietly claimed, and pick one edge to push back.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "20 minutes",
+  "body_md": "A specific phobia tends to expand its no-go zone gradually enough that a client stops noticing how much has been given up, avoiding driving on highways can end up limiting a job search; avoiding dogs can end up limiting which friends’ homes get visited. The client draws their current safe zone against what it used to include, then picks one edge of the shrunken territory to reclaim first.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What does your safe zone include today?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What did it used to include before the fear grew?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Which edge of the shrunken zone matters most to reclaim?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What would the first small step back into it look like?"
+   }
+  ],
+  "tags": [
+   "phobias",
+   "avoidance",
+   "exposure"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "feared-outcome-likelihood-sheet",
+  "title": "Feared Outcome Likelihood Sheet",
+  "kind": "cbt",
+  "summary": "Has a client estimate the real-world odds of their feared outcome, then compares it to base rates.",
+  "goal": "Use it to put a number on a feared outcome instead of letting it stay an unexamined certainty.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "15 minutes",
+  "body_md": "A specific phobia often runs on an outcome that feels certain but is, in fact, rare, the plane will crash, the dog will bite, the elevator will get stuck. The client estimates their own odds, then the two of you look together at what is actually known about the base rate for that outcome. The gap between the felt certainty and the real odds becomes something concrete to work with.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The feared outcome"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Your estimate of the odds it happens, in percent"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What is actually known about the real odds?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "How does that gap change how certain the fear feels?"
+   }
+  ],
+  "tags": [
+   "phobias",
+   "thinking traps",
+   "behavioral experiment"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "fear-passenger-exposure-log",
+  "title": "Fear Passenger Exposure Log",
+  "kind": "act",
+  "summary": "Logs approach steps toward a feared object or situation with fear allowed to come along, not required to leave first.",
+  "goal": "Use it to decouple doing the approach step from feeling calm enough to do it first.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "20 minutes",
+  "body_md": "Waiting to feel calm before approaching a feared situation usually means waiting indefinitely, since the calm tends to arrive after repeated approach, not before it. The client logs each approach step alongside how much fear was present and whether they did the step anyway, treating the fear as an unwelcome passenger rather than a stop sign.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Today’s approach step"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Fear level going in, 0 to 10"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Did you do the step with the fear present?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What did the fear do during and after the step?"
+   }
+  ],
+  "tags": [
+   "phobias",
+   "acceptance",
+   "exposure"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "fear-ladder-sticker-chart",
+  "title": "Fear Ladder Sticker Chart",
+  "kind": "kids",
+  "summary": "A sticker chart tracking a child’s steps up their own fear ladder, one small approach step at a time.",
+  "goal": "Use it to make gradual progress up a fear ladder visible and rewarding for a child.",
+  "audience": [
+   "Children"
+  ],
+  "duration": "Ongoing",
+  "body_md": "Built together with the parent, the ladder breaks a specific fear into small graded steps, and each completed step earns a sticker on the chart. Progress up a fear ladder can feel invisible day to day, and the chart gives the child something to look back at and see how far they have actually climbed. Celebrate effort at each step, not only reaching the top.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Your fear ladder, from easiest to hardest step"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Which step did you try today?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "How scared were you before, and after?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Parent: sticker earned — yes or no?"
+   }
+  ],
+  "tags": [
+   "phobias",
+   "children",
+   "exposure"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "fear-facts-quiz-show",
+  "title": "Fear Facts Quiz Show",
+  "kind": "game",
+  "summary": "A quiz game that corrects common myths about feared objects and situations, in a playful group format.",
+  "goal": "Use it to chip away at threat overestimation with real information, delivered as a game rather than a lecture.",
+  "audience": [
+   "Groups",
+   "Teens"
+  ],
+  "duration": "20 minutes",
+  "body_md": "Questions test common beliefs about feared things, how likely a dog is to bite, how safe air travel actually is, how elevators are inspected, and players guess true or false before hearing the real answer. Presenting accurate information as a game rather than a lecture tends to land better with a group that already feels defensive about being told their fear is irrational.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Which question surprised you the most?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What did you believe before, and what is actually true?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Does this change how big the fear feels?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What is one question you would add to the quiz?"
+   }
+  ],
+  "tags": [
+   "phobias",
+   "group",
+   "play"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "body-talk-audit",
+  "title": "Body Talk Audit",
+  "kind": "worksheet",
+  "summary": "Tracks how often a client’s day includes appearance-focused talk or comparison, in conversation or media.",
+  "goal": "Use it to make an often-invisible daily habit of appearance talk visible and open to change.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "One week",
+  "body_md": "Appearance-focused comments, from others, in media, or self-directed, can run through a day almost unnoticed until they are tracked on purpose. The client logs each instance along with how it affected their mood, then looks for patterns: certain people, certain apps, certain times of day. The goal is awareness first; specific changes come once the pattern is visible.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The appearance-focused moment (conversation, media, self-talk)"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Where did it come from?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "How did it affect your mood?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What pattern are you noticing across entries?"
+   }
+  ],
+  "tags": [
+   "body image",
+   "self-monitoring",
+   "media literacy"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "appearance-comparison-interrupt-sheet",
+  "title": "Appearance Comparison Interrupt Sheet",
+  "kind": "cbt",
+  "summary": "Catches an automatic appearance comparison and tests the assumption behind it before it settles in.",
+  "goal": "Use it to interrupt an automatic comparison before it turns into a settled negative belief.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "15 minutes",
+  "body_md": "A comparison, to a photo, a stranger, a past version of oneself, often happens in a split second and gets treated as a verdict rather than a passing thought. The client catches the comparison, writes the assumption behind it, and asks what is actually known instead of assumed. Slowing the moment down tends to loosen its grip more than trying to avoid comparisons altogether.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The comparison that came up"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What assumption is behind it?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What do you actually know, versus assume?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What would you say to a friend having this same comparison?"
+   }
+  ],
+  "tags": [
+   "body image",
+   "thinking traps",
+   "self-monitoring"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "body-as-vehicle-practice",
+  "title": "Body as Vehicle Practice",
+  "kind": "act",
+  "summary": "Shifts attention from how the body looks to what it allows a client to do in service of their values.",
+  "goal": "Use it to widen a client’s relationship with their body beyond appearance alone.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "15 minutes",
+  "body_md": "The body carries a person toward the things they value, a walk with a friend, picking up a child, standing at a job that matters, regardless of how it looks doing it. The client names a recent moment the body made a valued activity possible and practices noticing that function, not appearance, as what the moment was actually about. Repetition matters more than any single entry here.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "A recent moment your body made something you value possible"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What did your body let you do in that moment?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What would you have missed without it?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What does thanking your body for function, not appearance, feel like?"
+   }
+  ],
+  "tags": [
+   "body image",
+   "values",
+   "acceptance"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "body-image-opposite-action-card",
+  "title": "Body Image Opposite Action Card",
+  "kind": "dbt",
+  "summary": "Applies the DBT opposite action skill to the urge to avoid or hide that body image distress often brings.",
+  "goal": "Use it to interrupt avoidance driven by body image distress before it narrows a client’s life further.",
+  "audience": [
+   "Adults",
+   "Teens"
+  ],
+  "duration": "Ongoing",
+  "body_md": "Body image distress often comes with an urge to avoid, skip the event, cancel the photo, stay home, that can quietly shrink a client’s life over time if it goes unexamined. The client names the urge, checks whether acting on it fits the actual situation, and practices the opposite action fully when it does not, going to the event rather than only partly showing up.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The situation and the urge to avoid or hide"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Does the urge fit the actual situation?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "The opposite action, described fully"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What happened when you did the opposite action?"
+   }
+  ],
+  "tags": [
+   "body image",
+   "opposite action",
+   "avoidance"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
+ },
+ {
+  "slug": "body-image-support-conversation-guide",
+  "title": "Body Image Support Conversation Guide",
+  "kind": "couples",
+  "summary": "Helps a partner learn to support body image struggles without appearance-focused comments that can backfire.",
+  "goal": "Use it to replace well-meaning appearance comments with support that actually helps.",
+  "audience": [
+   "Couples"
+  ],
+  "duration": "20 minutes",
+  "body_md": "A partner’s well-meant reassurance about appearance can land badly for someone struggling with body image, since it keeps the conversation centered on looks either way. The guide has the struggling partner describe what kind of support actually helps, distraction, a hug, a change of subject, and the other partner practices offering that instead of a compliment about appearance.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Struggling partner: what kind of support actually helps you?"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Struggling partner: what comments, even kind ones, make it worse?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Supporting partner: what will you try saying or doing instead?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "How did it go the last time you tried this?"
+   }
+  ],
+  "tags": [
+   "body image",
+   "support",
+   "communication"
+  ],
+  "created_at": "2026-09-24T15:00:00+00:00"
  }
 ]
