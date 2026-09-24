@@ -142,6 +142,23 @@ is enough for them to find it. To get pages indexed faster, add the property in
 Re-submitting after each deploy is not necessary. Crawlers re-read the sitemap
 on their own.
 
+### IndexNow (Bing, without an account)
+
+Bing, Yandex, Seznam and Naver share [IndexNow](https://www.indexnow.org/), an
+open protocol that needs no account: the site hosts a key file at its root
+(`site/<key>.txt`, holding the key) and posts the URLs it wants crawled. This
+repository carries one key file, and
+
+```bash
+python3 tools/indexnow_submit.py                      # every URL in the sitemap
+python3 tools/indexnow_submit.py /articles/a-slug     # or just the new ones
+```
+
+posts them. A `200` or `202` means the batch was accepted, and Bing then
+crawls those URLs on its own schedule. This is a nudge, not a replacement for
+Bing Webmaster Tools, which is where the reports live; Google does not take
+IndexNow at all and needs the Search Console steps above.
+
 ## What is not done yet
 
 - **The county pages have no therapists on them yet.** Ventura County and
