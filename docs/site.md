@@ -19,7 +19,7 @@ Moving the domain off HostGator is written up step by step in
 | Hosting | Serves the site. | Vercel project `theraglee-site` |
 | Sunday tool email | One free discovery tool a week to visitors with no account, from the box above the footer. See [`weekly-tool-email.md`](weekly-tool-email.md). | `site/index.html` `#inbox`, `supabase/functions/tool-signup`, `supabase/functions/weekly-tools` |
 | Search landing pages | Real HTML at `/articles/<slug>` for every article, `/tools/...` landing pages and catalogs, plus `sitemap.xml` and `robots.txt`, so the library is indexable. See [`seo.md`](seo.md). | `data/seo-pages.json`, `tools/build_seo_pages.py` |
-| Feature showcase | The strip of feature cards under the header on every page but the therapist dashboard, sign-in and sign-up. See [below](#the-feature-showcase-under-the-header). | `site/assets/showcase.js`, styles in `site/assets/styles.css` |
+| Feature showcase | The strip of feature cards under the header on every page but the therapist dashboard, sign-in and sign-up; on the landing page it sits in the explore section instead. See [below](#the-feature-showcase-under-the-header). | `site/assets/showcase.js`, styles in `site/assets/styles.css` |
 | Domain | `theraglee.com`. | Registered at Network Solutions, served by Vercel |
 
 ## Two front doors: members and therapists
@@ -49,8 +49,7 @@ unfinished items), **Tools** (quick links into the library) and **Settings**
 (the Match Mode and morning-email switches). Each tab has an address, for
 example `dashboard.html#progress`. The header no longer links to Today, the
 library, Discover, Challenges, Journal, Articles or the therapist directory: the
-dashboard, the landing page's explore tiles (Find a Therapist is the first, and
-Create a Theraglee account the second for visitors) and the pages themselves do.
+dashboard, the landing page's feature showcase and the pages themselves do.
 The plans page, `pricing.html`, is reached from the lock badges, the upgrade
 prompts and the footer. `explore.html` still
 answers every existing link into it (`explore.html?type=quiz` and so on).
@@ -377,7 +376,10 @@ one per feature, from Theraglee Match Mode (the big green card, always first)
 through the daily picks, the journal, the library and on to the Premium tools.
 `chrome()` in `site/assets/app.js` mounts it from `site/assets/showcase.js`
 on every page except the therapist ones: `therapist-dashboard.html`,
-`therapist-login.html` and `therapist-signup.html`.
+`therapist-login.html` and `therapist-signup.html`. The landing page is the one
+exception to the placement: it calls `chrome({ showcase: false })` and mounts
+the strip itself, inside "What would you like to explore today?" under the
+hero, where the explore tiles used to be.
 
 Each card is the feature's name in large bold type over a one-line
 description, and each is a link:
@@ -389,7 +391,8 @@ description, and each is a link:
 
 The strip scrolls sideways (swipe, trackpad, the arrow buttons, or the arrow
 keys once it has focus) and moves on to the next card by itself every few
-seconds when nobody is using it. Hovering, touching, scrolling, or tabbing into
+seconds when nobody is using it, and starts over from the first card once it
+reaches the end. Hovering, touching, scrolling, or tabbing into
 it pauses that, and it resumes after a few seconds of quiet. It also stays put
 while the tab is hidden, while it is scrolled off screen, and for anyone whose
 device asks for reduced motion.

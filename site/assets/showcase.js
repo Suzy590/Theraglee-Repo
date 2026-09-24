@@ -4,7 +4,8 @@
    that advances by itself when left alone. Every card is a link. A feature
    the viewer cannot open yet sends a visitor to sign-up (and on to the feature
    afterwards), and a signed-in member whose tier is too low to the plans.
-   Mounted by chrome() in app.js on every page except the therapist dashboard.
+   Mounted by chrome() in app.js under the header on every page except the
+   therapist ones; the landing page mounts it itself, inside the explore section.
    ========================================================================== */
 import { DOORS, tierName } from './app.js';
 
@@ -71,7 +72,7 @@ export const FEATURES = [
    'goals.html#map', 3],
 ];
 
-const ADVANCE_MS = 4500;   // how long each card is shown before the strip moves on
+const ADVANCE_MS = 3000;   // how long each card is shown before the strip moves on
 const RESUME_MS  = 9000;   // how long after the visitor last touched it before it moves again
 
 /** Where a card sends someone (see the note at the top). */
@@ -81,17 +82,21 @@ const hrefFor = (href, need, a) =>
   : 'pricing.html';
 
 /**
- * Draws the strip and puts it right after `after` (the site header).
- *   a      the access object from chrome()
+ * Draws the strip.
+ *   a         the access object from chrome()
+ *   target    where it goes: right after this element, or in its place with `replace`
+ *   replace   true to swap `target` for the strip instead of following it
+ *   embedded  true when the strip sits inside a card that has its own heading:
+ *             no band, no kicker, just the cards and the arrows
  */
-export function mountShowcase(a, after) {
+export function mountShowcase(a, target, { replace = false, embedded = false } = {}) {
   const sec = document.createElement('section');
-  sec.className = 'showcase';
+  sec.className = 'showcase' + (embedded ? ' embedded' : '');
   sec.setAttribute('aria-roledescription', 'carousel');
   sec.setAttribute('aria-label', 'Everything Theraglee offers');
   sec.innerHTML = `<div class="wrap">
     <div class="showcase-head">
-      <p class="showcase-kicker">Everything on Theraglee</p>
+      ${embedded ? '' : '<p class="showcase-kicker">Everything on Theraglee</p>'}
       <div class="showcase-nav">
         <button type="button" class="showcase-arrow" data-dir="-1" aria-label="Previous feature">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -115,24 +120,30 @@ export function mountShowcase(a, after) {
       }).join('')}
     </div>
   </div>`;
-  after.insertAdjacentElement('afterend', sec);
+  if (replace) target.replaceWith(sec); else target.insertAdjacentElement('afterend', sec);
 
   const track = sec.querySelector('.showcase-track');
   const cards = [...track.querySelectorAll('.showcase-card')];
 
+  // Where a card starts, measured from the start of the strip.
+  const startOf = (c) => c.offsetLeft - cards[0].offsetLeft;
   // The card nearest the left edge of the strip, which is the one "on show".
   const current = () => {
     const x = track.scrollLeft;
     let best = 0, gap = Infinity;
-    cards.forEach((c, i) => { const d = Math.abs(c.offsetLeft - x); if (d < gap) { gap = d; best = i; } });
+    cards.forEach((c, i) => { const d = Math.abs(startOf(c) - x); if (d < gap) { gap = d; best = i; } });
     return best;
   };
+  // The strip cannot scroll past its last screenful, so the last few cards
+  // never reach the left edge. Once it is there, the next step is back to the start.
+  const atEnd = () => track.scrollLeft + track.clientWidth >= track.scrollWidth - 2;
 
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const goTo = (i) => {
     const n = (i + cards.length) % cards.length;
-    track.scrollTo({ left: cards[n].offsetLeft - cards[0].offsetLeft, behavior: reduceMotion ? 'auto' : 'smooth' });
+    track.scrollTo({ left: startOf(cards[n]), behavior: reduceMotion ? 'auto' : 'smooth' });
   };
+  const forward = () => atEnd() ? goTo(0) : goTo(current() + 1);
 
   /* ---- moving by itself ----
      Advances one card at a time while the strip is on screen, the tab is
@@ -146,7 +157,7 @@ export function mountShowcase(a, after) {
   const stop  = () => { clearTimeout(timer); timer = null; };
   const start = () => {
     if (reduceMotion || timer || held || !seen || document.hidden) return;
-    timer = setTimeout(() => { timer = null; goTo(current() + 1); start(); }, ADVANCE_MS);
+    timer = setTimeout(() => { timer = null; forward(); start(); }, ADVANCE_MS);
   };
   const pause = () => {
     stop(); held = true;
@@ -160,10 +171,10 @@ export function mountShowcase(a, after) {
   sec.addEventListener('mouseleave', () => { held = false; start(); });
 
   sec.querySelectorAll('.showcase-arrow').forEach(b => b.addEventListener('click', () => {
-    pause(); goTo(current() + Number(b.dataset.dir));
+    pause(); b.dataset.dir === '1' ? forward() : goTo(current() - 1);
   }));
   track.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowRight') { e.preventDefault(); goTo(current() + 1); }
+    if (e.key === 'ArrowRight') { e.preventDefault(); forward(); }
     if (e.key === 'ArrowLeft')  { e.preventDefault(); goTo(current() - 1); }
   });
 

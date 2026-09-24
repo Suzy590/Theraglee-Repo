@@ -85,7 +85,7 @@ em.script{font-family:var(--serif);font-style:italic;font-weight:400;color:var(-
   color:var(--ink);cursor:pointer;display:grid;place-items:center;padding:0;transition:border-color .18s,background .18s}
 .showcase-arrow:hover{border-color:var(--lime-2);background:var(--soft)}
 .showcase-arrow:focus-visible{outline:2px solid var(--lime-2);outline-offset:2px}
-.showcase-track{display:flex;gap:12px;overflow-x:auto;overscroll-behavior-x:contain;
+.showcase-track{position:relative;display:flex;gap:12px;overflow-x:auto;overscroll-behavior-x:contain;
   scroll-snap-type:x mandatory;padding:4px 0 6px;
   scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch}
 .showcase-track::-webkit-scrollbar{display:none}
@@ -117,6 +117,11 @@ em.script{font-family:var(--serif);font-style:italic;font-weight:400;color:var(-
 .showcase-flag .dot{width:7px;height:7px;border-radius:50%;background:var(--lime);
   animation:showcaseHalo 2.4s ease-out infinite}
 @keyframes showcaseHalo{0%{box-shadow:0 0 0 0 rgba(141,198,29,.6)}70%{box-shadow:0 0 0 6px rgba(141,198,29,0)}100%{box-shadow:0 0 0 0 rgba(141,198,29,0)}}
+/* Inside a card with its own heading (the landing page's explore section):
+   no band, no kicker, the arrows sit above the cards on the right. */
+.showcase.embedded{padding:0;margin-top:18px;background:transparent;border:0}
+.showcase.embedded .wrap{max-width:none;padding:0}
+.showcase.embedded .showcase-head{justify-content:flex-end;margin-bottom:8px}
 @media(max-width:600px){
   .showcase-card{flex-basis:min(78vw,250px)}
   .showcase-card.star{flex-basis:min(86vw,340px)}
