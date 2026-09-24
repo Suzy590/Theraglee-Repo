@@ -1,7 +1,28 @@
 {
   "_comment": "Source rows for tools/build_seo_pages.py. Each entry in pages becomes one indexable page at site/<path>/index.html, plus one <url> in site/sitemap.xml; each entry in cities becomes one therapist directory page (path, city, state, state_name are required; title, description, h1, intro, blocks and faq override the defaults). The article pages and the two catalog pages are built from data/, not from here. Never hand-edit the generated HTML.",
   "site": "https://theraglee.com",
-  "cities": [],
+  "cities": [
+    {
+      "path": "therapists/ventura-county",
+      "name": "Ventura County",
+      "state": "CA",
+      "state_name": "California",
+      "title": "Therapists in Ventura County, CA: Verified Directory — Theraglee",
+      "description": "Find a licensed therapist in Ventura County: Ventura, Oxnard, Thousand Oaks, Simi Valley, Camarillo, Moorpark and beyond. Every listing is verified with the California board and free to browse.",
+      "cities": ["Ventura", "Oxnard", "Thousand Oaks", "Simi Valley", "Camarillo", "Moorpark", "Santa Paula", "Fillmore", "Port Hueneme", "Ojai", "Newbury Park", "Westlake Village", "Oak Park", "Oak View", "San Buenaventura", "Piru", "Somis", "Casa Conejo", "Channel Islands Beach", "Meiners Oaks", "Mira Monte", "El Rio", "Saticoy", "Santa Rosa Valley", "Lake Sherwood", "Bell Canyon"],
+      "zips": ["93001-93012", "93015-93066", "93094", "93099", "91319-91320", "91358-91362", "91377"]
+    },
+    {
+      "path": "therapists/los-angeles-county",
+      "name": "Los Angeles County",
+      "state": "CA",
+      "state_name": "California",
+      "title": "Therapists in Los Angeles County, CA: Verified Directory — Theraglee",
+      "description": "Find a licensed therapist in Los Angeles County: Los Angeles, Long Beach, Pasadena, Glendale, Santa Monica, Torrance, Burbank, Santa Clarita and beyond. Every listing is verified with the California board and free to browse.",
+      "cities": ["Los Angeles", "Long Beach", "Pasadena", "Glendale", "Santa Monica", "Torrance", "Burbank", "Santa Clarita", "Lancaster", "Palmdale", "Agoura Hills", "Alhambra", "Arcadia", "Artesia", "Avalon", "Azusa", "Baldwin Park", "Bell", "Bell Gardens", "Bellflower", "Beverly Hills", "Bradbury", "Calabasas", "Carson", "Cerritos", "Claremont", "Commerce", "Compton", "Covina", "Cudahy", "Culver City", "Diamond Bar", "Downey", "Duarte", "El Monte", "El Segundo", "Gardena", "Glendora", "Hawaiian Gardens", "Hawthorne", "Hermosa Beach", "Hidden Hills", "Huntington Park", "Industry", "Inglewood", "Irwindale", "La Cañada Flintridge", "La Canada Flintridge", "La Habra Heights", "La Mirada", "La Puente", "La Verne", "Lakewood", "Lawndale", "Lomita", "Lynwood", "Malibu", "Manhattan Beach", "Maywood", "Monrovia", "Montebello", "Monterey Park", "Norwalk", "Palos Verdes Estates", "Paramount", "Pico Rivera", "Pomona", "Rancho Palos Verdes", "Redondo Beach", "Rolling Hills", "Rolling Hills Estates", "Rosemead", "San Dimas", "San Fernando", "San Gabriel", "San Marino", "Santa Fe Springs", "Sierra Madre", "Signal Hill", "South El Monte", "South Gate", "South Pasadena", "Temple City", "Vernon", "Walnut", "West Covina", "West Hollywood", "Westlake Village", "Whittier", "Sherman Oaks", "Studio City", "Encino", "Tarzana", "Woodland Hills", "Van Nuys", "North Hollywood", "Northridge", "Reseda", "Canoga Park", "Chatsworth", "Granada Hills", "Porter Ranch", "Sylmar", "Sun Valley", "Sunland", "Tujunga", "Mission Hills", "Panorama City", "Valley Village", "Winnetka", "West Hills", "Lake Balboa", "Toluca Lake", "Universal City", "Valencia", "Newhall", "Canyon Country", "Stevenson Ranch", "Castaic", "Acton", "Agua Dulce", "Venice", "Brentwood", "Westwood", "Century City", "Hollywood", "West Los Angeles", "Marina del Rey", "Playa Vista", "Playa del Rey", "Mar Vista", "Pacific Palisades", "Silver Lake", "Los Feliz", "Echo Park", "Highland Park", "Eagle Rock", "Downtown Los Angeles", "Koreatown", "Mid-Wilshire", "Hancock Park", "Larchmont", "Pico-Robertson", "Boyle Heights", "East Los Angeles", "San Pedro", "Wilmington", "Harbor City", "Altadena", "Topanga", "Ladera Heights", "View Park", "Windsor Hills", "Rowland Heights", "Hacienda Heights", "Valinda", "Charter Oak", "Avocado Heights", "Lennox", "Del Aire", "Westmont", "Willowbrook", "Florence-Graham", "Walnut Park", "West Whittier", "South Whittier", "East Rancho Dominguez", "Quartz Hill", "Littlerock", "Pearblossom", "Lake Los Angeles", "Leona Valley", "Lake Hughes"],
+      "zips": ["90001-90619", "90638-90671", "90701-90717", "90723", "90731-90734", "90744-90749", "90755", "90801-90899", "91001-91214", "91301-91318", "91321-91357", "91364-91376", "91380-91618", "91711", "91722-91724", "91731-91735", "91740-91741", "91744-91750", "91754-91756", "91765-91780", "91788-91804", "91896-91899", "93510", "93532-93553", "93563", "93584-93599"]
+    }
+  ],
   "pages": [
     {
       "path": "tools/anxiety-quiz",

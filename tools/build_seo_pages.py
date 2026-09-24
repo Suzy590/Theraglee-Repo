@@ -631,35 +631,59 @@ CITY_SCRIPT = """\
 import { chrome, sb, esc } from '/assets/app.js';
 await chrome({ active: 'therapists.html' });
 
-// The listing is live: the therapists published in this metro right now.
-const CITY = %(city)s, STATE = %(state)s;
+// The listing is live: the therapists published in this area right now. The
+// directory search filters by license state; the area itself is matched here
+// against each practice location's city and zip.
+const AREA = %(area)s, STATE = %(state)s, STATE_NAME = %(state_name)s;
+const CITIES = new Set(%(cities)s.map(c => c.toLowerCase()));
+const ZIPS = %(zips)s.map(z => z.split('-').map(Number));
 const host = document.getElementById('listing');
+
+const inArea = (t) => (t.locations || []).some(loc => {
+  const city = String(loc.city || '').trim().toLowerCase();
+  const zip = Number(String(loc.zip || '').slice(0, 5));
+  return (city && CITIES.has(city)) || ZIPS.some(([lo, hi]) => zip >= lo && zip <= (hi ?? lo));
+});
+
+const card = (t) => {
+  const initials = ((t.first_name?.[0] || '') + (t.last_name?.[0] || '')).toUpperCase();
+  const href = `/therapist.html?slug=${encodeURIComponent(t.slug)}`;
+  const loc = (t.locations || []).find(l => l.city) || (t.locations || [])[0];
+  const spec = (t.top_specialties?.length ? t.top_specialties : t.specialties || []).slice(0, 3);
+  return `<div class="tcard">
+    ${t.photo_url ? `<img class="avatar" src="${esc(t.photo_url)}" alt="">` : `<div class="avatar">${esc(initials)}</div>`}
+    <div style="flex:1;min-width:0">
+      <h3><a href="${href}">${esc(t.first_name)} ${esc(t.last_name)}${t.credentials ? `, ${esc(t.credentials)}` : ''}</a></h3>
+      <p class="faint" style="margin:0 0 6px">${loc ? esc([loc.city, loc.state].filter(Boolean).join(', ')) : esc(STATE_NAME)}${
+        t.delivery === 'telehealth' ? ' · Telehealth' : t.delivery === 'both' ? ' · In person &amp; telehealth' : ' · In person'}</p>
+      ${t.bio ? `<p class="muted" style="margin:0 0 8px;font-size:.93rem">${esc(String(t.bio).slice(0, 150))}${t.bio.length > 150 ? '…' : ''}</p>` : ''}
+      <div class="chips">${spec.map(s => `<span class="badge gray">${esc(s)}</span>`).join('')}</div>
+      <div class="row" style="margin-top:12px"><a class="btn ghost sm" href="${href}">View profile</a></div>
+    </div></div>`;
+};
+
 try {
-  const { data, error } = await sb.rpc('search_therapists', {
-    p_q: CITY, p_state: STATE, p_limit: 24, p_offset: 0,
-  });
-  if (error) throw error;
-  if (!data.length) {
-    host.innerHTML = `<div class="empty"><p style="margin:0 0 6px"><strong>No verified therapists in ${esc(CITY)} yet.</strong></p>
-      <p class="faint" style="margin:0">New practices are added as they verify. <a href="/therapists.html">Browse the whole directory</a>, or turn on Theraglee Match Mode from a free account and let a therapist reach out to you.</p></div>`;
-  } else {
-    host.innerHTML = data.map(t => {
-      const initials = ((t.first_name?.[0] || '') + (t.last_name?.[0] || '')).toUpperCase();
-      const href = `/therapist.html?slug=${encodeURIComponent(t.slug)}`;
-      const loc = (t.locations || [])[0];
-      const spec = (t.top_specialties?.length ? t.top_specialties : t.specialties || []).slice(0, 3);
-      return `<div class="tcard">
-        ${t.photo_url ? `<img class="avatar" src="${esc(t.photo_url)}" alt="">` : `<div class="avatar">${esc(initials)}</div>`}
-        <div style="flex:1;min-width:0">
-          <h3><a href="${href}">${esc(t.first_name)} ${esc(t.last_name)}${t.credentials ? `, ${esc(t.credentials)}` : ''}</a></h3>
-          <p class="faint" style="margin:0 0 6px">${loc ? esc([loc.city, loc.state].filter(Boolean).join(', ')) : esc(STATE)}${
-            t.delivery === 'telehealth' ? ' · Telehealth' : t.delivery === 'both' ? ' · In person &amp; telehealth' : ' · In person'}</p>
-          ${t.bio ? `<p class="muted" style="margin:0 0 8px;font-size:.93rem">${esc(String(t.bio).slice(0, 150))}${t.bio.length > 150 ? '…' : ''}</p>` : ''}
-          <div class="chips">${spec.map(s => `<span class="badge gray">${esc(s)}</span>`).join('')}</div>
-          <div class="row" style="margin-top:12px"><a class="btn ghost sm" href="${href}">View profile</a></div>
-        </div></div>`;
-    }).join('');
+  const all = [];
+  for (let offset = 0; offset < 400; offset += 100) {
+    const { data, error } = await sb.rpc('search_therapists', { p_state: STATE, p_limit: 100, p_offset: offset });
+    if (error) throw error;
+    all.push(...data);
+    if (data.length < 100) break;
   }
+  const local = all.filter(inArea);
+  const video = all.filter(t => !inArea(t) && (t.delivery === 'telehealth' || t.delivery === 'both')).slice(0, 12);
+  let html = '';
+  if (local.length) {
+    html += local.map(card).join('');
+  } else {
+    html += `<div class="empty"><p style="margin:0 0 6px"><strong>No verified therapists with an office in ${esc(AREA)} yet.</strong></p>
+      <p class="faint" style="margin:0">New practices are added as they verify. <a href="/therapists.html">Browse the whole directory</a>, or turn on Theraglee Match Mode from a free account and let a therapist reach out to you.</p></div>`;
+  }
+  if (video.length) {
+    html += `<h3 style="margin:26px 0 12px">By video, anywhere in ${esc(STATE_NAME)}</h3>
+      <p class="faint" style="margin:0 0 12px">Licensed in ${esc(STATE_NAME)} and seeing people by telehealth, so they can work with you in ${esc(AREA)}.</p>` + video.map(card).join('');
+  }
+  host.innerHTML = html;
 } catch (e) {
   console.debug('listing', e);
   host.innerHTML = '<div class="empty">The listing did not load. <a href="/therapists.html">Open the directory</a>.</div>';
@@ -669,8 +693,18 @@ try {
 def city_page(city: dict, site: str) -> str:
     path = city["path"]
     url = f"{site}/{path}"
-    name, st, state = city["city"], city["state"], city["state_name"]
+    name = city.get("name") or city["city"]
+    st, state = city["state"], city["state_name"]
+    cities = list(city.get("cities") or ([] if "name" in city else [name]))
+    zips = list(city.get("zips") or [])
     where = f"{name}, {state}"
+    places = ""
+    if cities and cities != [name]:
+        shown = cities[:10]
+        if len(cities) > 10:
+            places = ", ".join(shown) + " and more"
+        else:
+            places = ", ".join(shown[:-1]) + (" and " + shown[-1] if len(shown) > 1 else shown[0])
     title = city.get("title") or f"Therapists in {where}: License-Verified Directory — Theraglee"
     description = city.get("description") or (
         f"Find a licensed therapist in {name}, {state}. Every listing on Theraglee is verified "
@@ -679,9 +713,10 @@ def city_page(city: dict, site: str) -> str:
     h1 = city.get("h1") or f"Therapists in {where}"
     intro = city.get("intro") or (
         f"Every therapist listed here holds a license that Theraglee has checked with the {state} "
-        f"board, and the list is free to browse with no account. Filter the full directory by "
-        f"insurance, specialty, language or telehealth, or start with the practices in {name} "
-        f"below.")
+        f"board, and the list is free to browse with no account. "
+        + (f"The listing covers practices in {places}. " if places else "")
+        + f"Filter the full directory by insurance, specialty, language or telehealth, or start "
+        f"with the practices in {name} below.")
     blocks = city.get("blocks") or [
         {"h2": f"How to choose a therapist in {name}",
          "html": (f"<p>Start with the practical filters: whether they take your insurance, whether "
@@ -730,7 +765,7 @@ def city_page(city: dict, site: str) -> str:
         "name": h1,
         "description": description,
         "mainEntityOfPage": url,
-        "about": {"@type": "City", "name": name,
+        "about": {"@type": "AdministrativeArea" if "name" in city else "City", "name": name,
                   "containedInPlace": {"@type": "State", "name": state}},
         "publisher": publisher(site),
     })
@@ -756,7 +791,9 @@ def city_page(city: dict, site: str) -> str:
         tiles_section("Where to go next", related),
         faq_html,
     ]))
-    script = CITY_SCRIPT % {"city": json.dumps(name), "state": json.dumps(st)}
+    script = CITY_SCRIPT % {
+        "area": json.dumps(name), "state": json.dumps(st), "state_name": json.dumps(state),
+        "cities": json.dumps(cities, ensure_ascii=False), "zips": json.dumps(zips)}
     return shell(title=title, description=description, url=url, body=body,
                  ld=[ld, faq_ld], og_type="website", script=script)
 
@@ -853,9 +890,16 @@ def main() -> int:
     print(f"wrote the quiz catalog ({len(quizzes)}) and the worksheet catalog ({len(worksheets)})")
 
     for city in cities:
-        for key in ("path", "city", "state", "state_name"):
+        for key in ("path", "state", "state_name"):
             if not city.get(key):
                 print(f"error: a city row is missing {key!r}", file=sys.stderr)
+                return 1
+        if not (city.get("name") or city.get("city")):
+            print("error: a city row needs a name (or city)", file=sys.stderr)
+            return 1
+        for z in city.get("zips") or []:
+            if not re.fullmatch(r"\d{5}(?:-\d{5})?", z):
+                print(f"error: zip {z!r} in {city['path']} is not 5 digits or a 5-digit range", file=sys.stderr)
                 return 1
         if not claim(city["path"]):
             return 1
