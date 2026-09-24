@@ -51,16 +51,6 @@ notes: list[tuple[str, str, str]] = []          # (category, slug, note)
 # data/ because the export already worked around them, so they are recorded
 # here to keep the health report complete.
 EXPORT_NOTES = [
-    ("challenges", "30-day-mental-health-challenge-for-veterans",
-     "All 30 rows had `title` and `task` split mid-phrase — title `Tactical`, "
-     "task `Breathing ResetPractice 4444 breathing for 3 minutes.` The export "
-     "restores the intended split (`Tactical Breathing Reset` / `Practice 4444 "
-     "breathing for 3 minutes.`). Fix the rows in `challenge_days` to make it "
-     "permanent."),
-    ("challenges", "30-day-mental-health-challenge-for-veterans",
-     "Hyphens were stripped on import throughout: `4444 breathing` (4-4-4-4), "
-     "`60second`, `3sentence afteraction`, `7day`. Left verbatim — these are "
-     "wording changes for you to make, not formatting."),
     ("journal-prompts", "(source rows)",
      "2 of the 374 `daily_content` rows are not prompts and were left out: one "
      "is corrupted (`What's a piece of advice you` followed by CJK characters), "
@@ -170,38 +160,37 @@ def write(path: Path, text: str) -> None:
 
 # ------------------------------------------------------------ challenges --
 def render_challenge(c: dict) -> str:
-    days = c.get("days") or []
+    """A themed challenge: the bank of daily to-dos, numbered. A member picks
+    how many days it runs on the site; on paper the whole bank is the plan."""
+    tasks = c.get("tasks") or []
     meta = " <span class='dot'></span> ".join(filter(None, [
         tag_badges(c.get("tags")),
         level_badge(c.get("min_level")),
     ]))
 
     items = []
-    for d in days:
-        name = f'<p class="dayname">{e(d["title"])}</p>' if d.get("title") else ""
+    for i, task in enumerate(tasks, start=1):
         items.append(
             '    <li>\n'
-            f'      <span class="daynum">{d["day"]}</span>\n'
+            f'      <span class="daynum">{i}</span>\n'
             '      <div class="daybody">\n'
-            f'        <div class="txt">{name}<p class="daytask">{e(d["task"])}</p></div>\n'
+            f'        <div class="txt"><p class="daytask">{e(task)}</p></div>\n'
             '        <span class="tickbox"></span>\n'
             "      </div>\n"
             "    </li>"
         )
 
     body = cover(
-        eyebrow=f'{c["total_days"]}-Day Challenge',
+        eyebrow=f'{c.get("category") or "Challenge"} Challenge',
         title=c["title"],
         standfirst=c.get("description") or "One small thing a day. That is the whole method.",
+        deck=(f"{len(tasks)} daily to-dos. Run it for a week, a month or a year: "
+              "one to-do a day, and when you reach the end of the list, start again at the top."),
         meta=meta,
     )
     body += ('\n  <section class="section">\n'
              '    <h2 class="sec">Your days</h2>\n'
              f'    <ol class="days">\n' + "\n".join(items) + "\n    </ol>\n  </section>\n")
-    body += ('  <section class="section">\n'
-             '    <div class="note">Missing a day is part of it. Pick the next number up '
-             'and keep going — the streak is not the point, the returning is.</div>\n'
-             "  </section>\n")
     return body
 
 
@@ -675,11 +664,8 @@ def main() -> None:
 
     # Challenges
     for c in json.loads((DATA / "challenges.json").read_text(encoding="utf-8")):
-        emit("challenges", c["slug"], c["title"], f'{c["total_days"]} days',
+        emit("challenges", c["slug"], c["title"], f'{len(c["tasks"])} daily to-dos',
              render_challenge(c))
-        if len(c.get("days") or []) != c["total_days"]:
-            flag("challenges", c["slug"],
-                 f'total_days is {c["total_days"]} but {len(c.get("days") or [])} day rows exist.')
 
     # Articles
     for a in json.loads((DATA / "articles.json").read_text(encoding="utf-8")):

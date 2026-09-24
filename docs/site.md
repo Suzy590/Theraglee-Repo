@@ -85,7 +85,7 @@ by editing the page. Every piece of content carries a `min_level`:
 | Level | Tier | Who |
 |---|---|---|
 | 0 | Visitor | No account. Browses therapists, quotes, tips, fun facts, affirmations, reads every article, and uses all 360 free discovery tools. |
-| 1 | Free | Registered, no card. Adds the progress dashboard with favorites and saved-for-later (articles included), personalized daily content, the journal and its prompts, checklists with progress, 7-day challenges, articles by email every morning, and Theraglee Match Mode, the switch that lets therapists reach out. |
+| 1 | Free | Registered, no card. Adds the progress dashboard with favorites and saved-for-later (articles included), personalized daily content, the journal and its prompts, checklists with progress, themed challenges a week at a time, articles by email every morning, and Theraglee Match Mode, the switch that lets therapists reach out. |
 | 2 | Basic | Paid. Adds 312 quizzes, 186 worksheets, challenges up to 365 days, 150 mental health trivia quizzes, and Pip, the downloadable desktop pet. |
 | 3 | Premium | Paid. Adds goals, mood tracking, mandalas to print or color online, playlists, resource map, personalized therapist recommendations. |
 
@@ -365,7 +365,7 @@ gated by tier, so Basic and Premium have them too:
 | Keep favorites in your dashboard | `favorites` table via `assets/library.js`; "Your favorites" on the dashboard | RLS `own rows` |
 | Tons of journal prompts | 374 `daily_content` rows of kind `journal_prompt`, `journal.html` | `min_level = 1` |
 | Articles sent to your inbox | the `daily-digest` Edge Function, below | `profiles.daily_email` |
-| 7-day mental health challenges | `challenge_templates` (the 7-day one is `min_level = 1`); Free can also design a 7-day one | `min_level` |
+| Themed challenges, 7 days at a time | 20 `challenge_templates` at `min_level = 1`, two more added every day; one to-do a day from `challenge_days`, runs in `user_challenges`, ticks in `user_challenge_progress`; `guard_challenge_length()` keeps a Free member's run to 7 days — see [`challenges.md`](challenges.md) | `min_level`, RLS `own rows` |
 | Checklists with progress tracked | 10 `checklists` at `min_level = 1`, two more added every day, `checklist_progress` + `item_progress` | `min_level`, RLS `own rows` |
 | Theraglee Match Mode (dashboard switch: let therapists reach out) | `profiles.visible_to_therapists`, toggled on `dashboard.html` and `account.html`; the details therapists see are asked for in `assets/match.js`; blocks in `member_blocks` | `member_opted_in()`, `member_blocked()` |
 
@@ -496,7 +496,7 @@ Most of it was imported from the Word documents in the parent folder:
 - 374 journal prompts
 - 186 interactive worksheets (16 imported, 170 written for the site — see below)
 - 10 checklists, with two more added every day — see [`checklists.md`](checklists.md)
-- 3 challenges (two 30-day, one free 7-day)
+- 20 themed challenges (600 daily to-dos), with two more themes added every day — see [`challenges.md`](challenges.md)
 - 87 articles, free to everyone, with five more published every day — see [`articles.md`](articles.md)
 - 200 mandalas to print or color online (drawn in the browser from a seed)
 - 150 mental health trivia quizzes (1,500 questions), written for the site rather than imported
