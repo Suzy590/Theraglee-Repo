@@ -291,8 +291,9 @@ async function viewRun(id){
     ]);
     theme = t; bank = (days||[]).map(d => d.task);
   }
-  const custom = !bank.length;                 // a run from before themes, or a retired theme
-  const plan = run.custom_days || [];          // that run's own to-dos, by day
+  const custom = !run.template_id;             // a run from before themes had to-dos of their own
+  const loading = !!run.template_id && !bank.length;   // the theme's to-dos are being refreshed
+  const plan = run.custom_days || [];          // a custom run's own to-dos, by day
   const { data: prog } = await sb.from('user_challenge_progress')
     .select('day, completed_on').eq('user_challenge_id', run.id);
   const done = new Map((prog||[]).map(r => [r.day, r.completed_on]));
@@ -351,6 +352,7 @@ async function viewRun(id){
     </div>
     <p class="faint">Started ${fmtDate(run.started_on)}${run.archived ? ' · archived' : ''}</p>
     <div id="stats">${stats()}</div>
+    ${loading ? `<div class="notice warn">This theme’s to-dos are being updated right now. Give it a few minutes and refresh; your checked-off days are kept.</div>` : ''}
 
     <div class="spread" style="margin-top:26px">
       <h2 style="margin:0">Your days</h2>
@@ -368,7 +370,7 @@ async function viewRun(id){
           ${custom
             ? `<input type="text" class="taskin" data-d="${d}" placeholder="What will you do on day ${d}?"
                  value="${esc(task)}" style="margin-top:6px">`
-            : `<div class="task">${esc(task)}</div>`}
+            : `<div class="task">${task ? esc(task) : '<span class="muted">This day’s to-do is on its way. Refresh in a few minutes.</span>'}</div>`}
         </div></div>`;
     }).join('')}</div>
     <p class="faint" style="margin-top:28px">${NOTICE}</p>
