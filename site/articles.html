@@ -125,7 +125,7 @@ function render() {
       t ? ` matching “${t}”` : ''}`;
 
   document.getElementById('list').innerHTML = list.length
-    ? list.map(a => `<a class="tile" href="article.html?slug=${encodeURIComponent(a.slug)}">
+    ? list.map(a => `<a class="tile" href="articles/${encodeURIComponent(a.slug)}">
         ${favButton('article', a.id, isFavorite(lib, 'article', a.id), { size:20, label:false })}
         <h3>${esc(a.title)}</h3>
         ${a.excerpt ? `<p class="meta" style="color:var(--muted)">${esc(String(a.excerpt).slice(0,150))}${String(a.excerpt).length > 150 ? '…' : ''}</p>` : ''}

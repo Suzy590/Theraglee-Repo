@@ -18,7 +18,7 @@ Moving the domain off HostGator is written up step by step in
 | Payments | Stripe: Checkout, billing portal, Tax, Identity, Radar, Connect. See [`stripe.md`](stripe.md). | `supabase/functions/`, deployed as Supabase Edge Functions |
 | Hosting | Serves the site. | Vercel project `theraglee-site` |
 | Sunday tool email | One free discovery tool a week to visitors with no account, from the box above the footer. See [`weekly-tool-email.md`](weekly-tool-email.md). | `site/index.html` `#inbox`, `supabase/functions/tool-signup`, `supabase/functions/weekly-tools` |
-| Search landing pages | Real HTML at `/tools/...` and `/articles/...`, plus `sitemap.xml` and `robots.txt`, so the library is indexable. See [`seo.md`](seo.md). | `data/seo-pages.json`, `tools/build_seo_pages.py` |
+| Search landing pages | Real HTML at `/articles/<slug>` for every article, `/tools/...` landing pages and catalogs, plus `sitemap.xml` and `robots.txt`, so the library is indexable. See [`seo.md`](seo.md). | `data/seo-pages.json`, `tools/build_seo_pages.py` |
 | Feature showcase | The strip of feature cards under the header on every page but the therapist dashboard, sign-in and sign-up. See [below](#the-feature-showcase-under-the-header). | `site/assets/showcase.js`, styles in `site/assets/styles.css` |
 | Domain | `theraglee.com`. | Registered at Network Solutions, served by Vercel |
 

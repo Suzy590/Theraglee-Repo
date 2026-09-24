@@ -34,6 +34,10 @@ if (!art) {
   root.innerHTML = '<div class="empty">Article not found. <a href="articles.html">All articles</a></div>';
 } else {
   document.title = art.title + ' — Theraglee';
+  // The indexable copy of every article lives at /articles/<slug>.
+  const canon = document.createElement('link');
+  canon.rel = 'canonical'; canon.href = new URL('articles/' + encodeURIComponent(art.slug), location.href).href;
+  document.head.append(canon);
   logActivity('article', art.id, 'view', art.tags || []);
   const lib = await library();
   const read = lib.progress.get('article:'+art.id)?.status === 'completed';

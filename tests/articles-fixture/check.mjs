@@ -2,7 +2,7 @@
 //   node tests/articles-fixture/check.mjs
 // Fails (exit 1) if any article is malformed, any slug or title repeats, an
 // article is not free, or the copy uses language the articles avoid.
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 
 const ARTICLES = JSON.parse(readFileSync(new URL('../../data/articles.json', import.meta.url), 'utf8'));
 
@@ -109,6 +109,12 @@ for (const a of ARTICLES) {
   for (const re of BANNED) { const m = text.match(re); if (m) err(a, `avoid the phrase "${m[0]}"`); }
   if (!legacy) for (const re of UNSOURCED) { const m = text.match(re); if (m) err(a, `unsourced claim: "${m[0]}"`); }
   for (const re of UK) { const m = text.match(re); if (m) err(a, `US spelling: "${m[0]}"`); }
+}
+
+// Every article has an indexable page under site/articles/ (see docs/seo.md).
+for (const a of ARTICLES) {
+  if (!existsSync(new URL(`../../site/articles/${a.slug}/index.html`, import.meta.url)))
+    err(a, 'no page under site/articles/; run python3 tools/build_seo_pages.py');
 }
 
 if (errors.length) {
