@@ -72,6 +72,7 @@
 import { chrome, sb, esc, qs, toast, modal, lockNotice, logActivity } from './assets/app.js';
 import { library, isFavorite, favButton, bindLibrary, setProgress } from './assets/library.js';
 import { mandala, colorable } from './assets/mandala.js';
+import { SHAPES } from './assets/mandala-shapes.js';
 import { colorbook, paletteHtml } from './assets/coloring.js';
 
 const a = await chrome({ active:'explore.html' });
@@ -79,8 +80,13 @@ const root = document.getElementById('root');
 
 let rows = [];
 
-/* The figure for one row: hand-drawn SVG when there is one, otherwise the seed. */
-const figure = (m) => m.svg ? colorable(m.svg) : mandala(m.seed || 1, { title: m.title });
+/* The figure for one row: hand-drawn SVG when there is one, otherwise the seed
+   (inside its outline when the row has a shape). */
+const figure = (m) => m.svg ? colorable(m.svg) : mandala(m.seed || 1, { title: m.title, shape: m.shape });
+
+/* Which gallery filter a row falls under. */
+const kindOf = (m) => SHAPES[m.shape]?.kind || 'round';
+const KINDS = [['', 'All'], ['round', 'Round'], ['animal', 'Animals'], ['plant', 'Plants'], ['symbol', 'Symbols']];
 
 /* ---- saved colorings: localStorage always, mandala_colorings when signed in ---- */
 const localKey = (slug) => `tg.mandala.${slug}`;
@@ -132,11 +138,15 @@ async function gallery() {
       <p class="muted" style="max-width:56ch">Coloring is a quiet, low-effort way to settle a busy head.
         Print one and reach for your pencils, or color it right here — tap a shape and it fills in.
         Your coloring is saved as you go.</p>
-      <div class="row" style="margin:18px 0 26px">
+      <div class="spread" style="margin:18px 0 26px;gap:12px;flex-wrap:wrap">
+        <div class="chips" id="kinds" role="group" aria-label="Show">${KINDS
+          .filter(([k]) => !k || rows.some(m => kindOf(m) === k))
+          .map(([k, label]) => `<button type="button" class="chip${k ? '' : ' on'}" data-kind="${k}"
+            aria-pressed="${!k}">${label}</button>`).join('')}</div>
         <button class="btn ghost" id="print-all">Print all (blank)</button>
       </div>
       <div class="grid g3">${rows.map(m => `
-        <div class="m" data-slug="${esc(m.slug)}">${figure(m)}
+        <div class="m" data-slug="${esc(m.slug)}" data-kind="${kindOf(m)}">${figure(m)}
           <h3>${esc(m.title)}</h3>
           <span class="prog"></span>
           <div class="acts">
@@ -159,6 +169,15 @@ async function gallery() {
     card.querySelector('.prog').textContent = 'In progress — tap Color online to continue';
   }
 
+  document.getElementById('kinds').addEventListener('click', (e) => {
+    const chip = e.target.closest('[data-kind]');
+    if (!chip) return;
+    const k = chip.dataset.kind;
+    for (const c of root.querySelectorAll('#kinds .chip')) {
+      c.classList.toggle('on', c === chip); c.setAttribute('aria-pressed', String(c === chip));
+    }
+    for (const card of root.querySelectorAll('.m[data-kind]')) card.hidden = !!k && card.dataset.kind !== k;
+  });
   document.getElementById('print-all').addEventListener('click', () => window.print());
   root.addEventListener('click', (e) => {
     const b = e.target.closest('[data-print]');
