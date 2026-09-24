@@ -33,6 +33,18 @@
   .seo-faq{border-top:1px solid var(--hair);padding:12px 0}
   .seo-faq summary{cursor:pointer;font-weight:500}
   .seo-faq p{margin:.6em 0 0;color:var(--muted)}
+  .prose{font-size:1.05rem;line-height:1.75;color:var(--ink-2);margin-top:26px}
+  .prose p{margin:0 0 1.15em}
+  .prose h2{color:var(--ink);font-size:1.28rem;font-weight:500;margin:1.8em 0 .5em}
+  .seo-catalog h3{font-size:1.05rem;font-weight:500;margin:1.6em 0 .4em}
+  .seo-catalog li{margin:0 0 .5em}
+  .tcard{display:flex;gap:16px;background:var(--paper);border:1px solid var(--hair);
+    border-radius:var(--r);padding:20px;margin-bottom:14px;box-shadow:var(--shadow-1)}
+  .tcard .avatar{flex:0 0 64px;height:64px;border-radius:18px;background:var(--soft);object-fit:cover;
+    display:grid;place-items:center;font-size:1.3rem;color:var(--green);font-weight:500}
+  .tcard h3{margin:0 0 2px;font-size:1.08rem}
+  .tcard h3 a{color:inherit;text-decoration:none}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
 </style>
 <script type="application/ld+json">
 {
@@ -162,7 +174,7 @@
 
 <script type="module">
 import { chrome } from '/assets/app.js';
-await chrome();
+await chrome({ active: '' });
 </script>
 </body>
 </html>

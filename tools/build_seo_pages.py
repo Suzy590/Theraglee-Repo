@@ -4,15 +4,24 @@
 Theraglee's tools, quizzes and articles live in the database and are drawn by
 JavaScript from a `?slug=` query string, so a search engine arriving at one of
 them sees an empty shell. These pages are the readable front door: real HTML,
-served at a descriptive URL, with the intro and the links already in the
-markup.
+served at a descriptive URL, with the words already in the markup.
 
     python3 tools/build_seo_pages.py
 
-Source rows are in `data/seo-pages.json`. Output is `site/<path>/index.html`
-for each row, plus `site/sitemap.xml` covering those pages and the public
-pages at the site root. Never hand-edit the output; change the source row or
-this script and run it again.
+Four kinds of page come out of it:
+
+* the hand-written landing pages in `data/seo-pages.json` (`pages`);
+* one page per article in `data/articles.json`, at `articles/<slug>`, with the
+  whole article in the markup, because every article is free;
+* two catalog pages, `tools/quizzes` and `tools/worksheets`, listing every
+  quiz and worksheet by name so the library is crawlable even though the
+  tools themselves are for members;
+* one directory page per launch metro in `data/seo-pages.json` (`cities`),
+  at `therapists/<city-st>`.
+
+Output is `site/<path>/index.html` for each page, plus `site/sitemap.xml`
+covering those pages and the public pages at the site root. Never hand-edit
+the output; change the source row or this script and run it again.
 
 A folder holding an `index.html` is served at the folder's own path, so
 `site/tools/anxiety-quiz/index.html` answers to `/tools/anxiety-quiz` with no
@@ -26,10 +35,17 @@ import json
 import pathlib
 import re
 import sys
+from collections import defaultdict
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SOURCE = ROOT / "data" / "seo-pages.json"
+ARTICLES = ROOT / "data" / "articles.json"
+QUIZZES = ROOT / "data" / "quizzes.txt"
+WORKSHEETS = ROOT / "data" / "worksheets.json"
 SITE = ROOT / "site"
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from build_documents import load_quizzes  # noqa: E402
 
 # Public pages at the site root that belong in the sitemap. Anything behind a
 # sign-in, anything about one member's own account, and the 404 are left out.
@@ -54,6 +70,51 @@ GENERATED_BANNER = (
     "Do not edit by hand. -->"
 )
 
+# Every generated page carries the same head and the same styles, so a reader
+# sees one site whether they came in through an article or a tool page.
+SHARED_CSS = """\
+  .seo-wrap{max-width:760px;margin:0 auto;padding:44px 0 72px}
+  .seo-wrap h1{font-size:clamp(1.9rem,4vw,2.7rem);font-weight:300;letter-spacing:-.03em;margin:0 0 .5em}
+  .seo-lede{font-size:1.08rem;color:var(--muted);margin:0 0 6px}
+  .seo-block{margin-top:34px}
+  .seo-block h2{font-size:1.28rem;font-weight:500;margin:0 0 .6em}
+  .seo-block p{margin:0 0 .9em}
+  .seo-block ul,.seo-block ol{margin:0 0 .9em;padding-left:1.25em}
+  .seo-block li{margin:0 0 .45em}
+  .seo-tiles{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+  .seo-tiles .tile{display:flex;flex-direction:column;gap:4px}
+  .seo-faq{border-top:1px solid var(--hair);padding:12px 0}
+  .seo-faq summary{cursor:pointer;font-weight:500}
+  .seo-faq p{margin:.6em 0 0;color:var(--muted)}
+  .prose{font-size:1.05rem;line-height:1.75;color:var(--ink-2);margin-top:26px}
+  .prose p{margin:0 0 1.15em}
+  .prose h2{color:var(--ink);font-size:1.28rem;font-weight:500;margin:1.8em 0 .5em}
+  .seo-catalog h3{font-size:1.05rem;font-weight:500;margin:1.6em 0 .4em}
+  .seo-catalog li{margin:0 0 .5em}
+  .tcard{display:flex;gap:16px;background:var(--paper);border:1px solid var(--hair);
+    border-radius:var(--r);padding:20px;margin-bottom:14px;box-shadow:var(--shadow-1)}
+  .tcard .avatar{flex:0 0 64px;height:64px;border-radius:18px;background:var(--soft);object-fit:cover;
+    display:grid;place-items:center;font-size:1.3rem;color:var(--green);font-weight:500}
+  .tcard h3{margin:0 0 2px;font-size:1.08rem}
+  .tcard h3 a{color:inherit;text-decoration:none}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}"""
+
+# The words a visitor reads at the foot of every article, so a reader who came
+# in from a search knows what Theraglee is and is not.
+NOTICE = ('<div class="notice warn" style="margin-top:34px">Educational only — not medical advice, '
+          'diagnosis or treatment. <a href="/therapists.html">Find a licensed therapist</a> if you '
+          'want support.</div>')
+
+# Which hand-written tool page an article's tags point a reader to next.
+TOOL_FOR_TAG = {
+    "Anxiety": "tools/anxiety-quiz", "Worry": "tools/anxiety-quiz",
+    "Social Anxiety": "tools/anxiety-quiz", "Panic": "tools/anxiety-quiz",
+    "Depression": "tools/depression-quiz", "Loneliness": "tools/depression-quiz",
+    "CBT": "tools/cbt-thought-record", "Thinking Traps": "tools/cbt-thought-record",
+    "Self-Esteem": "tools/cbt-thought-record", "Shame": "tools/cbt-thought-record",
+    "Burnout": "tools/journal-prompts-burnout", "Work": "tools/journal-prompts-burnout",
+    "Stress": "tools/journal-prompts-burnout",
+}
 
 # Hand-maintained pages whose FAQ structured data is derived from the questions
 # a visitor can actually read on them: (file, canonical url, heading to read
@@ -64,12 +125,14 @@ FAQ_PAGES = [
     ("for-therapists.html", "https://theraglee.com/for-therapists.html", "<h2>Questions</h2>"),
 ]
 
-FAQ_START = ("<!-- faq-jsonld:start \u2014 generated by tools/build_seo_pages.py from the "
+FAQ_START = ("<!-- faq-jsonld:start — generated by tools/build_seo_pages.py from the "
              "questions visible on this page. Do not edit by hand. -->")
 FAQ_END = "<!-- faq-jsonld:end -->"
 
 CARD = re.compile(
     r'<div class="card"><h3>(.*?)</h3>\s*<p class="muted"[^>]*>(.*?)</p></div>', re.S)
+
+CLEAN_PATH = re.compile(r"[a-z0-9]+(?:[-/][a-z0-9]+)*")
 
 
 def plain(fragment: str) -> str:
@@ -106,140 +169,7 @@ def sync_faq_jsonld(filename: str, url: str, heading: str) -> int:
 
 
 def esc(text: str) -> str:
-    return html.escape(text, quote=True)
-
-
-def page_html(page: dict, site: str) -> str:
-    """One landing page: static content first, the site's own chrome after."""
-    url = f"{site}/{page['path']}"
-    blocks = "\n".join(
-        f'      <section class="seo-block">\n'
-        f'        <h2>{esc(b["h2"])}</h2>\n'
-        f'        {b["html"]}\n'
-        f'      </section>'
-        for b in page.get("blocks", [])
-    )
-
-    related = ""
-    rel = page.get("related")
-    if rel:
-        items = "\n".join(
-            f'          <a class="tile" href="{esc(i["href"])}">\n'
-            f'            <strong>{esc(i["label"])}</strong>\n'
-            f'            <span class="muted">{esc(i["note"])}</span></a>'
-            for i in rel["items"]
-        )
-        related = (
-            f'      <section class="seo-block">\n'
-            f'        <h2>{esc(rel["h2"])}</h2>\n'
-            f'        <div class="seo-tiles">\n{items}\n        </div>\n'
-            f'      </section>'
-        )
-
-    faq_html = ""
-    faq_ld = ""
-    if page.get("faq"):
-        rows = "\n".join(
-            f'          <details class="seo-faq">\n'
-            f'            <summary>{esc(f["q"])}</summary>\n'
-            f'            <p>{esc(f["a"])}</p></details>'
-            for f in page["faq"]
-        )
-        faq_html = (
-            f'      <section class="seo-block">\n'
-            f'        <h2>Common questions</h2>\n{rows}\n'
-            f'      </section>'
-        )
-        faq_ld = "\n" + json_ld(
-            {
-                "@context": "https://schema.org",
-                "@type": "FAQPage",
-                "mainEntity": [
-                    {
-                        "@type": "Question",
-                        "name": f["q"],
-                        "acceptedAnswer": {"@type": "Answer", "text": f["a"]},
-                    }
-                    for f in page["faq"]
-                ],
-            }
-        )
-
-    article_ld = json_ld(
-        {
-            "@context": "https://schema.org",
-            "@type": "Article",
-            "headline": page["h1"],
-            "description": page["description"],
-            "mainEntityOfPage": url,
-            "author": {"@type": "Organization", "name": "Theraglee", "url": site},
-            "publisher": {
-                "@type": "Organization",
-                "name": "Theraglee",
-                "url": site,
-                "logo": {"@type": "ImageObject", "url": f"{site}/assets/apple-touch-icon.png"},
-            },
-        }
-    )
-
-    return f"""<!doctype html>
-<html lang="en">
-{GENERATED_BANNER}
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<base href="/">
-<title>{esc(page['title'])}</title>
-<meta name="description" content="{esc(page['description'])}">
-<link rel="canonical" href="{esc(url)}">
-<meta property="og:type" content="article">
-<meta property="og:title" content="{esc(page['title'])}">
-<meta property="og:description" content="{esc(page['description'])}">
-<meta property="og:url" content="{esc(url)}">
-<meta name="twitter:card" content="summary">
-<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-<link rel="alternate icon" href="/assets/favicon.png" sizes="48x48">
-<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
-<link rel="stylesheet" href="/assets/styles.css">
-<style>
-  .seo-wrap{{max-width:760px;margin:0 auto;padding:44px 0 72px}}
-  .seo-wrap h1{{font-size:clamp(1.9rem,4vw,2.7rem);font-weight:300;letter-spacing:-.03em;margin:0 0 .5em}}
-  .seo-lede{{font-size:1.08rem;color:var(--muted);margin:0 0 6px}}
-  .seo-block{{margin-top:34px}}
-  .seo-block h2{{font-size:1.28rem;font-weight:500;margin:0 0 .6em}}
-  .seo-block p{{margin:0 0 .9em}}
-  .seo-block ul,.seo-block ol{{margin:0 0 .9em;padding-left:1.25em}}
-  .seo-block li{{margin:0 0 .45em}}
-  .seo-tiles{{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}}
-  .seo-tiles .tile{{display:flex;flex-direction:column;gap:4px}}
-  .seo-faq{{border-top:1px solid var(--hair);padding:12px 0}}
-  .seo-faq summary{{cursor:pointer;font-weight:500}}
-  .seo-faq p{{margin:.6em 0 0;color:var(--muted)}}
-</style>
-{article_ld}{faq_ld}
-</head>
-<body>
-<main>
-  <div class="wrap">
-    <article class="seo-wrap">
-      <h1>{esc(page['h1'])}</h1>
-      <p class="seo-lede">{esc(page['intro'])}</p>
-{blocks}
-{related}
-{faq_html}
-    </article>
-  </div>
-</main>
-
-<script type="module">
-import {{ chrome }} from '/assets/app.js';
-await chrome();
-</script>
-</body>
-</html>
-"""
+    return html.escape(str(text), quote=True)
 
 
 def json_ld(obj: dict) -> str:
@@ -249,47 +179,690 @@ def json_ld(obj: dict) -> str:
     return f'<script type="application/ld+json">\n{body}\n</script>'
 
 
-def sitemap(site: str, paths: list[str]) -> str:
-    urls = []
+def publisher(site: str) -> dict:
+    return {
+        "@type": "Organization",
+        "name": "Theraglee",
+        "url": site,
+        "logo": {"@type": "ImageObject", "url": f"{site}/assets/apple-touch-icon.png"},
+    }
+
+
+def faq_section(faq: list[dict] | None) -> tuple[str, str]:
+    """The visible FAQ block and the matching FAQPage data, or two empty strings."""
+    if not faq:
+        return "", ""
+    rows = "\n".join(
+        f'          <details class="seo-faq">\n'
+        f'            <summary>{esc(f["q"])}</summary>\n'
+        f'            <p>{esc(f["a"])}</p></details>'
+        for f in faq
+    )
+    visible = (
+        f'      <section class="seo-block">\n'
+        f'        <h2>Common questions</h2>\n{rows}\n'
+        f'      </section>'
+    )
+    data = json_ld({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {"@type": "Question", "name": f["q"],
+             "acceptedAnswer": {"@type": "Answer", "text": f["a"]}}
+            for f in faq
+        ],
+    })
+    return visible, data
+
+
+def tiles_section(h2: str, items: list[dict]) -> str:
+    if not items:
+        return ""
+    tiles = "\n".join(
+        f'          <a class="tile" href="{esc(i["href"])}">\n'
+        f'            <strong>{esc(i["label"])}</strong>\n'
+        f'            <span class="muted">{esc(i["note"])}</span></a>'
+        for i in items
+    )
+    return (
+        f'      <section class="seo-block">\n'
+        f'        <h2>{esc(h2)}</h2>\n'
+        f'        <div class="seo-tiles">\n{tiles}\n        </div>\n'
+        f'      </section>'
+    )
+
+
+def blocks_section(blocks: list[dict]) -> str:
+    return "\n".join(
+        f'      <section class="seo-block">\n'
+        f'        <h2>{esc(b["h2"])}</h2>\n'
+        f'        {b["html"]}\n'
+        f'      </section>'
+        for b in blocks
+    )
+
+
+def shell(*, title: str, description: str, url: str, body: str, ld: list[str],
+          og_type: str = "article", script: str = "", active: str = "") -> str:
+    """The page around the content: head, structured data, the site's chrome."""
+    head_ld = "\n".join(ld)
+    module = script or f"import {{ chrome }} from '/assets/app.js';\nawait chrome({{ active: '{active}' }});"
+    return f"""<!doctype html>
+<html lang="en">
+{GENERATED_BANNER}
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<base href="/">
+<title>{esc(title)}</title>
+<meta name="description" content="{esc(description)}">
+<link rel="canonical" href="{esc(url)}">
+<meta property="og:type" content="{og_type}">
+<meta property="og:title" content="{esc(title)}">
+<meta property="og:description" content="{esc(description)}">
+<meta property="og:url" content="{esc(url)}">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="/assets/favicon.png" sizes="48x48">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="/assets/styles.css">
+<style>
+{SHARED_CSS}
+</style>
+{head_ld}
+</head>
+<body>
+<main>
+  <div class="wrap">
+    <article class="seo-wrap">
+{body}
+    </article>
+  </div>
+</main>
+
+<script type="module">
+{module}
+</script>
+</body>
+</html>
+"""
+
+
+# ---------------------------------------------------------------------------
+# Hand-written landing pages (data/seo-pages.json → pages)
+# ---------------------------------------------------------------------------
+
+def page_html(page: dict, site: str) -> str:
+    """One landing page: static content first, the site's own chrome after."""
+    url = f"{site}/{page['path']}"
+    faq_html, faq_ld = faq_section(page.get("faq"))
+    rel = page.get("related") or {}
+    article_ld = json_ld({
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": page["h1"],
+        "description": page["description"],
+        "mainEntityOfPage": url,
+        "author": {"@type": "Organization", "name": "Theraglee", "url": site},
+        "publisher": publisher(site),
+    })
+    body = "\n".join(filter(None, [
+        f"      <h1>{esc(page['h1'])}</h1>",
+        f'      <p class="seo-lede">{esc(page["intro"])}</p>',
+        blocks_section(page.get("blocks", [])),
+        tiles_section(rel.get("h2", ""), rel.get("items", [])),
+        faq_html,
+    ]))
+    return shell(title=page["title"], description=page["description"], url=url,
+                 body=body, ld=[article_ld, faq_ld])
+
+
+# ---------------------------------------------------------------------------
+# Articles (data/articles.json → articles/<slug>)
+# ---------------------------------------------------------------------------
+
+def article_body(body_md: str) -> str:
+    """The same reading of an article as site/article.html: paragraphs are
+    separated by blank lines, and a short line with no closing punctuation
+    is a heading."""
+    out = []
+    for block in re.split(r"\n\n+", str(body_md)):
+        t = block.strip()
+        if not t:
+            continue
+        if len(t) < 90 and not re.search(r"[.?!]$", t):
+            out.append(f"<h2>{esc(t)}</h2>")
+        else:
+            out.append(f"<p>{esc(t)}</p>")
+    return "\n".join(out)
+
+
+def related_articles(article: dict, articles: list[dict], count: int = 4) -> list[dict]:
+    """Other articles sharing the most tags, newest first among equals."""
+    tags = set(article["tags"])
+    scored = []
+    for other in articles:
+        if other["slug"] == article["slug"]:
+            continue
+        shared = len(tags & set(other["tags"]))
+        if shared:
+            scored.append((-shared, other["published_at"], other))
+    # Most shared tags first; among equals, the newest.
+    scored.sort(key=lambda s: (s[0], -_stamp(s[1])))
+    return [s[2] for s in scored[:count]]
+
+
+def _stamp(published_at: str) -> int:
+    return int(re.sub(r"\D", "", published_at[:19]) or 0)
+
+
+def tool_links(article: dict, hand_pages: dict[str, dict]) -> list[dict]:
+    """The hand-written tool pages an article's tags point to, at most two,
+    plus the guide to finding a therapist."""
+    picked: list[str] = []
+    for tag in article["tags"]:
+        path = TOOL_FOR_TAG.get(tag)
+        if path and path not in picked and path in hand_pages:
+            picked.append(path)
+    picked = picked[:2]
+    guide = "articles/how-to-find-a-therapist"
+    if guide in hand_pages and guide not in picked:
+        picked.append(guide)
+    items = []
+    for path in picked:
+        page = hand_pages[path]
+        items.append({"label": page["h1"], "href": f"/{path}", "note": page["description"]})
+    return items
+
+
+ARTICLE_SCRIPT = """\
+import { chrome, sb, logActivity, toast } from '/assets/app.js';
+import { library, isFavorite, isLater, favButton, laterButton, statusBadge,
+         bindLibrary, setProgress, signupHref } from '/assets/library.js';
+await chrome({ active: 'articles.html' });
+
+// The words are already on the page. The account features (favorite, save for
+// later, mark as read) need the article's database id, so they arrive after.
+const SLUG = %(slug)s;
+try {
+  const { data: art } = await sb.from('articles').select('id,tags').eq('slug', SLUG).maybeSingle();
+  if (art) {
+    logActivity('article', art.id, 'view', art.tags || []);
+    const lib = await library();
+    const read = lib.progress.get('article:' + art.id)?.status === 'completed';
+    const bar = document.getElementById('libbar');
+    bar.innerHTML = `
+      ${favButton('article', art.id, isFavorite(lib, 'article', art.id))}
+      ${laterButton('article', art.id, isLater(lib, 'article', art.id))}
+      <span id="statuspill">${statusBadge(lib.progress.get('article:' + art.id))}</span>
+      <button class="btn ghost${read ? ' on' : ''}" id="markread">${read ? 'Read' : 'Mark as read'}</button>`;
+    bindLibrary(bar);
+    const nudge = document.getElementById('signup-nudge');
+    if (nudge) {
+      if (lib.authenticated) nudge.hidden = true;
+      else nudge.querySelector('a').href = signupHref('save');
+    }
+    document.getElementById('markread')?.addEventListener('click', async (e) => {
+      const done = e.currentTarget.textContent.trim() === 'Read';
+      const p = await setProgress('article', art.id, done ? 0 : 1, 1);
+      if (p === null) return toast('Sign in free to track what you have read.', 'err');
+      e.currentTarget.textContent = done ? 'Mark as read' : 'Read';
+      e.currentTarget.classList.toggle('on', !done);
+      document.getElementById('statuspill').innerHTML = statusBadge(p);
+    });
+  }
+} catch (e) {
+  console.debug('library bar', e);
+}"""
+
+
+def article_page(article: dict, articles: list[dict], hand_pages: dict[str, dict],
+                 site: str) -> str:
+    path = f"articles/{article['slug']}"
+    url = f"{site}/{path}"
+    title = f"{article['title']} — Theraglee"
+    description = str(article["excerpt"]).strip()
+    date = article["published_at"][:10]
+    tags = article["tags"]
+
+    ld = json_ld({
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": article["title"],
+        "description": description,
+        "mainEntityOfPage": url,
+        "datePublished": article["published_at"],
+        "keywords": ", ".join(tags),
+        "isAccessibleForFree": True,
+        "author": {"@type": "Organization", "name": "Theraglee", "url": site},
+        "publisher": publisher(site),
+    })
+
+    related = [
+        {"label": r["title"], "href": f"/articles/{r['slug']}",
+         "note": str(r["excerpt"]).strip()[:150] + ("…" if len(str(r["excerpt"]).strip()) > 150 else "")}
+        for r in related_articles(article, articles)
+    ]
+    tools = tool_links(article, hand_pages)
+    tag_line = " · ".join(esc(t) for t in tags)
+    body = "\n".join(filter(None, [
+        '      <a class="faint" href="/articles.html">← All articles</a>',
+        f'      <h1 style="margin-top:12px">{esc(article["title"])}</h1>',
+        f'      <p class="faint">{esc(_pretty_date(date))}{" · " + tag_line if tags else ""}</p>',
+        '      <div class="row no-print" id="libbar" style="margin-top:14px"></div>',
+        '      <p class="faint no-print" id="signup-nudge" style="margin-top:10px;max-width:60ch">'
+        'Free to read, no account needed. <a href="/signup.html?why=save">Create a free account</a> '
+        'to favorite this article, save it for later, and keep track of what you have read.</p>',
+        f'      <div class="prose">\n{article_body(article["body_md"])}\n      </div>',
+        tiles_section("Keep reading", related),
+        tiles_section("Tools that go with this", tools),
+        NOTICE,
+    ]))
+    script = ARTICLE_SCRIPT % {"slug": json.dumps(article["slug"])}
+    return shell(title=title, description=description, url=url, body=body, ld=[ld],
+                 script=script)
+
+
+MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August",
+          "September", "October", "November", "December"]
+
+
+def _pretty_date(iso: str) -> str:
+    y, m, d = iso.split("-")
+    return f"{MONTHS[int(m) - 1]} {int(d)}, {y}"
+
+
+# ---------------------------------------------------------------------------
+# Catalogs (data/quizzes.txt → tools/quizzes, data/worksheets.json → tools/worksheets)
+# ---------------------------------------------------------------------------
+
+def grouped(rows: list[dict]) -> list[tuple[str, list[dict]]]:
+    """Rows by their first tag, groups and rows both alphabetical."""
+    groups: dict[str, list[dict]] = defaultdict(list)
+    for row in rows:
+        groups[(row["tags"] or ["Other"])[0]].append(row)
+    return [(tag, sorted(groups[tag], key=lambda r: r["title"].lower()))
+            for tag in sorted(groups, key=str.lower)]
+
+
+def catalog_list(rows: list[dict], href: str, note) -> str:
+    parts = []
+    for tag, items in grouped(rows):
+        lis = "\n".join(
+            f'          <li><a href="{href}{esc(r["slug"])}">{esc(r["title"])}</a>'
+            + (f' — {esc(n)}' if (n := note(r)) else '') + '</li>'
+            for r in items
+        )
+        parts.append(f'        <h3>{esc(tag)}</h3>\n        <ul>\n{lis}\n        </ul>')
+    return "\n".join(parts)
+
+
+def quizzes_page(quizzes: list[dict], site: str) -> str:
+    path = "tools/quizzes"
+    url = f"{site}/{path}"
+    n = len(quizzes)
+    title = f"Mental Health Quizzes: {n} Self-Check Quizzes by Topic — Theraglee"
+    description = (f"Every one of Theraglee's {n} short mental health quizzes, by topic: anxiety, "
+                   "sleep, relationships, work, self-esteem, habits and more. Plain-language "
+                   "check-ins that end in a written read-back, not a diagnosis.")
+    faq = [
+        {"q": "Are these quizzes a diagnosis?",
+         "a": "No. Each quiz is a self-reflection check-in written in plain language. Theraglee "
+              "does not diagnose, screen for, assess for or treat any condition, and a result "
+              "here is never a clinical finding. Only a licensed clinician can do that."},
+        {"q": "How long does a quiz take?",
+         "a": "Most have four or five questions and take two to five minutes. Your answers save "
+              "to your own dashboard, so you can stop and pick a quiz up later."},
+        {"q": "Do I need to pay?",
+         "a": "The quizzes are part of the Basic membership. Reading is free: every article on "
+              "Theraglee is free to read, and a free account, no card needed, lets you save "
+              "articles and track what you have read."},
+        {"q": "Who can see my answers?",
+         "a": "Only you. Quiz answers live in your private dashboard. Therapists never see them, "
+              "even if you switch on Theraglee Match Mode."},
+    ]
+    faq_html, faq_ld = faq_section(faq)
+    ld = json_ld({
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": f"Mental health quizzes on Theraglee",
+        "description": description,
+        "mainEntityOfPage": url,
+        "publisher": publisher(site),
+    })
+    listing = catalog_list(quizzes, "/quiz.html?slug=", lambda r: r.get("description") or "")
+    body = "\n".join([
+        f"      <h1>Every mental health quiz on Theraglee, by topic</h1>",
+        f'      <p class="seo-lede">{esc(f"{n} short, plain-language check-ins on the things people actually search for: anxiety, sleep, relationships, work, self-esteem, habits, boundaries and more. Each one ends with a short written read-back of what your answers point to and a few specific things to try. None of them diagnoses anything.")}</p>',
+        '      <section class="seo-block">',
+        '        <h2>Start with the ones people open most</h2>',
+        '        <div class="seo-tiles">',
+        '          <a class="tile" href="/tools/anxiety-quiz"><strong>Anxiety quiz</strong><span class="muted">Four check-ins on where anxiety shows up for you.</span></a>',
+        '          <a class="tile" href="/tools/depression-quiz"><strong>Depression quiz</strong><span class="muted">A low-mood check-in, framed as what it is: not a screener.</span></a>',
+        '          <a class="tile" href="/tools/worksheets"><strong>Every worksheet</strong><span class="muted">The fillable worksheets, by topic.</span></a>',
+        '          <a class="tile" href="/articles.html"><strong>Free articles</strong><span class="muted">Free to read, five new ones every day.</span></a>',
+        '        </div>',
+        '      </section>',
+        '      <section class="seo-block seo-catalog">',
+        '        <h2>All quizzes by topic</h2>',
+        '        <p>Quizzes are part of the Basic membership. Opening one from here takes you to the quiz itself, where you can sign in or see membership options.</p>',
+        listing,
+        '      </section>',
+        faq_html,
+    ])
+    return shell(title=title, description=description, url=url, body=body,
+                 ld=[ld, faq_ld], og_type="website", active="explore.html")
+
+
+def worksheets_page(worksheets: list[dict], site: str) -> str:
+    path = "tools/worksheets"
+    url = f"{site}/{path}"
+    n = len(worksheets)
+    title = f"Mental Health Worksheets: {n} Fillable Worksheets by Topic — Theraglee"
+    description = (f"Every one of Theraglee's {n} fillable mental health worksheets, by topic: "
+                   "CBT thought records, anxiety, sleep, self-care, relationships, anger, grief "
+                   "and more. Fill them in online and your answers save to your dashboard.")
+    faq = [
+        {"q": "Can I print a worksheet?",
+         "a": "Yes. Every worksheet opens as a fillable page you can also print blank, and a "
+              "member's saved answers print with it."},
+        {"q": "Are the worksheets a treatment?",
+         "a": "No. They are structured writing exercises. Theraglee does not diagnose, screen for "
+              "or treat anything, and a worksheet is a place to think on paper, not a clinical "
+              "tool. A therapist can help you decide what to do with what you notice."},
+        {"q": "Do I need to pay?",
+         "a": "Worksheets are part of the Basic membership. Every article on Theraglee is free to "
+              "read, and a free account, no card needed, lets you save articles for later."},
+        {"q": "Does anyone else see what I write?",
+         "a": "No. Your answers save to your own private dashboard. Therapists never see them, "
+              "even if you switch on Theraglee Match Mode."},
+    ]
+    faq_html, faq_ld = faq_section(faq)
+    ld = json_ld({
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": "Mental health worksheets on Theraglee",
+        "description": description,
+        "mainEntityOfPage": url,
+        "publisher": publisher(site),
+    })
+
+    def note(r: dict) -> str:
+        prompts = sum(1 for f in r.get("fields", []) if f.get("type") != "table")
+        tables = sum(1 for f in r.get("fields", []) if f.get("type") == "table")
+        bits = []
+        if prompts:
+            bits.append(f"{prompts} prompt{'s' if prompts != 1 else ''}")
+        if tables:
+            bits.append(f"{tables} log table{'s' if tables != 1 else ''}")
+        return ", ".join(bits)
+
+    listing = catalog_list(worksheets, "/worksheet.html?slug=", note)
+    body = "\n".join([
+        f"      <h1>Every mental health worksheet on Theraglee, by topic</h1>",
+        f'      <p class="seo-lede">{esc(f"{n} fillable worksheets you complete online, from a classic CBT thought record to a plan for a hard morning. Each one is a set of prompts, sometimes with a log table, that saves to your dashboard so you can come back to it. They are for thinking on paper, not for diagnosing anything.")}</p>',
+        '      <section class="seo-block">',
+        '        <h2>Start with the ones people open most</h2>',
+        '        <div class="seo-tiles">',
+        '          <a class="tile" href="/tools/cbt-thought-record"><strong>CBT thought record</strong><span class="muted">The seven-column worksheet, with a walkthrough and a worked example.</span></a>',
+        '          <a class="tile" href="/tools/journal-prompts-burnout"><strong>Journal prompts for burnout</strong><span class="muted">Twelve prompts, plus the burnout worksheet.</span></a>',
+        '          <a class="tile" href="/tools/quizzes"><strong>Every quiz</strong><span class="muted">The short check-ins, by topic.</span></a>',
+        '          <a class="tile" href="/articles.html"><strong>Free articles</strong><span class="muted">Free to read, five new ones every day.</span></a>',
+        '        </div>',
+        '      </section>',
+        '      <section class="seo-block seo-catalog">',
+        '        <h2>All worksheets by topic</h2>',
+        '        <p>Worksheets are part of the Basic membership. Opening one from here takes you to the worksheet itself, where you can sign in or see membership options.</p>',
+        listing,
+        '      </section>',
+        faq_html,
+    ])
+    return shell(title=title, description=description, url=url, body=body,
+                 ld=[ld, faq_ld], og_type="website", active="explore.html")
+
+
+# ---------------------------------------------------------------------------
+# City directory pages (data/seo-pages.json → cities → therapists/<city-st>)
+# ---------------------------------------------------------------------------
+
+CITY_SCRIPT = """\
+import { chrome, sb, esc } from '/assets/app.js';
+await chrome({ active: 'therapists.html' });
+
+// The listing is live: the therapists published in this metro right now.
+const CITY = %(city)s, STATE = %(state)s;
+const host = document.getElementById('listing');
+try {
+  const { data, error } = await sb.rpc('search_therapists', {
+    p_q: CITY, p_state: STATE, p_limit: 24, p_offset: 0,
+  });
+  if (error) throw error;
+  if (!data.length) {
+    host.innerHTML = `<div class="empty"><p style="margin:0 0 6px"><strong>No verified therapists in ${esc(CITY)} yet.</strong></p>
+      <p class="faint" style="margin:0">New practices are added as they verify. <a href="/therapists.html">Browse the whole directory</a>, or turn on Theraglee Match Mode from a free account and let a therapist reach out to you.</p></div>`;
+  } else {
+    host.innerHTML = data.map(t => {
+      const initials = ((t.first_name?.[0] || '') + (t.last_name?.[0] || '')).toUpperCase();
+      const href = `/therapist.html?slug=${encodeURIComponent(t.slug)}`;
+      const loc = (t.locations || [])[0];
+      const spec = (t.top_specialties?.length ? t.top_specialties : t.specialties || []).slice(0, 3);
+      return `<div class="tcard">
+        ${t.photo_url ? `<img class="avatar" src="${esc(t.photo_url)}" alt="">` : `<div class="avatar">${esc(initials)}</div>`}
+        <div style="flex:1;min-width:0">
+          <h3><a href="${href}">${esc(t.first_name)} ${esc(t.last_name)}${t.credentials ? `, ${esc(t.credentials)}` : ''}</a></h3>
+          <p class="faint" style="margin:0 0 6px">${loc ? esc([loc.city, loc.state].filter(Boolean).join(', ')) : esc(STATE)}${
+            t.delivery === 'telehealth' ? ' · Telehealth' : t.delivery === 'both' ? ' · In person &amp; telehealth' : ' · In person'}</p>
+          ${t.bio ? `<p class="muted" style="margin:0 0 8px;font-size:.93rem">${esc(String(t.bio).slice(0, 150))}${t.bio.length > 150 ? '…' : ''}</p>` : ''}
+          <div class="chips">${spec.map(s => `<span class="badge gray">${esc(s)}</span>`).join('')}</div>
+          <div class="row" style="margin-top:12px"><a class="btn ghost sm" href="${href}">View profile</a></div>
+        </div></div>`;
+    }).join('');
+  }
+} catch (e) {
+  console.debug('listing', e);
+  host.innerHTML = '<div class="empty">The listing did not load. <a href="/therapists.html">Open the directory</a>.</div>';
+}"""
+
+
+def city_page(city: dict, site: str) -> str:
+    path = city["path"]
+    url = f"{site}/{path}"
+    name, st, state = city["city"], city["state"], city["state_name"]
+    where = f"{name}, {state}"
+    title = city.get("title") or f"Therapists in {where}: License-Verified Directory — Theraglee"
+    description = city.get("description") or (
+        f"Find a licensed therapist in {name}, {state}. Every listing on Theraglee is verified "
+        f"with the state board, free to browse with no account, and searchable by insurance, "
+        f"specialty, language and telehealth.")
+    h1 = city.get("h1") or f"Therapists in {where}"
+    intro = city.get("intro") or (
+        f"Every therapist listed here holds a license that Theraglee has checked with the {state} "
+        f"board, and the list is free to browse with no account. Filter the full directory by "
+        f"insurance, specialty, language or telehealth, or start with the practices in {name} "
+        f"below.")
+    blocks = city.get("blocks") or [
+        {"h2": f"How to choose a therapist in {name}",
+         "html": (f"<p>Start with the practical filters: whether they take your insurance, whether "
+                  f"they see people in person in {name} or by video, and whether they work with "
+                  f"what you are bringing. Then read two or three profiles the way you would read "
+                  f"a person, not a resume. The one whose words sound like someone you could talk "
+                  f"to is usually the right first call.</p><p>Most therapists offer a short "
+                  f"phone consultation before a first session. Use it to ask how they work, what "
+                  f"a session costs, and how soon they can see you. Our guide to "
+                  f"<a href=\"/articles/how-to-find-a-therapist\">finding a therapist</a> walks "
+                  f"through the license letters, the costs and the questions worth asking.</p>")},
+        {"h2": "What verified means here",
+         "html": ("<p>A therapist cannot mark themselves verified. Each license is checked against "
+                  "the state board's own record, and the listing only goes public once that check "
+                  "is written down. A therapist's real phone number and email never appear on the "
+                  "site; you reach them through a Theraglee number and a contact form, so your "
+                  "first message goes to a practice that is what it says it is.</p>")},
+        {"h2": "If you would rather be found",
+         "html": ("<p>A free account includes Theraglee Match Mode: switch it on, pick the topics "
+                  "you want help with, and licensed therapists can reach out to you instead. You "
+                  "stay pseudonymous until you reply. <a href=\"/signup.html\">Create a free "
+                  "account</a> to turn it on.</p>")},
+    ]
+    faq = city.get("faq") or [
+        {"q": f"How much does therapy cost in {name}?",
+         "a": "Roughly 100 to 250 dollars a session out of pocket in most of the country, more in "
+              "expensive metros. In-network insurance reduces it to a copay, out-of-network plans "
+              "often reimburse part of it, and many therapists keep a few sliding-scale slots that "
+              "are not advertised. Ask on the consultation call."},
+        {"q": f"Can I see a therapist in another state by video?",
+         "a": f"Usually not. A therapist has to be licensed in the state where you are sitting "
+              f"during the session, so a video therapist for someone in {name} needs a {state} "
+              f"license. Every listing shows the states the therapist is licensed in."},
+        {"q": "Does Theraglee recommend a therapist for me?",
+         "a": "No. Theraglee is a directory and a set of self-help tools. It does not diagnose or "
+              "treat anything, and it does not rank or recommend one therapist over another. "
+              "Whether a therapist is right for you is your call and theirs."},
+        {"q": "What if I need help right now?",
+         "a": "In the US you can call or text 988 at any time to reach the Suicide and Crisis "
+              "Lifeline. A directory is for finding ongoing care, not for an emergency."},
+    ]
+    faq_html, faq_ld = faq_section(faq)
+    ld = json_ld({
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": h1,
+        "description": description,
+        "mainEntityOfPage": url,
+        "about": {"@type": "City", "name": name,
+                  "containedInPlace": {"@type": "State", "name": state}},
+        "publisher": publisher(site),
+    })
+    related = [
+        {"label": "Browse the whole directory", "href": "/therapists.html",
+         "note": "Every verified therapist, searchable by area, insurance and specialty."},
+        {"label": "How to find a therapist", "href": "/articles/how-to-find-a-therapist",
+         "note": "What the license letters mean, what to ask, what it costs."},
+        {"label": "Anxiety quiz", "href": "/tools/anxiety-quiz",
+         "note": "Useful language to bring to a first session."},
+        {"label": "Are you a therapist?", "href": "/for-therapists.html",
+         "note": f"List your {name} practice with a verified badge and a protected number."},
+    ]
+    body = "\n".join(filter(None, [
+        f"      <h1>{esc(h1)}</h1>",
+        f'      <p class="seo-lede">{esc(intro)}</p>',
+        '      <section class="seo-block">',
+        f'        <h2>Verified therapists in {esc(name)}</h2>',
+        '        <div id="listing"><div class="skeleton" style="height:110px"></div></div>',
+        f'        <p><a class="btn ghost sm" href="/therapists.html">Search the full directory</a></p>',
+        '      </section>',
+        blocks_section(blocks),
+        tiles_section("Where to go next", related),
+        faq_html,
+    ]))
+    script = CITY_SCRIPT % {"city": json.dumps(name), "state": json.dumps(st)}
+    return shell(title=title, description=description, url=url, body=body,
+                 ld=[ld, faq_ld], og_type="website", script=script)
+
+
+# ---------------------------------------------------------------------------
+# Sitemap and main
+# ---------------------------------------------------------------------------
+
+def sitemap(site: str, entries: list[tuple[str, str, str | None]]) -> str:
+    """entries: (path, priority, lastmod or None). The root pages come first."""
+    urls: list[tuple[str, str, str | None]] = []
     for page, priority in PUBLIC_ROOT_PAGES:
         # The homepage canonical is the bare domain with a slash; match it here.
         loc = f"{site}/" if page == "index.html" else f"{site}/{page}"
-        urls.append((loc, priority))
-    for path in paths:
-        urls.append((f"{site}/{path}", "0.8"))
-    entries = "\n".join(
-        f"  <url>\n    <loc>{esc(loc)}</loc>\n"
-        f"    <priority>{priority}</priority>\n  </url>"
-        for loc, priority in urls
-    )
+        urls.append((loc, priority, None))
+    for path, priority, lastmod in entries:
+        urls.append((f"{site}/{path}", priority, lastmod))
+    rows = []
+    for loc, priority, lastmod in urls:
+        row = f"  <url>\n    <loc>{esc(loc)}</loc>\n"
+        if lastmod:
+            row += f"    <lastmod>{esc(lastmod)}</lastmod>\n"
+        row += f"    <priority>{priority}</priority>\n  </url>"
+        rows.append(row)
     return (
         '<?xml version="1.0" encoding="UTF-8"?>\n'
         '<!-- Generated by tools/build_seo_pages.py. Do not edit by hand. -->\n'
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-        f"{entries}\n</urlset>\n"
+        + "\n".join(rows) + "\n</urlset>\n"
     )
+
+
+def write(path: str, content: str) -> None:
+    out = SITE / path / "index.html"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(content, encoding="utf-8")
 
 
 def main() -> int:
     data = json.loads(SOURCE.read_text(encoding="utf-8"))
     site = data["site"].rstrip("/")
     pages = data["pages"]
+    cities = data.get("cities", [])
+    articles = json.loads(ARTICLES.read_text(encoding="utf-8"))
+    quizzes = load_quizzes(QUIZZES)
+    worksheets = json.loads(WORKSHEETS.read_text(encoding="utf-8"))
 
-    seen = set()
-    for page in pages:
-        path = page["path"]
-        if not re.fullmatch(r"[a-z0-9]+(?:[-/][a-z0-9]+)*", path):
+    seen: set[str] = set()
+
+    def claim(path: str) -> bool:
+        if not CLEAN_PATH.fullmatch(path):
             print(f"error: path {path!r} is not a clean lowercase URL", file=sys.stderr)
-            return 1
+            return False
         if path in seen:
             print(f"error: duplicate path {path!r}", file=sys.stderr)
-            return 1
+            return False
         seen.add(path)
+        return True
 
-        out = SITE / path / "index.html"
-        out.parent.mkdir(parents=True, exist_ok=True)
-        out.write_text(page_html(page, site), encoding="utf-8")
-        print(f"wrote site/{path}/index.html")
+    entries: list[tuple[str, str, str | None]] = []
+
+    hand_pages = {p["path"]: p for p in pages}
+    for page in pages:
+        if not claim(page["path"]):
+            return 1
+        write(page["path"], page_html(page, site))
+        entries.append((page["path"], "0.8", None))
+    print(f"wrote {len(pages)} landing pages")
+
+    # Articles: newest first in the sitemap, and a stale folder from a renamed
+    # slug is cleared so an old URL does not linger.
+    wanted = {f"articles/{a['slug']}" for a in articles} | {
+        p for p in hand_pages if p.startswith("articles/")}
+    for folder in sorted(p for p in (SITE / "articles").iterdir() if p.is_dir()):
+        rel = f"articles/{folder.name}"
+        if rel not in wanted and (folder / "index.html").exists():
+            (folder / "index.html").unlink()
+            folder.rmdir()
+            print(f"removed site/{rel}/index.html (no such article)")
+    for article in sorted(articles, key=lambda a: a["published_at"], reverse=True):
+        path = f"articles/{article['slug']}"
+        if not claim(path):
+            return 1
+        write(path, article_page(article, articles, hand_pages, site))
+        entries.append((path, "0.7", article["published_at"][:10]))
+    print(f"wrote {len(articles)} article pages")
+
+    for path, content in (("tools/quizzes", quizzes_page(quizzes, site)),
+                          ("tools/worksheets", worksheets_page(worksheets, site))):
+        if not claim(path):
+            return 1
+        write(path, content)
+        entries.append((path, "0.8", None))
+    print(f"wrote the quiz catalog ({len(quizzes)}) and the worksheet catalog ({len(worksheets)})")
+
+    for city in cities:
+        for key in ("path", "city", "state", "state_name"):
+            if not city.get(key):
+                print(f"error: a city row is missing {key!r}", file=sys.stderr)
+                return 1
+        if not claim(city["path"]):
+            return 1
+        write(city["path"], city_page(city, site))
+        entries.append((city["path"], "0.8", None))
+    if cities:
+        print(f"wrote {len(cities)} city pages")
 
     for filename, url, heading in FAQ_PAGES:
         count = sync_faq_jsonld(filename, url, heading)
@@ -297,8 +870,8 @@ def main() -> int:
             return 1
         print(f"synced site/{filename} FAQ structured data ({count} questions)")
 
-    (SITE / "sitemap.xml").write_text(sitemap(site, [p["path"] for p in pages]), encoding="utf-8")
-    print(f"wrote site/sitemap.xml ({len(PUBLIC_ROOT_PAGES) + len(pages)} urls)")
+    (SITE / "sitemap.xml").write_text(sitemap(site, entries), encoding="utf-8")
+    print(f"wrote site/sitemap.xml ({len(PUBLIC_ROOT_PAGES) + len(entries)} urls)")
     return 0
 
 

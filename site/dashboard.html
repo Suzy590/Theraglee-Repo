@@ -332,7 +332,7 @@ const HREF = {
   worksheet: r => `worksheet.html?slug=${encodeURIComponent(r.slug)}`,
   checklist: r => `checklist.html?slug=${encodeURIComponent(r.slug)}`,
   challenge: r => `challenges.html?template=${encodeURIComponent(r.slug)}`,
-  article:   r => `article.html?slug=${encodeURIComponent(r.slug)}`,
+  article:   r => `articles/${encodeURIComponent(r.slug)}`,
   mandala:   r => `mandalas.html?slug=${encodeURIComponent(r.slug)}`,
   trivia:    r => `trivia.html?slug=${encodeURIComponent(r.slug)}`,
 };
