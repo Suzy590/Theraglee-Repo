@@ -38,7 +38,7 @@ supabase/
                        identity, connect, session payments) — see docs/stripe.md
   migrations/          Schema changes that go with them
 documents/
-  index.html           Browsable library of all 611 documents
+  index.html           Browsable library of all 628 documents
   CONTENT-HEALTH.md    Source-data defects found while building
   challenges/ articles/ checklists/ journal-prompts/ quizzes/ worksheets/
 ```
@@ -97,7 +97,7 @@ Print from any browser, or:
 
 ```bash
 chromium --headless --no-pdf-header-footer \
-  --print-to-pdf=out.pdf documents/challenges/7-day-mental-health-reset.html
+  --print-to-pdf=out.pdf documents/challenges/fostering-gratitude.html
 ```
 
 ## Where the content comes from
@@ -109,15 +109,15 @@ chromium --headless --no-pdf-header-footer \
 |---|---|---|
 | `articles.json` | `articles` | 87 (five more every day — see `docs/articles.md`) |
 | `checklists.json` | `checklists` | 12 (two more every day — see `docs/checklists.md`) |
-| `challenges.json` | `challenge_templates` + `challenge_days` | 3 (67 days) |
+| `challenges.json` | `challenge_templates` + `challenge_days` | 20 themes (600 daily to-dos; two more themes every day — see `docs/challenges.md`) |
 | `worksheets.json` | `worksheets` | 186 |
 | `quizzes.txt` | `quizzes` + `quiz_questions` + `quiz_bands` | 312 (1,503 q, 1,247 bands) |
 | `journal-prompts.txt` | `daily_content` where `kind = 'journal_prompt'` | 372 |
 | `therapist-resources.json` | `therapist_resources` (the clinician library on the therapist dashboard; not rendered into `documents/`) | 250 (five more of every kind and five on each of eighteen topics every day — see `docs/therapist-resources.md`) |
 
 The 372 journal prompts are grouped into 11 themed collections at build time
-(keyword rules live in `THEMES` in the generator), which is why 611 documents come
-out of 972 source rows (the journal prompt rows collapse into 11 collections).
+(keyword rules live in `THEMES` in the generator), which is why 628 documents come
+out of 989 source rows (the journal prompt rows collapse into 11 collections).
 
 `quizzes.txt` is a compact pipe-delimited format rather than JSON — `Q|` a quiz,
 `P|` a question, `O|value|label` an option, `B|min|max|label|interpretation` a
