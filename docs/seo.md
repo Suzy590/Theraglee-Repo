@@ -51,19 +51,33 @@ reaching the site.
 
 ### City pages
 
-Add a row to `cities` and re-run the script:
+The launch areas are Ventura County and Los Angeles County, so the two rows
+in `cities` are counties. A row is an area of any size:
 
 ```json
-{ "path": "therapists/austin-tx", "city": "Austin", "state": "TX", "state_name": "Texas" }
+{ "path": "therapists/ventura-county", "name": "Ventura County", "state": "CA",
+  "state_name": "California",
+  "cities": ["Ventura", "Oxnard", "Thousand Oaks", "..."],
+  "zips": ["93001-93012", "93015-93066", "93094", "93099", "91319-91320", "91358-91362", "91377"] }
 ```
 
-That is enough for a full page: a headline, an intro, a live listing of the
-therapists published in that city (the same `search_therapists` call the
-directory makes, with the city as the search and the state as the filter),
-three blocks on choosing a therapist and what verified means, links onward,
-and four questions with `FAQPage` data. `title`, `description`, `h1`, `intro`,
-`blocks` and `faq` on the row override the defaults when a city deserves its
-own copy. Write the copy in US English and keep the two rules below.
+`path`, `name`, `state` and `state_name` are required (`city` still works in
+place of `name` for a single city). The page is a headline, an intro naming
+the first ten `cities`, a live listing, three blocks on choosing a therapist
+and what verified means, links onward, and four questions with `FAQPage`
+data. `title`, `description`, `h1`, `intro`, `blocks` and `faq` on the row
+override the defaults when an area deserves its own copy. Write the copy in
+US English and keep the two rules below.
+
+The listing is decided in the browser. `search_therapists` matches its search
+text against names and bios, not addresses, so the page asks the directory
+for every therapist licensed in the state (up to 400) and keeps the ones with
+a practice location whose city is in `cities` (case-insensitive) or whose zip
+falls in one of the `zips` ranges. Below those it shows up to twelve more who
+are licensed in the state and see people by video. The zip ranges skip the
+codes that belong to neighboring counties (Orange, San Bernardino, Kern and
+Santa Barbara), so a Buena Park or Carpinteria practice does not land on the
+wrong page.
 
 A folder holding an `index.html` is served at the folder's own path, so
 `site/tools/anxiety-quiz/index.html` answers to `/tools/anxiety-quiz` with no
@@ -130,12 +144,11 @@ on their own.
 
 ## What is not done yet
 
-- **The city pages need the launch metros.** The generator is ready (see
-  above) and `cities` is empty. Two things are needed before a city page is
-  worth publishing: the list of launch metros, and therapists published in
-  them. As of this writing no therapist listing is live, so a city page would
-  show an empty listing with nothing to rank for. Add the rows the day the
-  first practices in a metro are verified.
+- **The county pages have no therapists on them yet.** Ventura County and
+  Los Angeles County are live at `/therapists/ventura-county` and
+  `/therapists/los-angeles-county`, and each shows "no verified therapists
+  yet" until the first practices in those counties are verified. The copy
+  above the listing is what there is to rank on until then.
 - **Search Console and Bing.** Submitting the sitemap needs the Google and
   Microsoft accounts; the steps are above.
 - **One page per quiz and worksheet.** The catalogs name every tool, but each
