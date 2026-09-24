@@ -117,7 +117,7 @@ chromium --headless --no-pdf-header-footer \
 
 The 372 journal prompts are grouped into 11 themed collections at build time
 (keyword rules live in `THEMES` in the generator), which is why 611 documents come
-out of 967 source rows (the journal prompt rows collapse into 11 collections).
+out of 972 source rows (the journal prompt rows collapse into 11 collections).
 
 `quizzes.txt` is a compact pipe-delimited format rather than JSON — `Q|` a quiz,
 `P|` a question, `O|value|label` an option, `B|min|max|label|interpretation` a
