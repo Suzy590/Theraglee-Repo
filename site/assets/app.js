@@ -2,6 +2,7 @@
    Theraglee — shared front-end runtime
    ========================================================================== */
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.47.10';
+import { mountShowcase } from './showcase.js';
 
 export const SUPABASE_URL = 'https://oekqzuguruyqkafsqhos.supabase.co';
 export const SUPABASE_KEY = 'sb_publishable_eyxjcu2EnB7PrQywDJu9Ug_XRK-PZk0';
@@ -286,6 +287,12 @@ export async function chrome({ active = '' } = {}) {
       <div class="links" id="navlinks">${links}${right}</div>
     </nav></div></header>`;
   document.body.prepend(...header.childNodes);
+
+  // The feature showcase sits under the header on every page a member or
+  // visitor sees. The therapist pages (practice dashboard, sign-in, sign-up)
+  // are the other front door, so they go without.
+  const therapistPages = [DOORS.therapist.home, DOORS.therapist.signin, DOORS.therapist.signup];
+  if (!therapistPages.includes(here)) mountShowcase(a, $('.topbar'));
 
   $('#burger')?.addEventListener('click', (e) => {
     const l = $('#navlinks'); l.classList.toggle('open');

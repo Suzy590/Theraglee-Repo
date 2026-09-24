@@ -19,6 +19,7 @@ Moving the domain off HostGator is written up step by step in
 | Hosting | Serves the site. | Vercel project `theraglee-site` |
 | Sunday tool email | One free discovery tool a week to visitors with no account, from the box above the footer. See [`weekly-tool-email.md`](weekly-tool-email.md). | `site/index.html` `#inbox`, `supabase/functions/tool-signup`, `supabase/functions/weekly-tools` |
 | Search landing pages | Real HTML at `/articles/<slug>` for every article, `/tools/...` landing pages and catalogs, plus `sitemap.xml` and `robots.txt`, so the library is indexable. See [`seo.md`](seo.md). | `data/seo-pages.json`, `tools/build_seo_pages.py` |
+| Feature showcase | The strip of feature cards under the header on every page but the therapist dashboard, sign-in and sign-up. See [below](#the-feature-showcase-under-the-header). | `site/assets/showcase.js`, styles in `site/assets/styles.css` |
 | Domain | `theraglee.com`. | Registered at Network Solutions, served by Vercel |
 
 ## Two front doors: members and therapists
@@ -368,6 +369,36 @@ gated by tier, so Basic and Premium have them too:
 | Themed challenges, 7 days at a time | 20 `challenge_templates` at `min_level = 1`, two more added every day; one to-do a day from `challenge_days`, runs in `user_challenges`, ticks in `user_challenge_progress`; `guard_challenge_length()` keeps a Free member's run to 7 days — see [`challenges.md`](challenges.md) | `min_level`, RLS `own rows` |
 | Checklists with progress tracked | 12 `checklists` at `min_level = 1`, two more added every day, `checklist_progress` + `item_progress` | `min_level`, RLS `own rows` |
 | Theraglee Match Mode (dashboard switch: let therapists reach out) | `profiles.visible_to_therapists`, toggled on `dashboard.html` and `account.html`; the details therapists see are asked for in `assets/match.js`; blocks in `member_blocks` | `member_opted_in()`, `member_blocked()` |
+
+## The feature showcase under the header
+
+Every page a member or visitor sees carries a strip of cards under the header,
+one per feature, from Theraglee Match Mode (the big green card, always first)
+through the daily picks, the journal, the library and on to the Premium tools.
+`chrome()` in `site/assets/app.js` mounts it from `site/assets/showcase.js`
+on every page except the therapist ones: `therapist-dashboard.html`,
+`therapist-login.html` and `therapist-signup.html`.
+
+Each card is the feature's name in large bold type over a one-line
+description, and each is a link:
+
+| Viewer | Feature they can open | Feature above their tier |
+|---|---|---|
+| Visitor | Straight to the feature | `signup.html?next=…`, so they land on the feature once the account exists |
+| Signed-in member | Straight to the feature | `pricing.html`, with the tier shown on the card |
+
+The strip scrolls sideways (swipe, trackpad, the arrow buttons, or the arrow
+keys once it has focus) and moves on to the next card by itself every few
+seconds when nobody is using it. Hovering, touching, scrolling, or tabbing into
+it pauses that, and it resumes after a few seconds of quiet. It also stays put
+while the tab is hidden, while it is scrolled off screen, and for anyone whose
+device asks for reduced motion.
+
+The list of features, with where each opens and the tier it needs, is
+`FEATURES` at the top of `showcase.js`. The daily picks and Theraglee Match Mode
+open the right tab of the dashboard by address (`dashboard.html#daily-quote`,
+`dashboard.html#match-mode`): a hash naming something inside a tab opens that
+tab and scrolls to it.
 
 ## Theraglee Match Mode is pseudonymous until the member replies
 
