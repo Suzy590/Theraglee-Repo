@@ -289,8 +289,10 @@ export async function chrome({ active = '' } = {}) {
   document.body.prepend(...header.childNodes);
 
   // The feature showcase sits under the header on every page a member or
-  // visitor sees. The therapist dashboard is the practice, so it goes without.
-  if (here !== 'therapist-dashboard.html') mountShowcase(a, $('.topbar'));
+  // visitor sees. The therapist pages (practice dashboard, sign-in, sign-up)
+  // are the other front door, so they go without.
+  const therapistPages = [DOORS.therapist.home, DOORS.therapist.signin, DOORS.therapist.signup];
+  if (!therapistPages.includes(here)) mountShowcase(a, $('.topbar'));
 
   $('#burger')?.addEventListener('click', (e) => {
     const l = $('#navlinks'); l.classList.toggle('open');

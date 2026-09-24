@@ -19,7 +19,7 @@ Moving the domain off HostGator is written up step by step in
 | Hosting | Serves the site. | Vercel project `theraglee-site` |
 | Sunday tool email | One free discovery tool a week to visitors with no account, from the box above the footer. See [`weekly-tool-email.md`](weekly-tool-email.md). | `site/index.html` `#inbox`, `supabase/functions/tool-signup`, `supabase/functions/weekly-tools` |
 | Search landing pages | Real HTML at `/tools/...` and `/articles/...`, plus `sitemap.xml` and `robots.txt`, so the library is indexable. See [`seo.md`](seo.md). | `data/seo-pages.json`, `tools/build_seo_pages.py` |
-| Feature showcase | The strip of feature cards under the header on every page but the therapist dashboard. See [below](#the-feature-showcase-under-the-header). | `site/assets/showcase.js`, styles in `site/assets/styles.css` |
+| Feature showcase | The strip of feature cards under the header on every page but the therapist dashboard, sign-in and sign-up. See [below](#the-feature-showcase-under-the-header). | `site/assets/showcase.js`, styles in `site/assets/styles.css` |
 | Domain | `theraglee.com`. | Registered at Network Solutions, served by Vercel |
 
 ## Two front doors: members and therapists
@@ -376,7 +376,8 @@ Every page a member or visitor sees carries a strip of cards under the header,
 one per feature, from Theraglee Match Mode (the big green card, always first)
 through the daily picks, the journal, the library and on to the Premium tools.
 `chrome()` in `site/assets/app.js` mounts it from `site/assets/showcase.js`
-on every page except `therapist-dashboard.html`, which is the practice.
+on every page except the therapist ones: `therapist-dashboard.html`,
+`therapist-login.html` and `therapist-signup.html`.
 
 Each card is the feature's name in large bold type over a one-line
 description, and each is a link:
