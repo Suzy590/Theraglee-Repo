@@ -17,16 +17,53 @@ markup, and it points at the interactive tool behind it.
 python3 tools/build_seo_pages.py
 ```
 
-Source rows are in `data/seo-pages.json`. The script writes:
+The script writes:
 
-| Output | What it is |
-|---|---|
-| `site/<path>/index.html` | One landing page per row, served at `/<path>` |
-| `site/sitemap.xml` | Those pages plus the public pages at the site root |
-| The FAQ block in `site/index.html` and `site/for-therapists.html` | `FAQPage` structured data, rebuilt from the questions visible on each page |
+| Output | Built from | What it is |
+|---|---|---|
+| `site/tools/<slug>/index.html`, `site/articles/how-to-find-a-therapist/index.html` | `pages` in `data/seo-pages.json` | The hand-written landing pages, one per row |
+| `site/articles/<slug>/index.html` | `data/articles.json` | One page per article, with the whole article in the markup (every article is free) |
+| `site/tools/quizzes/index.html`, `site/tools/worksheets/index.html` | `data/quizzes.txt`, `data/worksheets.json` | Catalogs naming every quiz and worksheet by topic, so the library is crawlable even though the tools are for members |
+| `site/therapists/<city-st>/index.html` | `cities` in `data/seo-pages.json` | One directory page per launch metro (none yet; see below) |
+| `site/sitemap.xml` | All of the above | Plus the public pages at the site root |
+| The FAQ block in `site/index.html` and `site/for-therapists.html` | The questions visible on each page | `FAQPage` structured data |
 
 Never hand-edit the generated HTML or `sitemap.xml`. Change the source row, or
 the script, and run it again. Running it twice in a row changes nothing.
+`node tests/seo-pages/check.mjs` confirms every article has its page, every
+page is in the sitemap, and the structured data parses.
+
+### Articles
+
+Every article gets a page automatically. The daily articles routine runs the
+build after it appends the day's five to `data/articles.json`, and the article
+check refuses an article whose page is missing, so a new article cannot ship
+without one. The page carries the full text, `Article` structured data with
+the publish date and tags, up to four related articles by shared tag, and the
+tool pages the tags point to (`TOOL_FOR_TAG` in the script).
+
+Links across the site (`articles.html`, the explore grid, the dashboard) go to
+`/articles/<slug>`. `site/article.html?slug=` still works for old links and
+sets a canonical to the clean URL, and a rewrite in `site/vercel.json` sends
+`/articles/<slug>` to `article.html` when no generated page exists yet, so a
+clean URL never 404s between an article reaching the database and its page
+reaching the site.
+
+### City pages
+
+Add a row to `cities` and re-run the script:
+
+```json
+{ "path": "therapists/austin-tx", "city": "Austin", "state": "TX", "state_name": "Texas" }
+```
+
+That is enough for a full page: a headline, an intro, a live listing of the
+therapists published in that city (the same `search_therapists` call the
+directory makes, with the city as the search and the state as the filter),
+three blocks on choosing a therapist and what verified means, links onward,
+and four questions with `FAQPage` data. `title`, `description`, `h1`, `intro`,
+`blocks` and `faq` on the row override the defaults when a city deserves its
+own copy. Write the copy in US English and keep the two rules below.
 
 A folder holding an `index.html` is served at the folder's own path, so
 `site/tools/anxiety-quiz/index.html` answers to `/tools/anxiety-quiz` with no
@@ -93,14 +130,16 @@ on their own.
 
 ## What is not done yet
 
-- **The city pages.** One directory page per launch metro is still to come.
-  They need two things this repository does not have: the list of launch metros,
-  and therapists published in them. As of this writing no therapist listing is
-  live, so a city page would be an empty result with nothing to rank for.
-- **The rest of the library.** 67 articles, 312 quizzes and 186 worksheets still
-  exist only behind a `?slug=` URL. The generator is built to cover them; the
-  open question is the paywall below.
-- **Paywalled tools rank badly.** Every quiz and worksheet is `min_level = 2`,
-  so a visitor arriving from a search for "anxiety quiz" has to pay to take one.
-  Articles are the only free content. Making a handful of quizzes free would
-  give the landing pages something to convert with.
+- **The city pages need the launch metros.** The generator is ready (see
+  above) and `cities` is empty. Two things are needed before a city page is
+  worth publishing: the list of launch metros, and therapists published in
+  them. As of this writing no therapist listing is live, so a city page would
+  show an empty listing with nothing to rank for. Add the rows the day the
+  first practices in a metro are verified.
+- **Search Console and Bing.** Submitting the sitemap needs the Google and
+  Microsoft accounts; the steps are above.
+- **One page per quiz and worksheet.** The catalogs name every tool, but each
+  quiz and worksheet is still only reachable through a `?slug=` URL, and every
+  one is `min_level = 2`, so a visitor arriving from a search has to pay to use
+  it. Making a handful of quizzes free would give a per-quiz page something to
+  convert with; until then, per-tool pages would be thin.

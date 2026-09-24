@@ -1,6 +1,7 @@
 {
-  "_comment": "Source rows for tools/build_seo_pages.py. Each entry becomes one indexable page at site/<path>/index.html, plus one <url> in site/sitemap.xml. Never hand-edit the generated HTML.",
+  "_comment": "Source rows for tools/build_seo_pages.py. Each entry in pages becomes one indexable page at site/<path>/index.html, plus one <url> in site/sitemap.xml; each entry in cities becomes one therapist directory page (path, city, state, state_name are required; title, description, h1, intro, blocks and faq override the defaults). The article pages and the two catalog pages are built from data/, not from here. Never hand-edit the generated HTML.",
   "site": "https://theraglee.com",
+  "cities": [],
   "pages": [
     {
       "path": "tools/anxiety-quiz",

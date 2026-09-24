@@ -32,6 +32,7 @@ node tests/articles-fixture/check.mjs                 # data checks
 python3 tools/articles_sql.py --since 2026-09-10      # SQL for a day's articles (an upsert on slug)
 python3 tools/articles_sql.py slug-a slug-b           # or by slug
 python3 tools/build_documents.py                      # the print-ready copies in documents/
+python3 tools/build_seo_pages.py                      # the indexable page for each article (see seo.md)
 ```
 
 The generated SQL goes in a migration named
@@ -60,8 +61,10 @@ Each day's session:
 4. Generates the day's migration with `tools/articles_sql.py --since <today>`
    and applies it to the database.
 5. Confirms with a query that the five rows are in `articles` at `min_level 0`.
-6. Runs `python3 tools/build_documents.py` and bumps the article counts in
-   `README.md` and `docs/site.md`.
+6. Runs `python3 tools/build_documents.py` and `python3 tools/build_seo_pages.py`
+   (the second writes each new article's indexable page under `site/articles/`
+   and its sitemap entry; the article check fails until it has run), and bumps
+   the article counts in `README.md` and `docs/site.md`.
 7. Commits everything to the branch the session was given (every routine
    session gets its own `claude/...` branch, started fresh from the default
    branch), pushes it, and opens one draft pull request titled
