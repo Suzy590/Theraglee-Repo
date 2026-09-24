@@ -88,13 +88,16 @@ async function viewIndex(){
       check off one small to-do each day. Every registered member can run any theme for a week;
       Basic and Premium choose any length up to a full year.</p>
 
-    ${mine.length ? `<h2 style="margin-top:36px">Yours</h2><div class="grid g2">${mine.map(c=>{
+    ${mine.length ? `<h2 style="margin-top:36px">Yours</h2><div class="grid g2" id="mine">${mine.map(c=>{
         const n = doneMap[c.id]?.size || 0, pct = Math.round(n/c.total_days*100);
-        return `<a class="tile" href="challenges.html?open=${c.id}">
-          <h3>${esc(c.title)}</h3>
+        return `<div class="tile" data-run="${c.id}">
+          <h3><a href="challenges.html?open=${c.id}">${esc(c.title)}</a></h3>
           <div class="bar"><i style="width:${pct}%"></i></div>
           <span class="meta">${n} of ${c.total_days} days · started ${fmtDate(c.started_on)}${c.archived?' · archived':''}</span>
-        </a>`; }).join('')}</div>` : ''}
+          <div class="row" style="margin-top:12px">
+            <a class="btn sm" href="challenges.html?open=${c.id}">Open</a>
+            <button class="btn ghost sm" data-remove="${c.id}" data-title="${esc(c.title)}">Remove</button></div>
+        </div>`; }).join('')}</div>` : ''}
 
     <h2 style="margin-top:40px">Pick a theme</h2>
     <div class="field" style="margin-top:14px;max-width:48ch">
@@ -122,6 +125,36 @@ async function viewIndex(){
   }
   q.addEventListener('input', paintThemes);
   paintThemes();
+
+  root.querySelectorAll('[data-remove]').forEach(b => b.addEventListener('click', () => {
+    confirmRemove(b.dataset.remove, b.dataset.title, () => {
+      b.closest('[data-run]').remove();
+      const grid = document.getElementById('mine');
+      if (grid && !grid.children.length) { grid.previousElementSibling.remove(); grid.remove(); }
+    });
+  }));
+}
+
+/* Removing a challenge deletes the run and every day ticked on it. A member
+   who wants to keep the record archives it instead. */
+function confirmRemove(id, title, done){
+  const back = modal(`
+    <h2>Remove this challenge?</h2>
+    <p class="muted">“${esc(title)}” and the days you have checked off on it will be deleted. This cannot be undone.
+      If you would rather keep the record, archive it instead.</p>
+    <div class="row" style="margin-top:18px;justify-content:flex-end">
+      <button class="btn ghost" id="keep">Keep it</button>
+      <button class="btn danger" id="remove">Remove</button></div>`);
+  back.querySelector('#keep').onclick = () => back.remove();
+  back.querySelector('#remove').onclick = async (e) => {
+    busy(e.target, true, 'Removing…');
+    const { error } = await sb.from('user_challenges').delete().eq('id', id);
+    busy(e.target, false);
+    if (error) return toast(error.message, 'err');
+    back.remove();
+    toast('Challenge removed.', 'ok');
+    done();
+  };
 }
 
 /* --------------------------------------------------------- a theme */
@@ -312,7 +345,9 @@ async function viewRun(id){
         <h1 style="margin:0">${esc(run.title)}</h1>
         ${theme?.description ? `<p class="muted" style="margin-top:8px">${esc(theme.description)}</p>` : ''}
       </div>
-      <button class="btn ghost sm" id="archive">${run.archived?'Unarchive':'Archive'}</button>
+      <div class="row">
+        <button class="btn ghost sm" id="archive">${run.archived?'Unarchive':'Archive'}</button>
+        <button class="btn ghost sm" id="remove">Remove</button></div>
     </div>
     <p class="faint">Started ${fmtDate(run.started_on)}${run.archived ? ' · archived' : ''}</p>
     <div id="stats">${stats()}</div>
@@ -376,6 +411,9 @@ async function viewRun(id){
     run.archived = !run.archived;
     toast(run.archived ? 'Archived.' : 'Back in progress.', 'ok');
     document.getElementById('archive').textContent = run.archived ? 'Unarchive' : 'Archive';
+  });
+  document.getElementById('remove').addEventListener('click', () => {
+    confirmRemove(run.id, run.title, () => { location.href = 'challenges.html'; });
   });
 }
 

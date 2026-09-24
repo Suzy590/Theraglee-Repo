@@ -27,6 +27,7 @@ every page says so.
 | Ticking a day | `user_challenge_progress` (one row per run, per day, with `completed_on`) | RLS `own rows` |
 | Which to-do a day shows | the page: day *d* shows to-do *d* | a 90-day run sees the first 90 of the 365 |
 | Runs from before themes | `user_challenges` with no `template_id` and their own `custom_days` | still open and tickable; "design your own" is no longer offered |
+| Archiving or removing a run | the challenge page and the "Yours" list on `site/challenges.html` | archive keeps the record off the active list; remove deletes the `user_challenges` row and, by cascade, its ticks, after a confirmation |
 | The dashboard | "Challenges in progress" on `site/dashboard.html` | `n of N days` per active run |
 | Print-ready copy | `documents/challenges/<slug>.html`, the whole bank numbered | built by `tools/build_documents.py` |
 
