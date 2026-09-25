@@ -374,6 +374,8 @@ gated by tier, so Basic and Premium have them too:
 Every page a member or visitor sees carries a strip of cards under the header,
 one per feature, from Theraglee Match Mode (the big green card, always first)
 through the daily picks, the journal, the library and on to the Premium tools.
+The Match Mode card comes round again after every four other features, so it
+is on screen wherever someone has scrolled to.
 `chrome()` in `site/assets/app.js` mounts it from `site/assets/showcase.js`
 on every page except the therapist ones: `therapist-dashboard.html`,
 `therapist-login.html` and `therapist-signup.html`. The landing page is the one
