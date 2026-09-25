@@ -16,7 +16,7 @@
 import { admin, loadConfig } from "../_shared/supabase.ts";
 import { type Stripe, stripeClient } from "../_shared/stripe.ts";
 import {
-  connectStatus, identityStatusFor, isPlanKey, isStaleSubscription, planForPrice, subscriptionPatch,
+  connectStatus, identityStatusFor, isPlanKey, isStaleSubscription, keepsComp, planForPrice, subscriptionPatch,
 } from "../_shared/billing.ts";
 
 const idOf = (x: unknown): string | null =>
@@ -38,9 +38,13 @@ async function syncSubscription(stripe: Stripe, subscriptionId: string) {
   if (!userId) { console.error("no profile for customer", customerId); return; }
 
   const { data: profile } = await admin
-    .from("profiles").select("stripe_subscription_id").eq("id", userId).maybeSingle();
+    .from("profiles").select("stripe_subscription_id, subscription_status").eq("id", userId).maybeSingle();
   if (isStaleSubscription(profile?.stripe_subscription_id, sub)) {
     console.log("ignoring stale subscription", sub.id, "current is", profile?.stripe_subscription_id);
+    return;
+  }
+  if (keepsComp(profile?.subscription_status, sub)) {
+    console.log("ignoring ended subscription", sub.id, "for a complimentary membership");
     return;
   }
 

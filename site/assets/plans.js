@@ -18,7 +18,7 @@ export const PLANS_INTRO = {
 };
 
 export const PLANS_NOTE =
-  'Cancel anytime from your dashboard in two clicks. Your journal entries and tracking history stay yours, free or paid.';
+  'Cancel anytime from your dashboard in two clicks. Your journal entries and tracking history stay yours, free or paid. Have a discount code? Enter it on the checkout page.';
 
 // level matches TIERS in app.js: 1 Free, 2 Basic, 3 Premium.
 export const PLANS = [

@@ -30,6 +30,7 @@ supabase/
   config.toml                       per-function settings for the Supabase CLI
   migrations/
     20260906230000_stripe_tax_identity_connect.sql
+    20260925200000_admin_memberships_discount_codes.sql
   functions/
     _shared/
       billing.ts                    the pure decisions (which plan, which tier,
@@ -41,13 +42,17 @@ supabase/
     stripe-identity/                therapist ID check
     stripe-connect/                 therapist payout account
     stripe-session-checkout/        client pays a therapist
+    admin-membership/               admin adds, changes and ends memberships;
+                                    makes and applies discount codes
+    stripe-redeem/                  a paying member enters a discount code
 site/
   assets/app.js                     startCheckout, openPortal, startIdentity,
                                     connectAction, startSessionPayment
   pricing.html, account.html        member side
   therapist-dashboard.html          therapist side (Membership tab)
   therapist.html                    "Pay for a session" button
-  admin.html                        price IDs and the on/off switches
+  admin.html                        price IDs and the on/off switches;
+                                    Memberships and Discount codes tabs
 ```
 
 Until this change the three original functions existed only inside Supabase.
@@ -321,6 +326,44 @@ fee (which is why there is a minimum platform fee). And sales tax is not
 calculated on sessions: counseling services are generally exempt, and the
 therapist is the merchant of record.
 
+## Admin membership tools
+
+The **Memberships** tab of `/admin.html` has a **Manage** button on every
+member and therapist, and an **Add a member or therapist** button. The
+**Discount codes** tab makes and ends codes. All of it goes through the
+`admin-membership` function, which refuses anyone who is not an admin.
+
+- **Change plan.** Someone paying through Stripe has their subscription moved
+  to the new price, and Stripe prorates the difference on the next bill.
+  Anyone else gets the plan **complimentary**: `subscription_status = 'comped'`,
+  no Stripe subscription, no charge. `sub_active()` counts `comped` as active,
+  so access works exactly as if they paid. If they later buy a plan at
+  checkout, the paid subscription replaces the comp.
+- **End membership.** A Stripe subscription is canceled in Stripe, either now
+  (no refund) or at the end of the paid period, which can be undone until
+  then. A complimentary one ends at once. A therapist's listing comes down.
+- **Add.** Sends a Supabase invitation email to a new member or therapist,
+  optionally with a complimentary plan. It uses the project's auth email
+  settings, so the built-in mailer's hourly limit applies until custom SMTP is
+  set up.
+- **Discount codes.** Each code is a Stripe coupon plus a promotion code with
+  the same name: a percent or dollar amount off, for the first payment, a
+  number of months, or every payment; for members, therapists or both (limited
+  to those products in Stripe); with an optional use limit and last day. The
+  list shows Stripe's live count of uses. Ending a code stops new uses;
+  discounts already given stay.
+- **Using a code.** New subscribers type it on the Stripe Checkout page
+  (`allow_promotion_codes`). People who already pay enter it under
+  **Have a discount code?** on their account page (`stripe-redeem`), or an
+  admin applies it from **Manage**. A subscription carries one code at a time.
+
+After merging, apply the migration, then deploy the two new functions and the
+two that changed:
+
+```bash
+supabase functions deploy admin-membership stripe-redeem stripe-checkout stripe-webhook
+```
+
 ## The switches
 
 All in `app_config`, all editable from `/admin.html`:
@@ -345,6 +388,8 @@ All in `app_config`, all editable from `/admin.html`:
 | `therapist_profiles.accepts_payments`, `session_fee_cents` | the therapist | Their choice to take payments, and the price ($5–$1,000) |
 | `session_payments` | `stripe-session-checkout`, webhook | One row per session payment: `pending`, `paid`, `refunded`, `partially_refunded`, `disputed` |
 | `billing_alerts` | webhook | Disputes and Radar early-fraud warnings, for admins |
+| `profiles.subscription_status = 'comped'` | `admin-membership` | A complimentary membership an admin granted; the webhook leaves it alone unless a live subscription arrives |
+| `discount_codes` | `admin-membership` | The codes made on the admin screen, with their Stripe coupon and promotion code IDs |
 | `stripe_events` | webhook | Every event received; `processed_at` set once handled, `error` if not |
 
 The Stripe-managed columns are frozen for everyone except the functions and
@@ -361,6 +406,10 @@ verified or paid-out from the browser.
 - **"Payments are not switched on yet"** — the `stripe_enabled` switch is off
   (or, for sessions, `connect_enabled`). Admins bypass the first.
 - **"No Stripe price is set for …"** — a price ID is missing in the admin screen.
+- **"Paste the … price IDs on the Stripe setup tab first"** — a code for members
+  only or therapists only needs those price IDs to know which products to cover.
+- **"That code can no longer be used"** — Stripe refused it: used up, past its
+  last day, or ended.
 - **Paid but still on the free tier** — open Stripe → Developers → Webhooks and
   look at the endpoint's recent deliveries. A red one shows the error; the same
   text is in `stripe_events.error`. Fix, then click *Resend* in Stripe.

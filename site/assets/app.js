@@ -211,6 +211,34 @@ export async function startCheckout(plan, interval, btn) {
   await goStripe('stripe-checkout', { plan, interval }, btn, 'Opening checkout…', 'Could not start checkout.');
 }
 
+/** "Have a discount code?" for someone who already pays through Stripe.
+ *  New subscribers enter codes on the Stripe Checkout page instead. Put the
+ *  markup on the page, then call wireDiscountCode() once it is in the DOM. */
+export const discountCodeBox = () => `
+  <form class="card" id="dcode" style="margin-top:16px;padding:18px">
+    <label for="dcode-in" style="margin:0 0 8px;display:block"><strong>Have a discount code?</strong></label>
+    <div class="row" style="flex-wrap:nowrap">
+      <input id="dcode-in" autocomplete="off" maxlength="30" placeholder="Enter your code"
+        style="text-transform:uppercase">
+      <button class="btn ghost" type="submit">Apply</button>
+    </div>
+  </form>`;
+
+export function wireDiscountCode(onDone = () => location.reload()) {
+  const form = document.getElementById('dcode');
+  if (!form) return;
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = form.querySelector('button');
+    busy(btn, true, 'Applying…');
+    const out = await callStripeFn('stripe-redeem', { code: form.querySelector('input').value });
+    busy(btn, false);
+    if (out.error) return toast(out.message || 'That code did not work.', 'err');
+    toast('Discount applied. It shows on your next bill.', 'ok');
+    onDone();
+  });
+}
+
 export async function openPortal(btn) {
   await goStripe('stripe-portal', {}, btn, 'Opening…', 'Billing portal unavailable.');
 }

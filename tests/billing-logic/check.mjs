@@ -6,7 +6,8 @@
 // Exits non-zero on the first failed assertion.
 import assert from "node:assert/strict";
 import {
-  connectStatus, deadlineEnd, foundingOffer, identityStatusFor, isActive, isInterval,
+  codeFitsRole, connectStatus, hasLiveStripeSub, keepsComp, parseDiscountInput, planChangeError,
+  priceKeysForAudience, deadlineEnd, foundingOffer, identityStatusFor, isActive, isInterval,
   isStaleSubscription, isValidSessionFee, planForPrice, platformFee, priceKeyFor,
   safeReturnOrigin, subscriptionPatch,
 } from "../../supabase/functions/_shared/billing.ts";
@@ -20,6 +21,80 @@ test("isActive mirrors sub_active()", () => {
   assert.equal(isActive("past_due"), false);
   assert.equal(isActive("canceled"), false);
   assert.equal(isActive(null), false);
+  // An admin-granted complimentary membership counts as active.
+  assert.equal(isActive("comped"), true);
+});
+
+test("only a live Stripe subscription counts as paying through Stripe", () => {
+  assert.equal(hasLiveStripeSub({ stripe_subscription_id: "sub_1", subscription_status: "active" }), true);
+  assert.equal(hasLiveStripeSub({ stripe_subscription_id: "sub_1", subscription_status: "canceled" }), false);
+  // A comp keeps the id of an old, ended subscription; that is not paying.
+  assert.equal(hasLiveStripeSub({ stripe_subscription_id: "sub_1", subscription_status: "comped" }), false);
+  assert.equal(hasLiveStripeSub({ stripe_subscription_id: null, subscription_status: "active" }), false);
+});
+
+test("late events for an ended subscription leave a comp alone", () => {
+  assert.equal(keepsComp("comped", { id: "sub_old", status: "canceled" }), true);
+  assert.equal(keepsComp("comped", { id: "sub_new", status: "active" }), false);
+  assert.equal(keepsComp("active", { id: "sub_1", status: "canceled" }), false);
+});
+
+test("admins move members between Basic and Premium, therapists stay therapists", () => {
+  assert.equal(planChangeError("member", "premium", "monthly"), null);
+  assert.equal(planChangeError("member", "basic", "yearly"), null);
+  assert.equal(planChangeError("therapist", "therapist", "yearly"), null);
+  assert.ok(planChangeError("member", "therapist", "monthly"));
+  assert.ok(planChangeError("therapist", "premium", "monthly"));
+  assert.ok(planChangeError("member", "free", "monthly"));
+  assert.ok(planChangeError("member", "basic", "founding"));
+  assert.ok(planChangeError("admin", "premium", "monthly"));
+});
+
+test("discount codes: valid forms parse, bad ones say why", () => {
+  const now = new Date("2026-09-25T12:00:00Z");
+  const ok = parseDiscountInput({ code: " spring25 ", kind: "percent", value: "25", duration: "repeating",
+    months: "3", audience: "member", max_redemptions: "50", expires_on: "2026-12-31" }, now);
+  assert.equal(ok.ok, true);
+  assert.deepEqual(ok.value, { code: "SPRING25", percentOff: 25, amountOffCents: null, duration: "repeating",
+    durationInMonths: 3, audience: "member", maxRedemptions: 50,
+    expiresAt: Date.UTC(2026, 11, 31, 23, 59, 59, 999) / 1000 | 0 });
+
+  const amt = parseDiscountInput({ code: "TEN", kind: "amount", value: "9.99", duration: "forever" }, now);
+  assert.equal(amt.ok, true);
+  assert.equal(amt.value.amountOffCents, 999);
+  assert.equal(amt.value.audience, "all");
+  assert.equal(amt.value.maxRedemptions, null);
+  assert.equal(amt.value.expiresAt, null);
+  assert.equal(amt.value.durationInMonths, null);
+
+  const bad = (b) => assert.equal(parseDiscountInput({ code: "OK123", kind: "percent", value: 10,
+    duration: "once", ...b }, now).ok, false);
+  bad({ code: "no spaces" });
+  bad({ code: "AB" });
+  bad({ value: 0 });
+  bad({ value: 101 });
+  bad({ value: 12.5 });
+  bad({ kind: "amount", value: "0" });
+  bad({ kind: "amount", value: "1000.01" });
+  bad({ kind: "free" });
+  bad({ duration: "weekly" });
+  bad({ duration: "repeating", months: 0 });
+  bad({ audience: "everyone" });
+  bad({ max_redemptions: "0" });
+  bad({ expires_on: "2026-09-24" });
+  bad({ expires_on: "tomorrow" });
+});
+
+test("a code's audience decides who may use it and which prices it covers", () => {
+  assert.equal(codeFitsRole("all", "therapist"), true);
+  assert.equal(codeFitsRole("member", "member"), true);
+  assert.equal(codeFitsRole("member", "therapist"), false);
+  assert.equal(codeFitsRole("therapist", "member"), false);
+  assert.deepEqual(priceKeysForAudience("therapist"),
+    ["price_therapist_monthly", "price_therapist_yearly", "price_therapist_founding"]);
+  assert.deepEqual(priceKeysForAudience("member"),
+    ["price_basic_monthly", "price_basic_yearly", "price_premium_monthly", "price_premium_yearly"]);
+  assert.equal(priceKeysForAudience("all").length, 7);
 });
 
 test("price keys follow the admin screen's names", () => {
