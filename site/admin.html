@@ -16,6 +16,8 @@
   .tabs button{border:0;background:none;font:inherit;font-size:.95rem;padding:12px 16px;cursor:pointer;
     color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap}
   .tabs button.on{color:var(--green);border-bottom-color:var(--green);font-weight:500}
+  .mfilter{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 10px}
+  .mfilter input,.mfilter select{width:auto;flex:1 1 180px}
   .kvrow{display:grid;grid-template-columns:230px 1fr;gap:12px;align-items:center;margin-bottom:10px}
   code{background:var(--sand);padding:2px 6px;border-radius:5px;font-size:.86rem;
     font-family:ui-monospace,Menlo,monospace}
@@ -38,9 +40,9 @@ if (a.profile.role !== 'admin') {
     <p class="muted">This screen is for site administrators.</p>
     <a class="btn ghost" href="dashboard.html">Back to your dashboard</a></div>`;
 } else {
-let tab = location.hash.replace('#','') || 'verify';
+let tab = location.hash.replace('#','') || 'members';
 
-const TABS = [['verify','License verification'],['numbers','Tracking numbers'],
+const TABS = [['members','Memberships'],['verify','License verification'],['numbers','Tracking numbers'],
               ['billing','Stripe setup'],['content','Content']];
 
 function render(body){
@@ -56,9 +58,125 @@ function render(body){
     <div class="tabs">${TABS.map(([k,l])=>
       `<button data-tab="${k}" class="${tab===k?'on':''}">${l}</button>`).join('')}</div>
     <div id="body">${body}</div>`;
-  root.querySelectorAll('.tabs button').forEach(b => b.onclick = () => {
+  root.querySelectorAll('.tabs [data-tab]').forEach(b => b.onclick = () => {
     tab = b.dataset.tab; history.replaceState({},'','#'+tab); route();
   });
+}
+
+/* --------------------------------------------------------- members */
+// Members and therapists are separate memberships: a member pays for a tier
+// (Free, Basic, Premium) and a therapist pays for a practice listing. Both are
+// rows in `profiles` (the admin policy reads them all); a therapist's listing
+// details come from therapist_profiles.
+const LIVE_STATUSES = ['active', 'trialing'];
+const statusBadge = (p) => {
+  const st = p.subscription_status;
+  if (!st) return '<span class="badge gray">no subscription</span>';
+  const live = LIVE_STATUSES.includes(st);
+  const label = p.cancel_at_period_end && live ? 'canceling' : st.replace(/_/g, ' ');
+  return `<span class="badge ${live ? 'live' : 'gray'}">${esc(label)}</span>`;
+};
+const renews = (p) => p.current_period_end
+  ? `${p.cancel_at_period_end ? 'Ends' : 'Renews'} ${fmtDate(p.current_period_end)}` : '—';
+const planName = (tier) => ({ free: 'Free', basic: 'Basic', premium: 'Premium' })[tier] || esc(tier || '—');
+
+let mView = 'members', mQuery = '', mStatus = 'all';
+
+async function members(){
+  render('<div class="skeleton" style="height:150px"></div>');
+  const [{ data: people, error }, { data: listings }] = await Promise.all([
+    sb.from('profiles').select('id,email,full_name,role,tier,subscription_status,current_period_end,cancel_at_period_end,created_at')
+      .order('created_at', { ascending: false }),
+    sb.rpc('admin_pending_therapists'),
+  ]);
+  if (error) return render(`<div class="notice warn">Could not load memberships: ${esc(error.message)}</div>`);
+
+  const byUser = Object.fromEntries((listings||[]).map(t => [t.user_id, t]));
+  const all = people || [];
+  const memberRows = all.filter(p => p.role !== 'therapist');
+  const therapistRows = all.filter(p => p.role === 'therapist');
+  const isLive = (p) => LIVE_STATUSES.includes(p.subscription_status);
+
+  const stat = (n, label) => `<div class="card"><div style="font-size:1.8rem;font-weight:300;color:var(--green)">${n}</div>
+    <div class="faint">${label}</div></div>`;
+
+  const draw = () => {
+    const rows = (mView === 'members' ? memberRows : therapistRows).filter(p => {
+      if (mStatus === 'paying' && !isLive(p)) return false;
+      if (mStatus === 'none' && isLive(p)) return false;
+      if (!mQuery) return true;
+      const t = byUser[p.id];
+      const hay = [p.full_name, p.email, t && `${t.first_name} ${t.last_name}`].join(' ').toLowerCase();
+      return hay.includes(mQuery.toLowerCase());
+    });
+
+    const memberTable = () => `<table class="data">
+      <thead><tr><th>Member</th><th>Plan</th><th>Status</th><th>Billing</th><th>Joined</th></tr></thead>
+      <tbody>${rows.map(p => `<tr>
+        <td><strong>${esc(p.full_name || '—')}</strong>${p.role === 'admin' ? ' <span class="badge gray">admin</span>' : ''}<br>
+          <span class="faint">${esc(p.email || '')}</span></td>
+        <td>${planName(p.tier)}</td>
+        <td>${statusBadge(p)}</td>
+        <td class="faint">${renews(p)}</td>
+        <td class="faint">${fmtDate(p.created_at)}</td>
+      </tr>`).join('')}</tbody></table>`;
+
+    const therapistTable = () => `<table class="data">
+      <thead><tr><th>Therapist</th><th>Status</th><th>Billing</th><th>License</th><th>Listing</th><th>Joined</th></tr></thead>
+      <tbody>${rows.map(p => { const t = byUser[p.id]; return `<tr>
+        <td><strong>${esc(t ? `${t.first_name||''} ${t.last_name||''}`.trim() || p.full_name || '—' : p.full_name || '—')}</strong>${t?.credentials ? ', ' + esc(t.credentials) : ''}<br>
+          <span class="faint">${esc(p.email || '')}</span></td>
+        <td>${statusBadge(p)}</td>
+        <td class="faint">${renews(p)}</td>
+        <td>${t ? `<span class="badge ${t.verification === 'verified' ? 'live' : 'gray'}">${esc(t.verification)}</span>` : '<span class="faint">no profile yet</span>'}</td>
+        <td>${t?.published
+          ? (t.slug ? `<a href="therapist.html?slug=${encodeURIComponent(t.slug)}" target="_blank" rel="noopener">live ↗</a>` : 'live')
+          : '<span class="faint">not listed</span>'}</td>
+        <td class="faint">${fmtDate(p.created_at)}</td>
+      </tr>`; }).join('')}</tbody></table>`;
+
+    document.getElementById('mlist').innerHTML = rows.length
+      ? `<div class="scroll-x">${mView === 'members' ? memberTable() : therapistTable()}</div>
+         <p class="faint" style="margin-top:10px">Showing ${rows.length} of ${(mView === 'members' ? memberRows : therapistRows).length}.</p>`
+      : '<div class="empty">Nobody matches.</div>';
+  };
+
+  render(`
+    <h2>Memberships</h2>
+    <p class="muted" style="max-width:64ch">Everyone with an account, split into the two kinds of
+      membership: <strong>members</strong>, who use the site for themselves, and
+      <strong>therapists</strong>, who pay for a practice listing.</p>
+
+    <div class="grid g4" style="margin-top:18px">
+      ${stat(memberRows.length, 'members')}
+      ${stat(memberRows.filter(isLive).length, 'paying members')}
+      ${stat(therapistRows.length, 'therapists')}
+      ${stat(therapistRows.filter(isLive).length, 'paying therapists')}
+    </div>
+
+    <div class="tabs" style="margin:28px 0 0">
+      <button data-mview="members" class="${mView==='members'?'on':''}">Members (${memberRows.length})</button>
+      <button data-mview="therapists" class="${mView==='therapists'?'on':''}">Therapists (${therapistRows.length})</button>
+    </div>
+    <div class="mfilter">
+      <input id="mq" type="search" placeholder="Search by name or email" value="${esc(mQuery)}" aria-label="Search">
+      <select id="ms" aria-label="Filter by status">
+        <option value="all">All statuses</option>
+        <option value="paying">Paying (active or trial)</option>
+        <option value="none">Not paying</option>
+      </select>
+    </div>
+    <div id="mlist"></div>`);
+
+  document.getElementById('ms').value = mStatus;
+  document.querySelectorAll('[data-mview]').forEach(b => b.onclick = () => {
+    mView = b.dataset.mview;
+    document.querySelectorAll('[data-mview]').forEach(x => x.classList.toggle('on', x === b));
+    draw();
+  });
+  document.getElementById('mq').oninput = (e) => { mQuery = e.target.value.trim(); draw(); };
+  document.getElementById('ms').onchange = (e) => { mStatus = e.target.value; draw(); };
+  draw();
 }
 
 /* ---------------------------------------------------------- verify */
@@ -350,7 +468,7 @@ async function content(){
       for now. Ask and I'll build an in-site editor.</div>`);
 }
 
-function route(){ ({ verify, numbers, billing, content }[tab] || verify)(); }
+function route(){ ({ members, verify, numbers, billing, content }[tab] || members)(); }
 route();
 }
 }
