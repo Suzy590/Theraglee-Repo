@@ -187,8 +187,8 @@ function profile(){
       <div class="field"><label>What are you working on?</label>
         <div class="chips" id="issues">${MEMBER_ISSUES.map(i=>
           `<button type="button" class="chip ${(p.issues||[]).includes(i)?'on':''}" data-v="${esc(i)}">${esc(i)}</button>`).join('')}</div>
-        <div class="help">This shapes the daily content you see. If you switch on <strong>Theraglee
-          Match Mode</strong> under Privacy, these topics are also what therapists see.</div></div>
+        <div class="help">This shapes the daily content you see. Therapists never see it:
+          <strong>Theraglee Match Mode</strong> asks for its own topics when you switch it on.</div></div>
 
       <hr class="hr">
       <h3>Daily email</h3>
@@ -217,8 +217,7 @@ function privacy(){
       <label class="switch">
         <input type="checkbox" id="vis" ${p.visible_to_therapists?'checked':''}>
         <span><strong>Theraglee Match Mode</strong><br>
-        <span class="muted">${MATCH_BLURB} Switch it off and you disappear from their view
-        entirely.</span></span></label>
+        <span class="muted">${MATCH_BLURB}</span></span></label>
       ${p.visible_to_therapists ? `<div class="notice" style="margin-bottom:12px">
           <strong>Therapists read:</strong> ${esc(matchSummary(p))}
           <div><button type="button" class="btn sm ghost" id="vis-edit" style="margin-top:10px">Change what they see</button></div></div>` : ''}
@@ -235,11 +234,12 @@ function privacy(){
             know you are interested in them reaching out to you to set up an appointment for
             therapy. You don't have to contact them — they contact you. When you turn the switch ON,
             we ask you for a few details, and that is all Theraglee therapists in your area can see:
-            a pseudonymous profile with your age range, the broad topics you want to work on (like
-            anxiety or burnout), whether you prefer in-person, video, or either, and the first three
-            digits of your zip code so they know you're nearby. Something like "35–44 · seeks help
-            with anxiety · seeking video sessions · in the 902xx area". Not your name, and not your
-            exact location. Theraglee therapists contact you by sending a message to your Theraglee
+            a pseudonymous profile with your pseudonym, your age range, the broad topics you want to
+            work on (like anxiety or stress), whether you prefer in-person, video, or either, and the
+            first three digits of your zip code so they know you're nearby. Something like "Quiet
+            Harbor 27 · 35–44 · seeks help with anxiety · seeking video sessions · in the 902xx area".
+            Not your real name, and not your exact location. If you are open to video, therapists
+            anywhere in your state may reach out. Theraglee therapists contact you by sending a message to your Theraglee
             inbox, and you decide whether to answer. If you do reply, you'll be prompted to share
             your real name, and it goes to that one therapist only. They never see your email
             address, your journal, your quiz results, your worksheet results, or anything else in

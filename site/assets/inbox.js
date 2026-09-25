@@ -68,7 +68,9 @@ export async function mountInbox(host, a, { where = 'on your dashboard' } = {}){
                <button class="btn sm ghost" data-block="${esc(tid)}">Block this therapist</button>`}
         </div>
         <form class="reply" data-form="${esc(tid)}" hidden style="margin-top:16px">
-          <div class="notice" style="margin-bottom:12px">Your reply goes to this therapist with your
+          <div class="notice" style="margin-bottom:12px">${a.profile.match_pseudonym
+            ? `Until now this therapist has known you as <strong>${esc(a.profile.match_pseudonym)}</strong>. `
+            : ''}Your reply goes to this therapist with your
             <strong>real name</strong>, so they know who they are arranging an appointment with. They
             get an email that you wrote back. Nothing else about you changes: they still cannot see
             your email address or anything you have written.</div>
