@@ -10,6 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
 <link rel="stylesheet" href="assets/styles.css">
+<link rel="stylesheet" href="assets/mood.css">
 <style>
   .hero-line{font-family:var(--serif);font-style:italic;font-size:clamp(1.5rem,3.4vw,2.3rem);
     line-height:1.3;color:var(--ink);margin:0}
@@ -17,42 +18,6 @@
   .daily .card{display:flex;flex-direction:column;gap:10px}
   .daily .k{font-size:.74rem;text-transform:uppercase;letter-spacing:.09em;color:var(--faint);font-weight:600}
   .daily p{margin:0;font-size:.98rem}
-  .mood{display:flex;gap:8px;flex-wrap:wrap}
-  .mood button{width:52px;height:52px;border-radius:14px;border:1px solid var(--hair);
-    background:var(--paper);font-size:1.4rem;cursor:pointer;transition:all .2s}
-  .mood button:hover{border-color:var(--lime-2);transform:translateY(-2px)}
-  .mood button.on{background:var(--soft);border-color:var(--green)}
-  /* The Mood tab (assets/mood-ui.js): a 1 to 10 row per factor, then the weather. */
-  .factor-list{display:grid;gap:22px;margin-top:18px}
-  .factor-head{display:flex;flex-direction:column;gap:2px;margin-bottom:8px}
-  .factor-head .faint{font-size:.85rem}
-  .scale{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;max-width:520px}
-  .scale button{height:38px;border-radius:10px;border:1px solid var(--hair);background:var(--paper);
-    font:inherit;font-size:.9rem;color:var(--ink-2);cursor:pointer;padding:0;transition:all .15s}
-  .scale button:hover{border-color:var(--lime-2)}
-  .scale button.on{background:var(--green);border-color:var(--green);color:#fff;font-weight:600}
-  .scale-ends{display:flex;justify-content:space-between;max-width:520px;font-size:.78rem;margin-top:4px}
-  .weather{display:flex;gap:8px;flex-wrap:wrap}
-  .weather button{display:flex;flex-direction:column;align-items:center;gap:3px;width:74px;padding:9px 4px;
-    border-radius:14px;border:1px solid var(--hair);background:var(--paper);font-size:1.4rem;cursor:pointer;
-    transition:all .15s}
-  .weather button span{font-size:.72rem;color:var(--muted)}
-  .weather button:hover{border-color:var(--lime-2)}
-  .weather button.on{background:var(--soft);border-color:var(--green)}
-  .scale button:disabled,.weather button:disabled,.mood button:disabled{cursor:default;transform:none}
-  .scale button:disabled:not(.on),.weather button:disabled:not(.on),.mood button:disabled:not(.on){opacity:.45}
-  .submit-row{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-top:22px;padding-top:18px;
-    border-top:1px solid var(--hair)}
-  .submit-row .btn:disabled{opacity:.5;cursor:not-allowed}
-  .mood-findings{margin:14px 0 0;padding-left:20px;display:grid;gap:10px}
-  .links{display:grid;gap:10px}
-  .link-row{display:grid;grid-template-columns:minmax(120px,190px) 1fr minmax(90px,auto);gap:12px;align-items:center;
-    font-size:.9rem}
-  .link-row .bar{margin:0}
-  .link-row .bar.neg i{background:#E3C9A8}
-  @media (max-width:560px){.link-row{grid-template-columns:1fr 1fr}.link-row .bar{grid-column:1/-1;order:3}}
-  .mood-note{margin:22px 0 0;padding:12px 14px;border-radius:var(--r-sm);background:var(--sand);
-    font-size:.86rem;color:var(--muted)}
   .streak{font-size:2.2rem;font-weight:300;letter-spacing:-.03em;line-height:1}
   /* The top of the dashboard sits right under the feature showcase. */
   main.section{padding-top:26px}
