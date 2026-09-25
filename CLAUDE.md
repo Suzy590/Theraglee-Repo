@@ -112,3 +112,10 @@ an outline a row uses, or a row's seed or shape; add a new outline instead.
 in animal or plant shapes arrive every day; follow `docs/mandalas.md` for the
 routine and for how to draw an outline. Merge before applying the migration,
 never the other way round.
+
+## Mood factors are a data contract
+
+The Mood tab on the dashboard stores its nine 1 to 10 factors and the weather in
+`mood_logs`. The weather keys in `site/assets/mood-patterns.js` must match the
+check in the migration; `node tests/mood-patterns/check.mjs` guards this.
+`docs/mood.md` is the guide.
