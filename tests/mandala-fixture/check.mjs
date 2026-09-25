@@ -34,7 +34,6 @@ const rows = [];
 for (const f of readdirSync(dir).sort())
   for (const m of readFileSync(new URL(f, dir), 'utf8').matchAll(/\('([a-z0-9-]+)', '[^']+', (\d+), '([a-z-]+)'\)/g))
     rows.push({ slug: m[1], seed: +m[2], shape: m[3] });
-if (rows.length < 42) errors.push(`expected at least 42 shaped mandalas, found ${rows.length}`);
 const seen = new Set();
 for (const r of rows) {
   if (seen.has(r.slug)) errors.push(`${r.slug}: slug used twice`);
@@ -45,9 +44,18 @@ for (const r of rows) {
   if (idx.some((v, j) => v !== j)) errors.push(`${r.slug}: region indexes are not 0..n in order`);
   if (idx.length < 40 || idx.length > 160) errors.push(`${r.slug}: ${idx.length} shapes to color (40 to 160 expected)`);
 }
-const SHAPED = '436210ba21fb744856bf9ca7e9265535fcb235aabad796e67acd5988e6eecd76';
-const got = sha(rows.slice(0, 42).map(r => SHAPES[r.shape] ? mandala(r.seed, { shape: r.shape }) : ''));
-if (got !== SHAPED) errors.push(`the first 42 shaped mandalas draw differently (${got}): add a new outline instead of reshaping one that shipped`);
+// Each batch of shaped rows, in migration order, frozen as it shipped.
+const BATCHES = [
+  [42, '436210ba21fb744856bf9ca7e9265535fcb235aabad796e67acd5988e6eecd76'],   // 20260924180000_shaped_mandalas
+  [12, 'de7aa538c95def523563f7d7318806f7370b48576753ac31d8f14e8f01ffba3d'],   // 20260924190000_more_animal_mandalas
+];
+let from = 0;
+for (const [n, want] of BATCHES) {
+  const got = sha(rows.slice(from, from + n).map(r => SHAPES[r.shape] ? mandala(r.seed, { shape: r.shape }) : ''));
+  if (got !== want) errors.push(`shaped mandalas ${from + 1} to ${from + n} draw differently (${got}): add a new outline instead of reshaping one that shipped`);
+  from += n;
+}
+if (rows.length !== from) errors.push(`${rows.length - from} shaped mandalas are not in BATCHES yet: add their batch and hash`);
 
 if (errors.length) { console.error(errors.join('\n')); process.exit(1); }
 console.log(`ok: 6000 round seeds unchanged, ${Object.keys(SHAPES).length} outlines, ${rows.length} shaped mandalas`);

@@ -231,6 +231,100 @@ export const SHAPES = {
     lines: ['M100 145 L100 152 M100 152 C95 157 89 157 86 153 M100 152 C105 157 111 157 114 153',
             'M76 146 L36 140 M76 152 L38 160 M124 146 L164 140 M124 152 L162 160'],
   },
+  fox: {
+    label: 'Fox', kind: 'animal', heart: [100, 110],
+    parts: [
+      { layer: 'pattern', d: sym([100, 58], [
+        [112, 56, 124, 54, 136, 50], [148, 38, 160, 24, 172, 12],
+        [176, 36, 174, 58, 166, 76], [178, 92, 188, 106, 194, 118],
+        [168, 126, 142, 140, 114, 170], [110, 176, 105, 180, 100, 180]]) },
+      { layer: 'front', g: 'eyes', d: ellipse(76, 106, 11, 7, 20) },
+      { layer: 'front', g: 'eyes', d: ellipse(124, 106, 11, 7, -20) },
+      { layer: 'front', g: 'pupils', d: circle(77, 106, 3.5) },
+      { layer: 'front', g: 'pupils', d: circle(123, 106, 3.5) },
+      { layer: 'front', g: 'nose', d: ellipse(100, 172, 9, 6) },
+    ],
+  },
+  horse: {
+    label: 'Horse', kind: 'animal', heart: [128, 124],
+    parts: [
+      { layer: 'back', g: 'mane', d: 'M112 26 C146 28 174 52 186 84 C194 114 194 156 194 192 '
+          + 'L176 192 C176 150 172 110 162 86 C152 64 136 50 116 44 Z' },
+      { layer: 'pattern', d: 'M108 10 L122 40 C142 46 160 62 170 86 C180 112 184 150 186 192 '
+          + 'L96 192 C100 172 98 152 90 136 C78 130 60 134 42 138 C26 140 14 130 16 116 '
+          + 'C18 102 32 88 48 74 C64 58 82 40 100 34 Z' },
+      { layer: 'front', g: 'eye', d: ellipse(88, 70, 8, 6, -20) },
+      { layer: 'front', g: 'pupil', d: circle(89, 70, 3) },
+      { layer: 'front', g: 'nostril', d: ellipse(30, 118, 5, 7, 20) },
+    ],
+    lines: ['M22 132 C30 136 38 136 44 134'],
+  },
+  bear: {
+    label: 'Bear', kind: 'animal', heart: [100, 100],
+    parts: [
+      { layer: 'back', g: 'ears', d: circle(50, 56, 24) },
+      { layer: 'back', g: 'ears', d: circle(150, 56, 24) },
+      { layer: 'back', g: 'inner-ears', d: circle(52, 58, 12) },
+      { layer: 'back', g: 'inner-ears', d: circle(148, 58, 12) },
+      { layer: 'pattern', d: ellipse(100, 114, 70, 64) },
+      { layer: 'front', g: 'muzzle', d: ellipse(100, 146, 26, 20) },
+      { layer: 'front', g: 'nose', d: ellipse(100, 138, 10, 7) },
+      { layer: 'front', g: 'eyes', d: circle(74, 106, 6) },
+      { layer: 'front', g: 'eyes', d: circle(126, 106, 6) },
+    ],
+    lines: ['M100 145 L100 154 M100 154 C95 160 89 160 86 156 M100 154 C105 160 111 160 114 156'],
+  },
+  deer: {
+    label: 'Deer', kind: 'animal', heart: [100, 104],
+    parts: [
+      { layer: 'back', g: 'ears', d: ellipse(50, 74, 28, 12, 20) },
+      { layer: 'back', g: 'ears', d: ellipse(150, 74, 28, 12, -20) },
+      { layer: 'pattern', d: sym([100, 46], [
+        [122, 46, 142, 54, 150, 72], [160, 94, 154, 120, 140, 140],
+        [128, 156, 118, 170, 112, 180], [108, 186, 104, 188, 100, 188]]) },
+      { layer: 'front', g: 'eyes', d: ellipse(80, 104, 7, 9) },
+      { layer: 'front', g: 'eyes', d: ellipse(120, 104, 7, 9) },
+      { layer: 'front', g: 'nose', d: ellipse(100, 176, 12, 9) },
+    ],
+    lines: ['M116 52 C122 36 132 22 148 10 M126 34 C136 32 146 28 154 22 M136 20 C136 12 134 6 130 2',
+            'M84 52 C78 36 68 22 52 10 M74 34 C64 32 54 28 46 22 M64 20 C64 12 66 6 70 2'],
+  },
+  penguin: {
+    label: 'Penguin', kind: 'animal', heart: [100, 126],
+    parts: [
+      { layer: 'back', g: 'feet', d: ellipse(80, 186, 16, 7) },
+      { layer: 'back', g: 'feet', d: ellipse(120, 186, 16, 7) },
+      { layer: 'back', g: 'wings', d: ellipse(48, 120, 12, 40, 18) },
+      { layer: 'back', g: 'wings', d: ellipse(152, 120, 12, 40, -18) },
+      { layer: 'back', g: 'body', d: sym([100, 14], [
+        [130, 14, 146, 42, 148, 70], [164, 102, 164, 150, 150, 174],
+        [138, 190, 118, 192, 100, 192]]) },
+      { layer: 'pattern', d: ellipse(100, 126, 40, 58) },
+      { layer: 'front', g: 'eyes', d: circle(84, 42, 7) },
+      { layer: 'front', g: 'eyes', d: circle(116, 42, 7) },
+      { layer: 'front', g: 'beak', d: 'M90 54 L110 54 L100 66 Z' },
+    ],
+    dots: [[85, 43, 3], [115, 43, 3]],
+  },
+  hedgehog: {
+    label: 'Hedgehog', kind: 'animal', heart: [112, 128],
+    parts: [
+      { layer: 'back', g: 'feet', d: ellipse(80, 170, 12, 7) },
+      { layer: 'back', g: 'feet', d: ellipse(150, 170, 12, 7) },
+      { layer: 'pattern', d: (() => {
+        const pts = [];
+        for (let j = 0; j <= 36; j++) {
+          const a = Math.PI + Math.PI * j / 36, rr = j % 2 ? 72 : 86;
+          pts.push([112 + rr * Math.cos(a) * .96, 150 + rr * Math.sin(a) * 1.1]);
+        }
+        pts.push([186, 166], [44, 166]);
+        return poly(pts);
+      })() },
+      { layer: 'front', g: 'face', d: 'M66 104 C50 108 24 130 10 150 C28 164 56 168 78 162 C86 144 82 120 66 104 Z' },
+      { layer: 'front', g: 'nose', d: circle(12, 150, 5) },
+      { layer: 'front', g: 'eye', d: circle(46, 136, 4) },
+    ],
+  },
 
   /* ----------------------------------------------------------------- plants */
   leaf: {
