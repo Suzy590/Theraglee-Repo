@@ -100,3 +100,15 @@ Every article is `min_level = 0` (the database enforces it). The repo copy is
 `data/articles.json`; check it with `node tests/articles-fixture/check.mjs`,
 generate the SQL with `python3 tools/articles_sql.py`, and follow
 `docs/articles.md` for the daily routine and the writing rules.
+
+## Mandalas grow by two a day, and a shipped figure never changes
+
+A mandala is drawn in the browser from its `seed` and, for a shaped one, the
+outline named by `shape` in `site/assets/mandala-shapes.js`. A saved coloring
+points at region indexes, so never change `site/assets/mandala.js`'s drawing,
+an outline a row uses, or a row's seed or shape; add a new outline instead.
+`node tests/mandala-fixture/check.mjs` guards this, and
+`node tools/mandala_check.mjs` checks new figures in a browser. Two new ones
+in animal or plant shapes arrive every day; follow `docs/mandalas.md` for the
+routine and for how to draw an outline. Merge before applying the migration,
+never the other way round.

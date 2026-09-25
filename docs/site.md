@@ -710,6 +710,10 @@ the definer, because the `mandalas` table is Premium-only, and returns only the
 title, the seed or SVG, and the fills. On phones the dialog also offers the
 browser's own share sheet with the picture attached.
 
+New shaped mandalas arrive two a day; `docs/mandalas.md` has the routine, how
+to draw an outline, and `tools/mandala_check.mjs`, which checks new figures in
+a browser.
+
 Because the figure is drawn from its seed, changing `mandala.js` changes what
 every member sees and can move the region indexes a saved coloring points at.
 Treat the drawing order in `mandala()` as a data contract, and the outlines in
