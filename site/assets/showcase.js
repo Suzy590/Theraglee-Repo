@@ -11,7 +11,9 @@ import { DOORS, tierName } from './app.js';
 
 /* [name, description, where it opens, tier needed]. Tier 0 is open to everyone,
    1 needs a free account, 2 is Basic and 3 is Premium (see TIERS in app.js).
-   The first card is Theraglee Match Mode, drawn bigger and in brand green. */
+   The first entry is Theraglee Match Mode, drawn bigger and in brand green. It
+   opens the strip and comes round again after every four other features
+   (see cardOrder), so it is never far away however far someone scrolls. */
 export const FEATURES = [
   ['Theraglee Match Mode',
    'Flip one switch and let licensed therapists near you reach out. Your name stays private until you reply.',
@@ -78,6 +80,7 @@ export const FEATURES = [
    'goals.html#map', 3],
 ];
 
+const BETWEEN = 4;         // other features between one Match Mode card and the next
 const ADVANCE_MS = 3000;   // how long each card is shown before the strip moves on
 const RESUME_MS  = 9000;   // how long after the visitor last touched it before it moves again
 
@@ -86,6 +89,14 @@ const hrefFor = (href, need, a) =>
   a.level >= need ? href
   : !a.authenticated ? `${DOORS.member.signup}?next=${encodeURIComponent(href)}`
   : 'pricing.html';
+
+/** The cards in the order they are drawn: Match Mode, four features, Match Mode, four more, and so on. */
+export function cardOrder(features = FEATURES) {
+  const [star, ...rest] = features;
+  const order = [];
+  rest.forEach((f, i) => { if (i % BETWEEN === 0) order.push(star); order.push(f); });
+  return order;
+}
 
 /**
  * Draws the strip.
@@ -113,9 +124,10 @@ export function mountShowcase(a, target, { replace = false, embedded = false } =
       </div>
     </div>
     <div class="showcase-track" tabindex="0" aria-live="off">
-      ${FEATURES.map(([name, blurb, href, need], i) => {
+      ${cardOrder().map((feature) => {
+        const [name, blurb, href, need] = feature;
         const locked = a.level < need;
-        const star = i === 0;
+        const star = feature === FEATURES[0];
         return `<a class="showcase-card${star ? ' star' : ''}${locked ? ' locked' : ''}"
             href="${hrefFor(href, need, a)}" aria-label="${name}${locked ? `, ${tierName(need)} membership` : ''}">
           ${star ? '<span class="showcase-flag"><span class="dot"></span> Featured</span>' : ''}
