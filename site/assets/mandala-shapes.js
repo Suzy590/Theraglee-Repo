@@ -363,6 +363,35 @@ export const SHAPES = {
     ],
   },
 
+  octopus: {
+    label: 'Octopus', kind: 'animal', heart: [100, 66],
+    parts: [
+      // Six arms that leave the head and curl outward at the tip: [start x, side, how far it turns, length].
+      ...[[64, -1, 3.4, 88], [80, -1, 2.6, 92], [94, -1, 1.7, 96], [106, 1, 1.7, 96], [120, 1, 2.6, 92], [136, 1, 3.4, 88]]
+        .map(([x0, side, turn, len]) => ({
+          layer: 'back', g: 'arms', d: (() => {
+            const left = [], right = [], N = 40;
+            let x = x0, y = 108;
+            for (let j = 0; j <= N; j++) {
+              const t = j / N, a = Math.PI / 2 - side * turn * t * t, w = 10 * (1 - t) + 3;
+              const nx = -Math.sin(a), ny = Math.cos(a);
+              left.push([x + w * nx, y + w * ny]);
+              right.push([x - w * nx, y - w * ny]);
+              x += Math.cos(a) * len / N; y += Math.sin(a) * len / N;
+            }
+            return poly([...left, ...right.reverse()]);
+          })(),
+        })),
+      { layer: 'pattern', d: sym([100, 10], [
+        [136, 10, 160, 38, 160, 74], [160, 100, 146, 120, 128, 128],
+        [118, 132, 108, 134, 100, 134]]) },
+      { layer: 'front', g: 'eyes', d: circle(80, 92, 11) },
+      { layer: 'front', g: 'eyes', d: circle(120, 92, 11) },
+      { layer: 'front', g: 'pupils', d: circle(81, 93, 4.5) },
+      { layer: 'front', g: 'pupils', d: circle(119, 93, 4.5) },
+    ],
+    lines: ['M88 114 C94 120 106 120 112 114'],
+  },
   /* ----------------------------------------------------------------- plants */
   leaf: {
     label: 'Leaf', kind: 'plant', heart: [100, 100],
@@ -485,6 +514,17 @@ export const SHAPES = {
     ],
   },
 
+  maple: {
+    label: 'Maple Leaf', kind: 'plant', heart: [100, 90],
+    parts: [
+      { layer: 'back', g: 'stem', d: 'M97 150 L96 194 L104 194 L103 150 Z' },
+      { layer: 'pattern', d: (() => {
+        const right = [[100, 8], [113, 38], [126, 32], [120, 66], [148, 46], [144, 62], [174, 56],
+          [162, 78], [190, 88], [152, 112], [162, 126], [128, 124], [112, 142], [106, 158], [100, 166]];
+        return poly([...right, ...right.slice(1, -1).reverse().map(([x, y]) => [200 - x, y])]);
+      })() },
+    ],
+  },
   /* ---------------------------------------------------------------- symbols */
   heart: {
     label: 'Heart', kind: 'symbol', heart: [100, 102],

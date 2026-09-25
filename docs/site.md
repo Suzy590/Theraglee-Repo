@@ -381,7 +381,7 @@ gated by tier, so Basic and Premium have them too:
 | Keep favorites in your dashboard | `favorites` table via `assets/library.js`; "Your favorites" on the dashboard | RLS `own rows` |
 | Tons of journal prompts | 374 `daily_content` rows of kind `journal_prompt`, `journal.html` | `min_level = 1` |
 | Articles sent to your inbox | the `daily-digest` Edge Function, below | `profiles.daily_email` |
-| Themed challenges, 7 days at a time | 20 `challenge_templates` at `min_level = 1`, two more added every day; one to-do a day from `challenge_days`, runs in `user_challenges`, ticks in `user_challenge_progress`; `guard_challenge_length()` keeps a Free member's run to 7 days — see [`challenges.md`](challenges.md) | `min_level`, RLS `own rows` |
+| Themed challenges, 7 days at a time | 22 `challenge_templates` at `min_level = 1`, two more added every day; one to-do a day from `challenge_days`, runs in `user_challenges`, ticks in `user_challenge_progress`; `guard_challenge_length()` keeps a Free member's run to 7 days — see [`challenges.md`](challenges.md) | `min_level`, RLS `own rows` |
 | Checklists with progress tracked | 14 `checklists` at `min_level = 1`, two more added every day, `checklist_progress` + `item_progress` | `min_level`, RLS `own rows` |
 | Theraglee Match Mode (dashboard switch: let therapists reach out) | `profiles.visible_to_therapists`, toggled on `dashboard.html` and `account.html`; the details therapists see are asked for in `assets/match.js`; blocks in `member_blocks` | `member_opted_in()`, `member_blocked()` |
 
@@ -549,9 +549,9 @@ Most of it was imported from the Word documents in the parent folder:
 - 374 journal prompts
 - 186 interactive worksheets (16 imported, 170 written for the site — see below)
 - 14 checklists, with two more added every day — see [`checklists.md`](checklists.md)
-- 20 themed challenges (365 daily to-dos each), with two more themes added every day — see [`challenges.md`](challenges.md)
+- 22 themed challenges (365 daily to-dos each), with two more themes added every day — see [`challenges.md`](challenges.md)
 - 92 articles, free to everyone, with five more published every day — see [`articles.md`](articles.md)
-- 278 mandalas to print or color online (drawn in the browser from a seed): 200 round, 78 shaped like animals, plants and symbols
+- 280 mandalas to print or color online (drawn in the browser from a seed): 200 round, 80 shaped like animals, plants and symbols
 - 150 mental health trivia quizzes (1,500 questions), written for the site rather than imported
 - 140 daily items — affirmations, tips, fun facts, quotes
 
@@ -685,13 +685,14 @@ check. Never change an id once it has shipped.
 
 ## Mandalas: print or color online
 
-`site/mandalas.html` is the Premium coloring page. The gallery shows the 278
+`site/mandalas.html` is the Premium coloring page. The gallery shows the 280
 mandalas from the `mandalas` table (12 from launch, 188 added in
 `20260909000000_more_mandalas.sql`, and 42 shaped ones added in
 `20260924180000_shaped_mandalas.sql`, 12 more animals in
 `20260924190000_more_animal_mandalas.sql`, 12 more plants in
-`20260925020000_more_plant_mandalas.sql`, and 12 more symbols in
-`20260925040000_more_symbol_mandalas.sql`), with filters for All, Round, Animals,
+`20260925020000_more_plant_mandalas.sql`, 12 more symbols in
+`20260925040000_more_symbol_mandalas.sql`, and two more a day since, starting
+with `20260925181000_mandalas_2026_09_25.sql`), with filters for All, Round, Animals,
 Plants and Symbols; each card has **Color online** (opens
 `?slug=`) and **Print**, which prints that one figure blank on a single page.
 **Print all (blank)** prints the whole set, one per page.
@@ -705,7 +706,7 @@ shapes are the guide.
 | File | What it holds |
 |---|---|
 | `site/assets/mandala.js` | Draws a figure from its `seed`. Every closed shape, including the band between two rings, is a region with a stable `data-i` index and a ring group in `data-g`. `colorable()` gives hand-drawn SVG in the `svg` column the same treatment. |
-| `site/assets/mandala-shapes.js` | The outlines a shaped mandala is drawn inside (a butterfly, an owl, a fox, a tulip, a rose, a heart, a snowflake; 39 in all). Each is a list of parts: `back` and `front` parts are plain colorable shapes (legs, a stem, eyes), and the `pattern` parts are filled with the mandala's rings, centered on the shape's `heart`. A row's `shape` column names one; null is a round mandala. |
+| `site/assets/mandala-shapes.js` | The outlines a shaped mandala is drawn inside (a butterfly, an owl, a fox, a tulip, a rose, a heart, a snowflake; 41 in all). Each is a list of parts: `back` and `front` parts are plain colorable shapes (legs, a stem, eyes), and the `pattern` parts are filled with the mandala's rings, centered on the shape's `heart`. A row's `shape` column names one; null is a round mandala. |
 | `supabase/migrations/20260924180000_shaped_mandalas.sql` | The `shape` column, the 42 shaped rows, and `shared_mandala_coloring()` returning the shape. |
 | `site/assets/coloring.js` | The coloring itself: the palette, the tap handler, whole-ring fills, undo, PNG export. Works on any SVG whose shapes carry `.rg` and `data-i`. |
 | `supabase/migrations/20260908170000_mandala_colorings.sql` | The `mandala_colorings` table, so a half-finished coloring follows a member across devices. |
