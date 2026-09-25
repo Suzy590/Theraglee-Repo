@@ -9,10 +9,25 @@ signed-in member. It does three things:
    1 is terrible and 10 is fantastic: sleep, home life stress, school/work
    stress, nutrition, hunger in this moment, loneliness, overall thoughts,
    level of physical activity and social interaction. Then the weather, from
-   ten emoji. Every tap saves on its own; any of them can be skipped.
+   ten emoji. These taps are only marked on screen. A **Submit** button at the
+   bottom stays grayed out until all ten are answered; pressing it saves them
+   together and shows "All done for today". The face tap itself saves straight
+   away, so a day with only a face still counts as a day logged.
 3. **Your mood patterns.** Until there are 7 days with a mood (in a row or not)
    the tab says how many days are logged and how many are left. From day 7 it
    says which factors move with the mood.
+
+## One submitted check-in a day
+
+Once submitted, the day is final: the faces, ratings, weather and Submit
+button are locked until the member's next calendar day, which starts at their
+own midnight (the page uses the browser's local date for `logged_on`). The
+database enforces this too:
+`supabase/migrations/20260925130000_mood_submit_once_a_day.sql` adds
+`mood_logs.submitted_at` and a trigger that refuses any change to a submitted
+day's mood, factors, weather, date or `submitted_at`, from any page. The note
+on the Goals & tracking page stays editable, and that page's faces are locked
+for a submitted day too.
 
 Every rating runs the same way, so a higher number is always the better day:
 10 for stress means no stress, 10 for loneliness means connected.
@@ -54,5 +69,6 @@ cause.
 
 The Premium **Goals & tracking** page (`goals.html#mood`) still shows the 30-day
 chart and notes from the same rows, and the account page's data export includes
-the new columns because it selects `*`. Both pages use the same UTC date for
-"today", so they read and write the same row.
+the new columns because it selects `*`. Both pages use the member's local date
+for "today", so they read and write the same row. (Before 2026-09-25 both used
+the UTC date, so a few older rows may sit on the neighboring day.)

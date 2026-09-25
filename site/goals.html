@@ -125,25 +125,28 @@ async function goalsView(){
 }
 
 /* ------------------------------------------------------------- mood */
+/* The member's own calendar day, the same one the dashboard's Mood tab uses. */
+const localDay = (d = new Date()) =>
+  `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 async function moodView(){
-  const since = new Date(Date.now() - 29*86400000).toISOString().slice(0,10);
+  const since = localDay(new Date(Date.now() - 29*86400000));
   const { data: logs } = await sb.from('mood_logs').select('*')
     .eq('user_id', a.profile.id).gte('logged_on', since).order('logged_on');
   const byDate = Object.fromEntries((logs||[]).map(l=>[l.logged_on, l]));
-  const days = Array.from({length:30}, (_,i) => {
-    const d = new Date(Date.now() - (29-i)*86400000);
-    return d.toISOString().slice(0,10);
-  });
+  const days = Array.from({length:30}, (_,i) => localDay(new Date(Date.now() - (29-i)*86400000)));
   const vals = (logs||[]).map(l=>l.mood);
   const avg = vals.length ? (vals.reduce((s,v)=>s+v,0)/vals.length) : null;
-  const today = new Date().toISOString().slice(0,10);
+  const today = localDay();
   const now = byDate[today];
+  // A day submitted on the dashboard's Mood tab is final; only the note stays editable.
+  const locked = Boolean(now?.submitted_at);
 
   document.getElementById('body').innerHTML = `
     <div class="card">
       <h3>How are you today?</h3>
       <div class="mood-pick" id="pick">${[1,2,3,4,5].map(m=>
-        `<button data-m="${m}" class="${now?.mood===m?'on':''}">${['😞','🙁','😐','🙂','😄'][m-1]}</button>`).join('')}</div>
+        `<button data-m="${m}" class="${now?.mood===m?'on':''}" ${locked?'disabled':''}>${['😞','🙁','😐','🙂','😄'][m-1]}</button>`).join('')}</div>
+      ${locked ? '<p class="faint" style="margin:10px 0 0">Submitted for today on your dashboard. You can check in again tomorrow.</p>' : ''}
       <div class="field" style="margin-top:16px"><label for="note">A line about today (optional)</label>
         <input id="note" value="${esc(now?.notes||'')}" placeholder="What shaped it?"></div>
       <button class="btn sm" id="savenote">Save note</button>
@@ -167,6 +170,7 @@ async function moodView(){
         `<p style="margin:0 0 10px"><span class="faint">${fmtDate(l.logged_on)}</span> — ${esc(l.notes)}</p>`).join('')}</div>` : ''}`;
 
   document.querySelectorAll('#pick button').forEach(b => b.onclick = async () => {
+    if (locked) return;
     const { error } = await sb.from('mood_logs').upsert(
       { user_id: a.profile.id, logged_on: today, mood: Number(b.dataset.m) },
       { onConflict: 'user_id,logged_on' });
