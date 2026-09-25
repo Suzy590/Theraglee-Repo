@@ -4,13 +4,14 @@
    the mental health places around it, with a tile for each one below, then
    the national resources. The finding and sorting live in nearby-help.js.
 
-   Listings come from OpenStreetMap, a community map, so they are not vetted
-   by Theraglee and the page says so.
+   The map is drawn as soon as the place is found. Places then arrive from
+   SAMHSA's locator (through /api/nearby) and from OpenStreetMap, each added
+   when it answers, so one slow or busy source never blanks the tab.
    ========================================================================== */
 import { esc, toast, busy } from './app.js';
 import {
   RADIUS_MI, KINDS, kindInfo, overpassQuery, geocodeUrl, toPlaces,
-  fmtMiles, directionsHref, telHref,
+  samhsaPlaces, mergePlaces, fmtMiles, directionsHref, telHref,
 } from './nearby-help.js';
 
 const LEAFLET = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/';
@@ -65,34 +66,47 @@ function loadLeaflet() {
   });
 }
 
+/* fetch() that gives up after `ms`. */
+async function fetchWithin(url, ms, opts = {}) {
+  const stop = new AbortController();
+  const timer = setTimeout(() => stop.abort(), ms);
+  try { return await fetch(url, { ...opts, signal: stop.signal }); }
+  finally { clearTimeout(timer); }
+}
+
+/* A zip code or town → a point, through Nominatim. Null when nothing matches. */
 async function geocode(q) {
-  const r = await fetch(geocodeUrl(q), { headers: { Accept: 'application/json' } });
+  const r = await fetchWithin(geocodeUrl(q), 10000, { headers: { Accept: 'application/json' } });
   if (!r.ok) throw new Error('geocode');
   const [hit] = await r.json();
   if (!hit) return null;
   return { lat: +hit.lat, lon: +hit.lon, label: hit.display_name.split(',').slice(0, 3).join(',') };
 }
 
+/* SAMHSA's licensed facilities, through our own /api/nearby. */
+async function samhsa(lat, lon) {
+  const r = await fetchWithin(`/api/nearby?lat=${lat.toFixed(4)}&lon=${lon.toFixed(4)}`, 20000);
+  if (!r.ok) throw new Error('samhsa');
+  return r.json();
+}
+
 /* Asks each server in turn, giving each OVERPASS_WAIT_MS before moving on.
    Answers are kept for the session, so switching tabs doesn't search again. */
-const OVERPASS_WAIT_MS = 20000;
+const OVERPASS_WAIT_MS = 12000;
 async function overpass(lat, lon) {
   const query = overpassQuery(lat, lon);
   const cacheKey = 'nearby:' + query;
   try { const hit = sessionStorage.getItem(cacheKey); if (hit) return JSON.parse(hit); } catch {}
   const body = 'data=' + encodeURIComponent(query);
   for (const url of OVERPASS) {
-    const stop = new AbortController();
-    const timer = setTimeout(() => stop.abort(), OVERPASS_WAIT_MS);
     try {
-      const r = await fetch(url, { method: 'POST', body, signal: stop.signal,
+      const r = await fetchWithin(url, OVERPASS_WAIT_MS, { method: 'POST', body,
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
       if (!r.ok) continue;
       const json = await r.json();
       try { sessionStorage.setItem(cacheKey, JSON.stringify(json)); } catch {}
       return json;
     } catch { /* busy or slow: try the next server */ }
-    finally { clearTimeout(timer); }
   }
   throw new Error('overpass');
 }
@@ -110,6 +124,7 @@ const tile = (p, i) => {
     </div>
     <div><span class="badge gray"><span class="dot" style="background:${k.color}"></span>${esc(k.label)}</span></div>
     ${p.address ? `<p class="addr">${esc(p.address)}</p>` : ''}
+    ${p.setting ? `<p class="addr">${esc(p.setting)}</p>` : ''}
     ${p.hours ? `<p class="addr">Hours: ${esc(p.hours)}</p>` : ''}
     <div class="row">
       ${p.phone ? `<a class="btn sm" href="${esc(telHref(p.phone))}">Call ${esc(p.phone)}</a>` : ''}
@@ -136,7 +151,9 @@ export function mapView(body, zip = '') {
   body.innerHTML = `
     <style>${STYLE}</style>
     <h2>Mental health help near you</h2>
-    <p class="muted">Clinics, community centers and counseling services within ${RADIUS_MI} miles.</p>
+    <p class="muted">Clinics, treatment centers and counseling services within ${RADIUS_MI} miles.
+      Individual therapists aren't listed here; the <a href="therapists.html">Theraglee directory</a>
+      has those.</p>
     <form class="row" id="nearby-form" style="margin:16px 0">
       <input id="where" placeholder="Zip code or town" value="${esc(zip)}" style="max-width:240px"
         autocomplete="postal-code" aria-label="Zip code or town">
@@ -155,83 +172,123 @@ export function mapView(body, zip = '') {
       <div class="skeleton" style="height:440px"></div>`;
   };
 
+  let searchId = 0;
+
   async function draw(center, label, q) {
-    let places, L;
-    try {
-      [L, places] = await Promise.all([
-        loadLeaflet(),
-        overpass(center.lat, center.lon).then(j => toPlaces(j, center.lat, center.lon)),
-      ]);
-    } catch (e) {
-      box.innerHTML = `<div class="notice err">We couldn't load the map right now. Please try again
-        in a minute, or use the links below.</div>${moreLinks(q)}`;
-      return;
-    }
-    const used = KINDS.filter(k => places.some(p => p.kind === k[0]));
+    const me = ++searchId;
+    const stale = () => me !== searchId;
     box.innerHTML = `
       <div id="nearby-map" role="region" aria-label="Map of mental health help near ${esc(label)}"></div>
-      ${used.length ? `<div class="nearby-legend">${used.map(k =>
-        `<span><i style="background:${k[2]}"></i>${esc(k[1])}</span>`).join('')}</div>` : ''}
+      <div class="nearby-legend" id="legend"></div>
       <div class="spread" style="margin-top:28px">
         <h2 style="margin:0">Near ${esc(label)}</h2>
-        <span class="faint">${places.length
-          ? `${places.length} place${places.length === 1 ? '' : 's'}, closest first` : ''}</span>
+        <span class="faint" id="count">Finding places…</span>
       </div>
-      ${places.length ? `<div class="grid g3" id="places" style="margin-top:18px">
-          ${places.map(tile).join('')}</div>
-        ${places.length > FIRST ? `<button class="btn ghost" id="more" style="margin-top:18px">
-          Show all ${places.length}</button>` : ''}`
-        : `<div class="notice" style="margin-top:18px">The community map doesn't list any mental
-          health services within ${RADIUS_MI} miles of here yet. The links below search
-          federal and local directories instead.</div>`}
+      <div id="list" style="margin-top:18px"><div class="skeleton" style="height:180px"></div></div>
       ${moreLinks(q)}
-      <p class="faint" style="margin-top:14px">Listings come from OpenStreetMap, a community-made map,
-        and aren't checked by Theraglee. Call ahead to confirm hours and services. In a crisis,
-        call or text <a href="tel:988">988</a>.</p>`;
+      <p class="faint" style="margin-top:14px">Facilities come from SAMHSA's federal treatment locator,
+        and counseling services from OpenStreetMap, a community-made map. Neither is
+        checked by Theraglee, so call ahead to confirm hours and services. In a crisis, call or text
+        <a href="tel:988">988</a>.</p>`;
 
-    if (map) map.remove();
-    map = L.map('nearby-map', { scrollWheelZoom: false }).setView([center.lat, center.lon], 11);
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    }).addTo(map);
-    L.circleMarker([center.lat, center.lon], { radius: 7, color: '#16241C', weight: 2,
-      fillColor: '#FBF9F2', fillOpacity: 1 }).addTo(map).bindTooltip('You searched here');
-
-    const tiles = [...box.querySelectorAll('.place')];
-    const showAll = () => { box.querySelector('#places')?.classList.add('all'); box.querySelector('#more')?.remove(); };
-    box.querySelector('#more')?.addEventListener('click', showAll);
-    const pick = (i, pan) => {
-      tiles.forEach(t => t.classList.toggle('on', +t.dataset.i === i));
-      if (pan) { map.setView(markers[i].getLatLng(), Math.max(map.getZoom(), 14)); markers[i].openPopup(); }
-    };
-    markers = places.map((p, i) => {
-      const k = kindInfo(p.kind);
-      return L.circleMarker([p.lat, p.lon], { radius: 8, color: '#fff', weight: 2,
-        fillColor: k.color, fillOpacity: .95 })
-        .addTo(map)
-        .bindPopup(`<strong>${esc(p.name)}</strong><br>${esc(k.label)} · ${fmtMiles(p.miles)}` +
-          (p.address ? `<br>${esc(p.address)}` : '') +
-          (p.phone ? `<br><a href="${esc(telHref(p.phone))}">${esc(p.phone)}</a>` : ''))
-        .on('click', () => {
-          pick(i, false);
-          if (i >= FIRST) showAll();
-          tiles[i].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        });
-    });
-    if (places.length) {
-      map.fitBounds(L.latLngBounds([[center.lat, center.lon], ...places.map(p => [p.lat, p.lon])]),
-        { padding: [30, 30], maxZoom: 14 });
+    /* The map first: it needs only the point, not the places. */
+    let L = null, layer = null;
+    try {
+      L = await loadLeaflet();
+      if (stale()) return;
+      if (map) map.remove();
+      map = L.map('nearby-map', { scrollWheelZoom: false }).setView([center.lat, center.lon], 11);
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      }).addTo(map);
+      L.circleMarker([center.lat, center.lon], { radius: 7, color: '#16241C', weight: 2,
+        fillColor: '#FBF9F2', fillOpacity: 1 }).addTo(map).bindTooltip('You searched here');
+      layer = L.layerGroup().addTo(map);
+    } catch {
+      if (stale()) return;
+      map = null;
+      box.querySelector('#nearby-map').outerHTML = `<div class="notice warn">The map itself didn't
+        load, but the places near ${esc(label)} are listed below.</div>`;
     }
-    tiles.forEach(t => {
-      const open = (e) => {
-        if (e.target.closest('a')) return;
-        pick(+t.dataset.i, true);
-        box.querySelector('#nearby-map').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    let fromSamhsa = [], fromOsm = [], pending = 2, fitted = false;
+
+    const render = () => {
+      if (stale()) return;
+      const places = mergePlaces(fromSamhsa, fromOsm);
+      const used = KINDS.filter(k => places.some(p => p.kind === k[0]));
+      box.querySelector('#legend').innerHTML = used.map(k =>
+        `<span><i style="background:${k[2]}"></i>${esc(k[1])}</span>`).join('');
+      box.querySelector('#count').textContent = places.length
+        ? `${places.length} place${places.length === 1 ? '' : 's'}, closest first${pending ? ' · still looking…' : ''}`
+        : (pending ? 'Finding places…' : '');
+      const list = box.querySelector('#list');
+      const wasAll = !!list.querySelector('#places.all');
+      if (!places.length) {
+        list.innerHTML = pending ? '<div class="skeleton" style="height:180px"></div>'
+          : `<div class="notice">We couldn't find mental health services listed within ${RADIUS_MI}
+            miles of here right now. The links below search federal and local directories.</div>`;
+      } else {
+        list.innerHTML = `<div class="grid g3${wasAll ? ' all' : ''}" id="places">
+            ${places.map(tile).join('')}</div>
+          ${places.length > FIRST && !wasAll ? `<button class="btn ghost" id="more" style="margin-top:18px">
+            Show all ${places.length}</button>` : ''}`;
+      }
+
+      const tiles = [...list.querySelectorAll('.place')];
+      const showAll = () => { list.querySelector('#places')?.classList.add('all'); list.querySelector('#more')?.remove(); };
+      list.querySelector('#more')?.addEventListener('click', showAll);
+
+      let markers = [];
+      if (map && layer) {
+        layer.clearLayers();
+        markers = places.map((p, i) => {
+          const k = kindInfo(p.kind);
+          return L.circleMarker([p.lat, p.lon], { radius: 8, color: '#fff', weight: 2,
+            fillColor: k.color, fillOpacity: .95 })
+            .addTo(layer)
+            .bindPopup(`<strong>${esc(p.name)}</strong><br>${esc(k.label)} · ${fmtMiles(p.miles)}` +
+              (p.address ? `<br>${esc(p.address)}` : '') +
+              (p.phone ? `<br><a href="${esc(telHref(p.phone))}">${esc(p.phone)}</a>` : ''))
+            .on('click', () => {
+              pick(i, false);
+              if (i >= FIRST) showAll();
+              tiles[i].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            });
+        });
+        if (places.length && !fitted) {
+          fitted = true;
+          const near = places.slice(0, 25);
+          map.fitBounds(L.latLngBounds([[center.lat, center.lon], ...near.map(p => [p.lat, p.lon])]),
+            { padding: [30, 30], maxZoom: 14 });
+        }
+      }
+      const pick = (i, pan) => {
+        tiles.forEach(t => t.classList.toggle('on', +t.dataset.i === i));
+        if (pan && markers[i]) {
+          map.setView(markers[i].getLatLng(), Math.max(map.getZoom(), 14));
+          markers[i].openPopup();
+        }
       };
-      t.onclick = open;
-      t.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(e); } };
-    });
+      tiles.forEach(t => {
+        const open = (e) => {
+          if (e.target.closest('a')) return;
+          pick(+t.dataset.i, true);
+          box.querySelector('#nearby-map')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        };
+        t.onclick = open;
+        t.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(e); } };
+      });
+    };
+
+    const settle = (job, keep) => job.then(keep, () => {}).finally(() => { pending--; render(); });
+    render();
+    /* Not awaited: the search button frees up once the map is drawn. */
+    Promise.all([
+      settle(samhsa(center.lat, center.lon), j => { fromSamhsa = samhsaPlaces(j, center.lat, center.lon); }),
+      settle(overpass(center.lat, center.lon), j => { fromOsm = toPlaces(j, center.lat, center.lon); }),
+    ]);
   }
 
   async function search(q) {
