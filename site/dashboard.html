@@ -22,6 +22,32 @@
     background:var(--paper);font-size:1.4rem;cursor:pointer;transition:all .2s}
   .mood button:hover{border-color:var(--lime-2);transform:translateY(-2px)}
   .mood button.on{background:var(--soft);border-color:var(--green)}
+  /* The Mood tab (assets/mood-ui.js): a 1 to 10 row per factor, then the weather. */
+  .factor-list{display:grid;gap:22px;margin-top:18px}
+  .factor-head{display:flex;flex-direction:column;gap:2px;margin-bottom:8px}
+  .factor-head .faint{font-size:.85rem}
+  .scale{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;max-width:520px}
+  .scale button{height:38px;border-radius:10px;border:1px solid var(--hair);background:var(--paper);
+    font:inherit;font-size:.9rem;color:var(--ink-2);cursor:pointer;padding:0;transition:all .15s}
+  .scale button:hover{border-color:var(--lime-2)}
+  .scale button.on{background:var(--green);border-color:var(--green);color:#fff;font-weight:600}
+  .scale-ends{display:flex;justify-content:space-between;max-width:520px;font-size:.78rem;margin-top:4px}
+  .weather{display:flex;gap:8px;flex-wrap:wrap}
+  .weather button{display:flex;flex-direction:column;align-items:center;gap:3px;width:74px;padding:9px 4px;
+    border-radius:14px;border:1px solid var(--hair);background:var(--paper);font-size:1.4rem;cursor:pointer;
+    transition:all .15s}
+  .weather button span{font-size:.72rem;color:var(--muted)}
+  .weather button:hover{border-color:var(--lime-2)}
+  .weather button.on{background:var(--soft);border-color:var(--green)}
+  .mood-findings{margin:14px 0 0;padding-left:20px;display:grid;gap:10px}
+  .links{display:grid;gap:10px}
+  .link-row{display:grid;grid-template-columns:minmax(120px,190px) 1fr minmax(90px,auto);gap:12px;align-items:center;
+    font-size:.9rem}
+  .link-row .bar{margin:0}
+  .link-row .bar.neg i{background:#E3C9A8}
+  @media (max-width:560px){.link-row{grid-template-columns:1fr 1fr}.link-row .bar{grid-column:1/-1;order:3}}
+  .mood-note{margin:22px 0 0;padding:12px 14px;border-radius:var(--r-sm);background:var(--sand);
+    font-size:.86rem;color:var(--muted)}
   .streak{font-size:2.2rem;font-weight:300;letter-spacing:-.03em;line-height:1}
   .switch{display:flex;gap:14px;align-items:flex-start;padding:16px 18px;border:1px solid var(--hair);
     border-radius:var(--r-sm);background:var(--paper)}
@@ -34,7 +60,7 @@
   [data-panel]{display:none}
   [data-panel].on{display:block}
   /* Room for the sticky header when a link lands on one of these (dashboard.html#match-mode). */
-  #affirm-card,.daily .card,#mood-card,#match-mode{scroll-margin-top:104px}
+  #affirm-card,.daily .card,#mood-card,#mood-factors,#mood-patterns,#match-mode{scroll-margin-top:104px}
 </style>
 </head>
 <body>
@@ -50,6 +76,7 @@
 
     <div class="tabs" id="tabs" role="tablist">
       <button data-tab="today" role="tab">Today</button>
+      <button data-tab="mood" role="tab">Mood</button>
       <button data-tab="explore" role="tab">Explore Library</button>
       <button data-tab="discover" role="tab">Discover</button>
       <button data-tab="progress" role="tab">Progress</button>
@@ -68,18 +95,14 @@
         <div class="card"><div class="skeleton"></div></div>
       </div>
 
-      <div class="card" style="margin-top:26px" id="mood-card">
-        <h3>How are you today?</h3>
-        <p class="faint" style="margin-top:-4px">One tap. Premium members see the pattern over time.</p>
-        <div class="mood" id="mood">
-          <button data-m="1" title="Rough">😞</button>
-          <button data-m="2" title="Low">🙁</button>
-          <button data-m="3" title="Okay">😐</button>
-          <button data-m="4" title="Good">🙂</button>
-          <button data-m="5" title="Great">😄</button>
-        </div>
-        <div id="mood-after" class="faint" style="margin-top:12px"></div>
-      </div>
+      <a class="card mood-nudge" href="#mood" style="margin-top:26px;display:block;color:inherit">
+        <h3 style="margin:0">How are you today?</h3>
+        <p class="faint" style="margin:4px 0 0">Check in on the Mood tab, and see what may be shaping how you feel.</p>
+      </a>
+    </section>
+
+    <section data-panel="mood">
+      <div id="mood-host"><div class="card"><div class="skeleton" style="height:120px"></div></div></div>
     </section>
 
     <section data-panel="explore">
@@ -160,6 +183,7 @@ import { SETS as TRIVIA } from './assets/trivia-sets.js';
 import { matchDetailsModal, matchSummary, matchComplete } from './assets/match.js';
 import { mountLibrary } from './assets/explore-ui.js';
 import { mountDiscover } from './assets/discover-ui.js';
+import { mountMood } from './assets/mood-ui.js';
 import { loadPrices, tierCards, PLANS_INTRO, PLANS_NOTE } from './assets/plans.js';
 await chrome({ active:'dashboard.html' });
 const a = await requireAuth();
@@ -179,13 +203,15 @@ document.getElementById('tierbadge').textContent = tierName(a.level) + ' members
    The dashboard opens on Today. The other tabs are reached by their buttons or
    by address (dashboard.html#progress), and the address follows the tab so a
    refresh or a shared link comes back to the same one. */
-const PANELS = ['today', 'explore', 'discover', 'progress', 'tools', 'settings'];
+const PANELS = ['today', 'mood', 'explore', 'discover', 'progress', 'tools', 'settings'];
 let tab = 'today';
 // A hash that names something inside a tab (dashboard.html#match-mode, #daily-quote)
 // opens that tab and scrolls to it. The feature showcase under the header links this way.
 const panelOf = (id) => document.getElementById(id)?.closest('[data-panel]')?.dataset.panel;
 function showTab(next) {
-  tab = PANELS.includes(next) ? next : panelOf(next) || 'today';
+  // The Mood tab is drawn when it opens, so its cards (#mood-card and the rest)
+  // are not on the page yet when a link to one of them arrives.
+  tab = PANELS.includes(next) ? next : next.startsWith('mood-') ? 'mood' : panelOf(next) || 'today';
   document.querySelectorAll('[data-panel]').forEach(el => el.classList.toggle('on', el.dataset.panel === tab));
   document.querySelectorAll('#tabs button').forEach(b => {
     const on = b.dataset.tab === tab;
@@ -197,6 +223,11 @@ function showTab(next) {
   if (tab === 'explore' && !mounted.explore) {
     mounted.explore = true;
     mountLibrary(document.getElementById('explore-host'), a);
+  }
+  if (tab === 'mood' && !mounted.mood) {
+    mounted.mood = mountMood(document.getElementById('mood-host'), p).then(() => {
+      if (!PANELS.includes(next)) scrollToHash();
+    });
   }
   if (tab === 'discover' && !mounted.discover) {
     mounted.discover = true;
@@ -242,26 +273,6 @@ document.getElementById('daily').innerHTML = cards.join('') ||
 // The daily cards arrive after the page opened, so a link to one of them
 // (dashboard.html#daily-quote) can only be followed now.
 if (location.hash.startsWith('#daily-')) scrollToHash();
-
-/* ---- mood ---- */
-const today = new Date().toISOString().slice(0,10);
-const { data: todayMood } = await sb.from('mood_logs').select('mood')
-  .eq('user_id', p.id).eq('logged_on', today).maybeSingle();
-if (todayMood) {
-  document.querySelector(`.mood [data-m="${todayMood.mood}"]`)?.classList.add('on');
-  document.getElementById('mood-after').textContent = 'Logged for today. Tap another to change it.';
-}
-document.querySelectorAll('.mood button').forEach(b => b.addEventListener('click', async () => {
-  const mood = Number(b.dataset.m);
-  const { error } = await sb.from('mood_logs')
-    .upsert({ user_id: p.id, logged_on: today, mood }, { onConflict: 'user_id,logged_on' });
-  if (error) return toast(error.message,'err');
-  document.querySelectorAll('.mood button').forEach(x=>x.classList.remove('on'));
-  b.classList.add('on');
-  document.getElementById('mood-after').textContent = a.level >= 3
-    ? 'Saved. See your patterns on the Goals & tracking page.'
-    : 'Saved. Premium members can see how this trends over time.';
-}));
 
 /* ---- switches: therapist reach-out and the morning email ---- */
 const DIGEST_KINDS = ['article','affirmation','tip','journal_prompt'];

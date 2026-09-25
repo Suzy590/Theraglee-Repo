@@ -38,8 +38,10 @@ the other.
 | Header links | Dashboard (signed in only), For Therapists; visitors also get Sign in and Join free | Dashboard, Referrals, Messages, Member requests, Library, My profile, Directory |
 
 The member dashboard opens on a **Today** tab (the daily affirmation, quote,
-tip, fun fact and journal prompt, plus the one-tap mood check-in), which is
-what a member sees first after signing in. Its other tabs are **Explore
+tip, fun fact and journal prompt, plus a link to the mood check-in), which is
+what a member sees first after signing in. Its other tabs are **Mood** (the
+one-tap mood check-in, a 1 to 10 rating of what may be shaping it, the weather,
+and after seven days the patterns; see [`mood.md`](mood.md)), **Explore
 Library** (the whole library with search and filters, the same browser as
 `explore.html`, drawn from `site/assets/explore-ui.js`), **Discover** (the 360
 free discovery tools with search and topic chips, the same browser as
