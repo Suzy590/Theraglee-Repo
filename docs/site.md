@@ -47,9 +47,15 @@ Library** (the whole library with search and filters, the same browser as
 free discovery tools with search and topic chips, the same browser as
 `discover.html`, drawn from `site/assets/discover-ui.js`), **Progress**
 (the week's counts, challenges in progress, favorites, saved for later and
-unfinished items), **Tools** (quick links into the library) and **Settings**
-(the Match Mode and morning-email switches). Each tab has an address, for
-example `dashboard.html#progress`. The header no longer links to Today, the
+unfinished items), **Tools** (quick links into the library) and **Messages**
+(messages from therapists who reached out through Match Mode, with the
+member's replies and blocks, drawn from `site/assets/inbox.js`, the same inbox
+as the account page's Inbox tab). Each tab has an address, for
+example `dashboard.html#progress`. Above the tabs, in the upper right corner
+just under the feature showcase, sits the **Theraglee Match Mode** switch, a
+smaller copy of the one on the landing page, with what it does written
+underneath. The morning email is switched on and off on the account page
+(`account.html#profile`). The header no longer links to Today, the
 library, Discover, Challenges, Journal, Articles or the therapist directory: the
 dashboard, the landing page's feature showcase and the pages themselves do.
 The plans page, `pricing.html`, is reached from the lock badges, the upgrade
@@ -413,7 +419,8 @@ The list of features, with where each opens and the tier it needs, is
 `FEATURES` at the top of `showcase.js`. The daily picks and Theraglee Match Mode
 open the right tab of the dashboard by address (`dashboard.html#daily-quote`,
 `dashboard.html#match-mode`): a hash naming something inside a tab opens that
-tab and scrolls to it.
+tab and scrolls to it. The Match Mode switch sits above the tabs, so it shows
+whichever tab is open.
 
 ## Theraglee Match Mode is pseudonymous until the member replies
 
