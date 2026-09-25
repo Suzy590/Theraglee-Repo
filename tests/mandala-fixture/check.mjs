@@ -50,6 +50,7 @@ const BATCHES = [
   [12, 'de7aa538c95def523563f7d7318806f7370b48576753ac31d8f14e8f01ffba3d'],   // 20260924190000_more_animal_mandalas
   [12, 'c2287c5e29856e09389c37978cef293a062ef756c019d1a37a4e43cf242b6372'],   // 20260925020000_more_plant_mandalas
   [12, '3834c67ce8d317b1627d214edf0485d9ad933c0418b4beb9089e9aa510df15bb'],   // 20260925040000_more_symbol_mandalas
+  [2, '18ed367545ddfb2ecc3135d8b573c24a5cda24ad97d562661bffaf57b2287d39'],   // 20260925181000_mandalas_2026_09_25
 ];
 let from = 0;
 for (const [n, want] of BATCHES) {
