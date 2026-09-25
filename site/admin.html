@@ -11,6 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
 <link rel="stylesheet" href="assets/styles.css">
+<link rel="stylesheet" href="assets/mood.css">
 <style>
   .tabs{display:flex;gap:2px;border-bottom:1px solid var(--hair);margin:24px 0 28px;overflow-x:auto}
   .tabs button{border:0;background:none;font:inherit;font-size:.95rem;padding:12px 16px;cursor:pointer;
@@ -30,6 +31,7 @@
 
 <script type="module">
 import { chrome, sb, requireAuth, esc, toast, busy, fmtDate, modal, callStripeFn } from './assets/app.js';
+import { mountMood } from './assets/mood-ui.js';
 await chrome();
 const a = await requireAuth();
 if (a) {
@@ -43,7 +45,7 @@ if (a.profile.role !== 'admin') {
 let tab = location.hash.replace('#','') || 'members';
 
 const TABS = [['members','Memberships'],['verify','License verification'],['numbers','Tracking numbers'],
-              ['codes','Discount codes'],['billing','Stripe setup'],['content','Content']];
+              ['codes','Discount codes'],['billing','Stripe setup'],['content','Content'],['mood','Mood']];
 
 function render(body){
   root.innerHTML = `<div class="spread">
@@ -713,7 +715,15 @@ async function content(){
       for now. Ask and I'll build an in-site editor.</div>`);
 }
 
-function route(){ ({ members, codes, verify, numbers, billing, content }[tab] || members)(); }
+/* ------------------------------------------------------------ mood */
+// The admin's own daily mood check-in: the same one as the member dashboard's
+// Mood tab (assets/mood-ui.js), saved to the admin's own mood_logs rows.
+async function mood(){
+  render(`<div id="mood-host"><div class="card"><div class="skeleton" style="height:120px"></div></div></div>`);
+  await mountMood(document.getElementById('mood-host'), a.profile);
+}
+
+function route(){ ({ members, codes, verify, numbers, billing, content, mood }[tab] || members)(); }
 route();
 }
 }
