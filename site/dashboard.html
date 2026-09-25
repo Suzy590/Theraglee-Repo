@@ -23,10 +23,32 @@
   .mood button:hover{border-color:var(--lime-2);transform:translateY(-2px)}
   .mood button.on{background:var(--soft);border-color:var(--green)}
   .streak{font-size:2.2rem;font-weight:300;letter-spacing:-.03em;line-height:1}
-  .switch{display:flex;gap:14px;align-items:flex-start;padding:16px 18px;border:1px solid var(--hair);
-    border-radius:var(--r-sm);background:var(--paper)}
-  .switch input{width:20px;height:20px;accent-color:var(--green);margin-top:2px;flex:0 0 auto;cursor:pointer}
-  .switch .muted{font-size:.9rem}
+  /* The top of the dashboard sits right under the feature showcase. */
+  main.section{padding-top:26px}
+  .dash-top{display:flex;gap:18px 32px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+  /* Theraglee Match Mode: a smaller copy of the switch on the landing page,
+     in the upper right corner, with what it does written underneath. */
+  .mm{flex:0 1 380px;display:flex;flex-direction:column;align-items:flex-end;text-align:right}
+  .mm-row{display:flex;align-items:center;gap:14px}
+  .mm-switch{position:relative;flex:0 0 auto;width:92px;height:46px;border-radius:100px;cursor:pointer;padding:0;
+    background:#DCD8C9;border:2px solid #CFCAB8;
+    transition:background .5s ease,border-color .5s ease,box-shadow .5s ease}
+  .mm-switch:focus-visible{outline:3px solid var(--green);outline-offset:4px}
+  .mm-switch i{position:absolute;top:4px;left:4px;width:34px;height:34px;border-radius:50%;background:#fff;
+    box-shadow:0 3px 9px rgba(0,0,0,.22);transition:transform .6s cubic-bezier(.22,1,.36,1)}
+  .mm.on .mm-switch{background:var(--lime);border-color:var(--lime);
+    box-shadow:0 0 0 6px rgba(141,198,29,.18),0 0 32px rgba(141,198,29,.5)}
+  .mm.on .mm-switch i{transform:translateX(46px)}
+  .mm-label{font-family:var(--serif);font-style:italic;font-size:1.15rem;color:var(--ink-2);line-height:1.25}
+  .mm-label b{font-family:var(--sans);font-style:normal;font-weight:600;letter-spacing:.08em;color:var(--muted)}
+  .mm.on .mm-label b{color:var(--green)}
+  .mm-desc{margin:10px 0 0;font-size:.86rem;line-height:1.5}
+  #vis-summary{margin:8px 0 0;font-size:.86rem}
+  #vis-summary:empty{display:none}
+  @media(max-width:720px){
+    .mm{flex-basis:100%;align-items:flex-start;text-align:left}
+  }
+  @media(prefers-reduced-motion:reduce){.mm-switch,.mm-switch i{transition:none}}
   .tabs{display:flex;gap:4px;border-bottom:1px solid var(--hair);margin:24px 0 28px;overflow-x:auto}
   .tabs button{border:0;background:none;font:inherit;font-size:.95rem;padding:12px 18px;cursor:pointer;
     color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap}
@@ -40,12 +62,26 @@
 <body>
 <main class="section">
   <div class="wrap">
-    <div class="spread" style="margin-bottom:8px">
+    <div class="dash-top">
       <div>
         <p class="faint" id="datestr" style="margin:0"></p>
-        <h1 style="margin:.1em 0 0" id="greet">Your dashboard</h1>
+        <h1 style="margin:.1em 0 .3em" id="greet">Your dashboard</h1>
+        <span class="badge" id="tierbadge"></span>
       </div>
-      <span class="badge" id="tierbadge"></span>
+      <div class="mm" id="match-mode">
+        <div class="mm-row">
+          <span class="mm-label" id="mm-label">Theraglee Match Mode is <b>OFF</b></span>
+          <button class="mm-switch" id="vis" type="button" role="switch" aria-checked="false"
+            aria-labelledby="mm-label" aria-describedby="mm-desc"><i></i></button>
+        </div>
+        <p class="mm-desc muted" id="mm-desc">Let therapists reach out to you. Verified therapists see a
+          pseudonymous profile, never your name: your age range, the broad topics you want to
+          work on, whether you prefer in-person, video, or either, and the first three digits of
+          your zip code so they know you're nearby. They message your Theraglee inbox. Your real
+          name goes to a therapist only if you choose to reply to them, and you can block any
+          therapist with one tap. Off means you are invisible to them.</p>
+        <p id="vis-summary" class="muted"></p>
+      </div>
     </div>
 
     <div class="tabs" id="tabs" role="tablist">
@@ -54,7 +90,7 @@
       <button data-tab="discover" role="tab">Discover</button>
       <button data-tab="progress" role="tab">Progress</button>
       <button data-tab="tools" role="tab">Tools</button>
-      <button data-tab="settings" role="tab">Settings</button>
+      <button data-tab="messages" role="tab">Messages</button>
     </div>
 
     <section data-panel="today">
@@ -122,31 +158,8 @@
       <div id="upsell" style="margin-top:34px"></div>
     </section>
 
-    <section data-panel="settings">
-      <div class="card" id="settings-card">
-        <h3>Your switches</h3>
-        <p class="faint" style="margin-top:-4px">Both are yours to flip any time. Nothing else changes.</p>
-        <div class="grid g2" style="margin-top:14px">
-          <div id="match-mode">
-          <label class="switch">
-            <input type="checkbox" id="vis">
-            <span><strong>Theraglee Match Mode</strong><br>
-            <span class="muted">Let therapists reach out to you. Verified therapists see a
-              pseudonymous profile, never your name: your age range, the broad topics you want to
-              work on, whether you prefer in-person, video, or either, and the first three digits of
-              your zip code so they know you're nearby. They message your Theraglee inbox. Your real
-              name goes to a therapist only if you choose to reply to them, and you can block any
-              therapist with one tap. Off means you are invisible to them.</span></span></label>
-          <p id="vis-summary" class="muted" style="margin:8px 0 0;font-size:.9rem"></p>
-          </div>
-          <label class="switch">
-            <input type="checkbox" id="demail">
-            <span><strong>Morning email with an article</strong><br>
-            <span class="muted">A mental health article you have not read yet, plus the daily picks you
-            choose, in your inbox each morning.
-            <a href="account.html#profile">Choose what's included</a>.</span></span></label>
-        </div>
-      </div>
+    <section data-panel="messages">
+      <div id="inbox-host"><div class="skeleton" style="height:120px"></div></div>
     </section>
   </div>
 </main>
@@ -158,6 +171,7 @@ import { library, isFavorite, favButton, statusBadge, bindLibrary } from './asse
 import { TOOLS } from './assets/discover-tools.js';
 import { SETS as TRIVIA } from './assets/trivia-sets.js';
 import { matchDetailsModal, matchSummary, matchComplete } from './assets/match.js';
+import { mountInbox } from './assets/inbox.js';
 import { mountLibrary } from './assets/explore-ui.js';
 import { mountDiscover } from './assets/discover-ui.js';
 import { loadPrices, tierCards, PLANS_INTRO, PLANS_NOTE } from './assets/plans.js';
@@ -179,7 +193,7 @@ document.getElementById('tierbadge').textContent = tierName(a.level) + ' members
    The dashboard opens on Today. The other tabs are reached by their buttons or
    by address (dashboard.html#progress), and the address follows the tab so a
    refresh or a shared link comes back to the same one. */
-const PANELS = ['today', 'explore', 'discover', 'progress', 'tools', 'settings'];
+const PANELS = ['today', 'explore', 'discover', 'progress', 'tools', 'messages'];
 let tab = 'today';
 // A hash that names something inside a tab (dashboard.html#match-mode, #daily-quote)
 // opens that tab and scrolls to it. The feature showcase under the header links this way.
@@ -202,12 +216,16 @@ function showTab(next) {
     mounted.discover = true;
     mountDiscover(document.getElementById('discover-host'));
   }
+  // Messages are read fresh each time the tab opens, so a new one shows up.
+  if (tab === 'messages') mountInbox(document.getElementById('inbox-host'), a);
   if (!PANELS.includes(next)) scrollToHash();
 }
 // Scrolls to the element the hash names, if there is one, once its tab is open.
+// Match Mode sits above the tabs, so it is always showing.
 function scrollToHash() {
   const el = document.getElementById(location.hash.replace('#', ''));
-  if (el && el.closest('[data-panel].on')) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const panel = el?.closest('[data-panel]');
+  if (el && (!panel || panel.classList.contains('on'))) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 const mounted = {};
 document.querySelectorAll('#tabs button').forEach(b => b.addEventListener('click', () => {
@@ -263,13 +281,18 @@ document.querySelectorAll('.mood button').forEach(b => b.addEventListener('click
     : 'Saved. Premium members can see how this trends over time.';
 }));
 
-/* ---- switches: therapist reach-out and the morning email ---- */
-const DIGEST_KINDS = ['article','affirmation','tip','journal_prompt'];
-const vis = document.getElementById('vis'), demail = document.getElementById('demail');
-vis.checked = Boolean(p.visible_to_therapists);
-demail.checked = Boolean(p.daily_email);
+/* ---- Theraglee Match Mode: let therapists reach out ----
+   The switch in the upper right corner. The morning email is switched on and
+   off on the account page (account.html#profile). */
+const vis = document.getElementById('vis'), mm = document.getElementById('match-mode');
+function setVis(on){
+  mm.classList.toggle('on', on);
+  vis.setAttribute('aria-checked', String(on));
+  document.getElementById('mm-label').innerHTML = `Theraglee Match Mode is <b>${on ? 'ON' : 'OFF'}</b>`;
+}
+setVis(Boolean(p.visible_to_therapists));
 
-// Under the switch: the exact line therapists read, with a way to change it.
+// Under the description: the exact line therapists read, with a way to change it.
 const visSummary = document.getElementById('vis-summary');
 function paintVis(){
   visSummary.innerHTML = p.visible_to_therapists
@@ -283,29 +306,20 @@ function paintVis(){
 }
 paintVis();
 
-vis.addEventListener('change', async () => {
-  if (vis.checked) {
+vis.addEventListener('click', async () => {
+  if (!p.visible_to_therapists) {
     // Switching on asks for the details therapists will see, then saves both at once.
-    vis.checked = false;
     const saved = await matchDetailsModal(p, { editing: matchComplete(p) });
     if (!saved) return;
-    vis.checked = true; paintVis();
+    setVis(true); paintVis();
     return toast('Match Mode is on. Therapists can now reach out to you.', 'ok');
   }
+  setVis(false);
   const { error } = await sb.from('profiles')
     .update({ visible_to_therapists: false }).eq('id', p.id);
-  if (error) { vis.checked = true; return toast(error.message, 'err'); }
+  if (error) { setVis(true); return toast(error.message, 'err'); }
   p.visible_to_therapists = false; paintVis();
   toast('Match Mode is off. You are hidden from therapists.', 'ok');
-});
-demail.addEventListener('change', async () => {
-  const patch = { daily_email: demail.checked };
-  // Switching on with nothing chosen yet means the default set, article included.
-  if (demail.checked && !(p.daily_email_kinds || []).length) patch.daily_email_kinds = DIGEST_KINDS;
-  const { error } = await sb.from('profiles').update(patch).eq('id', p.id);
-  if (error) { demail.checked = !demail.checked; return toast(error.message, 'err'); }
-  Object.assign(p, patch);
-  toast(demail.checked ? 'Morning email switched on.' : 'Morning email switched off.', 'ok');
 });
 
 /* ---- counts ---- */
