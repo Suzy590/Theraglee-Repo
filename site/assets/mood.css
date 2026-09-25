@@ -1,7 +1,7 @@
 /* ==========================================================================
    Theraglee — the Mood check-in (assets/mood-ui.js): the day's faces, a 1 to
    10 row per factor, the weather, Submit, and the patterns card. Shared by the
-   member dashboard's Mood tab and the admin screen's Mood tab.
+   member dashboard's, the admin screen's and the practice dashboard's Mood tabs.
    ========================================================================== */
 .mood{display:flex;gap:8px;flex-wrap:wrap}
 .mood button{width:52px;height:52px;border-radius:14px;border:1px solid var(--hair);

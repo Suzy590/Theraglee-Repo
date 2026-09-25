@@ -1,10 +1,11 @@
 # The Mood tab
 
 The member dashboard has a **Mood** tab (`dashboard.html#mood`), open to every
-signed-in member. The admin screen has the same tab (`admin.html#mood`), drawn by
-the same code, for the admin's own check-in. Both read and write the signed-in
-account's own `mood_logs` rows, so an admin who submits on one tab sees that
-day submitted on the other. It does three things:
+signed-in member. The admin screen (`admin.html#mood`) and the therapist
+practice dashboard (`therapist-dashboard.html#mood`) have the same tab, drawn by
+the same code, for that account's own check-in. Every copy reads and writes the
+signed-in account's own `mood_logs` rows, so a day submitted on one tab shows as
+submitted on the others. It does three things:
 
 1. **The day's mood.** One tap on one of five faces (`mood_logs.mood`, 1 to 5).
 2. **What might be shaping it.** Once the face is tapped, the member rates nine
@@ -39,8 +40,8 @@ Every rating runs the same way, so a higher number is always the better day:
 
 | Piece | Where |
 |---|---|
-| The tab | `site/assets/mood-ui.js`, mounted by `site/dashboard.html` and `site/admin.html` when their Mood tab opens |
-| Styles | `site/assets/mood.css`, linked from both pages |
+| The tab | `site/assets/mood-ui.js`, mounted by `site/dashboard.html`, `site/admin.html` and `site/therapist-dashboard.html` when their Mood tab opens |
+| Styles | `site/assets/mood.css`, linked from all three pages |
 | Factors, weather, and the analysis | `site/assets/mood-patterns.js` (no imports) |
 | Columns | `supabase/migrations/20260925120000_mood_factors.sql` adds `sleep`, `home_stress`, `work_stress`, `nutrition`, `hunger`, `loneliness`, `thoughts`, `activity`, `social` (1 to 10) and `weather` to `mood_logs` |
 | Test | `node tests/mood-patterns/check.mjs` |
