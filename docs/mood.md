@@ -23,15 +23,19 @@ submitted on the others. It does three things:
 
 ## One submitted check-in a day
 
-Once submitted, the day is final: the faces, ratings, weather and Submit
-button are locked until the member's next calendar day, which starts at their
-own midnight (the page uses the browser's local date for `logged_on`). The
+Once submitted, the day is final: the answers clear from the screen, the faces
+are locked, and "All done for today" stays until the member's next calendar
+day, which starts at their own midnight (the page uses the browser's local date
+for `logged_on`). The next day opens blank. A page left open past midnight
+redraws itself for the new day the next time it is looked at, and a tap or
+Submit made on yesterday's page resets it instead of saving to yesterday.
+Ratings picked but not submitted are never saved, so they are never shown
+again. The
 database enforces this too:
 `supabase/migrations/20260925130000_mood_submit_once_a_day.sql` adds
 `mood_logs.submitted_at` and a trigger that refuses any change to a submitted
-day's mood, factors, weather, date or `submitted_at`, from any page. The note
-on the Goals & tracking page stays editable, and that page's faces are locked
-for a submitted day too.
+day's mood, factors, weather, date or `submitted_at`, from any page. The
+`notes` column stays editable.
 
 Every rating runs the same way, so a higher number is always the better day:
 10 for stress means no stress, 10 for loneliness means connected.
@@ -72,8 +76,8 @@ cause.
 
 ## Also reading `mood_logs`
 
-The Premium **Goals & tracking** page (`goals.html#mood`) still shows the 30-day
-chart and notes from the same rows, and the account page's data export includes
-the new columns because it selects `*`. Both pages use the member's local date
-for "today", so they read and write the same row. (Before 2026-09-25 both used
-the UTC date, so a few older rows may sit on the neighboring day.)
+The account page's data export includes every column because it selects `*`.
+The Premium **Goals & tracking** page no longer has a Mood tab (removed
+2026-09-25); it links to the dashboard's Mood tab instead. Before 2026-09-25
+"today" was the UTC date, which in the US turns over in the evening, so an
+evening check-in from before then may sit on the following day.

@@ -16,25 +16,39 @@ const COLS = ['logged_on', 'mood', 'weather', 'submitted_at', ...FACTORS.map(f =
 /* Everything Submit needs: the nine factors and the weather. */
 const NEEDED = [...FACTORS.map(f => f[0]), 'weather'];
 
-/* The member's own calendar day, so "tomorrow" starts at their midnight.
-   The Goals & tracking page uses the same, so both read the same row. */
+/* The member's own calendar day, so "tomorrow" starts at their midnight. */
 const todayKey = () => {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 };
 
+/* Pages whose Mood tab already redraws itself when the day changes. */
+const watched = new WeakSet();
+
 export async function mountMood(host, profile) {
   const uid = profile.id;
   const today = todayKey();
+  // A page left open past midnight starts the new day fresh the next time
+  // it is looked at, instead of showing yesterday's check-in.
+  if (!watched.has(host)) {
+    watched.add(host);
+    let day = today;
+    const fresh = () => {
+      if (document.visibilityState !== 'visible' || !host.isConnected || todayKey() === day) return;
+      day = todayKey();
+      mountMood(host, profile);
+    };
+    document.addEventListener('visibilitychange', fresh);
+    addEventListener('focus', fresh);
+  }
   const { data, error } = await sb.from('mood_logs').select(COLS)
     .eq('user_id', uid).order('logged_on', { ascending: false }).limit(365);
   if (error) { host.innerHTML = `<div class="empty">Your mood log could not be loaded. ${esc(error.message)}</div>`; return; }
   const rows = data || [];
   let now = rows.find(r => r.logged_on === today) || null;
-  // Answers picked but not yet submitted. Starts from anything already on
-  // today's row (from before there was a Submit button).
+  // Answers picked but not yet submitted. Always starts empty: only Submit
+  // saves them, and a submitted day is shown cleared.
   const draft = {};
-  for (const k of NEEDED) if (now?.[k] != null) draft[k] = now[k];
   const submitted = () => Boolean(now?.submitted_at);
 
   host.innerHTML = `
@@ -76,8 +90,10 @@ export async function mountMood(host, profile) {
 
   function paintToday() {
     const locked = submitted();
+    // Once submitted the day is done: the answers clear and stay locked
+    // until tomorrow's blank check-in.
     host.querySelectorAll('[data-mood] button').forEach(b => {
-      b.classList.toggle('on', Number(b.dataset.m) === now?.mood);
+      b.classList.toggle('on', !locked && Number(b.dataset.m) === now?.mood);
       b.disabled = locked;
     });
     $('[data-mood-after]').textContent = locked
@@ -85,6 +101,8 @@ export async function mountMood(host, profile) {
       : now ? 'Saved for today. Tap another face to change it.' : '';
     $('#mood-factors').hidden = !now;
     if (!now) return;
+    $('.factor-list').style.display = locked ? 'none' : '';
+    if (locked) for (const k of NEEDED) delete draft[k];
     for (const [key] of FACTORS) {
       host.querySelectorAll(`[data-factor="${key}"] button`).forEach(b => {
         b.classList.toggle('on', Number(b.dataset.v) === draft[key]);
@@ -152,8 +170,17 @@ export async function mountMood(host, profile) {
     paintToday(); paintPatterns();
   }
 
+  // The day turned over while the page sat open: start the new day instead
+  // of saving to yesterday.
+  const dayChanged = () => {
+    if (todayKey() === today) return false;
+    toast('A new day has started, so your check-in has reset.', 'ok');
+    mountMood(host, profile);
+    return true;
+  };
+
   host.querySelectorAll('[data-mood] button').forEach(b => b.addEventListener('click', async () => {
-    if (submitted()) return;
+    if (submitted() || dayChanged()) return;
     const mood = Number(b.dataset.m);
     const { error } = await sb.from('mood_logs')
       .upsert({ user_id: uid, logged_on: today, mood }, { onConflict: 'user_id,logged_on' });
@@ -175,13 +202,14 @@ export async function mountMood(host, profile) {
   }));
 
   $('[data-submit]').addEventListener('click', async (e) => {
-    if (submitted() || NEEDED.some(k => draft[k] == null)) return;
+    if (submitted() || NEEDED.some(k => draft[k] == null) || dayChanged()) return;
     e.target.disabled = true;
     const patch = { ...draft, submitted_at: new Date().toISOString() };
     const { error } = await sb.from('mood_logs').update(patch)
       .eq('user_id', uid).eq('logged_on', today);
     if (error) { paintToday(); return toast(error.message, 'err'); }
     keep(patch);
+    $('#mood-factors').scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
   paintToday(); paintPatterns();

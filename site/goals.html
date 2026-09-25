@@ -19,14 +19,6 @@
   .week span{flex:1;height:34px;border-radius:8px;background:var(--sand);display:grid;place-items:center;
     font-size:.72rem;color:var(--faint)}
   .week span.hit{background:var(--lime);color:var(--ink);font-weight:600}
-  .chart{display:flex;align-items:flex-end;gap:4px;height:150px;padding-top:10px}
-  .chart div{flex:1;background:var(--mist);border-radius:4px 4px 0 0;position:relative;min-height:3px}
-  .chart div[data-m="4"],.chart div[data-m="5"]{background:var(--lime)}
-  .chart div[data-m="1"],.chart div[data-m="2"]{background:#E3C9A8}
-  .mood-pick{display:flex;gap:8px;flex-wrap:wrap}
-  .mood-pick button{width:48px;height:48px;border-radius:12px;border:1px solid var(--hair);
-    background:var(--paper);font-size:1.3rem;cursor:pointer}
-  .mood-pick button.on{background:var(--soft);border-color:var(--green)}
 </style>
 </head>
 <body>
@@ -43,15 +35,16 @@ if (a) {
 const root = document.getElementById('root');
 
 if (a.level < 3) {
-  lockNotice(root, 3, 'Goals, mood tracking, playlists and the resource map');
+  lockNotice(root, 3, 'Goals, playlists and the resource map');
 } else {
 let tab = location.hash.replace('#','') || 'goals';
 
 const shell = (body) => `
   <h1>Goals &amp; tracking</h1>
-  <p class="muted" style="max-width:56ch">The Premium tools: set what you're aiming for, watch your
-    mood over time, and find what's near you.</p>
-  <div class="tabs">${[['goals','Goals'],['mood','Mood'],['music','Playlists'],['map','Nearby help']]
+  <p class="muted" style="max-width:56ch">The Premium tools: set what you're aiming for, find music
+    for how you feel, and find what's near you. Your daily mood check-in is on the
+    <a href="dashboard.html#mood">Mood tab of your dashboard</a>.</p>
+  <div class="tabs">${[['goals','Goals'],['music','Playlists'],['map','Nearby help']]
     .map(([k,l])=>`<button data-tab="${k}" class="${tab===k?'on':''}">${l}</button>`).join('')}</div>
   <div id="body">${body}</div>`;
 
@@ -125,70 +118,6 @@ async function goalsView(){
   });
 }
 
-/* ------------------------------------------------------------- mood */
-/* The member's own calendar day, the same one the dashboard's Mood tab uses. */
-const localDay = (d = new Date()) =>
-  `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-async function moodView(){
-  const since = localDay(new Date(Date.now() - 29*86400000));
-  const { data: logs } = await sb.from('mood_logs').select('*')
-    .eq('user_id', a.profile.id).gte('logged_on', since).order('logged_on');
-  const byDate = Object.fromEntries((logs||[]).map(l=>[l.logged_on, l]));
-  const days = Array.from({length:30}, (_,i) => localDay(new Date(Date.now() - (29-i)*86400000)));
-  const vals = (logs||[]).map(l=>l.mood);
-  const avg = vals.length ? (vals.reduce((s,v)=>s+v,0)/vals.length) : null;
-  const today = localDay();
-  const now = byDate[today];
-  // A day submitted on the dashboard's Mood tab is final; only the note stays editable.
-  const locked = Boolean(now?.submitted_at);
-
-  document.getElementById('body').innerHTML = `
-    <div class="card">
-      <h3>How are you today?</h3>
-      <div class="mood-pick" id="pick">${[1,2,3,4,5].map(m=>
-        `<button data-m="${m}" class="${now?.mood===m?'on':''}" ${locked?'disabled':''}>${['😞','🙁','😐','🙂','😄'][m-1]}</button>`).join('')}</div>
-      ${locked ? '<p class="faint" style="margin:10px 0 0">Submitted for today on your dashboard. You can check in again tomorrow.</p>' : ''}
-      <div class="field" style="margin-top:16px"><label for="note">A line about today (optional)</label>
-        <input id="note" value="${esc(now?.notes||'')}" placeholder="What shaped it?"></div>
-      <button class="btn sm" id="savenote">Save note</button>
-    </div>
-
-    <h2 style="margin-top:34px">Last 30 days</h2>
-    <div class="card">
-      <div class="chart">${days.map(d=>{
-        const m = byDate[d]?.mood;
-        return `<div data-m="${m||0}" title="${d}${m?' · '+m+'/5':''}"
-          style="height:${m ? (m/5*100) : 3}%"></div>`;
-      }).join('')}</div>
-      <div class="spread" style="margin-top:14px">
-        <span class="faint">${fmtDate(days[0])}</span>
-        <span class="faint">${avg ? 'Average '+avg.toFixed(1)+' / 5 across '+vals.length+' days' : 'No entries yet'}</span>
-        <span class="faint">Today</span>
-      </div>
-    </div>
-    ${(logs||[]).filter(l=>l.notes).length ? `<h2 style="margin-top:34px">Your notes</h2>
-      <div class="card">${logs.filter(l=>l.notes).reverse().map(l=>
-        `<p style="margin:0 0 10px"><span class="faint">${fmtDate(l.logged_on)}</span> — ${esc(l.notes)}</p>`).join('')}</div>` : ''}`;
-
-  document.querySelectorAll('#pick button').forEach(b => b.onclick = async () => {
-    if (locked) return;
-    const { error } = await sb.from('mood_logs').upsert(
-      { user_id: a.profile.id, logged_on: today, mood: Number(b.dataset.m) },
-      { onConflict: 'user_id,logged_on' });
-    if (error) return toast(error.message,'err');
-    moodView();
-  });
-  document.getElementById('savenote').onclick = async (e) => {
-    if (!now && !document.querySelector('#pick .on')) return toast('Pick a mood first.','err');
-    busy(e.target, true, 'Saving…');
-    await sb.from('mood_logs').upsert({ user_id: a.profile.id, logged_on: today,
-      mood: now?.mood || Number(document.querySelector('#pick .on').dataset.m),
-      notes: document.getElementById('note').value.trim() || null },
-      { onConflict: 'user_id,logged_on' });
-    busy(e.target, false); toast('Saved.','ok');
-  };
-}
-
 /* ----------------------------------------------------------- music */
 const MOODS = [
   ['Low and heavy','Slow, warm, nothing demanding','calm acoustic comfort'],
@@ -224,7 +153,7 @@ function render(){
   root.querySelectorAll('.tabs button').forEach(b => b.onclick = () => {
     tab = b.dataset.tab; history.replaceState({},'', '#'+tab); render();
   });
-  ({ goals: goalsView, mood: moodView, music: musicView, map: mapView }[tab] || goalsView)();
+  ({ goals: goalsView, music: musicView, map: mapView }[tab] || goalsView)();
 }
 render();
 }
