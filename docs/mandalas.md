@@ -98,13 +98,13 @@ too thin).
 
 ## Ideas not used yet
 
-Animals: octopus, lion, dog, cow, pig, sheep, frog, duck, swan, dolphin,
+Animals: lion, dog, cow, pig, sheep, frog, duck, swan, dolphin,
 seahorse, jellyfish, crab, starfish, bee, ladybug, dragonfly, peacock,
 flamingo, hummingbird, parrot, koala, panda, giraffe, camel, squirrel, mouse,
 raccoon, llama, sloth, otter, seal, chick, hen, goldfish, kangaroo, tiger,
 wolf, zebra, walrus.
 
-Plants: maple leaf, oak leaf, fern, palm tree, pine tree, daisy, lily, iris,
+Plants: oak leaf, fern, palm tree, pine tree, daisy, lily, iris,
 poppy, lavender, bonsai, strawberry, cherries, pear, lemon, pumpkin, carrot,
 succulent, water lily, monstera leaf, ginkgo leaf, pinecone, dandelion, potted
 plant, bamboo, orchid, hibiscus, grapes, mushroom cluster, holly.
