@@ -30,7 +30,7 @@
 </div></main>
 
 <script type="module">
-import { chrome, sb, requireAuth, esc, toast, busy, fmtDate, modal } from './assets/app.js';
+import { chrome, sb, requireAuth, esc, toast, busy, fmtDate, modal, callStripeFn } from './assets/app.js';
 import { mountMood } from './assets/mood-ui.js';
 await chrome();
 const a = await requireAuth();
@@ -45,7 +45,7 @@ if (a.profile.role !== 'admin') {
 let tab = location.hash.replace('#','') || 'members';
 
 const TABS = [['members','Memberships'],['verify','License verification'],['numbers','Tracking numbers'],
-              ['billing','Stripe setup'],['content','Content'],['mood','Mood']];
+              ['codes','Discount codes'],['billing','Stripe setup'],['content','Content'],['mood','Mood']];
 
 function render(body){
   root.innerHTML = `<div class="spread">
@@ -70,16 +70,31 @@ function render(body){
 // (Free, Basic, Premium) and a therapist pays for a practice listing. Both are
 // rows in `profiles` (the admin policy reads them all); a therapist's listing
 // details come from therapist_profiles.
-const LIVE_STATUSES = ['active', 'trialing'];
+//
+// `comped` is a complimentary membership an admin granted here, with no Stripe
+// subscription behind it; the database counts it as active (sub_active()).
+const LIVE_STATUSES = ['active', 'trialing', 'comped'];
+const isLive = (p) => LIVE_STATUSES.includes(p.subscription_status);
+const paysStripe = (p) => !!p.stripe_subscription_id && p.subscription_status !== 'comped' && isLive(p);
 const statusBadge = (p) => {
   const st = p.subscription_status;
   if (!st) return '<span class="badge gray">no subscription</span>';
   const live = LIVE_STATUSES.includes(st);
-  const label = p.cancel_at_period_end && live ? 'canceling' : st.replace(/_/g, ' ');
+  const label = st === 'comped' ? 'complimentary'
+    : p.cancel_at_period_end && live ? 'canceling' : st.replace(/_/g, ' ');
   return `<span class="badge ${live ? 'live' : 'gray'}">${esc(label)}</span>`;
 };
-const renews = (p) => p.current_period_end
-  ? `${p.cancel_at_period_end ? 'Ends' : 'Renews'} ${fmtDate(p.current_period_end)}` : '—';
+const renews = (p) => p.subscription_status === 'comped' ? 'No charge'
+  : p.current_period_end ? `${p.cancel_at_period_end ? 'Ends' : 'Renews'} ${fmtDate(p.current_period_end)}` : '—';
+
+/** Calls the admin-membership Edge Function; toasts and returns null on failure. */
+async function adminCall(action, body = {}, btn = null, label = 'Working…') {
+  if (btn) busy(btn, true, label);
+  const out = await callStripeFn('admin-membership', { action, ...body });
+  if (btn) busy(btn, false);
+  if (out.error) { toast(out.message || 'That did not work.', 'err'); return null; }
+  return out;
+}
 const planName = (tier) => ({ free: 'Free', basic: 'Basic', premium: 'Premium' })[tier] || esc(tier || '—');
 
 let mView = 'members', mQuery = '', mStatus = 'all';
@@ -87,7 +102,7 @@ let mView = 'members', mQuery = '', mStatus = 'all';
 async function members(){
   render('<div class="skeleton" style="height:150px"></div>');
   const [{ data: people, error }, { data: listings }] = await Promise.all([
-    sb.from('profiles').select('id,email,full_name,role,tier,subscription_status,current_period_end,cancel_at_period_end,created_at')
+    sb.from('profiles').select('id,email,full_name,role,tier,stripe_subscription_id,subscription_status,current_period_end,cancel_at_period_end,created_at')
       .order('created_at', { ascending: false }),
     sb.rpc('admin_pending_therapists'),
   ]);
@@ -97,7 +112,6 @@ async function members(){
   const all = people || [];
   const memberRows = all.filter(p => p.role !== 'therapist');
   const therapistRows = all.filter(p => p.role === 'therapist');
-  const isLive = (p) => LIVE_STATUSES.includes(p.subscription_status);
 
   const stat = (n, label) => `<div class="card"><div style="font-size:1.8rem;font-weight:300;color:var(--green)">${n}</div>
     <div class="faint">${label}</div></div>`;
@@ -113,7 +127,7 @@ async function members(){
     });
 
     const memberTable = () => `<table class="data">
-      <thead><tr><th>Member</th><th>Plan</th><th>Status</th><th>Billing</th><th>Joined</th></tr></thead>
+      <thead><tr><th>Member</th><th>Plan</th><th>Status</th><th>Billing</th><th>Joined</th><th></th></tr></thead>
       <tbody>${rows.map(p => `<tr>
         <td><strong>${esc(p.full_name || '—')}</strong>${p.role === 'admin' ? ' <span class="badge gray">admin</span>' : ''}<br>
           <span class="faint">${esc(p.email || '')}</span></td>
@@ -121,10 +135,11 @@ async function members(){
         <td>${statusBadge(p)}</td>
         <td class="faint">${renews(p)}</td>
         <td class="faint">${fmtDate(p.created_at)}</td>
+        <td>${manageBtn(p)}</td>
       </tr>`).join('')}</tbody></table>`;
 
     const therapistTable = () => `<table class="data">
-      <thead><tr><th>Therapist</th><th>Status</th><th>Billing</th><th>License</th><th>Listing</th><th>Joined</th></tr></thead>
+      <thead><tr><th>Therapist</th><th>Status</th><th>Billing</th><th>License</th><th>Listing</th><th>Joined</th><th></th></tr></thead>
       <tbody>${rows.map(p => { const t = byUser[p.id]; return `<tr>
         <td><strong>${esc(t ? `${t.first_name||''} ${t.last_name||''}`.trim() || p.full_name || '—' : p.full_name || '—')}</strong>${t?.credentials ? ', ' + esc(t.credentials) : ''}<br>
           <span class="faint">${esc(p.email || '')}</span></td>
@@ -135,25 +150,32 @@ async function members(){
           ? (t.slug ? `<a href="therapist.html?slug=${encodeURIComponent(t.slug)}" target="_blank" rel="noopener">live ↗</a>` : 'live')
           : '<span class="faint">not listed</span>'}</td>
         <td class="faint">${fmtDate(p.created_at)}</td>
+        <td>${manageBtn(p)}</td>
       </tr>`; }).join('')}</tbody></table>`;
 
     document.getElementById('mlist').innerHTML = rows.length
       ? `<div class="scroll-x">${mView === 'members' ? memberTable() : therapistTable()}</div>
          <p class="faint" style="margin-top:10px">Showing ${rows.length} of ${(mView === 'members' ? memberRows : therapistRows).length}.</p>`
       : '<div class="empty">Nobody matches.</div>';
+    document.querySelectorAll('[data-manage]').forEach(b => b.onclick = () =>
+      manage(all.find(p => p.id === b.dataset.manage), byUser[b.dataset.manage]));
   };
 
   render(`
-    <h2>Memberships</h2>
+    <div class="spread">
+      <h2 style="margin:0">Memberships</h2>
+      <button class="btn sm" id="addmember">Add a member or therapist</button>
+    </div>
     <p class="muted" style="max-width:64ch">Everyone with an account, split into the two kinds of
       membership: <strong>members</strong>, who use the site for themselves, and
-      <strong>therapists</strong>, who pay for a practice listing.</p>
+      <strong>therapists</strong>, who pay for a practice listing. Use <strong>Manage</strong> on a
+      row to change someone's plan, end their membership, or apply a discount code.</p>
 
     <div class="grid g4" style="margin-top:18px">
       ${stat(memberRows.length, 'members')}
-      ${stat(memberRows.filter(isLive).length, 'paying members')}
+      ${stat(memberRows.filter(isLive).length, 'members on Basic or Premium')}
       ${stat(therapistRows.length, 'therapists')}
-      ${stat(therapistRows.filter(isLive).length, 'paying therapists')}
+      ${stat(therapistRows.filter(isLive).length, 'active therapist memberships')}
     </div>
 
     <div class="tabs" style="margin:28px 0 0">
@@ -164,13 +186,14 @@ async function members(){
       <input id="mq" type="search" placeholder="Search by name or email" value="${esc(mQuery)}" aria-label="Search">
       <select id="ms" aria-label="Filter by status">
         <option value="all">All statuses</option>
-        <option value="paying">Paying (active or trial)</option>
-        <option value="none">Not paying</option>
+        <option value="paying">Active (paid, trial or complimentary)</option>
+        <option value="none">No active membership</option>
       </select>
     </div>
     <div id="mlist"></div>`);
 
   document.getElementById('ms').value = mStatus;
+  document.getElementById('addmember').onclick = addMember;
   document.querySelectorAll('[data-mview]').forEach(b => b.onclick = () => {
     mView = b.dataset.mview;
     document.querySelectorAll('[data-mview]').forEach(x => x.classList.toggle('on', x === b));
@@ -179,6 +202,228 @@ async function members(){
   document.getElementById('mq').oninput = (e) => { mQuery = e.target.value.trim(); draw(); };
   document.getElementById('ms').onchange = (e) => { mStatus = e.target.value; draw(); };
   draw();
+}
+
+const manageBtn = (p) => p.role === 'admin' ? ''
+  : `<button class="btn sm ghost" data-manage="${p.id}">Manage</button>`;
+
+/** The Manage window for one account: change plan, end, resume, discount. */
+async function manage(p, listing){
+  const therapist = p.role === 'therapist';
+  const stripe = paysStripe(p);
+  const comped = p.subscription_status === 'comped';
+  const name = listing ? `${listing.first_name||''} ${listing.last_name||''}`.trim() : '';
+  const { data: codes } = stripe
+    ? await sb.from('discount_codes').select('id,code,percent_off,amount_off_cents,audience,active,expires_at')
+        .eq('active', true).order('created_at', { ascending: false })
+    : { data: [] };
+  const usable = (codes||[]).filter(c => (c.audience === 'all' || c.audience === (therapist ? 'therapist' : 'member'))
+    && (!c.expires_at || new Date(c.expires_at) > new Date()));
+
+  const now = therapist ? (isLive(p) ? 'Therapist membership' : 'No membership')
+    : (isLive(p) ? planName(p.tier) : 'Free');
+
+  const back = modal(`
+    <h2 style="margin-bottom:4px">${esc(name || p.full_name || p.email || 'Account')}</h2>
+    <p class="faint" style="margin:0 0 14px">${esc(p.email||'')} · ${therapist ? 'Therapist' : 'Member'} account</p>
+    <p style="margin:0 0 18px">Now: <strong>${esc(now)}</strong> ${statusBadge(p)}
+      <span class="faint">${esc(renews(p))}</span></p>
+
+    <h3 style="margin:0 0 6px">Change plan</h3>
+    <p class="muted" style="font-size:.9rem;margin:0 0 10px">${stripe
+      ? 'They pay through Stripe, so their subscription moves to the new price. Stripe charges or credits the difference on their next bill.'
+      : 'They have no paid subscription, so this gives them the plan <strong>free of charge</strong> (complimentary) until you end it. No card is needed.'}</p>
+    <div class="row">
+      ${therapist ? '<input type="hidden" id="mp" value="therapist"><span>Therapist membership</span>'
+        : `<select id="mp" style="width:auto"><option value="basic">Basic</option><option value="premium">Premium</option></select>`}
+      ${stripe ? `<select id="mi" style="width:auto"><option value="monthly">Monthly</option><option value="yearly">Yearly</option></select>` : ''}
+      <button class="btn sm" id="mchange">${stripe ? 'Switch plan' : 'Give this plan free'}</button>
+    </div>
+
+    <h3 style="margin:22px 0 6px">End membership</h3>
+    ${stripe ? `
+      <p class="muted" style="font-size:.9rem;margin:0 0 10px">Stops their Stripe subscription. Ending now
+        takes access away at once and does not refund the current period.${therapist ? ' Their listing comes down.' : ''}</p>
+      <div class="row">
+        ${p.cancel_at_period_end
+          ? `<button class="btn sm ghost" id="mresume">Keep it going (undo the scheduled end)</button>`
+          : `<button class="btn sm ghost" id="mendlater">End when the current period is over</button>`}
+        <button class="btn sm danger" id="mendnow">End now</button>
+      </div>`
+    : comped ? `
+      <p class="muted" style="font-size:.9rem;margin:0 0 10px">Ends the complimentary membership at once.
+        ${therapist ? 'Their listing comes down.' : 'They go back to the Free plan.'}</p>
+      <button class="btn sm danger" id="mendnow">End complimentary membership</button>`
+    : '<p class="faint" style="margin:0">There is no active membership to end.</p>'}
+
+    <h3 style="margin:22px 0 6px">Discount</h3>
+    ${stripe ? (usable.length ? `
+      <p class="muted" style="font-size:.9rem;margin:0 0 10px">Puts a code on their subscription. It replaces
+        any discount they already have.</p>
+      <div class="row">
+        <select id="mcode" style="width:auto">${usable.map(c =>
+          `<option value="${c.id}">${esc(c.code)} — ${esc(codeOff(c))}</option>`).join('')}</select>
+        <button class="btn sm" id="mapply">Apply code</button>
+      </div>`
+      : '<p class="faint" style="margin:0">No active codes fit this account. Make one on the Discount codes tab.</p>')
+    : `<p class="faint" style="margin:0">Codes discount a paid subscription. This account has none, so give
+        them a code to enter on the checkout page when they sign up for a plan.</p>`}
+
+    <div class="row" style="justify-content:flex-end;margin-top:22px">
+      <button class="btn ghost" id="mclose">Close</button></div>`);
+
+  const done = (msg) => { back.remove(); toast(msg, 'ok'); members(); };
+  back.querySelector('#mclose').onclick = () => back.remove();
+  if (!therapist && ['basic','premium'].includes(p.tier)) back.querySelector('#mp').value = p.tier === 'basic' ? 'premium' : 'basic';
+
+  back.querySelector('#mchange').onclick = async (e) => {
+    const plan = back.querySelector('#mp').value;
+    const interval = back.querySelector('#mi')?.value || 'monthly';
+    const out = await adminCall('change_plan', { user_id: p.id, plan, interval }, e.target, 'Saving…');
+    if (out) done(out.unchanged ? 'They are already on that plan.' : out.complimentary ? 'Plan given free of charge.' : 'Plan switched in Stripe.');
+  };
+  back.querySelector('#mendnow')?.addEventListener('click', async (e) => {
+    if (!confirm('End this membership now? Access stops straight away.')) return;
+    if (await adminCall('end', { user_id: p.id, when: 'now' }, e.target, 'Ending…')) done('Membership ended.');
+  });
+  back.querySelector('#mendlater')?.addEventListener('click', async (e) => {
+    if (await adminCall('end', { user_id: p.id, when: 'period_end' }, e.target, 'Scheduling…'))
+      done('It will end when the current period is over.');
+  });
+  back.querySelector('#mresume')?.addEventListener('click', async (e) => {
+    if (await adminCall('resume', { user_id: p.id }, e.target, 'Saving…')) done('The membership will keep renewing.');
+  });
+  back.querySelector('#mapply')?.addEventListener('click', async (e) => {
+    const code_id = back.querySelector('#mcode').value;
+    if (await adminCall('apply_code', { user_id: p.id, code_id }, e.target, 'Applying…')) done('Discount applied.');
+  });
+}
+
+/** The Add window: invite someone by email, optionally on a free plan. */
+function addMember(){
+  const back = modal(`
+    <h2>Add a member or therapist</h2>
+    <p class="muted" style="font-size:.92rem">They get an email invitation with a link that signs them in.</p>
+    <div class="field"><label for="ae">Email</label><input id="ae" type="email" autocomplete="off"></div>
+    <div class="field"><label for="an">Full name <span class="faint">(optional)</span></label><input id="an"></div>
+    <div class="field"><label for="at">Account type</label>
+      <select id="at"><option value="member">Member</option><option value="therapist">Therapist</option></select></div>
+    <div class="field"><label for="ap">Membership</label><select id="ap"></select>
+      <p class="faint" style="margin:6px 0 0;font-size:.86rem">A plan picked here is complimentary: no card
+        and no charge until you end it. To have them pay, leave it off and they choose a plan themselves.</p></div>
+    <div class="row" style="justify-content:flex-end">
+      <button class="btn ghost" id="acancel">Cancel</button>
+      <button class="btn" id="asend">Send invitation</button></div>`);
+  const plans = () => {
+    back.querySelector('#ap').innerHTML = back.querySelector('#at').value === 'therapist'
+      ? '<option value="none">None yet — they start it themselves</option><option value="therapist">Therapist membership, free</option>'
+      : '<option value="free">Free</option><option value="basic">Basic, free of charge</option><option value="premium">Premium, free of charge</option>';
+  };
+  plans();
+  back.querySelector('#at').onchange = plans;
+  back.querySelector('#acancel').onclick = () => back.remove();
+  back.querySelector('#asend').onclick = async (e) => {
+    const out = await adminCall('add', {
+      email: back.querySelector('#ae').value.trim(),
+      full_name: back.querySelector('#an').value.trim(),
+      type: back.querySelector('#at').value,
+      plan: back.querySelector('#ap').value,
+    }, e.target, 'Sending…');
+    if (!out) return;
+    mView = back.querySelector('#at').value === 'therapist' ? 'therapists' : 'members';
+    back.remove(); toast('Invitation sent.', 'ok');
+    members();
+  };
+}
+
+/* ----------------------------------------------------------- codes */
+const money = (cents) => '$' + (cents / 100).toFixed(cents % 100 ? 2 : 0);
+const codeOff = (c) => c.percent_off ? `${c.percent_off}% off` : `${money(c.amount_off_cents)} off`;
+const codeLasts = (c) => c.duration === 'once' ? 'first payment'
+  : c.duration === 'forever' ? 'every payment'
+  : `${c.duration_in_months} month${c.duration_in_months === 1 ? '' : 's'}`;
+const codeFor = (c) => ({ all: 'Everyone', member: 'Members', therapist: 'Therapists' })[c.audience] || c.audience;
+
+async function codes(){
+  render('<div class="skeleton" style="height:150px"></div>');
+  const out = await callStripeFn('admin-membership', { action: 'list_codes' });
+  const list = out.codes || [];
+
+  render(`
+    <h2>Discount codes</h2>
+    <p class="muted" style="max-width:64ch">Make a code, then either share it — people type it on the
+      checkout page, or on their account page if they already pay — or apply it for them from
+      <strong>Memberships → Manage</strong>. Codes are created in Stripe, which tracks every use.</p>
+    ${out.error ? `<div class="notice warn" style="margin:14px 0">${esc(out.message || 'Could not load the codes.')}</div>` : ''}
+
+    <div class="card" style="margin-top:18px">
+      <h3 style="margin-top:0">New code</h3>
+      <div class="kvrow"><label for="cc" style="margin:0">Code</label>
+        <div class="row" style="flex-wrap:nowrap"><input id="cc" placeholder="e.g. WELCOME20" maxlength="30"
+          style="text-transform:uppercase"><button class="btn sm ghost" id="cgen" type="button" style="white-space:nowrap">Make one up</button></div></div>
+      <div class="kvrow"><label for="ck" style="margin:0">Discount</label>
+        <div class="row" style="flex-wrap:nowrap">
+          <select id="ck" style="width:auto"><option value="percent">Percent off</option><option value="amount">Dollars off</option></select>
+          <input id="cv" type="number" min="1" step="1" placeholder="20" style="max-width:120px"></div></div>
+      <div class="kvrow"><label for="cd" style="margin:0">How long it lasts</label>
+        <div class="row" style="flex-wrap:nowrap">
+          <select id="cd" style="width:auto"><option value="once">First payment only</option>
+            <option value="repeating">A number of months</option><option value="forever">Every payment, for good</option></select>
+          <input id="cm" type="number" min="1" max="36" placeholder="months" style="max-width:110px;display:none"></div></div>
+      <div class="kvrow"><label for="ca" style="margin:0">Who can use it</label>
+        <select id="ca"><option value="all">Members and therapists</option><option value="member">Members only</option>
+          <option value="therapist">Therapists only</option></select></div>
+      <div class="kvrow"><label for="cx" style="margin:0">Most uses <span class="faint">(blank = no limit)</span></label>
+        <input id="cx" type="number" min="1" step="1"></div>
+      <div class="kvrow"><label for="ce" style="margin:0">Last day to use it <span class="faint">(optional)</span></label>
+        <input id="ce" type="date"></div>
+      <div class="row" style="margin-top:8px"><button class="btn" id="ccreate">Create code</button></div>
+    </div>
+
+    <h3 style="margin-top:30px">Your codes</h3>
+    ${list.length ? `<div class="scroll-x"><table class="data">
+      <thead><tr><th>Code</th><th>Discount</th><th>Lasts</th><th>For</th><th>Used</th><th>Last day</th><th>Status</th><th></th></tr></thead>
+      <tbody>${list.map(c => {
+        const expired = c.expires_at && new Date(c.expires_at) < new Date();
+        return `<tr>
+        <td><code>${esc(c.code)}</code> <button class="btn sm ghost" data-copy="${esc(c.code)}">Copy</button></td>
+        <td>${esc(codeOff(c))}</td>
+        <td class="faint">${esc(codeLasts(c))}</td>
+        <td class="faint">${esc(codeFor(c))}</td>
+        <td class="faint">${c.times_redeemed ?? '—'}${c.max_redemptions ? ' of ' + c.max_redemptions : ''}</td>
+        <td class="faint">${c.expires_at ? fmtDate(c.expires_at) : '—'}</td>
+        <td>${c.active && !expired ? '<span class="badge live">active</span>'
+          : `<span class="badge gray">${expired ? 'expired' : 'ended'}</span>`}</td>
+        <td>${c.active && !expired ? `<button class="btn sm ghost" data-endcode="${c.id}">End</button>` : ''}</td>
+      </tr>`; }).join('')}</tbody></table></div>`
+    : '<div class="empty">No codes yet.</div>'}`);
+
+  const kind = document.getElementById('ck'), val = document.getElementById('cv');
+  kind.onchange = () => { val.step = kind.value === 'amount' ? '0.01' : '1'; val.placeholder = kind.value === 'amount' ? '5.00' : '20'; };
+  const dur = document.getElementById('cd');
+  dur.onchange = () => { document.getElementById('cm').style.display = dur.value === 'repeating' ? '' : 'none'; };
+  document.getElementById('cgen').onclick = () => {
+    const abc = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    const bytes = crypto.getRandomValues(new Uint8Array(8));
+    document.getElementById('cc').value = [...bytes].map(b => abc[b % abc.length]).join('');
+  };
+  document.getElementById('ccreate').onclick = async (e) => {
+    const res = await adminCall('create_code', {
+      code: document.getElementById('cc').value, kind: kind.value, value: val.value,
+      duration: dur.value, months: document.getElementById('cm').value,
+      audience: document.getElementById('ca').value,
+      max_redemptions: document.getElementById('cx').value, expires_on: document.getElementById('ce').value,
+    }, e.target, 'Creating…');
+    if (res) { toast(`Code ${res.code.code} is ready.`, 'ok'); codes(); }
+  };
+  document.querySelectorAll('[data-copy]').forEach(b => b.onclick = async () => {
+    try { await navigator.clipboard.writeText(b.dataset.copy); toast('Copied.', 'ok'); }
+    catch { toast('Copy did not work — select the code instead.', 'err'); }
+  });
+  document.querySelectorAll('[data-endcode]').forEach(b => b.onclick = async () => {
+    if (!confirm('End this code? Nobody will be able to use it again. Discounts already given stay.')) return;
+    if (await adminCall('end_code', { code_id: b.dataset.endcode }, b, 'Ending…')) { toast('Code ended.', 'ok'); codes(); }
+  });
 }
 
 /* ---------------------------------------------------------- verify */
@@ -478,7 +723,7 @@ async function mood(){
   await mountMood(document.getElementById('mood-host'), a.profile);
 }
 
-function route(){ ({ members, verify, numbers, billing, content, mood }[tab] || members)(); }
+function route(){ ({ members, codes, verify, numbers, billing, content, mood }[tab] || members)(); }
 route();
 }
 }

@@ -17,7 +17,7 @@ import { CORS, json, readBody } from "../_shared/http.ts";
 import { admin, allowedOrigins, callerFrom, loadConfig } from "../_shared/supabase.ts";
 import { stripeClient } from "../_shared/stripe.ts";
 import {
-  foundingOffer, isActive, isInterval, isPlanKey, minuteBucket, PLANS, priceKeyFor, safeReturnOrigin,
+  foundingOffer, hasLiveStripeSub, isInterval, isPlanKey, minuteBucket, PLANS, priceKeyFor, safeReturnOrigin,
 } from "../_shared/billing.ts";
 import type { Stripe } from "../_shared/stripe.ts";
 
@@ -113,7 +113,9 @@ Deno.serve(async (req) => {
     }
 
     // Already subscribed? Change plan through the portal rather than buying twice.
-    if (profile.stripe_subscription_id && isActive(profile.subscription_status)) {
+    // A complimentary membership has no subscription to change, so it goes on
+    // to a normal checkout; the paid subscription then replaces the comp.
+    if (hasLiveStripeSub(profile)) {
       const returnUrl = `${site}/${home}`;
       try {
         const portal = await stripe.billingPortal.sessions.create({
@@ -121,7 +123,7 @@ Deno.serve(async (req) => {
           return_url: returnUrl,
           flow_data: {
             type: "subscription_update",
-            subscription_update: { subscription: profile.stripe_subscription_id },
+            subscription_update: { subscription: profile.stripe_subscription_id! },
           },
         });
         return json({ url: portal.url, portal: true });

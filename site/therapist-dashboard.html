@@ -65,6 +65,7 @@
 <script type="module">
 import { chrome, sb, requireAuth, access, clearAccess, esc, toast, busy, fmtDate,
          modal, openPortal, startCheckout, startIdentity, connectAction, callStripeFn,
+         discountCodeBox, wireDiscountCode,
          FN, qs } from './assets/app.js';
 import { matchSummary } from './assets/match.js';
 import { foundingOffer } from './assets/plans.js';
@@ -124,7 +125,11 @@ if (qs('checkout') || qs('identity') || qs('connect')) {
   history.replaceState({}, '', 'therapist-dashboard.html#membership');
 }
 
-const paid = ['active','trialing'].includes(a.profile.subscription_status);
+// 'comped' is a complimentary membership an admin granted: it counts as paid,
+// but there is no Stripe subscription to manage or discount.
+const comped = a.profile.subscription_status === 'comped';
+const paysStripe = ['active','trialing'].includes(a.profile.subscription_status);
+const paid = paysStripe || comped;
 const liveListing = T?.verification === 'verified' && T?.published;
 
 /* ------------------------------------------------------------ shell */
@@ -1129,11 +1134,11 @@ async function membership(){
     <div class="card" style="margin-top:16px">
       <div class="spread">
         <div><strong>Status</strong><br>
-          <span class="muted">${paid ? 'Active' : (p.subscription_status || 'Not subscribed')}</span></div>
+          <span class="muted">${comped ? 'Complimentary (no charge)' : paid ? 'Active' : (p.subscription_status || 'Not subscribed')}</span></div>
         ${p.current_period_end ? `<div><strong>${p.cancel_at_period_end?'Ends':'Renews'}</strong><br>
           <span class="muted">${fmtDate(p.current_period_end)}</span></div>` : ''}
         <div class="row">
-          ${paid ? `<button class="btn ghost" id="portal">Manage membership</button>`
+          ${paid ? (paysStripe ? `<button class="btn ghost" id="portal">Manage membership</button>` : '')
                  : `${founding ? `<button class="btn" id="sub-founding">Founding member · $${esc(offer.rate)}/month</button>` : ''}
                     <button class="btn ${founding ? 'ghost' : ''}" id="sub">${founding ? 'Regular monthly' : 'Start monthly'}${
                       cfg.display_therapist_monthly ? ' · $' + esc(cfg.display_therapist_monthly) + '/month' : ''}</button>
@@ -1152,6 +1157,7 @@ async function membership(){
         is verified, and opens the clinician library and Match Mode. Cancel any time.
         <a href="for-therapists.html#membership">Everything it includes</a>.</p>`}
     </div>
+    ${paysStripe ? discountCodeBox() : ''}
 
     ${T ? `
     <h3 style="margin-top:32px">Identity check</h3>
@@ -1228,6 +1234,7 @@ async function membership(){
     </div>`);
 
   document.getElementById('portal')?.addEventListener('click', e => openPortal(e.target));
+  wireDiscountCode();
   document.getElementById('sub-founding')?.addEventListener('click', e => startCheckout('therapist','founding',e.target));
   document.getElementById('sub')?.addEventListener('click', e => startCheckout('therapist','monthly',e.target));
   document.getElementById('sub-yearly')?.addEventListener('click', e => startCheckout('therapist','yearly',e.target));

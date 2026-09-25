@@ -3,11 +3,22 @@
 // Deliberately has no imports, so `tests/billing-logic/check.mjs` can load it
 // under plain Node and exercise every branch without Deno, Supabase or Stripe.
 
-export const ACTIVE_STATUSES = ["active", "trialing"] as const;
+/**
+ * `comped` is not a Stripe status: it marks a complimentary membership an
+ * admin granted from /admin.html, with no subscription behind it.
+ */
+export const COMPED = "comped";
+export const ACTIVE_STATUSES = ["active", "trialing", COMPED] as const;
 
 /** Mirrors `public.sub_active()` in Postgres — keep the two in step. */
 export const isActive = (status: string | null | undefined): boolean =>
   !!status && (ACTIVE_STATUSES as readonly string[]).includes(status);
+
+/** Whether a profile is paying through a live Stripe subscription (as
+ *  opposed to a complimentary membership, or none). */
+export const hasLiveStripeSub = (
+  p: { stripe_subscription_id?: string | null; subscription_status?: string | null },
+): boolean => !!p.stripe_subscription_id && p.subscription_status !== COMPED && isActive(p.subscription_status);
 
 export type PlanKey = "basic" | "premium" | "therapist";
 /** `founding` is the therapist founding-member rate: monthly billing at a
@@ -168,6 +179,128 @@ export function subscriptionPatch(sub: SubscriptionLike, customerId: string, pla
 export const isStaleSubscription = (
   currentSubscriptionId: string | null | undefined, sub: SubscriptionLike,
 ): boolean => !!currentSubscriptionId && currentSubscriptionId !== sub.id && !isActive(sub.status);
+
+/**
+ * Whether a subscription event must leave a complimentary membership alone:
+ * a late event for an old, ended subscription should not take away access an
+ * admin granted since. A live subscription still wins — the member paid.
+ */
+export const keepsComp = (
+  currentStatus: string | null | undefined, sub: SubscriptionLike,
+): boolean => currentStatus === COMPED && !isActive(sub.status);
+
+/* ------------------------------------------------------- Admin changes */
+
+export type MemberPlan = "free" | "basic" | "premium";
+
+/**
+ * Which plan an admin may put an account on. Members move between Basic and
+ * Premium; therapists have the one therapist plan. Admin accounts are never
+ * changed from the screen. Returns an error message, or null when allowed.
+ */
+export function planChangeError(role: string, plan: unknown, interval: unknown): string | null {
+  if (role === "admin") return "Admin accounts are not managed from this screen.";
+  if (interval !== "monthly" && interval !== "yearly") return "Pick monthly or yearly.";
+  if (role === "therapist") return plan === "therapist" ? null : "Therapist accounts can only be on the therapist plan.";
+  if (plan === "basic" || plan === "premium") return null;
+  return plan === "therapist" ? "Member accounts cannot be put on the therapist plan." : "Pick Basic or Premium.";
+}
+
+/* ------------------------------------------------------ Discount codes */
+
+export type CodeAudience = "all" | "member" | "therapist";
+export type CodeDuration = "once" | "repeating" | "forever";
+
+export interface DiscountInput {
+  code: string;
+  percentOff: number | null;
+  amountOffCents: number | null;
+  duration: CodeDuration;
+  durationInMonths: number | null;
+  audience: CodeAudience;
+  maxRedemptions: number | null;
+  /** Unix seconds (end of the chosen day, UTC), or null for no expiry. */
+  expiresAt: number | null;
+}
+
+const intIn = (v: unknown, lo: number, hi: number): number | null => {
+  const n = typeof v === "number" ? v : typeof v === "string" && v.trim() !== "" ? Number(v) : NaN;
+  return Number.isInteger(n) && n >= lo && n <= hi ? n : null;
+};
+
+/** Stripe promotion codes are letters and digits; we store them upper case. */
+export const normalizeCode = (v: unknown): string =>
+  typeof v === "string" ? v.trim().toUpperCase() : "";
+
+export const isValidCode = (code: string): boolean => /^[A-Z0-9]{3,30}$/.test(code);
+
+/**
+ * Validates the admin's "new discount code" form. `kind` is percent or
+ * amount; `value` is the percent (1–100) or the dollars off (whole or cents).
+ */
+export function parseDiscountInput(
+  body: Record<string, unknown>, now: Date = new Date(),
+): { ok: true; value: DiscountInput } | { ok: false; message: string } {
+  const code = normalizeCode(body.code);
+  if (!isValidCode(code)) return { ok: false, message: "Codes are 3 to 30 letters and numbers, no spaces." };
+
+  let percentOff: number | null = null, amountOffCents: number | null = null;
+  if (body.kind === "percent") {
+    percentOff = intIn(body.value, 1, 100);
+    if (percentOff === null) return { ok: false, message: "A percent off is a whole number from 1 to 100." };
+  } else if (body.kind === "amount") {
+    const dollars = typeof body.value === "number" ? body.value : Number(String(body.value ?? "").trim() || NaN);
+    const cents = Math.round(dollars * 100);
+    if (!Number.isFinite(dollars) || cents < 1 || cents > 100_000) {
+      return { ok: false, message: "A dollar amount off is from $0.01 to $1,000." };
+    }
+    amountOffCents = cents;
+  } else return { ok: false, message: "Pick a percent or a dollar amount off." };
+
+  const duration = body.duration;
+  if (duration !== "once" && duration !== "repeating" && duration !== "forever") {
+    return { ok: false, message: "Pick how long the discount lasts." };
+  }
+  const durationInMonths = duration === "repeating" ? intIn(body.months, 1, 36) : null;
+  if (duration === "repeating" && durationInMonths === null) {
+    return { ok: false, message: "A discount for a number of months lasts 1 to 36 months." };
+  }
+
+  const audience = body.audience ?? "all";
+  if (audience !== "all" && audience !== "member" && audience !== "therapist") {
+    return { ok: false, message: "Pick who the code is for." };
+  }
+
+  const blank = (v: unknown) => v === undefined || v === null || String(v).trim() === "";
+  const maxRedemptions = blank(body.max_redemptions) ? null : intIn(body.max_redemptions, 1, 1_000_000);
+  if (!blank(body.max_redemptions) && maxRedemptions === null) {
+    return { ok: false, message: "The number of uses is a whole number, 1 or more." };
+  }
+
+  let expiresAt: number | null = null;
+  if (!blank(body.expires_on)) {
+    const end = deadlineEnd(String(body.expires_on));
+    if (!end) return { ok: false, message: "The last day to use it is a date (YYYY-MM-DD)." };
+    if (end.getTime() <= now.getTime()) return { ok: false, message: "The last day to use it has already passed." };
+    expiresAt = Math.floor(end.getTime() / 1000);
+  }
+
+  return { ok: true, value: {
+    code, percentOff, amountOffCents, duration, durationInMonths,
+    audience: audience as CodeAudience, maxRedemptions, expiresAt,
+  } };
+}
+
+/** Whether a code made for `audience` may be used on an account with `role`. */
+export const codeFitsRole = (audience: string, role: string): boolean =>
+  audience === "all" || (audience === "therapist" ? role === "therapist" : role !== "therapist");
+
+/** The app_config price keys a code for `audience` should be limited to. */
+export function priceKeysForAudience(audience: CodeAudience): string[] {
+  const plans = (Object.keys(PLANS) as PlanKey[])
+    .filter((k) => audience === "all" || PLANS[k].audience === audience);
+  return plans.flatMap((k) => [PLANS[k].monthly, PLANS[k].yearly, ...(PLANS[k].founding ? [PLANS[k].founding!] : [])]);
+}
 
 /* ----------------------------------------------------------- Connect */
 

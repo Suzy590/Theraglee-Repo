@@ -33,3 +33,12 @@ verify_jwt = false
 # Match Mode message; the function checks the key itself.
 [functions.match-reply-alert]
 verify_jwt = false
+
+# Admin-only membership and discount-code actions; the function checks the
+# caller is an admin itself.
+[functions.admin-membership]
+verify_jwt = false
+
+# A paying member enters a discount code on their account page.
+[functions.stripe-redeem]
+verify_jwt = false

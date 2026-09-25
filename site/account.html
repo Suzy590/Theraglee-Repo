@@ -27,7 +27,7 @@
 
 <script type="module">
 import { chrome, sb, requireAuth, access, clearAccess, esc, toast, busy, qs,
-         fmtDate, tierName, openPortal, startCheckout, modal,
+         fmtDate, tierName, openPortal, startCheckout, modal, discountCodeBox, wireDiscountCode,
          contentCounts, counted } from './assets/app.js';
 import { MEMBER_ISSUES } from './assets/lists.js';
 import { SETS as TRIVIA } from './assets/trivia-sets.js';
@@ -69,9 +69,14 @@ function shell(body){
     <div id="body">${body}</div>`;
 }
 
+// 'comped' is a complimentary membership an admin granted: active, but with no
+// Stripe subscription to manage or discount.
+const COMPED = 'comped';
+const paysStripe = (p) => ['active','trialing'].includes(p.subscription_status);
+
 function membership(){
   const p = a.profile;
-  const live = ['active','trialing'].includes(p.subscription_status);
+  const live = paysStripe(p);
   return `
     <div class="card pad-lg">
       <div class="spread">
@@ -79,6 +84,7 @@ function membership(){
           <h2 style="margin:0">${tierName(a.level)}</h2>
           <p class="muted" style="margin:6px 0 0">
             ${a.level === 1 ? 'Free forever. No card on file.'
+              : p.subscription_status === COMPED ? 'Complimentary membership from Theraglee. No charge.'
               : live ? (p.cancel_at_period_end
                   ? `Ends on ${fmtDate(p.current_period_end)} — you keep access until then.`
                   : `Renews on ${fmtDate(p.current_period_end)}.`)
@@ -92,6 +98,7 @@ function membership(){
         </div>
       </div>
     </div>
+    ${live ? discountCodeBox() : ''}
 
     ${a.level < 3 ? `
     <h2 style="margin-top:34px">${esc(PLANS_INTRO.title)}</h2>
@@ -119,14 +126,17 @@ function membership(){
 
 function therapistMembership(){
   const p = a.profile;
-  const live = ['active','trialing'].includes(p.subscription_status);
+  const comped = p.subscription_status === COMPED;
+  const paying = paysStripe(p);
+  const live = paying || comped;
   return `
     <div class="card pad-lg">
       <div class="spread">
         <div>
           <h2 style="margin:0">Therapist membership</h2>
           <p class="muted" style="margin:6px 0 0">
-            ${live ? (p.cancel_at_period_end
+            ${comped ? 'Complimentary membership from Theraglee. No charge.'
+              : live ? (p.cancel_at_period_end
                   ? `Ends on ${fmtDate(p.current_period_end)} — your listing stays up until then.`
                   : `Active. Renews on ${fmtDate(p.current_period_end)}.`)
               : p.subscription_status === 'past_due' ? 'A payment did not go through. Update your card to keep the listing up.'
@@ -134,11 +144,12 @@ function therapistMembership(){
           </p>
         </div>
         <div class="row">
-          ${live ? `<button class="btn ghost" id="portal">Manage billing</button>` : ''}
+          ${paying ? `<button class="btn ghost" id="portal">Manage billing</button>` : ''}
           <a class="btn" href="therapist-dashboard.html#membership">Open practice dashboard</a>
         </div>
       </div>
     </div>
+    ${paying ? discountCodeBox() : ''}
 
     <h2 style="margin-top:34px">What your membership includes</h2>
     <p class="muted">One flat membership for licensed professionals, separate from the member plans.</p>
@@ -325,7 +336,10 @@ async function render(){
     tab = b.dataset.tab; history.replaceState({},'', '#'+tab); render();
   }));
 
-  if (tab === 'membership') document.getElementById('portal')?.addEventListener('click', e => openPortal(e.target));
+  if (tab === 'membership') {
+    document.getElementById('portal')?.addEventListener('click', e => openPortal(e.target));
+    wireDiscountCode();
+  }
 
   if (tab === 'security') {
     document.getElementById('pw').addEventListener('click', async () => {
