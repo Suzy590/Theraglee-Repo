@@ -38,8 +38,10 @@ the other.
 | Header links | Dashboard (signed in only), For Therapists; visitors also get Sign in and Join free | Dashboard, Referrals, Messages, Member requests, Library, My profile, Directory |
 
 The member dashboard opens on a **Today** tab (the daily affirmation, quote,
-tip, fun fact and journal prompt, plus the one-tap mood check-in), which is
-what a member sees first after signing in. Its other tabs are **Explore
+tip, fun fact and journal prompt, plus a link to the mood check-in), which is
+what a member sees first after signing in. Its other tabs are **Mood** (the
+one-tap mood check-in, a 1 to 10 rating of what may be shaping it, the weather,
+and after seven days the patterns; see [`mood.md`](mood.md)), **Explore
 Library** (the whole library with search and filters, the same browser as
 `explore.html`, drawn from `site/assets/explore-ui.js`), **Discover** (the 360
 free discovery tools with search and topic chips, the same browser as
@@ -179,6 +181,14 @@ psychologists through a different board with its own lookup; those have a
 `psychology` row too (`state_boards_psychology`), which the admin screen and the
 function use when the license type is PsyD, PhD or EdD. A state with no row
 falls back to a search link in the admin screen.
+
+### Short bio
+
+The **Short bio** box on My profile takes up to 1,400 characters. The box
+stops accepting text at that length and shows a live count under it, the
+save refuses a longer one, and `therapist_profiles.bio` has a matching check
+constraint (migration `therapist_bio_limit`), so the limit holds however the
+value arrives.
 
 ### Profile photos
 
