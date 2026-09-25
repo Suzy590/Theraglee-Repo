@@ -48,6 +48,7 @@ for (const r of rows) {
 const BATCHES = [
   [42, '436210ba21fb744856bf9ca7e9265535fcb235aabad796e67acd5988e6eecd76'],   // 20260924180000_shaped_mandalas
   [12, 'de7aa538c95def523563f7d7318806f7370b48576753ac31d8f14e8f01ffba3d'],   // 20260924190000_more_animal_mandalas
+  [12, 'c2287c5e29856e09389c37978cef293a062ef756c019d1a37a4e43cf242b6372'],   // 20260925020000_more_plant_mandalas
 ];
 let from = 0;
 for (const [n, want] of BATCHES) {

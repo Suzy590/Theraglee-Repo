@@ -382,6 +382,71 @@ export const SHAPES = {
         [126, 188, 112, 184, 100, 178]]) },
     ],
   },
+  sunflower: {
+    label: 'Sunflower', kind: 'plant', heart: [100, 78],
+    parts: [
+      { layer: 'back', g: 'stem', d: 'M96 140 L95 196 L105 196 L104 140 Z' },
+      { layer: 'back', g: 'leaves', d: 'M97 178 C76 178 56 166 44 146 C68 146 86 158 97 178 Z' },
+      { layer: 'back', g: 'leaves', d: 'M103 166 C124 166 144 154 156 134 C132 134 114 146 103 166 Z' },
+      { layer: 'pattern', d: polar(100, 78, a => 50 + 28 * Math.abs(Math.cos(10 * (a + Math.PI / 2))) ** .6, 360) },
+    ],
+  },
+  rose: {
+    label: 'Rose', kind: 'plant', heart: [100, 70],
+    parts: [
+      { layer: 'back', g: 'stem', d: 'M96 112 C94 140 96 170 94 196 L104 196 C106 170 104 140 104 112 Z' },
+      { layer: 'back', g: 'thorns', d: 'M104 146 L114 140 L104 138 Z' },
+      { layer: 'back', g: 'thorns', d: 'M96 170 L86 164 L96 162 Z' },
+      { layer: 'back', g: 'leaves', d: 'M98 150 C82 136 60 132 42 140 C56 156 80 162 98 150 Z' },
+      { layer: 'back', g: 'leaves', d: 'M102 128 C118 112 140 108 158 116 C144 132 120 138 102 128 Z' },
+      { layer: 'back', g: 'sepals', d: 'M70 104 C82 118 118 118 130 104 L100 124 Z' },
+      { layer: 'pattern', d: sym([100, 26], [
+        [116, 18, 134, 24, 136, 40], [148, 30, 164, 32, 172, 44],
+        [172, 72, 150, 96, 126, 106], [118, 110, 108, 112, 100, 112]]) },
+      { layer: 'front', g: 'bud', d: 'M74 46 C70 26 90 14 110 18 C128 22 136 40 126 52 '
+          + 'C118 62 100 60 98 50 C96 42 106 36 112 42 C110 32 96 30 88 38 C82 44 84 54 90 60 '
+          + 'C82 58 76 52 74 46 Z' },
+    ],
+  },
+  cactus: {
+    label: 'Cactus', kind: 'plant', heart: [100, 96],
+    parts: [
+      { layer: 'pattern', d: 'M100 14 C112 14 120 22 120 34 L120 92 L140 92 C144 92 146 90 146 86 '
+          + 'L146 54 C146 44 152 40 158 40 C164 40 170 44 170 54 L170 94 C170 108 160 116 146 116 '
+          + 'L120 116 L120 168 L80 168 L80 130 L54 130 C40 130 30 122 30 108 L30 68 '
+          + 'C30 58 36 54 42 54 C48 54 54 58 54 68 L54 106 L80 106 L80 34 C80 22 88 14 100 14 Z' },
+      { layer: 'front', g: 'pot', d: 'M64 170 L136 170 L128 196 L72 196 Z' },
+      { layer: 'front', g: 'rim', d: 'M58 158 L142 158 L142 172 L58 172 Z' },
+    ],
+  },
+  acorn: {
+    label: 'Acorn', kind: 'plant', heart: [100, 122],
+    parts: [
+      { layer: 'pattern', d: sym([100, 60], [
+        [132, 60, 152, 84, 152, 116], [152, 152, 126, 178, 100, 194]]) },
+      { layer: 'front', g: 'cap', d: 'M40 74 C40 42 68 26 100 26 C132 26 160 42 160 74 '
+          + 'C140 86 60 86 40 74 Z' },
+      { layer: 'front', g: 'stem', d: 'M95 28 C95 18 99 10 107 5 L112 9 C106 14 104 20 104 28 Z' },
+    ],
+  },
+  pineapple: {
+    label: 'Pineapple', kind: 'plant', heart: [100, 130],
+    parts: [
+      { layer: 'back', g: 'crown', d: poly([[70, 78], [44, 38], [78, 60], [70, 14], [90, 50],
+        [100, 4], [110, 50], [130, 14], [122, 60], [156, 38], [130, 78]]) },
+      { layer: 'pattern', d: ellipse(100, 132, 50, 62) },
+    ],
+  },
+  clover: {
+    label: 'Clover', kind: 'plant', heart: [100, 88],
+    parts: [
+      { layer: 'back', g: 'stem', d: 'M97 120 C98 150 110 176 132 194 L140 188 C118 172 106 148 105 120 Z' },
+      { layer: 'pattern', d: polar(100, 88, a => {
+        const t = Math.abs(Math.cos(1.5 * (a + Math.PI / 2)));
+        return 18 + 70 * Math.sqrt(t) * (1 - .18 * (1 - Math.abs(Math.cos(3 * (a + Math.PI / 2 + Math.PI / 3)))) ** 8);
+      }, 288) },
+    ],
+  },
 
   /* ---------------------------------------------------------------- symbols */
   heart: {
