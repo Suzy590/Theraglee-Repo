@@ -94,6 +94,43 @@ function star(cx, cy, R, r, n = 5) {
   return poly(pts);
 }
 
+/* A six-armed snowflake: each arm has one pair of side branches. */
+function snowflake(cx, cy, len = 92, w = 11) {
+  const y0 = w * Math.sqrt(3), yb = len * .5, lb = len * .3, bw = 8;
+  const ux = Math.cos(Math.PI / 3), uy = Math.sin(Math.PI / 3);     // branches lean outward
+  const right = [[w, y0], [w, yb],
+    [w + lb * ux + bw * .5 * uy, yb + lb * uy - bw * .5 * ux],
+    [w + lb * ux - bw * .5 * uy, yb + lb * uy + bw * .5 * ux],
+    [w, yb + bw * 1.6], [w, len - w]];
+  const arm = [...right, [0, len], ...right.slice().reverse().map(([x, y]) => [-x, y])];
+  const pts = [];
+  for (let k = 0; k < 6; k++) {
+    const t = -Math.PI / 2 + k * Math.PI / 3, ax = Math.cos(t), ay = Math.sin(t);
+    for (const [x, y] of arm.slice(0, -1)) pts.push([cx + y * ax + x * ay, cy + y * ay - x * ax]);
+  }
+  return poly(pts);
+}
+
+/* A cloud: the tops of overlapping circles on a flat base, the first and
+   last circles rounding off its ends. circles: [[cx, cy, r], ...] left to right. */
+function cloud(circles) {
+  const top = (x) => Math.min(...circles.filter(([cx, , r]) => Math.abs(x - cx) <= r)
+    .map(([cx, cy, r]) => cy - Math.sqrt(r * r - (x - cx) ** 2)));
+  const [fx, fy, fr] = circles[0], [lx, ly, lr] = circles[circles.length - 1];
+  const base = Math.max(fy + fr, ly + lr), pts = [];
+  for (let x = fx - fr; x <= lx + lr; x += 2) pts.push([x, top(x)]);
+  for (let a = 0; a <= 90; a += 10) pts.push([lx + lr * Math.cos(a * Math.PI / 180), ly + lr * Math.sin(a * Math.PI / 180)]);
+  pts.push([lx, base], [fx, base]);
+  for (let a = 90; a <= 180; a += 10) pts.push([fx + fr * Math.cos(a * Math.PI / 180), fy + fr * Math.sin(a * Math.PI / 180)]);
+  return poly(pts);
+}
+
+/* A raindrop the size of a fingertip, point up. */
+const drop = (x, y, s = 1) => `M${f1(x)} ${f1(y - 11 * s)} C${f1(x + 3 * s)} ${f1(y - 5 * s)} ${f1(x + 7 * s)} ${f1(y)} `
+  + `${f1(x + 7 * s)} ${f1(y + 4 * s)} C${f1(x + 7 * s)} ${f1(y + 8 * s)} ${f1(x + 4 * s)} ${f1(y + 11 * s)} ${f1(x)} ${f1(y + 11 * s)} `
+  + `C${f1(x - 4 * s)} ${f1(y + 11 * s)} ${f1(x - 7 * s)} ${f1(y + 8 * s)} ${f1(x - 7 * s)} ${f1(y + 4 * s)} `
+  + `C${f1(x - 7 * s)} ${f1(y)} ${f1(x - 3 * s)} ${f1(y - 5 * s)} ${f1(x)} ${f1(y - 11 * s)} Z`;
+
 export const SHAPES = {
   /* ---------------------------------------------------------------- animals */
   butterfly: {
@@ -478,6 +515,52 @@ export const SHAPES = {
       [148, 74, 158, 66, 166, 68], [176, 70, 178, 82, 172, 92],
       [162, 108, 160, 122, 160, 138], [160, 160, 146, 174, 128, 178],
       [126, 182, 124, 186, 124, 190], [116, 190, 108, 190, 100, 190]]) }],
+  },
+  snowflake: {
+    label: 'Snowflake', kind: 'symbol', heart: [100, 100],
+    parts: [{ layer: 'pattern', d: snowflake(100, 100) }],
+  },
+  sun: {
+    label: 'Sun', kind: 'symbol', heart: [100, 100],
+    parts: [{ layer: 'pattern', d: polar(100, 100, a => {
+      const t = 8 * (a + Math.PI / 2);
+      return 56 + (1 - Math.abs(Math.sin(t))) ** 2 * (27 + 11 * Math.cos(t));
+    }, 384) }],
+  },
+  feather: {
+    label: 'Feather', kind: 'symbol', heart: [98, 84],
+    parts: [
+      { layer: 'back', g: 'quill', d: 'M16 188 L22 194 L66 154 L58 148 Z' },
+      { layer: 'pattern', d: 'M50 164 C38 140 38 116 48 96 L38 92 C50 70 72 48 102 36 '
+          + 'C132 22 160 14 182 14 C184 36 176 64 160 90 L172 92 C156 118 132 140 104 152 '
+          + 'L110 160 C92 166 70 170 50 164 Z' },
+      { layer: 'front', g: 'shaft', d: 'M52 166 C84 122 124 72 176 20 L179 23 C128 76 88 126 57 169 Z' },
+    ],
+  },
+  cloud: {
+    label: 'Rain Cloud', kind: 'symbol', heart: [106, 106],
+    parts: [
+      { layer: 'pattern', d: cloud([[42, 116, 26], [78, 86, 36], [124, 74, 42], [162, 110, 30]]) },
+      { layer: 'front', g: 'drops', d: drop(62, 168) },
+      { layer: 'front', g: 'drops', d: drop(100, 180) },
+      { layer: 'front', g: 'drops', d: drop(138, 168) },
+    ],
+  },
+  rainbow: {
+    label: 'Rainbow', kind: 'symbol', heart: [100, 148],
+    parts: [
+      { layer: 'pattern', d: poly([...Array(73)].map((_, j) => {
+        const a = Math.PI + Math.PI * j / 72;
+        return [100 + 90 * Math.cos(a), 150 + 90 * Math.sin(a)];
+      })) },
+      { layer: 'front', g: 'clouds', d: cloud([[20, 152, 14], [40, 142, 18], [60, 154, 12]]) },
+      { layer: 'front', g: 'clouds', d: cloud([[140, 154, 12], [160, 142, 18], [180, 152, 14]]) },
+      { layer: 'front', g: 'center', d: cloud([[74, 150, 14], [100, 128, 26], [126, 150, 14]]) },
+    ],
+  },
+  gem: {
+    label: 'Gem', kind: 'symbol', heart: [100, 84],
+    parts: [{ layer: 'pattern', d: poly([[30, 66], [66, 26], [134, 26], [170, 66], [100, 180]]) }],
   },
 };
 
