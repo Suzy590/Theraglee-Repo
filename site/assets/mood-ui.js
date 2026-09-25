@@ -1,7 +1,10 @@
 /* ==========================================================================
    Theraglee — the Mood tab on the member dashboard.
-   One tap for the day's mood, then a one-tap 1 to 10 rating for each factor
-   that may be shaping it, and the weather. Every tap saves on its own. Once
+   One tap for the day's mood (saved straight away), then a one-tap 1 to 10
+   rating for each factor that may be shaping it, and the weather. Those are
+   sent together with Submit, which works only once all of them are answered.
+   A submitted day is final until the next day; the database enforces this
+   (20260925130000_mood_submit_once_a_day.sql). Once
    there are seven days of entries (in a row or not), "Your mood patterns"
    says which factors move with the mood. The factors and the analysis live in
    mood-patterns.js; docs/mood.md is the guide.
@@ -9,10 +12,16 @@
 import { sb, esc, toast } from './app.js';
 import { MOODS, FACTORS, WEATHER, MIN_DAYS, analyze, strength } from './mood-patterns.js';
 
-const COLS = ['logged_on', 'mood', 'weather', ...FACTORS.map(f => f[0])].join(',');
+const COLS = ['logged_on', 'mood', 'weather', 'submitted_at', ...FACTORS.map(f => f[0])].join(',');
+/* Everything Submit needs: the nine factors and the weather. */
+const NEEDED = [...FACTORS.map(f => f[0]), 'weather'];
 
-/* The same "today" the Goals & tracking page uses, so both read the same row. */
-const todayKey = () => new Date().toISOString().slice(0, 10);
+/* The member's own calendar day, so "tomorrow" starts at their midnight.
+   The Goals & tracking page uses the same, so both read the same row. */
+const todayKey = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
 
 export async function mountMood(host, profile) {
   const uid = profile.id;
@@ -22,6 +31,11 @@ export async function mountMood(host, profile) {
   if (error) { host.innerHTML = `<div class="empty">Your mood log could not be loaded. ${esc(error.message)}</div>`; return; }
   const rows = data || [];
   let now = rows.find(r => r.logged_on === today) || null;
+  // Answers picked but not yet submitted. Starts from anything already on
+  // today's row (from before there was a Submit button).
+  const draft = {};
+  for (const k of NEEDED) if (now?.[k] != null) draft[k] = now[k];
+  const submitted = () => Boolean(now?.submitted_at);
 
   host.innerHTML = `
     <div class="card" id="mood-card">
@@ -35,7 +49,7 @@ export async function mountMood(host, profile) {
     <div class="card" id="mood-factors" style="margin-top:26px" hidden>
       <h3>What might be shaping it?</h3>
       <p class="faint" style="margin-top:-4px">How does each of these feel <strong>today</strong>?
-        1 is terrible, 10 is fantastic. One tap each. It saves as you go, and you can skip any.</p>
+        1 is terrible, 10 is fantastic. One tap each, then press Submit at the bottom.</p>
       <div class="factor-list">${FACTORS.map(([key, label, hint]) => `
         <div class="factor" data-factor="${key}">
           <div class="factor-head"><strong>${esc(label)}</strong><span class="faint">${esc(hint)}</span></div>
@@ -50,7 +64,10 @@ export async function mountMood(host, profile) {
             `<button type="button" data-w="${k}" title="${l}" aria-label="${l}">${e}<span>${l}</span></button>`).join('')}</div>
         </div>
       </div>
-      <p data-factors-after class="faint" style="margin:16px 0 0"></p>
+      <div class="submit-row">
+        <button type="button" class="btn" data-submit disabled>Submit</button>
+        <p data-factors-after class="faint" style="margin:0"></p>
+      </div>
     </div>
 
     <div class="card" id="mood-patterns" style="margin-top:26px"></div>`;
@@ -58,22 +75,35 @@ export async function mountMood(host, profile) {
   const $ = (s) => host.querySelector(s);
 
   function paintToday() {
-    host.querySelectorAll('[data-mood] button').forEach(b =>
-      b.classList.toggle('on', Number(b.dataset.m) === now?.mood));
-    $('[data-mood-after]').textContent = now
-      ? 'Saved for today. Tap another face to change it.' : '';
+    const locked = submitted();
+    host.querySelectorAll('[data-mood] button').forEach(b => {
+      b.classList.toggle('on', Number(b.dataset.m) === now?.mood);
+      b.disabled = locked;
+    });
+    $('[data-mood-after]').textContent = locked
+      ? 'Submitted for today. You can check in again tomorrow.'
+      : now ? 'Saved for today. Tap another face to change it.' : '';
     $('#mood-factors').hidden = !now;
     if (!now) return;
     for (const [key] of FACTORS) {
-      host.querySelectorAll(`[data-factor="${key}"] button`).forEach(b =>
-        b.classList.toggle('on', Number(b.dataset.v) === now[key]));
+      host.querySelectorAll(`[data-factor="${key}"] button`).forEach(b => {
+        b.classList.toggle('on', Number(b.dataset.v) === draft[key]);
+        b.disabled = locked;
+      });
     }
-    host.querySelectorAll('[data-w]').forEach(b => b.classList.toggle('on', b.dataset.w === now.weather));
-    const done = FACTORS.filter(([k]) => now[k] != null).length + (now.weather ? 1 : 0);
-    const all = FACTORS.length + 1;
-    $('[data-factors-after]').textContent = done === all
-      ? 'All done for today. Thank you for checking in.'
-      : `${done} of ${all} rated today.`;
+    host.querySelectorAll('[data-w]').forEach(b => {
+      b.classList.toggle('on', b.dataset.w === draft.weather);
+      b.disabled = locked;
+    });
+    const done = NEEDED.filter(k => draft[k] != null).length;
+    const btn = $('[data-submit]');
+    btn.disabled = locked || done < NEEDED.length;
+    btn.style.display = locked ? 'none' : '';
+    $('[data-factors-after]').textContent = locked
+      ? 'All done for today. Thank you for checking in. You can check in again tomorrow.'
+      : done === NEEDED.length
+        ? 'All answered. Press Submit to save today\'s check-in.'
+        : `${done} of ${NEEDED.length} answered. Answer them all to submit.`;
   }
 
   function paintPatterns() {
@@ -123,6 +153,7 @@ export async function mountMood(host, profile) {
   }
 
   host.querySelectorAll('[data-mood] button').forEach(b => b.addEventListener('click', async () => {
+    if (submitted()) return;
     const mood = Number(b.dataset.m);
     const { error } = await sb.from('mood_logs')
       .upsert({ user_id: uid, logged_on: today, mood }, { onConflict: 'user_id,logged_on' });
@@ -132,16 +163,26 @@ export async function mountMood(host, profile) {
     if (first) $('#mood-factors').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }));
 
-  async function saveField(patch) {
+  // Picking a rating only marks it; nothing is saved until Submit.
+  host.querySelectorAll('[data-factor]').forEach(row => row.querySelectorAll('button').forEach(b =>
+    b.addEventListener('click', () => {
+      if (submitted()) return;
+      draft[row.dataset.factor] = Number(b.dataset.v); paintToday();
+    })));
+  host.querySelectorAll('[data-w]').forEach(b => b.addEventListener('click', () => {
+    if (submitted()) return;
+    draft.weather = b.dataset.w; paintToday();
+  }));
+
+  $('[data-submit]').addEventListener('click', async (e) => {
+    if (submitted() || NEEDED.some(k => draft[k] == null)) return;
+    e.target.disabled = true;
+    const patch = { ...draft, submitted_at: new Date().toISOString() };
     const { error } = await sb.from('mood_logs').update(patch)
       .eq('user_id', uid).eq('logged_on', today);
-    if (error) return toast(error.message, 'err');
+    if (error) { paintToday(); return toast(error.message, 'err'); }
     keep(patch);
-  }
-  host.querySelectorAll('[data-factor]').forEach(row => row.querySelectorAll('button').forEach(b =>
-    b.addEventListener('click', () => saveField({ [row.dataset.factor]: Number(b.dataset.v) }))));
-  host.querySelectorAll('[data-w]').forEach(b =>
-    b.addEventListener('click', () => saveField({ weather: b.dataset.w })));
+  });
 
   paintToday(); paintPatterns();
 }

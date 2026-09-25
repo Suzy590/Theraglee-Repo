@@ -104,4 +104,13 @@ test("nine factors and seven to ten weather choices, matching the migration", ()
   assert.deepEqual(list, WEATHER.map(w => w[0]));
 });
 
+test("a submitted day is locked in the database, the note aside", () => {
+  const sql = readFileSync(new URL("../../supabase/migrations/20260925130000_mood_submit_once_a_day.sql", import.meta.url), "utf8");
+  const locked = [...sql.matchAll(/new\.(\w+)\s+is distinct from old\.\1/g)].map(m => m[1]);
+  for (const k of ["mood", "weather", "submitted_at", "logged_on", ...FACTORS.map(f => f[0])]) {
+    assert.ok(locked.includes(k), `the lock must cover ${k}`);
+  }
+  assert.ok(!locked.includes("notes"), "the note stays editable");
+});
+
 console.log(`\n${n} checks passed`);
