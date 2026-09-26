@@ -60,7 +60,7 @@ export async function mountMood(host, profile) {
       <div data-mood-after class="faint" style="margin-top:12px"></div>
     </div>
 
-    <div class="card" id="mood-factors" style="margin-top:26px" hidden>
+    <div class="card" id="mood-factors" style="margin-top:26px">
       <h3>What might be shaping it?</h3>
       <p class="faint" style="margin-top:-4px">How does each of these feel <strong>today</strong>?
         1 is terrible, 10 is fantastic. One tap each, then press Submit at the bottom.</p>
@@ -99,8 +99,8 @@ export async function mountMood(host, profile) {
     $('[data-mood-after]').textContent = locked
       ? 'Submitted for today. You can check in again tomorrow.'
       : now ? 'Saved for today. Tap another face to change it.' : '';
-    $('#mood-factors').hidden = !now;
-    if (!now) return;
+    // The questions always show, so the whole check-in is visible from the
+    // start; Submit waits for the face at the top as well as every answer.
     $('.factor-list').style.display = locked ? 'none' : '';
     if (locked) for (const k of NEEDED) delete draft[k];
     for (const [key] of FACTORS) {
@@ -115,13 +115,15 @@ export async function mountMood(host, profile) {
     });
     const done = NEEDED.filter(k => draft[k] != null).length;
     const btn = $('[data-submit]');
-    btn.disabled = locked || done < NEEDED.length;
+    btn.disabled = locked || !now || done < NEEDED.length;
     btn.style.display = locked ? 'none' : '';
     $('[data-factors-after]').textContent = locked
       ? 'All done for today. Thank you for checking in. You can check in again tomorrow.'
-      : done === NEEDED.length
-        ? 'All answered. Press Submit to save today\'s check-in.'
-        : `${done} of ${NEEDED.length} answered. Answer them all to submit.`;
+      : done < NEEDED.length
+        ? `${done} of ${NEEDED.length} answered. Answer them all to submit.`
+        : !now
+          ? 'All answered. Tap a face at the top for your day overall, then press Submit.'
+          : 'All answered. Press Submit to save today\'s check-in.';
   }
 
   function paintPatterns() {
@@ -185,9 +187,7 @@ export async function mountMood(host, profile) {
     const { error } = await sb.from('mood_logs')
       .upsert({ user_id: uid, logged_on: today, mood }, { onConflict: 'user_id,logged_on' });
     if (error) return toast(error.message, 'err');
-    const first = !now;
     keep({ mood });
-    if (first) $('#mood-factors').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }));
 
   // Picking a rating only marks it; nothing is saved until Submit.
@@ -202,7 +202,7 @@ export async function mountMood(host, profile) {
   }));
 
   $('[data-submit]').addEventListener('click', async (e) => {
-    if (submitted() || NEEDED.some(k => draft[k] == null) || dayChanged()) return;
+    if (!now || submitted() || NEEDED.some(k => draft[k] == null) || dayChanged()) return;
     e.target.disabled = true;
     const patch = { ...draft, submitted_at: new Date().toISOString() };
     const { error } = await sb.from('mood_logs').update(patch)
