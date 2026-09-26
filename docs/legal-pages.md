@@ -23,7 +23,7 @@ fact; if any of these change, the policy must change in the same pull request.
 | Statement in the policy | Where it comes from |
 | --- | --- |
 | No advertising trackers, pixels, session replay or third-party analytics | Nothing of the kind is loaded from `site/`. Adding Vercel Analytics, Google Analytics, a Meta pixel, etc. requires updating sections 2, 5 and 6 and honoring opt-out signals |
-| Service providers: Supabase, Vercel, Stripe, Resend, a telephony provider, a license-verification service, Google Fonts, OpenStreetMap | `docs/site.md`, `site/admin.html`, the `<link>` tags on every page, `site/goals.html` |
+| Service providers: Supabase, Vercel, Stripe, Resend, a telephony provider, a license-verification service, Google Fonts, OpenStreetMap, SAMHSA's FindTreatment.gov locator | `docs/site.md`, `site/admin.html`, the `<link>` tags on every page, `site/goals.html`, `site/api/nearby.js` (`docs/nearby-help.md`) |
 | No AI chatbot, AI companion or AI therapy; personalization is rule-based | `daily_pick` is a database function. If a conversational or generative feature is ever added, Illinois, Nevada, Utah, California, New York, Oregon, Tennessee and Washington all have laws that apply — read them first |
 | Personal data is not used to train AI or LLMs | Connecticut requires this disclosure either way |
 | Therapists see only a pseudonymous profile (age range, broad topics, session preference and the first three digits of the zip code), and only with opt-in; the member's real name reaches a therapist only in a reply the member sends; a member can block a therapist | `site/assets/match.js`, the `member_discovery` view (no name, gender, age or zip column), `outreach_replies.member_name`, `member_blocks`; wording in `docs/match-mode-consent.md` |

@@ -26,13 +26,14 @@ each one, and the national resources underneath.
      Vercel's edge for a day. The point is rounded to about a kilometer first.
      SAMHSA lists a facility once per program; `samhsaPlaces` folds those
      into one tile.
-   - **OpenStreetMap's Overpass API**, a bonus: counseling services and
-     mental health centers. Its public servers are often too busy, so each in
+   - **OpenStreetMap's Overpass API**, a bonus: mental health centers,
+     psychiatry and addiction services. Its public servers are often too busy, so each in
      `OVERPASS` gets 12 seconds and the tab carries on without them. Answers
      are kept in `sessionStorage` for the visit.
 4. **Exclusions.** Individual therapists (psychotherapists, psychologists,
-   therapist offices) and Planned Parenthood are never listed, from either
-   source. `isExcluded` in `nearby-help.js` decides, and the Overpass query
+   therapist offices), counseling offices and Planned Parenthood are never
+   listed, from either source. Counseling for addiction or a crisis stays,
+   shown as "Addiction & recovery" or "Crisis & mental health center". `isExcluded` in `nearby-help.js` decides, and the Overpass query
    doesn't ask for therapist tags at all. Members are pointed to the Theraglee
    directory for therapists instead.
 5. `mergePlaces` drops community-map listings SAMHSA already has, sorts closest

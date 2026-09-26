@@ -43,7 +43,7 @@ test("miles is a great-circle distance", () => {
 });
 
 test("kinds of help", () => {
-  assert.equal(kindOf({ healthcare: "counselling" }), "counseling");
+  assert.equal(kindOf({ healthcare: "counselling" }), "other");
   assert.equal(kindOf({ healthcare: "counselling", "healthcare:counselling": "addiction" }), "addiction");
   assert.equal(kindOf({ amenity: "clinic", "healthcare:speciality": "psychiatry" }), "psychiatry");
   assert.equal(kindOf({ amenity: "social_facility", "social_facility:for": "mental_health" }), "crisis");
@@ -68,10 +68,11 @@ test("address, phone and website come out clean", () => {
 
 test("toPlaces keeps named places, drops repeats, and sorts closest first", () => {
   const json = { elements: [
-    { type: "node", id: 1, lat: 45.60, lon: -122.6, tags: { name: "Far", healthcare: "counselling" } },
-    { type: "way", id: 2, center: { lat: 45.51, lon: -122.6 }, tags: { name: "Near", healthcare: "counselling" } },
-    { type: "node", id: 3, lat: 45.51, lon: -122.6, tags: { name: "near", healthcare: "counselling" } },
-    { type: "node", id: 4, lat: 45.52, lon: -122.6, tags: { healthcare: "counselling" } },
+    { type: "node", id: 1, lat: 45.60, lon: -122.6, tags: { name: "Far", "healthcare:speciality": "psychiatry" } },
+    { type: "way", id: 2, center: { lat: 45.51, lon: -122.6 }, tags: { name: "Near", "social_facility:for": "mental_health" } },
+    { type: "node", id: 3, lat: 45.51, lon: -122.6, tags: { name: "near", "social_facility:for": "mental_health" } },
+    { type: "node", id: 4, lat: 45.52, lon: -122.6, tags: { "social_facility:for": "mental_health" } },
+    { type: "node", id: 8, lat: 45.50, lon: -122.6, tags: { name: "Hope Counseling", healthcare: "counselling" } },
     { type: "node", id: 6, lat: 45.50, lon: -122.6, tags: { name: "A Therapist", healthcare: "psychotherapist" } },
     { type: "node", id: 7, lat: 45.50, lon: -122.6, tags: { name: "Planned Parenthood", healthcare: "counselling" } },
     { type: "relation", id: 5, tags: { name: "No point" } },
@@ -79,7 +80,7 @@ test("toPlaces keeps named places, drops repeats, and sorts closest first", () =
   const p = toPlaces(json, 45.5, -122.6);
   assert.deepEqual(p.map(x => x.name), ["Near", "Far"]);
   assert.equal(p[0].id, "way/2");
-  assert.equal(p[0].kind, "counseling");
+  assert.equal(p[0].kind, "crisis");
   assert.equal(toPlaces(json, 45.5, -122.6, 1).length, 1);
   assert.deepEqual(toPlaces(null, 0, 0), []);
   // "Far" is about 7 miles off, so a 5-mile radius drops it.
@@ -148,7 +149,11 @@ test("therapists and Planned Parenthood are never listed", () => {
   assert.ok(isExcluded({ name: "Calm Rooms" }, { office: "therapist" }));
   assert.ok(isExcluded({ name: "Calm Rooms" }, { "healthcare:speciality": "psychotherapy" }));
   assert.ok(!isExcluded({ name: "County Behavioral Health" }, { "healthcare:speciality": "psychiatry;psychotherapy" }));
-  assert.ok(!isExcluded({ name: "Hope Counseling Center" }, { healthcare: "counselling" }));
+  // Counseling offices are left out; counseling for addiction or a crisis stays.
+  assert.ok(isExcluded({ name: "Hope Counseling Center" }, { healthcare: "counselling" }));
+  assert.ok(!isExcluded({ name: "Aspen Counseling" }, { healthcare: "counselling", "healthcare:counselling": "addiction" }));
+  assert.ok(!isExcluded({ name: "Crisis Line" }, { healthcare: "counselling" }));
+  assert.equal(KINDS.some(k => k[0] === "counseling"), false);
   assert.ok(!isExcluded({ name: "Aspen Recovery" }));
   assert.ok(isExcluded({ name: "WW Studio" }, { healthcare: "counselling", "healthcare:counselling": "dietitian" }));
   assert.equal(KINDS.some(k => k[0] === "therapist"), false);
