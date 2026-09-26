@@ -1,7 +1,7 @@
 // Data checks for the dashboard playlists. Run from the repo root:
 //   node tests/playlists-fixture/check.mjs
 // Fails (exit 1) if a genre or mood is missing a list, a list is not exactly
-// forty songs, a song is repeated within a genre (a cover counts), an entry
+// forty songs, its Spotify id is malformed, a song is repeated within a genre (a cover counts), an entry
 // is missing its title or artist, or the copy uses UK spelling.
 import { GENRES, MOODS, PLAYLISTS } from '../../site/assets/playlists.js';
 
@@ -34,6 +34,8 @@ for (const g of GENRES) {
     if (!l) { errors.push(`${tag}: missing`); continue; }
     if (!l.title) errors.push(`${tag}: missing title`);
     if (!l.blurb) errors.push(`${tag}: missing blurb`);
+    if (l.spotify !== '' && !/^[A-Za-z0-9]{22}$/.test(l.spotify || ''))
+      errors.push(`${tag}: spotify must be '' or a 22-character playlist id`);
     if (!Array.isArray(l.songs) || l.songs.length !== SONGS_PER_LIST)
       errors.push(`${tag}: ${l.songs?.length ?? 0} songs, want ${SONGS_PER_LIST}`);
     for (const s of l.songs || []) {
