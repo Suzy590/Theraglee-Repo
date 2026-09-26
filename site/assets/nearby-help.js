@@ -7,10 +7,10 @@
    Places within RADIUS_MI of it come from two sources:
    - SAMHSA's treatment locator, through /api/nearby (site/api/nearby.js):
      licensed mental health and substance use facilities. This is the main one.
-   - OpenStreetMap's Overpass API: counseling services and mental health
-     centers, when its public servers answer in time.
-   Individual therapists and Planned Parenthood are left out of every result
-   (see isExcluded).
+   - OpenStreetMap's Overpass API: mental health centers, psychiatry and
+     addiction services, when its public servers answer in time.
+   Individual therapists, counseling offices and Planned Parenthood are left
+   out of every result (see isExcluded).
    Each becomes a "place": a name, what kind of help it is, an address, a
    phone, a website, and how far away it is.
    ========================================================================== */
@@ -26,7 +26,6 @@ export const KINDS = [
   ['psychiatry', 'Psychiatry',                    '#6A3FA0'],
   ['clinic',     'Mental health clinic',          '#0E7C7B'],
   ['addiction',  'Addiction & recovery',          '#B2541E'],
-  ['counseling', 'Counseling',                    '#1F6FA8'],
   ['other',      'Mental health service',         '#5A6760'],
 ];
 export const kindInfo = (key) => {
@@ -43,7 +42,8 @@ const FILTERS = [
 ];
 
 /* Never listed, from either source: individual therapists (psychotherapists,
-   psychologists, therapist offices) and Planned Parenthood. */
+   psychologists, therapist offices), counseling offices and Planned
+   Parenthood. Counseling for addiction or a crisis stays, under those kinds. */
 const EXCLUDED_NAMES = /planned\s*parenthood/i;
 /* A name carrying a clinician's license or degree is one therapist's practice. */
 const CREDENTIALS = /(^|[\s,(])(LMFT|LAMFT|MFT|LCSW|LICSW|LMSW|LPC|LPCC|LMHC|LCPC|LCMHC|LPCC|PsyD|Psy\.D\.?|Ph\.?D\.?|EdD|LCAT|NCC)\b/;
@@ -51,6 +51,8 @@ export function isExcluded(place = {}, tags = {}) {
   if (EXCLUDED_NAMES.test(place.name || '') || EXCLUDED_NAMES.test(tags.operator || '') ||
       EXCLUDED_NAMES.test(tags.brand || '')) return true;
   if (CREDENTIALS.test(place.name || '')) return true;
+  if (tags.healthcare === 'counselling' &&
+      kindOf({ ...tags, name: place.name || tags.name }) === 'other') return true;
   /* Not mental health help at all: diet and weight-loss counseling. */
   if (/dietitian|nutrition/.test(tags['healthcare:counselling'] || '') ||
       /weight_loss/.test(tags['healthcare:speciality'] || '')) return true;
@@ -104,7 +106,6 @@ export function kindOf(t = {}) {
     return 'psychiatry';
   if (has('social_facility:for', /mental_health/) || has('healthcare:speciality', /mental_health/))
     return 'crisis';
-  if (has('healthcare', /^counselling$/)) return 'counseling';
   return 'other';
 }
 

@@ -75,7 +75,7 @@
     <article class="doc">
       <span class="eyebrow">Legal</span>
       <h1>Privacy Policy</h1>
-      <p class="dates">Effective September 18, 2026 · Last reviewed September 25, 2026 ·
+      <p class="dates">Effective September 26, 2026 · Last reviewed September 25, 2026 ·
         See also the <a href="terms.html">Terms of Service</a></p>
 
       <div class="summary" id="short-version">
@@ -178,7 +178,9 @@
         <li>We do not run advertising trackers, social media pixels, session-replay tools or
           third-party analytics scripts.</li>
         <li>We do not collect precise location. If you press <em>Use my location</em> on the resource
-          map, your browser shares your position with the map for that one view and we do not store it.</li>
+          map, your browser shares your position with the map for that one view and we do not store it.
+          To find treatment facilities near you, our server sends that position, rounded to about half a
+          mile, to SAMHSA's treatment locator.</li>
         <li>We do not collect Social Security numbers, government ID numbers, biometric data, or
           genetic data.</li>
         <li>We do not build advertising profiles or infer anything about you for marketing.</li>
@@ -249,8 +251,14 @@
             <td>A therapist's name, license number and state</td></tr>
           <tr><td>Google Fonts</td><td>Serves the typefaces used on every page</td>
             <td>Your IP address, when your browser fetches the font files</td></tr>
-          <tr><td>OpenStreetMap</td><td>Shows the map on the resource finder for Premium members</td>
-            <td>Your IP address and the area you asked to see, when you open the map</td></tr>
+          <tr><td>OpenStreetMap</td><td>Shows the map on the resource finder for Premium members, and
+            finds the zip code or town you type on it</td>
+            <td>Your IP address and the zip code, town or area you asked to see, when you use the map</td></tr>
+          <tr><td>SAMHSA (the U.S. Substance Abuse and Mental Health Services Administration)</td>
+            <td>Its FindTreatment.gov locator lists the licensed treatment facilities on the resource finder
+            for Premium members</td>
+            <td>The area you searched, rounded to about half a mile. Our server sends it, so SAMHSA does not
+            see your IP address or who you are</td></tr>
         </tbody>
       </table></div>
 

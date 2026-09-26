@@ -151,8 +151,8 @@ export function mapView(body, zip = '') {
   body.innerHTML = `
     <style>${STYLE}</style>
     <h2>Mental health help near you</h2>
-    <p class="muted">Clinics, treatment centers and counseling services within ${RADIUS_MI} miles.
-      Individual therapists aren't listed here; the <a href="therapists.html">Theraglee directory</a>
+    <p class="muted">Clinics, treatment centers and crisis services within ${RADIUS_MI} miles.
+      Individual therapists and counseling offices aren't listed here; the <a href="therapists.html">Theraglee directory</a>
       has those.</p>
     <form class="row" id="nearby-form" style="margin:16px 0">
       <input id="where" placeholder="Zip code or town" value="${esc(zip)}" style="max-width:240px"
@@ -187,7 +187,7 @@ export function mapView(body, zip = '') {
       <div id="list" style="margin-top:18px"><div class="skeleton" style="height:180px"></div></div>
       ${moreLinks(q)}
       <p class="faint" style="margin-top:14px">Facilities come from SAMHSA's federal treatment locator,
-        and counseling services from OpenStreetMap, a community-made map. Neither is
+        and mental health centers from OpenStreetMap, a community-made map. Neither is
         checked by Theraglee, so call ahead to confirm hours and services. In a crisis, call or text
         <a href="tel:988">988</a>.</p>`;
 
