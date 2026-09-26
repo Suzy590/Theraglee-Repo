@@ -85,6 +85,7 @@
     <div class="tabs" id="tabs" role="tablist">
       <button data-tab="today" role="tab">Today</button>
       <button data-tab="mood" role="tab">Mood</button>
+      <button data-tab="playlists" role="tab">Playlists</button>
       <button data-tab="explore" role="tab">Explore Library</button>
       <button data-tab="discover" role="tab">Discover</button>
       <button data-tab="progress" role="tab">Progress</button>
@@ -111,6 +112,10 @@
 
     <section data-panel="mood">
       <div id="mood-host"><div class="card"><div class="skeleton" style="height:120px"></div></div></div>
+    </section>
+
+    <section data-panel="playlists">
+      <div id="playlists-host"><div class="card"><div class="skeleton" style="height:120px"></div></div></div>
     </section>
 
     <section data-panel="explore">
@@ -161,7 +166,7 @@
 
 <script type="module">
 import { chrome, sb, access, requireAuth, esc, tierName, toast, fmtDate,
-         contentCounts, counted } from './assets/app.js';
+         contentCounts, counted, lockNotice } from './assets/app.js';
 import { library, isFavorite, favButton, statusBadge, bindLibrary } from './assets/library.js';
 import { TOOLS } from './assets/discover-tools.js';
 import { SETS as TRIVIA } from './assets/trivia-sets.js';
@@ -170,6 +175,7 @@ import { mountInbox } from './assets/inbox.js';
 import { mountLibrary } from './assets/explore-ui.js';
 import { mountDiscover } from './assets/discover-ui.js';
 import { mountMood } from './assets/mood-ui.js';
+import { mountPlaylists } from './assets/playlists-ui.js';
 import { loadPrices, tierCards, PLANS_INTRO, PLANS_NOTE } from './assets/plans.js';
 await chrome({ active:'dashboard.html' });
 const a = await requireAuth();
@@ -189,7 +195,7 @@ document.getElementById('tierbadge').textContent = tierName(a.level) + ' members
    The dashboard opens on Today. The other tabs are reached by their buttons or
    by address (dashboard.html#progress), and the address follows the tab so a
    refresh or a shared link comes back to the same one. */
-const PANELS = ['today', 'mood', 'explore', 'discover', 'progress', 'tools', 'messages'];
+const PANELS = ['today', 'mood', 'playlists', 'explore', 'discover', 'progress', 'tools', 'messages'];
 let tab = 'today';
 // A hash that names something inside a tab (dashboard.html#match-mode, #daily-quote)
 // opens that tab and scrolls to it. The feature showcase under the header links this way.
@@ -218,6 +224,12 @@ function showTab(next) {
   if (tab === 'discover' && !mounted.discover) {
     mounted.discover = true;
     mountDiscover(document.getElementById('discover-host'));
+  }
+  // Playlists are Premium: a genre, then a mood, then forty songs.
+  if (tab === 'playlists' && !mounted.playlists) {
+    mounted.playlists = true;
+    const host = document.getElementById('playlists-host');
+    if (a.level < 3) lockNotice(host, 3, 'Playlists'); else mountPlaylists(host);
   }
   // Messages are read fresh each time the tab opens, so a new one shows up.
   if (tab === 'messages') mountInbox(document.getElementById('inbox-host'), a);
@@ -413,6 +425,7 @@ const quick = [
   ['Worksheets', 'explore.html?type=worksheet', 2],
   ['Desktop pet', 'pet.html', 2, true],
   ['Mental health trivia', 'trivia.html', 2, true],
+  ['Music playlists', 'dashboard.html#playlists', 3, false, 'Pick a genre and a mood, get 40 songs'],
   ['Goals & tracking', 'goals.html', 3],
   ['Mandalas', 'mandalas.html', 3],
   ['Find a therapist', 'therapists.html', 0, false, 'Search the Theraglee directory for therapists in your area'],

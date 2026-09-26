@@ -41,7 +41,11 @@ The member dashboard opens on a **Today** tab (the daily affirmation, quote,
 tip, fun fact and journal prompt, plus a link to the mood check-in), which is
 what a member sees first after signing in. Its other tabs are **Mood** (the
 one-tap mood check-in, a 1 to 10 rating of what may be shaping it, the weather,
-and after seven days the patterns; see [`mood.md`](mood.md)), **Explore
+and after seven days the patterns; see [`mood.md`](mood.md)), **Playlists**
+(Premium: pick a genre, then a mood, and get forty songs curated for the pair,
+each linking to a search on Apple Music and Spotify; the lists are
+`site/assets/playlists.js`, the tab is `site/assets/playlists-ui.js`, and
+[`playlists.md`](playlists.md) is the guide), **Explore
 Library** (the whole library with search and filters, the same browser as
 `explore.html`, drawn from `site/assets/explore-ui.js`), **Discover** (the 360
 free discovery tools with search and topic chips, the same browser as

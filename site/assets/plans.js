@@ -49,7 +49,7 @@ export const PLANS = [
   { key: 'premium', level: 3, name: 'Premium', featured: true,
     feats: [
       'Everything in Basic, plus:',
-      'Mood-based music playlists',
+      'Music playlists by genre and mood',
       'Local mental health resource map',
       'Mandalas to print or color online',
       'Mental health goal tracking',
