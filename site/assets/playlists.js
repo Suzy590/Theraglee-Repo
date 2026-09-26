@@ -4,14 +4,18 @@
    A Premium feature on the member dashboard (dashboard.html#playlists). The
    member picks one of the genres below, then one of the moods, and gets the
    curated list for that pair: forty songs, every one on both Apple Music and
-   Spotify. Each song links to a search for it on each service, and the whole
-   list can be copied to paste into either app. The drawing lives in
-   playlists-ui.js; tests/playlists-fixture/check.mjs guards this file.
+   Spotify. Each list is also a public playlist in Theraglee's Spotify account
+   (made by tools/spotify_playlists.mjs), played right on the page. The
+   drawing lives in playlists-ui.js; tests/playlists-fixture/check.mjs guards
+   this file.
 
    Shape
      GENRES     [{ key, name, blurb }]              six genres, in the order shown
      MOODS      [{ key, name, blurb, wants }]       six moods, in the order shown
-     PLAYLISTS  { [genre.key]: { [mood.key]: { title, blurb, songs } } }
+     PLAYLISTS  { [genre.key]: { [mood.key]: { title, blurb, spotify, songs } } }
+     spotify    the id of this list's public playlist on Spotify, or '' until
+                tools/spotify_playlists.mjs has made it; with an id the tab
+                shows a Spotify player, without one it shows links per song
      songs      [[title, artist], ...]              exactly forty per list
 
    Writing rules
@@ -45,7 +49,7 @@ export const PLAYLISTS = {};
 
 /* ----------------------------------------------------------------- Pop */
 PLAYLISTS.pop = {
-  low: { title: 'Soft pop for a heavy day', blurb: 'Slow ballads and warm voices that sit with you instead of asking anything.', songs: [
+  low: { title: 'Soft pop for a heavy day', blurb: 'Slow ballads and warm voices that sit with you instead of asking anything.', spotify: '', songs: [
     ['Someone Like You', 'Adele'], ['Fix You', 'Coldplay'], ['Skinny Love', 'Birdy'],
     ['Say Something', 'A Great Big World & Christina Aguilera'], ['All I Want', 'Kodaline'],
     ['Let Her Go', 'Passenger'], ['Stay With Me', 'Sam Smith'], ['When the Party\'s Over', 'Billie Eilish'],
@@ -60,7 +64,7 @@ PLAYLISTS.pop = {
     ['Lost Without You', 'Freya Ridings'], ['Wish You Were Here', 'Pink Floyd'], ['Nothing Compares 2 U', 'Sinéad O\'Connor'],
     ['Angel', 'Sarah McLachlan'], ['I Will Remember You', 'Sarah McLachlan'], ['Beautiful', 'Christina Aguilera'],
   ] },
-  anxious: { title: 'Steady pop to breathe with', blurb: 'Even tempos and soft edges, nothing sudden, so your breath can follow the beat.', songs: [
+  anxious: { title: 'Steady pop to breathe with', blurb: 'Even tempos and soft edges, nothing sudden, so your breath can follow the beat.', spotify: '', songs: [
     ['Breathin', 'Ariana Grande'], ['Ocean Eyes', 'Billie Eilish'], ['Lovely', 'Billie Eilish & Khalid'],
     ['Better Together', 'Jack Johnson'], ['Banana Pancakes', 'Jack Johnson'], ['Upside Down', 'Jack Johnson'],
     ['Put Your Records On', 'Corinne Bailey Rae'], ['Like I\'m Gonna Lose You', 'Meghan Trainor & John Legend'],
@@ -75,7 +79,7 @@ PLAYLISTS.pop = {
     ['Stay', 'Rihanna & Mikky Ekko'], ['Warm on a Cold Night', 'HONNE'], ['Cool Kids', 'Echosmith'],
     ['Lights Up', 'Harry Styles'], ['Watermelon Sugar', 'Harry Styles'],
   ] },
-  flat: { title: 'A gentle lift', blurb: 'Warm, mid-tempo songs that open a window without telling you to cheer up.', songs: [
+  flat: { title: 'A gentle lift', blurb: 'Warm, mid-tempo songs that open a window without telling you to cheer up.', spotify: '', songs: [
     ['Here Comes the Sun', 'The Beatles'], ['Three Little Birds', 'Bob Marley & The Wailers'], ['Lovely Day', 'Bill Withers'],
     ['Walking on Sunshine', 'Katrina & The Waves'], ['Good as Hell', 'Lizzo'], ['Juice', 'Lizzo'],
     ['Sunroof', 'Nicky Youre & dazy'], ['Best Day of My Life', 'American Authors'], ['Budapest', 'George Ezra'],
@@ -90,7 +94,7 @@ PLAYLISTS.pop = {
     ['A Sky Full of Stars', 'Coldplay'], ['Shake It Off', 'Taylor Swift'], ['Dog Days Are Over', 'Florence + The Machine'],
     ['Pompeii', 'Bastille'], ['On Top of the World', 'Imagine Dragons'],
   ] },
-  angry: { title: 'Loud pop to let it out', blurb: 'Big, defiant songs that give the feeling a shape and a chorus to shout.', songs: [
+  angry: { title: 'Loud pop to let it out', blurb: 'Big, defiant songs that give the feeling a shape and a chorus to shout.', spotify: '', songs: [
     ['Since U Been Gone', 'Kelly Clarkson'], ['So What', 'P!nk'], ['Raise Your Glass', 'P!nk'], ['Bad Blood', 'Taylor Swift'],
     ['Look What You Made Me Do', 'Taylor Swift'], ['Good 4 U', 'Olivia Rodrigo'], ['Brutal', 'Olivia Rodrigo'],
     ['Vampire', 'Olivia Rodrigo'], ['Bad Guy', 'Billie Eilish'], ['You Should See Me in a Crown', 'Billie Eilish'],
@@ -105,7 +109,7 @@ PLAYLISTS.pop = {
     ['Misery Business', 'Paramore'], ['Ain\'t It Fun', 'Paramore'], ['Hard Out Here', 'Lily Allen'],
     ['Truth Hurts', 'Lizzo'], ['Flowers', 'Miley Cyrus'],
   ] },
-  restless: { title: 'Pop to move to', blurb: 'Bright, quick, danceable songs for a walk, a clean-up or a drive with the windows down.', songs: [
+  restless: { title: 'Pop to move to', blurb: 'Bright, quick, danceable songs for a walk, a clean-up or a drive with the windows down.', spotify: '', songs: [
     ['Uptown Funk', 'Mark Ronson & Bruno Mars'], ['Can\'t Stop the Feeling!', 'Justin Timberlake'], ['Happy', 'Pharrell Williams'],
     ['Shut Up and Dance', 'Walk the Moon'], ['Blinding Lights', 'The Weeknd'], ['Physical', 'Dua Lipa'],
     ['Dance Monkey', 'Tones and I'], ['Shake It Out', 'Florence + The Machine'], ['I Gotta Feeling', 'Black Eyed Peas'],
@@ -120,7 +124,7 @@ PLAYLISTS.pop = {
     ['Domino', 'Jessie J'], ['Starships', 'Nicki Minaj'], ['Timber', 'Pitbull & Kesha'], ['Tik Tok', 'Kesha'],
     ['Good Time', 'Owl City & Carly Rae Jepsen'],
   ] },
-  okay: { title: 'Easy pop company', blurb: 'Mellow, familiar and unhurried, for a day that is fine and can stay that way.', songs: [
+  okay: { title: 'Easy pop company', blurb: 'Mellow, familiar and unhurried, for a day that is fine and can stay that way.', spotify: '', songs: [
     ['Sunday Best', 'Surfaces'], ['Wait for You', 'Surfaces'], ['Golden', 'Harry Styles'], ['Late Night Talking', 'Harry Styles'],
     ['Heat Waves', 'Glass Animals'], ['Somebody That I Used to Know', 'Gotye & Kimbra'], ['Lush Life', 'Zara Larsson'],
     ['Cool', 'Dua Lipa'], ['Homemade Dynamite', 'Lorde'], ['Ribs', 'Lorde'], ['Royals', 'Lorde'], ['Green Light', 'Lorde'],
@@ -138,7 +142,7 @@ PLAYLISTS.pop = {
 
 /* ---------------------------------------------------------------- Rock */
 PLAYLISTS.rock = {
-  low: { title: 'Slow rock for a heavy day', blurb: 'Ballads and slow burners with room to feel it, from the classics to now.', songs: [
+  low: { title: 'Slow rock for a heavy day', blurb: 'Ballads and slow burners with room to feel it, from the classics to now.', spotify: '', songs: [
     ['Nothing Else Matters', 'Metallica'], ['Wonderwall', 'Oasis'], ['Champagne Supernova', 'Oasis'],
     ['Black', 'Pearl Jam'], ['Hurt', 'Nine Inch Nails'], ['Creep', 'Radiohead'], ['Fake Plastic Trees', 'Radiohead'],
     ['High and Dry', 'Radiohead'], ['With or Without You', 'U2'], ['One', 'U2'], ['Under the Bridge', 'Red Hot Chili Peppers'],
@@ -152,7 +156,7 @@ PLAYLISTS.rock = {
     ['Angie', 'The Rolling Stones'], ['Let It Be', 'The Beatles'], ['Blackbird', 'The Beatles'],
     ['Free Fallin\'', 'Tom Petty'], ['Runaway Train', 'Soul Asylum'], ['Disarm', 'The Smashing Pumpkins'],
   ] },
-  anxious: { title: 'Steady rock to settle to', blurb: 'Mid-tempo and even, warm guitars and a pulse you can lean on.', songs: [
+  anxious: { title: 'Steady rock to settle to', blurb: 'Mid-tempo and even, warm guitars and a pulse you can lean on.', spotify: '', songs: [
     ['Sweet Disposition', 'The Temper Trap'], ['Chasing Cars', 'Snow Patrol'], ['Run', 'Snow Patrol'],
     ['Somewhere Only We Know', 'Keane'], ['Everybody\'s Changing', 'Keane'], ['Clocks', 'Coldplay'],
     ['In My Place', 'Coldplay'], ['Fix You', 'Coldplay'], ['Yellow', 'Coldplay'], ['Trouble', 'Coldplay'],
@@ -168,7 +172,7 @@ PLAYLISTS.rock = {
     ['Big Yellow Taxi', 'Counting Crows'], ['Hey Jude', 'The Beatles'], ['Ho Hey', 'The Lumineers'],
     ['Home', 'Phillip Phillips'], ['Soak Up the Sun', 'Sheryl Crow'],
   ] },
-  flat: { title: 'Rock with a gentle lift', blurb: 'Songs that build, brighten and get you moving without demanding it.', songs: [
+  flat: { title: 'Rock with a gentle lift', blurb: 'Songs that build, brighten and get you moving without demanding it.', spotify: '', songs: [
     ['Mr. Blue Sky', 'Electric Light Orchestra'], ['Here Comes the Sun', 'The Beatles'], ['Good Day Sunshine', 'The Beatles'],
     ['Brown Eyed Girl', 'Van Morrison'], ['Into the Mystic', 'Van Morrison'], ['Go Your Own Way', 'Fleetwood Mac'],
     ['Don\'t Stop', 'Fleetwood Mac'], ['Don\'t Stop Believin\'', 'Journey'], ['Don\'t Stop Me Now', 'Queen'],
@@ -183,7 +187,7 @@ PLAYLISTS.rock = {
     ['Steal My Sunshine', 'Len'], ['Hey Soul Sister', 'Train'], ['Drops of Jupiter', 'Train'],
     ['Little Talks', 'Of Monsters and Men'], ['Radioactive', 'Imagine Dragons'],
   ] },
-  angry: { title: 'Rock to throw it at', blurb: 'Loud, fast and cathartic, from grunge to metal, for putting the feeling somewhere safe.', songs: [
+  angry: { title: 'Rock to throw it at', blurb: 'Loud, fast and cathartic, from grunge to metal, for putting the feeling somewhere safe.', spotify: '', songs: [
     ['Smells Like Teen Spirit', 'Nirvana'], ['Breed', 'Nirvana'], ['Killing in the Name', 'Rage Against the Machine'],
     ['Bulls on Parade', 'Rage Against the Machine'], ['Chop Suey!', 'System of a Down'], ['Toxicity', 'System of a Down'],
     ['Bodies', 'Drowning Pool'], ['Break Stuff', 'Limp Bizkit'], ['Duality', 'Slipknot'], ['Psychosocial', 'Slipknot'],
@@ -197,7 +201,7 @@ PLAYLISTS.rock = {
     ['American Idiot', 'Green Day'], ['Basket Case', 'Green Day'], ['Cherry Bomb', 'The Runaways'],
     ['Rebel Girl', 'Bikini Kill'], ['Celebrity Skin', 'Hole'], ['Zombie', 'The Cranberries'],
   ] },
-  restless: { title: 'Rock to move to', blurb: 'Driving riffs and quick tempos for a run, a workout or a drive.', songs: [
+  restless: { title: 'Rock to move to', blurb: 'Driving riffs and quick tempos for a run, a workout or a drive.', spotify: '', songs: [
     ['Seven Nation Army', 'The White Stripes'], ['Mr. Brightside', 'The Killers'], ['When You Were Young', 'The Killers'],
     ['Somebody Told Me', 'The Killers'], ['Take Me Out', 'Franz Ferdinand'], ['Do I Wanna Know?', 'Arctic Monkeys'],
     ['I Bet You Look Good on the Dancefloor', 'Arctic Monkeys'], ['Last Nite', 'The Strokes'], ['Reptilia', 'The Strokes'],
@@ -212,7 +216,7 @@ PLAYLISTS.rock = {
     ['Sweet Child O\' Mine', 'Guns N\' Roses'], ['Livin\' on a Prayer', 'Bon Jovi'], ['Eye of the Tiger', 'Survivor'],
     ['Woo Hoo', 'The 5.6.7.8\'s'], ['Feel Good Inc.', 'Gorillaz'], ['Believer', 'Imagine Dragons'],
   ] },
-  okay: { title: 'Easy rock company', blurb: 'Classic and current rock that hums along while you get on with the day.', songs: [
+  okay: { title: 'Easy rock company', blurb: 'Classic and current rock that hums along while you get on with the day.', spotify: '', songs: [
     ['Sweet Home Alabama', 'Lynyrd Skynyrd'], ['Hotel California', 'Eagles'], ['More Than a Feeling', 'Boston'],
     ['Come Together', 'The Beatles'], ['Twist and Shout', 'The Beatles'], ['Beast of Burden', 'The Rolling Stones'],
     ['Miss You', 'The Rolling Stones'], ['Rhiannon', 'Fleetwood Mac'], ['The Chain', 'Fleetwood Mac'],
@@ -231,7 +235,7 @@ PLAYLISTS.rock = {
 
 /* ------------------------------------------------------- Hip-hop & R&B */
 PLAYLISTS.hiphop = {
-  low: { title: 'Slow R&B for a heavy day', blurb: 'Soft soul and slow rap, warm and unhurried, for keeping you company.', songs: [
+  low: { title: 'Slow R&B for a heavy day', blurb: 'Soft soul and slow rap, warm and unhurried, for keeping you company.', spotify: '', songs: [
     ['Redbone', 'Childish Gambino'], ['Pink + White', 'Frank Ocean'], ['Thinkin Bout You', 'Frank Ocean'],
     ['Self Control', 'Frank Ocean'], ['Ivy', 'Frank Ocean'], ['Get You', 'Daniel Caesar & Kali Uchis'],
     ['Best Part', 'Daniel Caesar & H.E.R.'], ['Focus', 'H.E.R.'], ['Hard Place', 'H.E.R.'], ['Come Through and Chill', 'Miguel & J. Cole'],
@@ -245,7 +249,7 @@ PLAYLISTS.hiphop = {
     ['Essence', 'WizKid & Tems'], ['Cranes in the Sky', 'Solange'], ['Weak', 'SWV'], ['Say My Name', 'Destiny\'s Child'],
     ['Untitled (How Does It Feel)', 'D\'Angelo'],
   ] },
-  anxious: { title: 'Steady R&B to breathe with', blurb: 'Smooth, even grooves with nothing jarring, so the nervous system can settle.', songs: [
+  anxious: { title: 'Steady R&B to breathe with', blurb: 'Smooth, even grooves with nothing jarring, so the nervous system can settle.', spotify: '', songs: [
     ['Come Away with Me', 'Norah Jones'], ['Golden', 'Jill Scott'], ['A Long Walk', 'Jill Scott'],
     ['On & On', 'Erykah Badu'], ['Didn\'t Cha Know', 'Erykah Badu'], ['Brown Sugar', 'D\'Angelo'],
     ['Lady', 'D\'Angelo'], ['Cruisin\'', 'Smokey Robinson'], ['Sumthin\' Sumthin\'', 'Maxwell'],
@@ -260,7 +264,7 @@ PLAYLISTS.hiphop = {
     ['Doo Wop (That Thing)', 'Ms. Lauryn Hill'], ['Ex-Factor', 'Ms. Lauryn Hill'], ['Killing Me Softly', 'Fugees'],
     ['Waterfalls', 'TLC'], ['Sunny', 'Bobby Hebb'], ['Lovely Day', 'Bill Withers'],
   ] },
-  flat: { title: 'Hip-hop with a gentle lift', blurb: 'Warm, sunny rap and soul that gets the day moving without shouting.', songs: [
+  flat: { title: 'Hip-hop with a gentle lift', blurb: 'Warm, sunny rap and soul that gets the day moving without shouting.', spotify: '', songs: [
     ['Sunday Candy', 'Donnie Trumpet & The Social Experiment'], ['Blessings', 'Chance the Rapper'], ['No Problem', 'Chance the Rapper, Lil Wayne & 2 Chainz'],
     ['Juice', 'Chance the Rapper'], ['Alright', 'Kendrick Lamar'], ['I', 'Kendrick Lamar'], ['Humble.', 'Kendrick Lamar'],
     ['Good Life', 'Kanye West & T-Pain'], ['Touch the Sky', 'Kanye West & Lupe Fiasco'], ['Kick, Push', 'Lupe Fiasco'],
@@ -275,7 +279,7 @@ PLAYLISTS.hiphop = {
     ['Broccoli', 'DRAM & Lil Yachty'], ['Cash Machine', 'DRAM'], ['Everybody Loves the Sunshine', 'Roy Ayers Ubiquity'],
     ['Better', 'Khalid'], ['Come Thru', 'Summer Walker & Usher'], ['U Got It Bad', 'Usher'], ['Yeah!', 'Usher, Lil Jon & Ludacris'],
   ] },
-  angry: { title: 'Rap to let it out', blurb: 'Hard beats and sharp verses that turn the feeling into energy you can use.', songs: [
+  angry: { title: 'Rap to let it out', blurb: 'Hard beats and sharp verses that turn the feeling into energy you can use.', spotify: '', songs: [
     ['Lose Yourself', 'Eminem'], ['Till I Collapse', 'Eminem & Nate Dogg'], ['The Way I Am', 'Eminem'], ['Not Afraid', 'Eminem'],
     ['DNA.', 'Kendrick Lamar'], ['m.A.A.d city', 'Kendrick Lamar & MC Eiht'], ['Backseat Freestyle', 'Kendrick Lamar'],
     ['Power', 'Kanye West'], ['Black Skinhead', 'Kanye West'], ['Stronger', 'Kanye West'], ['X Gon\' Give It to Ya', 'DMX'],
@@ -290,7 +294,7 @@ PLAYLISTS.hiphop = {
     ['Savage', 'Megan Thee Stallion'], ['Big Ole Freak', 'Megan Thee Stallion'], ['Bitch Better Have My Money', 'Rihanna'],
     ['Rap God', 'Eminem'], ['Money Trees', 'Kendrick Lamar & Jay Rock'],
   ] },
-  restless: { title: 'Hip-hop to move to', blurb: 'Bounce, tempo and hooks for walking fast, cleaning or getting through a workout.', songs: [
+  restless: { title: 'Hip-hop to move to', blurb: 'Bounce, tempo and hooks for walking fast, cleaning or getting through a workout.', spotify: '', songs: [
     ['Can\'t Hold Us', 'Macklemore & Ryan Lewis & Ray Dalton'], ['Thrift Shop', 'Macklemore & Ryan Lewis & Wanz'],
     ['Empire State of Mind', 'JAY-Z & Alicia Keys'], ['99 Problems', 'JAY-Z'], ['Dirt Off Your Shoulder', 'JAY-Z'],
     ['In da Club', '50 Cent'], ['Hot in Herre', 'Nelly'], ['Ride wit Me', 'Nelly & City Spud'], ['Crazy in Love', 'Beyoncé & JAY-Z'],
@@ -305,7 +309,7 @@ PLAYLISTS.hiphop = {
     ['Crank That (Soulja Boy)', 'Soulja Boy'], ['Fergalicious', 'Fergie'], ['Boom Boom Pow', 'Black Eyed Peas'],
     ['I Gotta Feeling', 'Black Eyed Peas'], ['Let\'s Get It Started', 'Black Eyed Peas'],
   ] },
-  okay: { title: 'Easy hip-hop and R&B', blurb: 'Laid-back grooves and familiar voices that keep the day rolling along.', songs: [
+  okay: { title: 'Easy hip-hop and R&B', blurb: 'Laid-back grooves and familiar voices that keep the day rolling along.', spotify: '', songs: [
     ['Sundress', 'A$AP Rocky'], ['Best I Ever Had', 'Drake'], ['Take Care', 'Drake & Rihanna'], ['Too Good', 'Drake & Rihanna'],
     ['Work', 'Rihanna & Drake'], ['Diamonds', 'Rihanna'], ['Umbrella', 'Rihanna & JAY-Z'], ['Needed Me', 'Rihanna'],
     ['Nights', 'Frank Ocean'], ['Novacane', 'Frank Ocean'], ['Chanel', 'Frank Ocean'], ['Lost', 'Frank Ocean'],
@@ -323,7 +327,7 @@ PLAYLISTS.hiphop = {
 
 /* ------------------------------------------------------------- Country */
 PLAYLISTS.country = {
-  low: { title: 'Slow country for a heavy day', blurb: 'Steel guitar, plain words and slow songs that know what a hard day is.', songs: [
+  low: { title: 'Slow country for a heavy day', blurb: 'Steel guitar, plain words and slow songs that know what a hard day is.', spotify: '', songs: [
     ['Hurt', 'Johnny Cash'], ['Whiskey Lullaby', 'Brad Paisley & Alison Krauss'], ['The House That Built Me', 'Miranda Lambert'],
     ['Tin Man', 'Miranda Lambert'], ['I Drive Your Truck', 'Lee Brice'], ['Marry Me', 'Thomas Rhett'],
     ['Die a Happy Man', 'Thomas Rhett'], ['Cover Me Up', 'Jason Isbell'], ['If We Were Vampires', 'Jason Isbell and the 400 Unit'],
@@ -338,7 +342,7 @@ PLAYLISTS.country = {
     ['Better Together', 'Luke Combs'], ['Blue Ain\'t Your Color', 'Keith Urban'], ['The Dance', 'Garth Brooks'],
     ['He Stopped Loving Her Today', 'George Jones'], ['Go Rest High on That Mountain', 'Vince Gill'], ['Always on My Mind', 'Willie Nelson'],
   ] },
-  anxious: { title: 'Steady country to settle to', blurb: 'Easy tempos, warm voices and no surprises, like a porch at dusk.', songs: [
+  anxious: { title: 'Steady country to settle to', blurb: 'Easy tempos, warm voices and no surprises, like a porch at dusk.', spotify: '', songs: [
     ['Blue Eyes Crying in the Rain', 'Willie Nelson'], ['On the Road Again', 'Willie Nelson'], ['Ring of Fire', 'Johnny Cash'],
     ['I Walk the Line', 'Johnny Cash'], ['Jolene', 'Dolly Parton'], ['Coat of Many Colors', 'Dolly Parton'],
     ['Wagon Wheel', 'Old Crow Medicine Show'], ['Bluebird', 'Miranda Lambert'], ['Take Me Home, Country Roads', 'John Denver'],
@@ -353,7 +357,7 @@ PLAYLISTS.country = {
     ['Mercy', 'Brett Young'], ['Meant to Be', 'Bebe Rexha & Florida Georgia Line'], ['Hard to Love', 'Lee Brice'],
     ['Love Story', 'Taylor Swift'], ['Fifteen', 'Taylor Swift'], ['Tim McGraw', 'Taylor Swift'],
   ] },
-  flat: { title: 'Country with a gentle lift', blurb: 'Bright, warm songs that open the curtains a little and get the day rolling.', songs: [
+  flat: { title: 'Country with a gentle lift', blurb: 'Bright, warm songs that open the curtains a little and get the day rolling.', spotify: '', songs: [
     ['Chicken Fried', 'Zac Brown Band'], ['Toes', 'Zac Brown Band'], ['Knee Deep', 'Zac Brown Band & Jimmy Buffett'],
     ['Homegrown', 'Zac Brown Band'], ['Life Is Good', 'Zac Brown Band'], ['My Wish', 'Rascal Flatts'],
     ['Life Is a Highway', 'Rascal Flatts'], ['Fast Cars and Freedom', 'Rascal Flatts'], ['Something Like That', 'Tim McGraw'],
@@ -369,7 +373,7 @@ PLAYLISTS.country = {
     ['Peter Pan', 'Kelsea Ballerini'], ['Get Me Some of That', 'Thomas Rhett'], ['American Kids', 'Kenny Chesney'],
     ['Summertime', 'Kenny Chesney'], ['No Shoes, No Shirt, No Problems', 'Kenny Chesney'],
   ] },
-  angry: { title: 'Country to let it out', blurb: 'Fired-up, fed-up songs that put the feeling into words and turn it up.', songs: [
+  angry: { title: 'Country to let it out', blurb: 'Fired-up, fed-up songs that put the feeling into words and turn it up.', spotify: '', songs: [
     ['Gunpowder & Lead', 'Miranda Lambert'], ['Kerosene', 'Miranda Lambert'], ['Mama\'s Broken Heart', 'Miranda Lambert'],
     ['Little Red Wagon', 'Miranda Lambert'], ['Before He Cheats', 'Carrie Underwood'], ['Two Black Cadillacs', 'Carrie Underwood'],
     ['Church Bells', 'Carrie Underwood'], ['Goodbye Earl', 'The Chicks'], ['Not Ready to Make Nice', 'The Chicks'],
@@ -385,7 +389,7 @@ PLAYLISTS.country = {
     ['Whiskey Glasses', 'Morgan Wallen'], ['Fancy', 'Reba McEntire'], ['I Hope', 'Gabby Barrett'],
     ['Texas Hold \'Em', 'Beyoncé'], ['Whiskey Bent and Hell Bound', 'Hank Williams Jr.'],
   ] },
-  restless: { title: 'Country to move to', blurb: 'Foot-stomping, fast and fun, for a drive, a walk or a kitchen you are cleaning anyway.', songs: [
+  restless: { title: 'Country to move to', blurb: 'Foot-stomping, fast and fun, for a drive, a walk or a kitchen you are cleaning anyway.', spotify: '', songs: [
     ['Chattahoochee', 'Alan Jackson'], ['Good Time', 'Alan Jackson'], ['Friends in Low Places', 'Garth Brooks'],
     ['Ain\'t Goin\' Down (\'Til the Sun Comes Up)', 'Garth Brooks'], ['Callin\' Baton Rouge', 'Garth Brooks'], ['Guitars, Cadillacs', 'Dwight Yoakam'],
     ['Fast as You', 'Dwight Yoakam'], ['Dixieland Delight', 'Alabama'], ['Mountain Music', 'Alabama'], ['Song of the South', 'Alabama'],
@@ -400,7 +404,7 @@ PLAYLISTS.country = {
     ['Girl in a Country Song', 'Maddie & Tae'], ['Dibs', 'Kelsea Ballerini'], ['Sweet Tea', 'Cody Johnson'],
     ['Fancy Like', 'Walker Hayes'], ['Truck Bed', 'Hardy'], ['Last Night', 'Morgan Wallen'],
   ] },
-  okay: { title: 'Easy country company', blurb: 'Mid-tempo, familiar and warm, the kind of songs a good day plays itself.', songs: [
+  okay: { title: 'Easy country company', blurb: 'Mid-tempo, familiar and warm, the kind of songs a good day plays itself.', spotify: '', songs: [
     ['Alright', 'Darius Rucker'], ['Sangria', 'Blake Shelton'], ['Honey Bee', 'Blake Shelton'], ['God\'s Country', 'Blake Shelton'],
     ['Austin', 'Blake Shelton'], ['Hell of a Year', 'Parker McCollum'], ['Pretty Heart', 'Parker McCollum'],
     ['Chasin\' You', 'Morgan Wallen'], ['7 Summers', 'Morgan Wallen'], ['Sand in My Boots', 'Morgan Wallen'],
@@ -419,7 +423,7 @@ PLAYLISTS.country = {
 
 /* -------------------------------------------------------- Indie & folk */
 PLAYLISTS.indie = {
-  low: { title: 'Quiet folk for a heavy day', blurb: 'Hushed voices and acoustic guitars that sit with you in the dark and do not rush.', songs: [
+  low: { title: 'Quiet folk for a heavy day', blurb: 'Hushed voices and acoustic guitars that sit with you in the dark and do not rush.', spotify: '', songs: [
     ['Holocene', 'Bon Iver'], ['Skinny Love', 'Bon Iver'], ['Re: Stacks', 'Bon Iver'], ['Flume', 'Bon Iver'],
     ['The Night We Met', 'Lord Huron'], ['Cherry Wine', 'Hozier'], ['Work Song', 'Hozier'], ['Like Real People Do', 'Hozier'],
     ['Motion Sickness', 'Phoebe Bridgers'], ['Scott Street', 'Phoebe Bridgers'], ['Funeral', 'Phoebe Bridgers'],
@@ -433,7 +437,7 @@ PLAYLISTS.indie = {
     ['Songbird', 'Eva Cassidy'], ['Fields of Gold', 'Eva Cassidy'], ['Say Yes', 'Elliott Smith'], ['Big Black Car', 'Gregory Alan Isakov'],
     ['If I Go, I\'m Goin', 'Gregory Alan Isakov'], ['Amsterdam', 'Gregory Alan Isakov'],
   ] },
-  anxious: { title: 'Steady folk to breathe with', blurb: 'Even strumming and gentle voices, nothing sharp, for slowing the room down.', songs: [
+  anxious: { title: 'Steady folk to breathe with', blurb: 'Even strumming and gentle voices, nothing sharp, for slowing the room down.', spotify: '', songs: [
     ['Fast Car', 'Tracy Chapman'], ['The Boxer', 'Mumford & Sons & Jerry Douglas'], ['I Will Wait', 'Mumford & Sons'],
     ['Awake My Soul', 'Mumford & Sons'], ['Timshel', 'Mumford & Sons'], ['Ophelia', 'The Lumineers'],
     ['Stubborn Love', 'The Lumineers'], ['Cleopatra', 'The Lumineers'], ['Sleep on the Floor', 'The Lumineers'],
@@ -448,7 +452,7 @@ PLAYLISTS.indie = {
     ['Fire and Rain', 'James Taylor'], ['Carolina in My Mind', 'James Taylor'], ['Sweet Baby James', 'James Taylor'],
     ['Diamonds & Rust', 'Joan Baez'], ['Suzanne', 'Leonard Cohen'], ['Hallelujah', 'Leonard Cohen'],
   ] },
-  flat: { title: 'Indie with a gentle lift', blurb: 'Warm, bright and unforced, like a window opening on a slow morning.', songs: [
+  flat: { title: 'Indie with a gentle lift', blurb: 'Warm, bright and unforced, like a window opening on a slow morning.', spotify: '', songs: [
     ['Home', 'Edward Sharpe & The Magnetic Zeros'], ['Ho Hey', 'The Lumineers'], ['Riptide', 'Vance Joy'],
     ['Little Talks', 'Of Monsters and Men'], ['Mountain Sound', 'Of Monsters and Men'], ['Dirty Paws', 'Of Monsters and Men'],
     ['Budapest', 'George Ezra'], ['Shotgun', 'George Ezra'], ['Paradise', 'George Ezra'], ['Sedona', 'Houndmouth'],
@@ -461,7 +465,7 @@ PLAYLISTS.indie = {
     ['Cough Syrup', 'Young the Giant'], ['My Body', 'Young the Giant'], ['Hey Now', 'London Grammar'],
     ['Tessellate', 'Alt-J'], ['Left Hand Free', 'Alt-J'], ['Dreams', 'Beck'], ['Golden Age', 'Beck'], ['Girl', 'Beck'],
   ] },
-  angry: { title: 'Indie to let it out', blurb: 'Distorted guitars and songs that get to say what you cannot yet.', songs: [
+  angry: { title: 'Indie to let it out', blurb: 'Distorted guitars and songs that get to say what you cannot yet.', spotify: '', songs: [
     ['Cannonball', 'The Breeders'], ['Debaser', 'Pixies'], ['Gouge Away', 'Pixies'], ['Monkey Gone to Heaven', 'Pixies'],
     ['Teen Age Riot', 'Sonic Youth'], ['Kool Thing', 'Sonic Youth'], ['Rebel Girl', 'Bikini Kill'], ['Deceptacon', 'Le Tigre'],
     ['Ur Mum', 'Wet Leg'], ['Kyoto', 'Phoebe Bridgers'], ['I Know the End', 'Phoebe Bridgers'],
@@ -475,7 +479,7 @@ PLAYLISTS.indie = {
     ['Portions for Foxes', 'Rilo Kiley'], ['The Moneymaker', 'Rilo Kiley'], ['Kill V. Maim', 'Grimes'], ['Oblivion', 'Grimes'],
     ['Pedestrian at Best', 'Courtney Barnett'],
   ] },
-  restless: { title: 'Indie to move to', blurb: 'Quick strums, hand claps and choruses to walk fast to.', songs: [
+  restless: { title: 'Indie to move to', blurb: 'Quick strums, hand claps and choruses to walk fast to.', spotify: '', songs: [
     ['Dog Days Are Over', 'Florence + The Machine'], ['Shake It Out', 'Florence + The Machine'], ['Ship to Wreck', 'Florence + The Machine'],
     ['Feel It Still', 'Portugal. The Man'], ['Live in the Moment', 'Portugal. The Man'], ['A-Punk', 'Vampire Weekend'],
     ['Oxford Comma', 'Vampire Weekend'], ['Cousins', 'Vampire Weekend'], ['Harmony Hall', 'Vampire Weekend'], ['This Life', 'Vampire Weekend'],
@@ -490,7 +494,7 @@ PLAYLISTS.indie = {
     ['Daft Punk Is Playing at My House', 'LCD Soundsystem'], ['All My Friends', 'LCD Soundsystem'], ['Someone Great', 'LCD Soundsystem'],
     ['Wolf Like Me', 'TV on the Radio'],
   ] },
-  okay: { title: 'Easy indie company', blurb: 'Mellow, familiar and a little sunny, for a day that is going fine.', songs: [
+  okay: { title: 'Easy indie company', blurb: 'Mellow, familiar and a little sunny, for a day that is going fine.', spotify: '', songs: [
     ['Coffee', 'beabadoobee'], ['The Perfect Pair', 'beabadoobee'], ['Sofia', 'Clairo'], ['Bags', 'Clairo'],
     ['Pretty Girl', 'Clairo'], ['Amoeba', 'Clairo'], ['Prom Dress', 'mxmtoon'], ['Cariño', 'The Marías'],
     ['Hush', 'The Marías'], ['Little by Little', 'The Marías'], ['Best Friend', 'Rex Orange County'], ['Loving Is Easy', 'Rex Orange County'],
@@ -507,7 +511,7 @@ PLAYLISTS.indie = {
 
 /* ------------------------------------------------- Electronic & chill */
 PLAYLISTS.electronic = {
-  low: { title: 'Ambient for a heavy day', blurb: 'Slow, warm textures and soft beats that hold the room without asking anything.', songs: [
+  low: { title: 'Ambient for a heavy day', blurb: 'Slow, warm textures and soft beats that hold the room without asking anything.', spotify: '', songs: [
     ['Teardrop', 'Massive Attack'], ['Angel', 'Massive Attack'], ['Protection', 'Massive Attack & Tracey Thorn'],
     ['Roads', 'Portishead'], ['Glory Box', 'Portishead'], ['Sour Times', 'Portishead'], ['Porcelain', 'Moby'],
     ['Why Does My Heart Feel So Bad?', 'Moby'], ['Natural Blues', 'Moby'], ['Avril 14th', 'Aphex Twin'], ['#3', 'Aphex Twin'],
@@ -520,7 +524,7 @@ PLAYLISTS.electronic = {
     ['Saman', 'Ólafur Arnalds'], ['Near Light', 'Ólafur Arnalds'], ['Says', 'Nils Frahm'], ['Familiar', 'Nils Frahm'],
     ['Vladimir\'s Blues', 'Max Richter'], ['Divenire', 'Ludovico Einaudi'], ['Spiegel im Spiegel', 'Arvo Pärt'],
   ] },
-  anxious: { title: 'Steady electronic to breathe with', blurb: 'Even pulses and warm pads, one tempo, nothing that jumps out.', songs: [
+  anxious: { title: 'Steady electronic to breathe with', blurb: 'Even pulses and warm pads, one tempo, nothing that jumps out.', spotify: '', songs: [
     ['Sun Models', 'ODESZA & Madelyn Grant'], ['A Moment Apart', 'ODESZA'], ['Late Night', 'ODESZA'],
     ['Say My Name', 'ODESZA, Zyra'], ['Higher Ground', 'ODESZA & Naomi Wild'], ['Kusanagi', 'ODESZA'],
     ['Innerbloom', 'RÜFÜS DU SOL'], ['Underwater', 'RÜFÜS DU SOL'], ['Treat You Better', 'RÜFÜS DU SOL'],
@@ -534,7 +538,7 @@ PLAYLISTS.electronic = {
     ['Strobe', 'deadmau5'], ['I Remember', 'deadmau5 & Kaskade'], ['Shelter', 'Porter Robinson & Madeon'],
     ['Sad Machine', 'Porter Robinson'], ['Goodbye to a World', 'Porter Robinson'], ['Beautiful Escape', 'Tom Misch & Zak Abel'],
   ] },
-  flat: { title: 'Electronic with a gentle lift', blurb: 'Warm synths and rising builds that brighten the room slowly.', songs: [
+  flat: { title: 'Electronic with a gentle lift', blurb: 'Warm synths and rising builds that brighten the room slowly.', spotify: '', songs: [
     ['Sunset', 'Caribou'], ['Feel So Close', 'Calvin Harris'], ['Summer', 'Calvin Harris'], ['Sweet Nothing', 'Calvin Harris & Florence Welch'],
     ['Wake Me Up', 'Avicii'], ['Levels', 'Avicii'], ['The Nights', 'Avicii'], ['Waiting for Love', 'Avicii'],
     ['Lean On', 'Major Lazer & DJ Snake & MØ'], ['Cold Water', 'Major Lazer, Justin Bieber & MØ'], ['Light It Up', 'Major Lazer'],
@@ -549,7 +553,7 @@ PLAYLISTS.electronic = {
     ['Cheerleader', 'OMI & Felix Jaehn'], ['Ain\'t Nobody (Loves Me Better)', 'Felix Jaehn & Jasmine Thompson'],
     ['Are You with Me', 'Lost Frequencies'], ['Reality', 'Lost Frequencies & Janieck Devy'], ['Sofia', 'Álvaro Soler'],
   ] },
-  angry: { title: 'Electronic to throw it at', blurb: 'Heavy drops, hard drums and bass you can feel in your chest.', songs: [
+  angry: { title: 'Electronic to throw it at', blurb: 'Heavy drops, hard drums and bass you can feel in your chest.', spotify: '', songs: [
     ['Scary Monsters and Nice Sprites', 'Skrillex'], ['Bangarang', 'Skrillex & Sirah'], ['First of the Year (Equinox)', 'Skrillex'],
     ['Kill Everybody', 'Skrillex'], ['Cinema', 'Benny Benassi & Skrillex'], ['Hold On', 'Rusko & Amber Coffman'],
     ['Block Rockin\' Beats', 'The Chemical Brothers'], ['Hey Boy Hey Girl', 'The Chemical Brothers'], ['Galvanize', 'The Chemical Brothers'],
@@ -564,7 +568,7 @@ PLAYLISTS.electronic = {
     ['Stress', 'Justice'], ['Genesis', 'Justice'], ['D.A.N.C.E.', 'Justice'], ['Windowlicker', 'Aphex Twin'],
     ['Come to Daddy', 'Aphex Twin'], ['Internet Friends', 'Knife Party'],
   ] },
-  restless: { title: 'Electronic to move to', blurb: 'Clean four-on-the-floor tempos for a run, a workout or a long walk.', songs: [
+  restless: { title: 'Electronic to move to', blurb: 'Clean four-on-the-floor tempos for a run, a workout or a long walk.', spotify: '', songs: [
     ['One More Time', 'Daft Punk'], ['Harder, Better, Faster, Stronger', 'Daft Punk'], ['Around the World', 'Daft Punk'],
     ['Get Lucky', 'Daft Punk, Pharrell Williams & Nile Rodgers'], ['Lose Yourself to Dance', 'Daft Punk & Pharrell Williams'],
     ['Don\'t You Worry Child', 'Swedish House Mafia & John Martin'], ['Save the World', 'Swedish House Mafia'], ['One', 'Swedish House Mafia'],
@@ -579,7 +583,7 @@ PLAYLISTS.electronic = {
     ['Call on Me', 'Eric Prydz'], ['Pjanoo', 'Eric Prydz'], ['Opus', 'Eric Prydz'], ['Insomnia', 'Faithless'],
     ['Around the World (La La La La La)', 'ATC'], ['Show Me Love', 'Robin S.'],
   ] },
-  okay: { title: 'Easy electronic company', blurb: 'Lo-fi, house and downtempo that keep the day rolling in the background.', songs: [
+  okay: { title: 'Easy electronic company', blurb: 'Lo-fi, house and downtempo that keep the day rolling in the background.', spotify: '', songs: [
     ['Sun Is Shining', 'Axwell & Ingrosso'], ['Sunday', 'Sonny Fodera'], ['Runaway (U & I)', 'Galantis'],
     ['Losing It', 'Fisher'], ['Piece of Your Heart', 'Meduza & Goodboys'], ['Cola', 'CamelPhat & Elderbrook'], ['Panic Room', 'CamelPhat & Au/Ra'],
     ['Sleepless', 'Flume & Jezzabell Doran'], ['Never Be Like You', 'Flume & Kai'], ['Say It', 'Flume & Tove Lo'], ['Holdin On', 'Flume'],

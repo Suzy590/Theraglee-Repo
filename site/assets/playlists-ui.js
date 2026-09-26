@@ -1,9 +1,12 @@
 /* ==========================================================================
    Theraglee — the Playlists tab on the member dashboard (dashboard.html#playlists).
    Three steps on one panel: pick a genre, pick a mood, get the forty songs
-   curated for that pair. Every song is on Apple Music and Spotify, and each
-   one links to a search for it on both, so nothing about the member's
-   listening comes back to Theraglee. The lists live in playlists.js.
+   curated for that pair. A list that has been made into a public playlist in
+   Theraglee's Spotify account (its `spotify` id in playlists.js) plays right
+   here in Spotify's own embedded player, with the songs listed under it; a
+   list that has not yet shows each song as a link to search for it on
+   Spotify and Apple Music, and a button to copy the list. Either way nothing
+   about the member's listening comes back to Theraglee.
    The last genre and mood picked are kept in this browser, so the tab
    reopens where the member left it.
    ========================================================================== */
@@ -39,6 +42,9 @@ const STYLE = `
   .pl-songs .links a{font-size:.78rem;padding:5px 10px;border:1px solid var(--hair);border-radius:var(--r-pill);
     color:var(--ink);text-decoration:none;white-space:nowrap}
   .pl-songs .links a:hover{border-color:var(--green);color:var(--green)}
+  .pl-player{margin:16px 0 0;border-radius:12px;overflow:hidden;background:var(--sand)}
+  .pl-player iframe{display:block;width:100%;height:380px;border:0}
+  .pl-songs.quiet li{grid-template-columns:2.2em 1fr;padding:8px 16px}
   @media(max-width:560px){
     .pl-songs li{grid-template-columns:2em 1fr}
     .pl-songs .links{grid-column:2}
@@ -46,6 +52,8 @@ const STYLE = `
 
 const q = (title, artist) => encodeURIComponent(`${title} ${artist}`);
 const spotify = (t, a) => `https://open.spotify.com/search/${q(t, a)}`;
+const embed   = (id) => `https://open.spotify.com/embed/playlist/${id}?utm_source=generator&theme=0`;
+const open    = (id) => `https://open.spotify.com/playlist/${id}`;
 const apple   = (t, a) => `https://music.apple.com/us/search?term=${q(t, a)}`;
 
 const remembered = () => { try { return JSON.parse(localStorage.getItem(REMEMBER)) || {}; } catch { return {}; } };
@@ -90,32 +98,38 @@ export function mountPlaylists(host) {
             <span class="wants">${esc(m.wants)}</span></button>`).join('')}</div>`;
     } else {
       const g = genreOf(), m = moodOf(), list = PLAYLISTS[genre][mood];
+      const ready = Boolean(list.spotify);
       host.innerHTML = `${steps()}
         <div class="pl-head">
           <div>
             <span class="badge">${esc(g.name)}</span> <span class="badge gray">${esc(m.name)}</span>
             <h2>${esc(list.title)}</h2>
-            <p class="muted">${esc(list.blurb)} ${list.songs.length} songs, all on Apple Music and Spotify.</p>
+            <p class="muted">${esc(list.blurb)} ${list.songs.length} songs${ready ? '.' : ', all on Apple Music and Spotify.'}</p>
           </div>
           <div class="row">
-            <button class="btn sm" type="button" id="pl-copy">Copy the list</button>
+            ${ready
+              ? `<a class="btn sm" href="${open(list.spotify)}" target="_blank" rel="noopener">Open in Spotify</a>`
+              : `<button class="btn sm" type="button" id="pl-copy">Copy the list</button>`}
             <button class="btn sm ghost" type="button" data-step="mood">Another mood</button>
           </div>
         </div>
-        <ol class="pl-songs">${list.songs.map(([t, a]) => `
+        ${ready ? `<div class="pl-player"><iframe title="${esc(list.title)} on Spotify" src="${embed(list.spotify)}"
+            loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe></div>` : ''}
+        <ol class="pl-songs ${ready ? 'quiet' : ''}">${list.songs.map(([t, a]) => `
           <li><span><span class="t">${esc(t)}</span><span class="a">${esc(a)}</span></span>
-            <span class="links">
+            ${ready ? '' : `<span class="links">
               <a href="${spotify(t, a)}" target="_blank" rel="noopener">Spotify</a>
               <a href="${apple(t, a)}" target="_blank" rel="noopener">Apple Music</a>
-            </span></li>`).join('')}</ol>
-        <div class="notice" style="margin-top:20px">Each link opens a search in your own music app, so nothing about
-          your listening comes back to Theraglee. To keep the whole list, copy it and paste it into a new playlist.</div>`;
+            </span>`}</li>`).join('')}</ol>
+        <div class="notice" style="margin-top:20px">${ready
+          ? 'Press play to listen here with a free or paid Spotify account, or open the playlist in Spotify to save it. Nothing about your listening comes back to Theraglee.'
+          : 'Each link opens a search in your own music app, so nothing about your listening comes back to Theraglee. To keep the whole list, copy it and paste it into a new playlist.'}</div>`;
 
-      host.querySelector('#pl-copy').onclick = async (e) => {
+      host.querySelector('#pl-copy')?.addEventListener('click', async (e) => {
         const text = `${list.title} (${g.name}, ${m.name})\n` + list.songs.map(([t, a], i) => `${i + 1}. ${t} — ${a}`).join('\n');
         try { await navigator.clipboard.writeText(text); toast('Copied. Paste it into a new playlist.', 'ok'); }
         catch { toast('Could not copy on this device.', 'err'); }
-      };
+      });
     }
 
     host.querySelectorAll('[data-genre]').forEach(b => b.onclick = () => { genre = b.dataset.genre; mood = null; save(); render(); });
