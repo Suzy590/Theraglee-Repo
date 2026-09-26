@@ -8,13 +8,13 @@ signed-in account's own `mood_logs` rows, so a day submitted on one tab shows as
 submitted on the others. It does three things:
 
 1. **The day's mood.** One tap on one of five faces (`mood_logs.mood`, 1 to 5).
-2. **What might be shaping it.** Once the face is tapped, the member rates nine
+2. **What might be shaping it.** Shown from the start, below the faces, the member rates nine
    factors for how each feels *today*, one tap each on a 1 to 10 scale, where
    1 is terrible and 10 is fantastic: sleep, home life stress, school/work
    stress, nutrition, hunger in this moment, loneliness, overall thoughts,
    level of physical activity and social interaction. Then the weather, from
    ten emoji. These taps are only marked on screen. A **Submit** button at the
-   bottom stays grayed out until all ten are answered; pressing it saves them
+   bottom stays grayed out until a face is tapped and all ten are answered; pressing it saves them
    together and shows "All done for today". The face tap itself saves straight
    away, so a day with only a face still counts as a day logged.
 3. **Your mood patterns.** Until there are 7 days with a mood (in a row or not)
