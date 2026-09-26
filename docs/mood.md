@@ -78,6 +78,7 @@ cause.
 
 The account page's data export includes every column because it selects `*`.
 The Premium **Goals & tracking** page no longer has a Mood tab (removed
-2026-09-25); it links to the dashboard's Mood tab instead. Before 2026-09-25
+2026-09-25) or a Playlists tab (moved to the dashboard 2026-09-26); it links
+to the dashboard's Mood and Playlists tabs instead. Before 2026-09-25
 "today" was the UTC date, which in the US turns over in the evening, so an
 evening check-in from before then may sit on the following day.

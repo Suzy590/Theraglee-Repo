@@ -113,6 +113,14 @@ in animal or plant shapes arrive every day; follow `docs/mandalas.md` for the
 routine and for how to draw an outline. Merge before applying the migration,
 never the other way round.
 
+## Playlists are a genre, then a mood, then forty songs
+
+The Playlists tab on the dashboard (`site/assets/playlists-ui.js`) draws its
+lists from `site/assets/playlists.js`: six genres by six moods, forty songs
+each, every one on Apple Music and Spotify, none repeated within a genre.
+`node tests/playlists-fixture/check.mjs` guards this. `docs/playlists.md` is
+the guide.
+
 ## Mood factors are a data contract
 
 The Mood tab on the dashboard stores its nine 1 to 10 factors and the weather in

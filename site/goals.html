@@ -29,22 +29,25 @@
 <script type="module">
 import { chrome, sb, requireAuth, esc, toast, busy, fmtDate, lockNotice, modal } from './assets/app.js';
 import { mapView as nearbyView } from './assets/nearby-ui.js';
+// The Playlists tab moved to the dashboard; an old link to it still lands there.
+if (location.hash === '#music') location.replace('dashboard.html#playlists');
 await chrome({ active:'dashboard.html' });
 const a = await requireAuth();
 if (a) {
 const root = document.getElementById('root');
 
 if (a.level < 3) {
-  lockNotice(root, 3, 'Goals, playlists and the resource map');
+  lockNotice(root, 3, 'Goals and the resource map');
 } else {
 let tab = location.hash.replace('#','') || 'goals';
 
 const shell = (body) => `
   <h1>Goals &amp; tracking</h1>
-  <p class="muted" style="max-width:56ch">The Premium tools: set what you're aiming for, find music
-    for how you feel, and find what's near you. Your daily mood check-in is on the
-    <a href="dashboard.html#mood">Mood tab of your dashboard</a>.</p>
-  <div class="tabs">${[['goals','Goals'],['music','Playlists'],['map','Nearby help']]
+  <p class="muted" style="max-width:56ch">The Premium tools: set what you're aiming for, and find
+    what's near you. Your daily mood check-in is on the
+    <a href="dashboard.html#mood">Mood tab of your dashboard</a>, and music for how you feel is on its
+    <a href="dashboard.html#playlists">Playlists tab</a>.</p>
+  <div class="tabs">${[['goals','Goals'],['map','Nearby help']]
     .map(([k,l])=>`<button data-tab="${k}" class="${tab===k?'on':''}">${l}</button>`).join('')}</div>
   <div id="body">${body}</div>`;
 
@@ -118,33 +121,6 @@ async function goalsView(){
   });
 }
 
-/* ----------------------------------------------------------- music */
-const MOODS = [
-  ['Low and heavy','Slow, warm, nothing demanding','calm acoustic comfort'],
-  ['Anxious','Steady tempo to settle the nervous system','ambient calm focus'],
-  ['Flat / unmotivated','A gentle lift, not a shove','feel good indie morning'],
-  ['Angry','Somewhere to put it','cathartic rock release'],
-  ['Restless','Something to move to','upbeat walking tempo'],
-  ['Okay, keeping it there','Easy company','mellow afternoon'],
-];
-function musicView(){
-  document.getElementById('body').innerHTML = `
-    <h2>Playlists by mood</h2>
-    <p class="muted">Pick where you are right now — these open in your own music app.</p>
-    <div class="grid g3" style="margin-top:20px">${MOODS.map(([name, blurb, q])=>`
-      <div class="card">
-        <h3>${esc(name)}</h3>
-        <p class="muted" style="font-size:.92rem">${esc(blurb)}</p>
-        <div class="row">
-          <a class="btn sm" target="_blank" rel="noopener"
-             href="https://open.spotify.com/search/${encodeURIComponent(q)}/playlists">Spotify</a>
-          <a class="btn sm ghost" target="_blank" rel="noopener"
-             href="https://music.apple.com/us/search?term=${encodeURIComponent(q)}">Apple Music</a>
-        </div></div>`).join('')}</div>
-    <div class="notice" style="margin-top:24px">These open a search in your own account, so nothing
-      about your listening comes back to Theraglee.</div>`;
-}
-
 /* ------------------------------------------------------------- map */
 const mapView = () => nearbyView(document.getElementById('body'), a.profile.zip || '');
 
@@ -153,7 +129,7 @@ function render(){
   root.querySelectorAll('.tabs button').forEach(b => b.onclick = () => {
     tab = b.dataset.tab; history.replaceState({},'', '#'+tab); render();
   });
-  ({ goals: goalsView, music: musicView, map: mapView }[tab] || goalsView)();
+  ({ goals: goalsView, map: mapView }[tab] || goalsView)();
 }
 render();
 }
