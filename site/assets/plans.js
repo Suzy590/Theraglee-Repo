@@ -52,7 +52,7 @@ export const PLANS = [
       'Music playlists by genre and mood',
       'Local mental health resource map',
       'Mandalas to print or color online',
-      'Mental health goal tracking',
+      'Goals and a personal quest map that grows as you show up',
       'Mood tracking to help you see patterns over time',
       'Gain deeper insights from your mood and goal tracking',
     ],

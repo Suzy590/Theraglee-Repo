@@ -127,3 +127,13 @@ The Mood tab on the dashboard stores its nine 1 to 10 factors and the weather in
 `mood_logs`. The weather keys in `site/assets/mood-patterns.js` must match the
 check in the migration; `node tests/mood-patterns/check.mjs` guards this.
 `docs/mood.md` is the guide.
+
+## The quest map is general wellness, and its keys are a data contract
+
+The Premium Goals & tracking page (`site/goals.html`) draws a quest map from
+`site/assets/quest-paths.js`. Its value, category, minute and scene keys must
+match the checks in `supabase/migrations/20260927190000_quest_maps.sql`, and a
+shipped action key never changes. Nothing on it screens, scores, diagnoses or
+mentions streaks, the suggestion helper stays rule-based, and the wellness note
+stays on every tab. `node tests/quest-paths/check.mjs` guards this.
+`docs/quest-map.md` is the guide.

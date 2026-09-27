@@ -400,18 +400,22 @@ async function render(){
     document.getElementById('export').addEventListener('click', async (e) => {
       busy(e.target, true, 'Gathering…');
       const uid = a.profile.id;
-      const [j,q,w,c,m,g] = await Promise.all([
+      const [j,q,w,c,m,g,qu,qs,qr] = await Promise.all([
         sb.from('journal_entries').select('*').eq('user_id',uid),
         sb.from('quiz_attempts').select('*').eq('user_id',uid),
         sb.from('worksheet_responses').select('*').eq('user_id',uid),
         sb.from('user_challenges').select('*').eq('user_id',uid),
         sb.from('mood_logs').select('*').eq('user_id',uid),
-        sb.from('goals').select('*').eq('user_id',uid),
+        sb.from('goals').select('*, goal_logs(*)').eq('user_id',uid),
+        sb.from('quests').select('*').eq('user_id',uid),
+        sb.from('quest_steps').select('*').eq('user_id',uid),
+        sb.from('quest_reflections').select('*').eq('user_id',uid),
       ]);
       const blob = new Blob([JSON.stringify({
         exported_at: new Date().toISOString(), profile: a.profile,
         journal: j.data, quiz_attempts: q.data, worksheets: w.data,
         challenges: c.data, mood_logs: m.data, goals: g.data,
+        quests: qu.data, quest_steps: qs.data, quest_reflections: qr.data,
       }, null, 2)], { type:'application/json' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
