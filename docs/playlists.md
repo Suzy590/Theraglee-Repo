@@ -55,6 +55,12 @@ into `site/assets/playlists.js`. Commit that file and the tab shows the
 players. The sign-in is kept in `~/.theraglee-spotify.json`, outside the repo,
 and renews itself, so later runs need only `build`.
 
+Spotify gives a new app a daily request quota, enough for roughly fifteen
+lists a day, so the first build takes about three days: when the quota is
+spent, `build` stops and says how long Spotify asks it to wait, and the next
+`build` carries on with the lists that have no id yet (a playlist it had
+started is picked back up by name, never made twice).
+
 `build` lists any song it could not find on Spotify. Swap that song in
 `playlists.js` for one that is there, clear the list's `spotify` id, and run
 `build pop/low` (the genre and mood keys) to remake just that list.
