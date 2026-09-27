@@ -159,11 +159,11 @@ if (cmd === 'build') {
       if (hit) uris.push(hit.uri); else missing.push(`${tag}: ${t} — ${a}`);
       process.stdout.write(hit ? '.' : 'x');
     }
-    const pl = await api(`/users/${encodeURIComponent(me.id)}/playlists`, { method: 'POST', body: {
+    const pl = await api('/me/playlists', { method: 'POST', body: {
       name: `Theraglee · ${g.name} · ${m.name}`, public: true,
       description: `${list.title}. ${list.blurb} Curated by Theraglee (theraglee.com).`.slice(0, 300) } });
     for (let i = 0; i < uris.length; i += 100)
-      await api(`/playlists/${pl.id}/tracks`, { method: 'POST', body: { uris: uris.slice(i, i + 100) } });
+      await api(`/playlists/${pl.id}/items`, { method: 'POST', body: { uris: uris.slice(i, i + 100) } });
     writeId(list, pl.id); list.spotify = pl.id;
     console.log(` ${uris.length} added → ${pl.id}`);
   }
@@ -175,8 +175,8 @@ if (cmd === 'verify') {
   for (const { g, m, list } of pairs(args)) {
     const tag = `${g.key}/${m.key}`;
     if (!list.spotify) { console.log(`${tag}: no playlist yet`); continue; }
-    const pl = await api(`/playlists/${list.spotify}?fields=name,public,tracks.total`);
-    console.log(`${tag}: ${pl.tracks.total}/${list.songs.length} songs, ${pl.public ? 'public' : 'NOT PUBLIC'} — ${pl.name}`);
+    const pl = await api(`/playlists/${list.spotify}?fields=name,public,items.total,tracks.total`);
+    console.log(`${tag}: ${(pl.items || pl.tracks).total}/${list.songs.length} songs, ${pl.public ? 'public' : 'NOT PUBLIC'} — ${pl.name}`);
   }
 }
 
