@@ -265,7 +265,7 @@ PLAYLISTS.hiphop = {
     ['Waterfalls', 'TLC'], ['Sunny', 'Bobby Hebb'], ['Lovely Day', 'Bill Withers'],
   ] },
   flat: { title: 'Hip-hop with a gentle lift', blurb: 'Warm, sunny rap and soul that gets the day moving without shouting.', spotify: '76WyEnW1HasJHaDwwGL6vn', songs: [
-    ['Sunday Candy', 'Donnie Trumpet & The Social Experiment'], ['Blessings', 'Chance the Rapper'], ['No Problem', 'Chance the Rapper, Lil Wayne & 2 Chainz'],
+    ['Cocoa Butter Kisses', 'Chance the Rapper'], ['Blessings', 'Chance the Rapper'], ['No Problem', 'Chance the Rapper, Lil Wayne & 2 Chainz'],
     ['Juice', 'Chance the Rapper'], ['Alright', 'Kendrick Lamar'], ['I', 'Kendrick Lamar'], ['Humble.', 'Kendrick Lamar'],
     ['Good Life', 'Kanye West & T-Pain'], ['Touch the Sky', 'Kanye West & Lupe Fiasco'], ['Kick, Push', 'Lupe Fiasco'],
     ['The Show Goes On', 'Lupe Fiasco'], ['Sunflower', 'Post Malone & Swae Lee'], ['Wow.', 'Post Malone'],
