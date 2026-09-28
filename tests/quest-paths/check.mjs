@@ -59,6 +59,13 @@ test("every action is well formed", () => {
   }
 });
 
+test("writing actions are flagged, so the page opens a note box for them", () => {
+  const writers = ACTIONS.filter(a => a.write);
+  assert.ok(writers.length >= 10, "a good spread of writing actions");
+  for (const a of writers) assert.match(a.text, /^(Write|Note|Describe|List|Fill|Name)\b/, `${a.key} is done by writing`);
+  for (const a of ACTIONS.filter(a => /^(Write|Describe|List|Fill)\b/.test(a.text))) assert.ok(a.write, `${a.key} should be flagged write`);
+});
+
 test("every category has a two-minute action, so the shortest setting is never empty", () => {
   for (const c of CATEGORIES) {
     assert.ok(ACTIONS.some(a => a.cat === c.key && a.min === 2), `${c.key} has a 2 minute action`);
