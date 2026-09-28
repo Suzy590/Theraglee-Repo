@@ -13,8 +13,8 @@ request.
 > Let therapists reach out to you. Verified therapists see a pseudonymous
 > profile that includes: your pseudonym, your age range, the broad topic(s) you
 > would like to work on with a therapist, whether you prefer in-person, video,
-> or either, and the first three digits of your zip code so they know you're
-> nearby. If you indicate you are open to video sessions, you may have
+> or either, your insurance plan (or that you plan to pay out of pocket), and
+> the first three digits of your zip code so they know you're nearby. If you indicate you are open to video sessions, you may have
 > therapists anywhere in your state reach out to you. Therapists will reach out
 > to you by messaging your Theraglee inbox. Your real name goes to a therapist
 > only if you choose to reply to them, and you can block any therapist with one
@@ -34,9 +34,18 @@ will be shared with therapists and must not be their real name.
 | Age range | `profiles.match_age_range`, one of `18-24`, `25-34`, `35-44`, `45-54`, `55-64`, `65+` | "35–44" |
 | Broad topics | `profiles.match_topics`, from Anxiety, Panic, Depression, Stress, Life transition, Grief/loss, Relationship issues, Family issues, Trauma, Personal growth, Other. Separate from `profiles.issues`, which shapes daily content; the view falls back to `issues` for members who switched Match Mode on before `match_topics` existed | "seeks help with anxiety and stress" |
 | Session preference | `profiles.match_delivery`: `in_person`, `telehealth` (video) or `both` | "seeking video sessions" |
+| How they plan to pay | `profiles.match_insurance`: a plan name from `INSURANCES` in `site/assets/lists.js` (the same list therapists pick the plans they accept from), `self_pay` or `unsure`. The practice dashboard marks members whose plan is in the therapist's `insurances` and can show only those | "has Aetna insurance", "paying out of pocket", "not sure about insurance yet" |
 | First three digits of the zip code | `left(profiles.zip, 3)`, exposed by the view as `area`; the zip code is required to switch on | "in the 902xx area" |
 
 Nothing else. The view has no real name, gender, age, zip, email or content column.
+
+## How the answers are loaded
+
+Every page reads the signed-in member's profile from `my_access()`
+(`20260928190000_match_mode_insurance_and_reload.sql`). It must return every
+`match_*` column above; if one is left out, the "Therapists read" line forgets
+it at each sign-in and the window opens blank for it, even though the answer is
+saved. Add any new Match Mode column there too.
 
 ## What therapists never see
 

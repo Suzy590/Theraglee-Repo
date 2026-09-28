@@ -68,7 +68,7 @@ import { chrome, sb, requireAuth, access, clearAccess, esc, toast, busy, fmtDate
          modal, openPortal, startCheckout, startIdentity, connectAction, callStripeFn,
          discountCodeBox, wireDiscountCode,
          FN, qs } from './assets/app.js';
-import { matchSummary } from './assets/match.js';
+import { matchSummary, takesInsurance } from './assets/match.js';
 import { mountMood } from './assets/mood-ui.js';
 import { foundingOffer } from './assets/plans.js';
 import { SPECIALTIES, MODALITIES, INSURANCES, AGE_RANGES, PARTICIPANTS,
@@ -428,6 +428,7 @@ async function messages(){
 }
 
 /* ---------------------------------------------------------- members */
+let insOnly = false;   // "Only members with an insurance plan I accept"
 async function members(){
   if (!T) return needsListing();
   render('<div class="skeleton" style="height:160px"></div>');
@@ -460,12 +461,15 @@ async function members(){
     .sort((x, y) => new Date(y[1].items.at(-1).at) - new Date(x[1].items.at(-1).at));
 
   const line = (m) => matchSummary(m);
+  const shown = insOnly ? rows.filter(m => takesInsurance(T.insurances, m.insurance)) : rows;
 
   render(`
     <h2>Members who have toggled ON <strong>Theraglee Match Mode</strong></h2>
     <p class="muted">Theraglee members who switched on <strong>Theraglee Match Mode</strong>. Each
       one is pseudonymous: you see their pseudonym, their age range, the broad topics they want to work on, whether
-      they prefer in-person, video, or either, and the first three digits of their zip code. Never a
+      they prefer in-person, video, or either, their insurance plan (or that they plan to pay out of
+      pocket), and the first three digits of their zip code. Members whose plan is among the insurance
+      you accept on your listing are marked <strong>Takes your insurance</strong>. Never a
       name, an exact location or an email address, and never anything they have written in their
       journal. A member who answers your message gives you their real name with the reply. A member
       can block you at any time; you then stop seeing them and cannot write to them.</p>
@@ -494,14 +498,17 @@ async function members(){
         </div>`).join('')}</div>` : ''}
 
     <h3 style="margin-top:28px">Waiting to hear from a therapist</h3>
-    ${rows.length ? `<div class="grid g3" style="margin-top:14px">${rows.map(m=>`
+    ${rows.some(m => takesInsurance(T.insurances, m.insurance)) ? `<label class="row" style="gap:8px;margin-top:8px">
+      <input type="checkbox" id="ins-only" ${insOnly?'checked':''}> Only members with an insurance plan I accept</label>` : ''}
+    ${shown.length ? `<div class="grid g3" style="margin-top:14px">${shown.map(m=>`
       <div class="card">
         <div class="spread"><strong>${esc(line(m))}</strong>
           ${m.has_replied ? '<span class="badge">Replied</span>'
             : m.already_contacted ? '<span class="badge gray">Contacted</span>' : ''}</div>
         <div class="chips" style="margin:12px 0">${
           (m.issues||[]).map(i=>`<span class="badge">${esc(i)}</span>`).join('')
-          || '<span class="faint">No topics listed</span>'}</div>
+          || '<span class="faint">No topics listed</span>'}${
+          takesInsurance(T.insurances, m.insurance) ? '<span class="badge live">Takes your insurance</span>' : ''}</div>
         <p class="faint" style="margin:0">${m.area?'In the '+esc(m.area)+' area':'Area not shared'}
           · joined ${fmtDate(m.created_at)}</p>
         <button class="btn sm" style="margin-top:14px" data-reach="${m.id}"
@@ -541,6 +548,7 @@ async function members(){
   document.querySelectorAll('[data-followup]').forEach(b => b.onclick = () => send(b.dataset.followup,
     `A reply to ${esc(b.dataset.name)}. It lands in their Theraglee inbox.`,
     'Thanks for writing back — here is how to book a first session…'));
+  document.getElementById('ins-only')?.addEventListener('change', (e) => { insOnly = e.target.checked; members(); });
   document.querySelectorAll('[data-readall]').forEach(b => b.onclick = async () => {
     await sb.from('outreach_replies').update({ read_at: new Date().toISOString() })
       .eq('therapist_id', T.id).eq('member_id', b.dataset.readall).is('read_at', null);
