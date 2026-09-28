@@ -7,6 +7,7 @@
    member chooses to send (outreach_replies.member_name). */
 
 import { sb, esc, modal, busy, toast } from './app.js';
+import { INSURANCES } from './lists.js';
 
 export const AGE_RANGES = ['18-24', '25-34', '35-44', '45-54', '55-64', '65+'];
 
@@ -26,6 +27,19 @@ const SESSION_LINE = {
    database accepts only these; see 20260925060000_match_mode_pseudonym_topics.sql. */
 export const MATCH_TOPICS = ['Anxiety', 'Panic', 'Depression', 'Stress', 'Life transition',
   'Grief/loss', 'Relationship issues', 'Family issues', 'Trauma', 'Personal growth', 'Other'];
+
+/* How the member plans to pay (profiles.match_insurance): a plan from the same
+   list therapists pick the plans they accept from, or one of these two. */
+export const PAY_SELF = 'self_pay';
+export const PAY_UNSURE = 'unsure';
+export const insuranceLabel = (v) =>
+  v === PAY_SELF ? 'paying out of pocket'
+  : v === PAY_UNSURE ? 'not sure about insurance yet'
+  : v ? 'has ' + v + ' insurance' : '';
+
+/* True when the therapist accepts the member's plan (therapist_profiles.insurances). */
+export const takesInsurance = (therapistPlans, v) =>
+  Boolean(v && v !== PAY_SELF && v !== PAY_UNSURE && (therapistPlans || []).includes(v));
 
 /* A pseudonym is 2 to 30 letters, digits, spaces and . ' _ - (the database checks the same). */
 export const PSEUDONYM_RE = /^[A-Za-z0-9][A-Za-z0-9 .'_-]{1,29}$/;
@@ -48,9 +62,10 @@ export const areaOf = (zip) => (/^\d{5}/.test(zip || '') ? zip.slice(0, 3) + 'xx
 /* True once the member has answered everything the window asks for. */
 export const matchComplete = (p) =>
   Boolean(p?.match_pseudonym && p?.match_age_range && p?.match_delivery
-    && (p?.match_topics || []).length && areaOf(p?.zip));
+    && (p?.match_topics || []).length && p?.match_insurance && areaOf(p?.zip));
 
-/* "Quiet Harbor 27 · 35–44 · seeks help with anxiety and stress · seeking video sessions · in the 902xx area"
+/* "Quiet Harbor 27 · 35–44 · seeks help with anxiety and stress · seeking video sessions ·
+   has Aetna insurance · in the 902xx area"
    Accepts a member's own profile (match_* fields plus zip) or a member_discovery row.
    A member who switched Match Mode on before match_topics existed still shows issues. */
 export function matchSummary(m, { withArea = true } = {}) {
@@ -63,6 +78,7 @@ export function matchSummary(m, { withArea = true } = {}) {
     range ? rangeLabel(range) : 'Theraglee member',
     topics.length ? 'seeks help with ' + listWords(topics) : 'topics not chosen yet',
     sessionLabel(m.match_delivery ?? m.delivery),
+    insuranceLabel(m.match_insurance ?? m.insurance),
     withArea && area ? 'in the ' + area + ' area' : '',
   ].filter(Boolean);
   return parts.join(' · ');
@@ -77,8 +93,8 @@ function listWords(words) {
 /* The short explanation under every Match Mode switch. */
 export const MATCH_BLURB = `Let therapists reach out to you. Verified therapists see a pseudonymous
   profile that includes: your pseudonym, your age range, the broad topic(s) you would like to work on
-  with a therapist, whether you prefer in-person, video, or either, and the first three digits of your
-  zip code so they know you're nearby. If you indicate you are open to video sessions, you may have
+  with a therapist, whether you prefer in-person, video, or either, your insurance plan (or that you
+  plan to pay out of pocket), and the first three digits of your zip code so they know you're nearby. If you indicate you are open to video sessions, you may have
   therapists anywhere in your state reach out to you. Therapists will reach out to you by messaging
   your Theraglee inbox. Your real name goes to a therapist only if you choose to reply to them, and
   you can block any therapist with one tap. Toggling OFF Theraglee Match Mode makes you invisible to
@@ -123,6 +139,17 @@ export function matchDetailsModal(p, { editing = false } = {}) {
         <div class="help">If you are open to video, therapists anywhere in your state may
           reach out to you.</div></div>
 
+      <div class="field"><label for="mm-ins">How do you plan to pay?</label>
+        <select id="mm-ins">
+          <option value="">Choose one</option>
+          <option value="${PAY_SELF}" ${p.match_insurance === PAY_SELF ? 'selected' : ''}>I'll pay out of pocket</option>
+          <option value="${PAY_UNSURE}" ${p.match_insurance === PAY_UNSURE ? 'selected' : ''}>I'm not sure yet</option>
+          <optgroup label="My insurance plan">${INSURANCES.map(i =>
+            `<option value="${esc(i)}" ${p.match_insurance === i ? 'selected' : ''}>${esc(i)}</option>`).join('')}</optgroup>
+        </select>
+        <div class="help">Therapists see your plan's name so those who take it can reach out.
+          Not listed? Choose "I'm not sure yet".</div></div>
+
       <div class="field"><label for="mm-zip">Zip code</label>
         <input id="mm-zip" type="text" inputmode="numeric" maxlength="10" value="${esc(p.zip||'')}" placeholder="5 digits">
         <div class="help">Therapists see only the first three digits of your zip code, so they know
@@ -141,6 +168,7 @@ export function matchDetailsModal(p, { editing = false } = {}) {
       match_age_range: one('mm-age'),
       match_topics:    [...back.querySelectorAll('#mm-issues .chip.on')].map(c => c.dataset.v),
       match_delivery:  one('mm-delivery'),
+      match_insurance: $('#mm-ins').value || null,
       zip:             $('#mm-zip').value.trim() || null,
     });
     const preview = () => {
@@ -158,7 +186,7 @@ export function matchDetailsModal(p, { editing = false } = {}) {
       preview();
     }));
     $('#mm-suggest').onclick = () => { $('#mm-name').value = suggestPseudonym(); preview(); };
-    back.querySelectorAll('input').forEach(el => el.addEventListener('input', preview));
+    back.querySelectorAll('input, select').forEach(el => el.addEventListener('input', preview));
 
     // Closing the window by clicking outside it or pressing Escape counts as "not now".
     const watch = new MutationObserver(() => { if (!document.body.contains(back)) { watch.disconnect(); done(null); } });
@@ -172,6 +200,7 @@ export function matchDetailsModal(p, { editing = false } = {}) {
       if (!v.match_age_range)  return toast('Please choose your age range. Theraglee is for adults 18 and over.', 'err');
       if (!v.match_topics.length) return toast('Pick at least one topic so therapists know how to help.', 'err');
       if (!v.match_delivery)   return toast('Let therapists know whether you prefer in-person, video, or either.', 'err');
+      if (!v.match_insurance)  return toast('Let therapists know your insurance, or that you will pay out of pocket.', 'err');
       if (!v.zip || !/^\d{5}(-\d{4})?$/.test(v.zip)) return toast('Please enter your 5-digit zip code.', 'err');
       busy(e.target, true, 'Saving…');
       const patch = { ...v, visible_to_therapists: true, onboarded: true };
