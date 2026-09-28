@@ -85,7 +85,7 @@ export function mountPlaylists(host) {
       host.innerHTML = `${steps()}
         <h2 style="margin-top:0">First, pick a genre</h2>
         <p class="muted" style="max-width:56ch;margin-top:-6px">Then a mood, and you get forty songs curated for the
-          two together, every one on Apple Music and Spotify.</p>
+          two together, ready to play right here.</p>
         <div class="pl-pick" style="margin-top:20px">${GENRES.map(g => `
           <button type="button" data-genre="${g.key}"><h3>${esc(g.name)}</h3><p>${esc(g.blurb)}</p></button>`).join('')}</div>`;
     } else if (!mood) {
