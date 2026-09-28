@@ -101,6 +101,9 @@ async function api(path, { method = 'GET', body } = {}) {
       if (wait > 600) die(`Spotify's daily quota for this app is used up; it asks for a ${Math.round(wait / 3600)} hour wait. Run build again after that; lists already made are kept.`);
       await new Promise(ok => setTimeout(ok, wait * 1000)); continue;
     }
+    if (r.status >= 500) {                        // Spotify hiccup: try again in a moment
+      await new Promise(ok => setTimeout(ok, 3000 * (tries + 1))); continue;
+    }
     if (r.status === 204) return {};
     const j = await r.json().catch(() => ({}));
     if (!r.ok) throw new Error(`${method} ${path}: ${r.status} ${JSON.stringify(j.error || j)}`);

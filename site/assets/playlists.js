@@ -279,7 +279,7 @@ PLAYLISTS.hiphop = {
     ['Broccoli', 'DRAM & Lil Yachty'], ['Cash Machine', 'DRAM'], ['Everybody Loves the Sunshine', 'Roy Ayers Ubiquity'],
     ['Better', 'Khalid'], ['Come Thru', 'Summer Walker & Usher'], ['U Got It Bad', 'Usher'], ['Yeah!', 'Usher, Lil Jon & Ludacris'],
   ] },
-  angry: { title: 'Rap to let it out', blurb: 'Hard beats and sharp verses that turn the feeling into energy you can use.', spotify: '', songs: [
+  angry: { title: 'Rap to let it out', blurb: 'Hard beats and sharp verses that turn the feeling into energy you can use.', spotify: '2fTaYrbSsFlkhVJXNOYuvH', songs: [
     ['Lose Yourself', 'Eminem'], ['Till I Collapse', 'Eminem & Nate Dogg'], ['The Way I Am', 'Eminem'], ['Not Afraid', 'Eminem'],
     ['DNA.', 'Kendrick Lamar'], ['m.A.A.d city', 'Kendrick Lamar & MC Eiht'], ['Backseat Freestyle', 'Kendrick Lamar'],
     ['Power', 'Kanye West'], ['Black Skinhead', 'Kanye West'], ['Stronger', 'Kanye West'], ['X Gon\' Give It to Ya', 'DMX'],
@@ -294,7 +294,7 @@ PLAYLISTS.hiphop = {
     ['Savage', 'Megan Thee Stallion'], ['Big Ole Freak', 'Megan Thee Stallion'], ['Bitch Better Have My Money', 'Rihanna'],
     ['Rap God', 'Eminem'], ['Money Trees', 'Kendrick Lamar & Jay Rock'],
   ] },
-  restless: { title: 'Hip-hop to move to', blurb: 'Bounce, tempo and hooks for walking fast, cleaning or getting through a workout.', spotify: '', songs: [
+  restless: { title: 'Hip-hop to move to', blurb: 'Bounce, tempo and hooks for walking fast, cleaning or getting through a workout.', spotify: '5wLd4ZOJmdJ41wuyUkcX7R', songs: [
     ['Can\'t Hold Us', 'Macklemore & Ryan Lewis & Ray Dalton'], ['Thrift Shop', 'Macklemore & Ryan Lewis & Wanz'],
     ['Empire State of Mind', 'JAY-Z & Alicia Keys'], ['99 Problems', 'JAY-Z'], ['Dirt Off Your Shoulder', 'JAY-Z'],
     ['In da Club', '50 Cent'], ['Hot in Herre', 'Nelly'], ['Ride wit Me', 'Nelly & City Spud'], ['Crazy in Love', 'Beyoncé & JAY-Z'],
@@ -309,7 +309,7 @@ PLAYLISTS.hiphop = {
     ['Crank That (Soulja Boy)', 'Soulja Boy'], ['Fergalicious', 'Fergie'], ['Boom Boom Pow', 'Black Eyed Peas'],
     ['I Gotta Feeling', 'Black Eyed Peas'], ['Let\'s Get It Started', 'Black Eyed Peas'],
   ] },
-  okay: { title: 'Easy hip-hop and R&B', blurb: 'Laid-back grooves and familiar voices that keep the day rolling along.', spotify: '', songs: [
+  okay: { title: 'Easy hip-hop and R&B', blurb: 'Laid-back grooves and familiar voices that keep the day rolling along.', spotify: '5byRUXJBEApQo2mt0cSePv', songs: [
     ['Sundress', 'A$AP Rocky'], ['Best I Ever Had', 'Drake'], ['Take Care', 'Drake & Rihanna'], ['Too Good', 'Drake & Rihanna'],
     ['Work', 'Rihanna & Drake'], ['Diamonds', 'Rihanna'], ['Umbrella', 'Rihanna & JAY-Z'], ['Needed Me', 'Rihanna'],
     ['Nights', 'Frank Ocean'], ['Novacane', 'Frank Ocean'], ['Chanel', 'Frank Ocean'], ['Lost', 'Frank Ocean'],
@@ -327,7 +327,7 @@ PLAYLISTS.hiphop = {
 
 /* ------------------------------------------------------------- Country */
 PLAYLISTS.country = {
-  low: { title: 'Slow country for a heavy day', blurb: 'Steel guitar, plain words and slow songs that know what a hard day is.', spotify: '', songs: [
+  low: { title: 'Slow country for a heavy day', blurb: 'Steel guitar, plain words and slow songs that know what a hard day is.', spotify: '2TRIMUXdJ34Zv6aA8URzzu', songs: [
     ['Hurt', 'Johnny Cash'], ['Whiskey Lullaby', 'Brad Paisley & Alison Krauss'], ['The House That Built Me', 'Miranda Lambert'],
     ['Tin Man', 'Miranda Lambert'], ['I Drive Your Truck', 'Lee Brice'], ['Marry Me', 'Thomas Rhett'],
     ['Die a Happy Man', 'Thomas Rhett'], ['Cover Me Up', 'Jason Isbell'], ['If We Were Vampires', 'Jason Isbell and the 400 Unit'],
@@ -342,7 +342,7 @@ PLAYLISTS.country = {
     ['Better Together', 'Luke Combs'], ['Blue Ain\'t Your Color', 'Keith Urban'], ['The Dance', 'Garth Brooks'],
     ['He Stopped Loving Her Today', 'George Jones'], ['Go Rest High on That Mountain', 'Vince Gill'], ['Always on My Mind', 'Willie Nelson'],
   ] },
-  anxious: { title: 'Steady country to settle to', blurb: 'Easy tempos, warm voices and no surprises, like a porch at dusk.', spotify: '', songs: [
+  anxious: { title: 'Steady country to settle to', blurb: 'Easy tempos, warm voices and no surprises, like a porch at dusk.', spotify: '5JxvX3dco1pU259fnAeFSq', songs: [
     ['Blue Eyes Crying in the Rain', 'Willie Nelson'], ['On the Road Again', 'Willie Nelson'], ['Ring of Fire', 'Johnny Cash'],
     ['I Walk the Line', 'Johnny Cash'], ['Jolene', 'Dolly Parton'], ['Coat of Many Colors', 'Dolly Parton'],
     ['Wagon Wheel', 'Old Crow Medicine Show'], ['Bluebird', 'Miranda Lambert'], ['Take Me Home, Country Roads', 'John Denver'],
@@ -357,7 +357,7 @@ PLAYLISTS.country = {
     ['Mercy', 'Brett Young'], ['Meant to Be', 'Bebe Rexha & Florida Georgia Line'], ['Hard to Love', 'Lee Brice'],
     ['Love Story', 'Taylor Swift'], ['Fifteen', 'Taylor Swift'], ['Tim McGraw', 'Taylor Swift'],
   ] },
-  flat: { title: 'Country with a gentle lift', blurb: 'Bright, warm songs that open the curtains a little and get the day rolling.', spotify: '', songs: [
+  flat: { title: 'Country with a gentle lift', blurb: 'Bright, warm songs that open the curtains a little and get the day rolling.', spotify: '0Jul80wCOAH20ekDh1RBPg', songs: [
     ['Chicken Fried', 'Zac Brown Band'], ['Toes', 'Zac Brown Band'], ['Knee Deep', 'Zac Brown Band & Jimmy Buffett'],
     ['Homegrown', 'Zac Brown Band'], ['Life Is Good', 'Zac Brown Band'], ['My Wish', 'Rascal Flatts'],
     ['Life Is a Highway', 'Rascal Flatts'], ['Fast Cars and Freedom', 'Rascal Flatts'], ['Something Like That', 'Tim McGraw'],
@@ -373,7 +373,7 @@ PLAYLISTS.country = {
     ['Peter Pan', 'Kelsea Ballerini'], ['Get Me Some of That', 'Thomas Rhett'], ['American Kids', 'Kenny Chesney'],
     ['Summertime', 'Kenny Chesney'], ['No Shoes, No Shirt, No Problems', 'Kenny Chesney'],
   ] },
-  angry: { title: 'Country to let it out', blurb: 'Fired-up, fed-up songs that put the feeling into words and turn it up.', spotify: '', songs: [
+  angry: { title: 'Country to let it out', blurb: 'Fired-up, fed-up songs that put the feeling into words and turn it up.', spotify: '1cEnlIIZz1HyzPwqRJkUx6', songs: [
     ['Gunpowder & Lead', 'Miranda Lambert'], ['Kerosene', 'Miranda Lambert'], ['Mama\'s Broken Heart', 'Miranda Lambert'],
     ['Little Red Wagon', 'Miranda Lambert'], ['Before He Cheats', 'Carrie Underwood'], ['Two Black Cadillacs', 'Carrie Underwood'],
     ['Church Bells', 'Carrie Underwood'], ['Goodbye Earl', 'The Chicks'], ['Not Ready to Make Nice', 'The Chicks'],
@@ -389,7 +389,7 @@ PLAYLISTS.country = {
     ['Whiskey Glasses', 'Morgan Wallen'], ['Fancy', 'Reba McEntire'], ['I Hope', 'Gabby Barrett'],
     ['Texas Hold \'Em', 'Beyoncé'], ['Whiskey Bent and Hell Bound', 'Hank Williams Jr.'],
   ] },
-  restless: { title: 'Country to move to', blurb: 'Foot-stomping, fast and fun, for a drive, a walk or a kitchen you are cleaning anyway.', spotify: '', songs: [
+  restless: { title: 'Country to move to', blurb: 'Foot-stomping, fast and fun, for a drive, a walk or a kitchen you are cleaning anyway.', spotify: '5iG3GAue0lSHei5nW3g7Xs', songs: [
     ['Chattahoochee', 'Alan Jackson'], ['Good Time', 'Alan Jackson'], ['Friends in Low Places', 'Garth Brooks'],
     ['Ain\'t Goin\' Down (\'Til the Sun Comes Up)', 'Garth Brooks'], ['Callin\' Baton Rouge', 'Garth Brooks'], ['Guitars, Cadillacs', 'Dwight Yoakam'],
     ['Fast as You', 'Dwight Yoakam'], ['Dixieland Delight', 'Alabama'], ['Mountain Music', 'Alabama'], ['Song of the South', 'Alabama'],
@@ -404,7 +404,7 @@ PLAYLISTS.country = {
     ['Girl in a Country Song', 'Maddie & Tae'], ['Dibs', 'Kelsea Ballerini'], ['Sweet Tea', 'Cody Johnson'],
     ['Fancy Like', 'Walker Hayes'], ['Truck Bed', 'Hardy'], ['Last Night', 'Morgan Wallen'],
   ] },
-  okay: { title: 'Easy country company', blurb: 'Mid-tempo, familiar and warm, the kind of songs a good day plays itself.', spotify: '', songs: [
+  okay: { title: 'Easy country company', blurb: 'Mid-tempo, familiar and warm, the kind of songs a good day plays itself.', spotify: '2rd7zzfFf9QGMVActXn3xg', songs: [
     ['Alright', 'Darius Rucker'], ['Sangria', 'Blake Shelton'], ['Honey Bee', 'Blake Shelton'], ['God\'s Country', 'Blake Shelton'],
     ['Austin', 'Blake Shelton'], ['Hell of a Year', 'Parker McCollum'], ['Pretty Heart', 'Parker McCollum'],
     ['Chasin\' You', 'Morgan Wallen'], ['7 Summers', 'Morgan Wallen'], ['Sand in My Boots', 'Morgan Wallen'],
@@ -423,7 +423,7 @@ PLAYLISTS.country = {
 
 /* -------------------------------------------------------- Indie & folk */
 PLAYLISTS.indie = {
-  low: { title: 'Quiet folk for a heavy day', blurb: 'Hushed voices and acoustic guitars that sit with you in the dark and do not rush.', spotify: '', songs: [
+  low: { title: 'Quiet folk for a heavy day', blurb: 'Hushed voices and acoustic guitars that sit with you in the dark and do not rush.', spotify: '7g0eQGIGbI6EHh9TRsjIJh', songs: [
     ['Holocene', 'Bon Iver'], ['Skinny Love', 'Bon Iver'], ['Re: Stacks', 'Bon Iver'], ['Flume', 'Bon Iver'],
     ['The Night We Met', 'Lord Huron'], ['Cherry Wine', 'Hozier'], ['Work Song', 'Hozier'], ['Like Real People Do', 'Hozier'],
     ['Motion Sickness', 'Phoebe Bridgers'], ['Scott Street', 'Phoebe Bridgers'], ['Funeral', 'Phoebe Bridgers'],
