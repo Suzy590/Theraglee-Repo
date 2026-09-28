@@ -118,8 +118,10 @@ never the other way round.
 The Playlists tab on the dashboard (`site/assets/playlists-ui.js`) draws its
 lists from `site/assets/playlists.js`: six genres by six moods, forty songs
 each, every one on Apple Music and Spotify, none repeated within a genre.
-`node tests/playlists-fixture/check.mjs` guards this. `docs/playlists.md` is
-the guide.
+Each list is a public playlist in Theraglee's Spotify account, made by
+`node tools/spotify_playlists.mjs` and played on the page; the playlist's
+id sits in the list's `spotify` field. `node tests/playlists-fixture/check.mjs`
+guards this. `docs/playlists.md` is the guide.
 
 ## Mood factors are a data contract
 
