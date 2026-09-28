@@ -41,7 +41,14 @@ and the What helped box repeat the pathway to help.
    scenes (`site/assets/quest-scene.js`) only gain plants, lanterns or
    scenery. A milestone day (`MILESTONES`) or a new chapter gets a small
    celebration.
-4. **Changing course.** "Adjust" edits the quest in place. "Start a new quest"
+4. **Writing actions.** An action with `write: true` ("Write three things
+   you are glad of today") is done by writing: tapping its circle (shown as a
+   pencil) opens a note box with the prompt. The member can save a note and
+   mark it done, or mark it done without writing. The note is kept on the
+   step (`quest_steps.note`), shows under the action for the rest of the day
+   with an edit link, and appears on the What helped tab under "From your
+   quest map". Every other action is marked done with one tap.
+5. **Changing course.** "Adjust" edits the quest in place. "Start a new quest"
    keeps the old one (inactive) and all days shown up carry over.
 
 "Today" is the member's own calendar day (browser local date), as on the
@@ -77,12 +84,13 @@ before any generative or conversational feature is added here.
 | Table | What |
 |---|---|
 | `quests` | The member's choices; one active at a time (`quests_one_active`) |
-| `quest_steps` | One row per micro-action marked done on a day |
+| `quest_steps` | One row per micro-action marked done on a day, with the note for a writing action |
 | `quest_reflections` | One What helped note per day |
 | `goals`, `goal_logs` | Goals (with the new SMART columns) and their daily logs |
 
 `supabase/migrations/20260927190000_quest_maps.sql` creates the quest tables
-and adds the goal columns. Every row is readable and deletable only by its
+and adds the goal columns; `20260928010000_quest_step_notes.sql` adds the
+note on steps. Every row is readable and deletable only by its
 owner. Adding or changing needs Premium, so a member who leaves Premium can
 still download and delete. No therapist, admin screen or other member has a
 policy on these tables. The account page's **Download my data** includes all

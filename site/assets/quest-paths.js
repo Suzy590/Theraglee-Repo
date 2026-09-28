@@ -53,14 +53,16 @@ export const SCENES = [
 
 /**
  * Micro-actions. `values` lists the VALUES each suits best; an action with no
- * `values` suits them all. `min` is roughly how long it takes.
+ * `values` suits them all. `min` is roughly how long it takes. `write` marks
+ * the ones done by writing something down: tapping one on the page opens a
+ * note box, and what the member writes is kept with the step.
  */
 export const ACTIONS = [
   // Small habits
   { key: 'hab_glass_water',     cat: 'habits', min: 2,  text: 'Drink a glass of water before your first screen of the day.', values: ['energy', 'steady_routines'] },
   { key: 'hab_same_wake',       cat: 'habits', min: 2,  text: 'Get up within the same half hour as yesterday.', values: ['steady_routines', 'energy'] },
   { key: 'hab_tidy_surface',    cat: 'habits', min: 5,  text: 'Clear one surface, like a nightstand or a corner of a desk.', values: ['steady_routines', 'focus', 'calm_evenings'] },
-  { key: 'hab_tomorrow_three',  cat: 'habits', min: 5,  text: 'Write the three things you want to do tomorrow, then stop.', values: ['focus', 'steady_routines'] },
+  { key: 'hab_tomorrow_three',  cat: 'habits', min: 5, write: true,  text: 'Write the three things you want to do tomorrow, then stop.', values: ['focus', 'steady_routines'] },
   { key: 'hab_screen_curfew',   cat: 'habits', min: 2,  text: 'Pick a time tonight when the phone goes to charge in another room.', values: ['calm_evenings'] },
   { key: 'hab_single_task',     cat: 'habits', min: 20, text: 'Work on one thing for twenty minutes with notifications off.', values: ['focus'] },
   { key: 'hab_evening_reset',   cat: 'habits', min: 10, text: 'Do a ten-minute evening reset: dishes, bag packed, clothes out.', values: ['calm_evenings', 'steady_routines'] },
@@ -75,20 +77,20 @@ export const ACTIONS = [
   { key: 'sc_snack_sit',        cat: 'self_care', min: 5,  text: 'Eat a snack sitting down, without doing anything else.', values: ['self_kindness', 'energy'] },
 
   // Reflection prompts (personal reflection, not assessment)
-  { key: 'ref_went_well',       cat: 'reflection', min: 5,  text: 'Write one thing that went a bit better than expected today.' },
-  { key: 'ref_ideal_evening',   cat: 'reflection', min: 5,  text: 'Describe, in a few lines, an evening you would enjoy.', values: ['calm_evenings'] },
-  { key: 'ref_small_win',       cat: 'reflection', min: 2,  text: 'Note a small thing you finished today, however small.', values: ['focus', 'steady_routines', 'self_kindness'] },
-  { key: 'ref_what_matters',    cat: 'reflection', min: 10, text: 'List what you spent time on today, and star what you want more of.', values: ['focus'] },
-  { key: 'ref_person_admire',   cat: 'reflection', min: 5,  text: 'Write about someone you admire and one thing they do that you like.', values: ['connection', 'self_kindness'] },
-  { key: 'ref_future_self',     cat: 'reflection', min: 10, text: 'Write a short note from you a year from now, about an ordinary good day.', values: ['self_kindness', 'focus'] },
-  { key: 'ref_idea_page',       cat: 'reflection', min: 10, text: 'Fill half a page with ideas you would like to try, good or silly.', values: ['creativity'] },
+  { key: 'ref_went_well',       cat: 'reflection', min: 5, write: true,  text: 'Write one thing that went a bit better than expected today.' },
+  { key: 'ref_ideal_evening',   cat: 'reflection', min: 5, write: true,  text: 'Describe, in a few lines, an evening you would enjoy.', values: ['calm_evenings'] },
+  { key: 'ref_small_win',       cat: 'reflection', min: 2, write: true,  text: 'Note a small thing you finished today, however small.', values: ['focus', 'steady_routines', 'self_kindness'] },
+  { key: 'ref_what_matters',    cat: 'reflection', min: 10, write: true, text: 'List what you spent time on today, and star what you want more of.', values: ['focus'] },
+  { key: 'ref_person_admire',   cat: 'reflection', min: 5, write: true,  text: 'Write about someone you admire and one thing they do that you like.', values: ['connection', 'self_kindness'] },
+  { key: 'ref_future_self',     cat: 'reflection', min: 10, write: true, text: 'Write a short note from you a year from now, about an ordinary good day.', values: ['self_kindness', 'focus'] },
+  { key: 'ref_idea_page',       cat: 'reflection', min: 10, write: true, text: 'Fill half a page with ideas you would like to try, good or silly.', values: ['creativity'] },
 
   // Gratitude
-  { key: 'gr_three_things',     cat: 'gratitude', min: 5,  text: 'Write three things you are glad of today, one line each.' },
-  { key: 'gr_one_thing',        cat: 'gratitude', min: 2,  text: 'Name one thing from today you are glad happened.' },
+  { key: 'gr_three_things',     cat: 'gratitude', min: 5, write: true,  text: 'Write three things you are glad of today, one line each.' },
+  { key: 'gr_one_thing',        cat: 'gratitude', min: 2, write: true,  text: 'Name one thing from today you are glad happened.' },
   { key: 'gr_thank_someone',    cat: 'gratitude', min: 5,  text: 'Send someone a short thank-you for something specific.', values: ['connection'] },
   { key: 'gr_senses',           cat: 'gratitude', min: 2,  text: 'Notice one pleasant thing for each of three senses.', values: ['calm_evenings', 'time_outdoors'] },
-  { key: 'gr_letter',           cat: 'gratitude', min: 20, text: 'Write a longer thank-you letter, whether or not you send it.', values: ['connection', 'self_kindness'] },
+  { key: 'gr_letter',           cat: 'gratitude', min: 20, write: true, text: 'Write a longer thank-you letter, whether or not you send it.', values: ['connection', 'self_kindness'] },
 
   // Movement
   { key: 'mv_walk_block',       cat: 'movement', min: 10, text: 'Walk around the block at an easy pace.', values: ['energy', 'time_outdoors'] },
@@ -118,7 +120,7 @@ export const ACTIONS = [
   { key: 'cr_photo',            cat: 'creativity', min: 2,  text: 'Take one photo of something ordinary that looks good.', values: ['creativity', 'time_outdoors'] },
   { key: 'cr_mandala',          cat: 'creativity', min: 20, text: 'Color part of a mandala on the Mandalas page.', values: ['creativity', 'calm_evenings'] },
   { key: 'cr_new_recipe',       cat: 'creativity', min: 20, text: 'Cook something slightly new, or an old favorite a new way.', values: ['creativity', 'connection'] },
-  { key: 'cr_six_words',        cat: 'creativity', min: 2,  text: 'Describe today in exactly six words.', values: ['creativity', 'self_kindness'] },
+  { key: 'cr_six_words',        cat: 'creativity', min: 2, write: true,  text: 'Describe today in exactly six words.', values: ['creativity', 'self_kindness'] },
 ];
 
 /**
