@@ -85,6 +85,14 @@
   [data-panel]{display:none}
   [data-panel].on{display:block}
   /* Room for the sticky header when a link lands on one of these (dashboard.html#match-mode). */
+  /* The mood check-in on Today sits in its own tinted panel, below the daily
+     cards and Match Mode (.dash-top already leaves the gap). */
+  .mood-zone{margin-top:0;padding:26px;border-radius:var(--r-lg);background:var(--soft);
+    border:1px solid var(--mist)}
+  .mood-zone-head{margin:0 0 20px}
+  .mood-zone-head h2{margin:0}
+  .mood-zone-head p{margin:4px 0 0}
+  @media(max-width:560px){.mood-zone{padding:18px 14px}}
   #affirm-card,.daily .card,#mood-card,#mood-factors,#mood-patterns,#match-mode{scroll-margin-top:104px}
 </style>
 </head>
@@ -145,7 +153,13 @@
     </div>
 
     <section data-panel="today">
-      <div id="mood-host"><div class="card"><div class="skeleton" style="height:120px"></div></div></div>
+      <section class="mood-zone" aria-labelledby="mood-zone-title">
+        <div class="mood-zone-head">
+          <h2 id="mood-zone-title">Mood</h2>
+          <p class="muted">Your daily check-in, and what may be shaping how you feel.</p>
+        </div>
+        <div id="mood-host"><div class="card"><div class="skeleton" style="height:120px"></div></div></div>
+      </section>
     </section>
 
     <section data-panel="journal">
