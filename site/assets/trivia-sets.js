@@ -1,7 +1,7 @@
 /* =============================================================================
    Theraglee — Mental health trivia: 150 quizzes, ten questions each, fifteen topics.
    -----------------------------------------------------------------------------
-   A Basic feature. Like the free discovery tools, the quizzes ship with the site
+   A Basic feature. Like the self-discovery tools, the quizzes ship with the site
    rather than living in the database; trivia.html renders them and keeps
    scores (trivia_scores, with localStorage as the fallback).
 
