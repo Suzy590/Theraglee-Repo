@@ -40,10 +40,14 @@
   .today-top .daily p{font-size:.9rem;line-height:1.5}
   .today-top #daily-quote p{font-size:1rem!important}
   .mm{text-align:right}
-  /* A soft outline groups the switch, the consent card and the summary. */
-  .mm{padding:14px 16px 16px;border:1px solid var(--hair);border-radius:var(--r-lg);background:rgba(240,247,226,.35)}
-  .mm-row{display:flex;align-items:center;gap:12px;justify-self:end;align-self:end}
-  .mm-body{display:flex;flex-direction:column}
+  /* A soft outline groups the switch, the consent card and the summary. Its
+     top half is drawn on the switch row and its bottom half on the body, so
+     the box starts just above the switch rather than at the greeting's top. */
+  .mm{row-gap:0}
+  .mm-row,.mm-body{background:var(--sand);border:1px solid #D9D3BF}
+  .mm-row{display:flex;align-items:center;justify-content:flex-end;gap:12px;align-self:end;
+    padding:10px 16px;border-bottom:0;border-radius:var(--r-lg) var(--r-lg) 0 0}
+  .mm-body{display:flex;flex-direction:column;padding:0 16px 16px;border-top:0;border-radius:0 0 var(--r-lg) var(--r-lg)}
   .mm-switch{position:relative;flex:0 0 auto;width:72px;height:36px;border-radius:100px;cursor:pointer;padding:0;
     background:#DCD8C9;border:2px solid #CFCAB8;
     transition:background .5s ease,border-color .5s ease,box-shadow .5s ease}
@@ -73,8 +77,7 @@
     .dash-left,.mm{grid-row:auto;display:block}
     .dash-hello{margin-bottom:14px}
     .mm{text-align:left}
-    .mm-row{justify-self:start}
-    .mm-body{margin-top:10px}
+    .mm-row{justify-content:flex-start}
   }
   @media(prefers-reduced-motion:reduce){.mm-switch,.mm-switch i{transition:none}}
   .tabs{display:flex;gap:4px;border-bottom:1px solid var(--hair);margin:0 0 22px;overflow-x:auto}
