@@ -92,7 +92,7 @@ async function token() {
 }
 
 async function api(path, { method = 'GET', body } = {}) {
-  for (let tries = 0; tries < 5; tries++) {
+  for (let tries = 0; tries < 10; tries++) {
     const r = await fetch(path.startsWith('http') ? path : API + path, { method,
       headers: { Authorization: `Bearer ${await token()}`, ...(body ? { 'Content-Type': 'application/json' } : {}) },
       body: body ? JSON.stringify(body) : undefined });
@@ -102,14 +102,14 @@ async function api(path, { method = 'GET', body } = {}) {
       await new Promise(ok => setTimeout(ok, wait * 1000)); continue;
     }
     if (r.status >= 500) {                        // Spotify hiccup: try again in a moment
-      await new Promise(ok => setTimeout(ok, 3000 * (tries + 1))); continue;
+      await new Promise(ok => setTimeout(ok, Math.min(60_000, 3000 * 2 ** tries))); continue;
     }
     if (r.status === 204) return {};
     const j = await r.json().catch(() => ({}));
     if (!r.ok) throw new Error(`${method} ${path}: ${r.status} ${JSON.stringify(j.error || j)}`);
     return j;
   }
-  throw new Error(`${method} ${path}: rate limited too long`);
+  throw new Error(`${method} ${path}: Spotify kept refusing or failing; run build again later, lists already made are kept`);
 }
 
 const norm = (s) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();

@@ -283,7 +283,7 @@ PLAYLISTS.rock = {
     ['All My Love', 'Led Zeppelin'], ['The Kids Are Alright', 'The Who'], ['Always', 'Bon Jovi'], ['Bed of Roses', 'Bon Jovi'],
     ['Who Says You Can\'t Go Home', 'Bon Jovi'], ['We Are the Champions', 'Queen'],
   ] },
-  winddown: { title: 'Slow rock for winding down', blurb: 'Quiet guitars and slow songs for the end of the day.', spotify: '', songs: [
+  winddown: { title: 'Slow rock for winding down', blurb: 'Quiet guitars and slow songs for the end of the day.', spotify: '3FwsifZlzhhNQoktnMoW1M', songs: [
     ['Going to California', 'Led Zeppelin'], ['Thank You', 'Led Zeppelin'], ['The Rain Song', 'Led Zeppelin'],
     ['Fearless', 'Pink Floyd'], ['Ruby Tuesday', 'The Rolling Stones'], ['Lovesong', 'The Cure'], ['Pictures of You', 'The Cure'],
     ['Lover, You Should\'ve Come Over', 'Jeff Buckley'], ['Nude', 'Radiohead'], ['Lightning Crashes', 'Live'],
@@ -778,7 +778,7 @@ PLAYLISTS.electronic = {
 
 /* ---------------------------------------------- Soft rock & easy listening */
 PLAYLISTS.softrock = {
-  low: { title: 'Soft rock for a heavy day', blurb: 'Gentle ballads and familiar voices from the radio, slow enough to sit with.', spotify: '', songs: [
+  low: { title: 'Soft rock for a heavy day', blurb: 'Gentle ballads and familiar voices from the radio, slow enough to sit with.', spotify: '32RruYx4zJ3zILQGXBV4Ik', songs: [
     ['Fire and Rain', 'James Taylor'], ['Tears in Heaven', 'Eric Clapton'], ['Landslide', 'Fleetwood Mac'],
     ['Desperado', 'Eagles'], ['Rainy Days and Mondays', 'Carpenters'], ['Superstar', 'Carpenters'], ['Hard to Say I\'m Sorry', 'Chicago'],
     ['If You Leave Me Now', 'Chicago'], ['Everything I Own', 'Bread'], ['Sometimes When We Touch', 'Dan Hill'],
@@ -793,7 +793,7 @@ PLAYLISTS.softrock = {
     ['Sorry Seems to Be the Hardest Word', 'Elton John'], ['She\'s Always a Woman', 'Billy Joel'], ['Don\'t Know Much', 'Linda Ronstadt & Aaron Neville'],
     ['Long, Long Time', 'Linda Ronstadt'], ['Nights in White Satin', 'The Moody Blues'],
   ] },
-  anxious: { title: 'Steady soft rock to breathe with', blurb: 'Easy tempos, warm harmonies and nothing sudden, like a long drive on an empty road.', spotify: '', songs: [
+  anxious: { title: 'Steady soft rock to breathe with', blurb: 'Easy tempos, warm harmonies and nothing sudden, like a long drive on an empty road.', spotify: '3mNMUSQSmwoYVqv2sffXoO', songs: [
     ['Peaceful Easy Feeling', 'Eagles'], ['Sweet Baby James', 'James Taylor'], ['Carolina in My Mind', 'James Taylor'],
     ['So Far Away', 'Carole King'], ['A Horse with No Name', 'America'], ['Ventura Highway', 'America'], ['Summer Breeze', 'Seals & Crofts'],
     ['Diamond Girl', 'Seals & Crofts'], ['Sailing', 'Christopher Cross'], ['Moonlight Feels Right', 'Starbuck'],
@@ -807,7 +807,7 @@ PLAYLISTS.softrock = {
     ['Wonderful Tonight', 'Eric Clapton'], ['Harvest Moon', 'Neil Young'], ['Tin Man', 'America'], ['Fool If You Think It\'s Over', 'Chris Rea'],
     ['On and On', 'Stephen Bishop'], ['Wildfire', 'Michael Martin Murphey'],
   ] },
-  lonely: { title: 'Soft rock to keep you company', blurb: 'Songs about friends, home and being there for someone, sung by voices that feel familiar.', spotify: '', songs: [
+  lonely: { title: 'Soft rock to keep you company', blurb: 'Songs about friends, home and being there for someone, sung by voices that feel familiar.', spotify: '6cL2buh2G1UELjMaVr3ACj', songs: [
     ['You\'ve Got a Friend', 'James Taylor'], ['Thank You for Being a Friend', 'Andrew Gold'], ['Lonely People', 'America'],
     ['All by Myself', 'Eric Carmen'], ['Longer', 'Dan Fogelberg'], ['Wherever You Will Go', 'The Calling'],
     ['With a Little Help from My Friends', 'Joe Cocker'], ['Have You Ever Seen the Rain', 'Creedence Clearwater Revival'],
@@ -823,7 +823,7 @@ PLAYLISTS.softrock = {
     ['I Honestly Love You', 'Olivia Newton-John'], ['You Needed Me', 'Anne Murray'], ['Could I Have This Dance', 'Anne Murray'],
     ['Somewhere Out There', 'Linda Ronstadt & James Ingram'],
   ] },
-  flat: { title: 'Soft rock with a gentle lift', blurb: 'Bright guitars and sing-along choruses that open the curtains a little.', spotify: '', songs: [
+  flat: { title: 'Soft rock with a gentle lift', blurb: 'Bright guitars and sing-along choruses that open the curtains a little.', spotify: '5tBCnWwsVb4m44aOPmwDAl', songs: [
     ['Sister Golden Hair', 'America'], ['Go Your Own Way', 'Fleetwood Mac'], ['Don\'t Stop', 'Fleetwood Mac'],
     ['Everywhere', 'Fleetwood Mac'], ['Take It Easy', 'Eagles'], ['Already Gone', 'Eagles'], ['Mexico', 'James Taylor'],
     ['Shower the People', 'James Taylor'], ['I Feel the Earth Move', 'Carole King'], ['Beautiful', 'Carole King'],
@@ -838,7 +838,7 @@ PLAYLISTS.softrock = {
     ['Glory of Love', 'Peter Cetera'], ['Hey, Soul Sister', 'Train'], ['Save Tonight', 'Eagle-Eye Cherry'],
     ['Slide', 'Goo Goo Dolls'], ['Unwell', 'Matchbox Twenty'], ['Run-Around', 'Blues Traveler'],
   ] },
-  angry: { title: 'Soft rock with some bite', blurb: 'The moodier, punchier side of the radio, for a feeling that needs somewhere to go.', spotify: '', songs: [
+  angry: { title: 'Soft rock with some bite', blurb: 'The moodier, punchier side of the radio, for a feeling that needs somewhere to go.', spotify: '4VE8Y6NBNbEFyGMQjojwoB', songs: [
     ['The Chain', 'Fleetwood Mac'], ['Life in the Fast Lane', 'Eagles'], ['Heartache Tonight', 'Eagles'], ['Dirty Laundry', 'Don Henley'],
     ['Smuggler\'s Blues', 'Glenn Frey'], ['Rich Girl', 'Daryl Hall & John Oates'], ['Maneater', 'Daryl Hall & John Oates'],
     ['Out of Touch', 'Daryl Hall & John Oates'], ['Big Shot', 'Billy Joel'], ['You May Be Right', 'Billy Joel'],
