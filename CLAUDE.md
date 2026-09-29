@@ -30,6 +30,14 @@ Two deliberate exceptions, both stored values rather than words on a page:
   as an alias of `.badge.gray`, so markup published before the switch still
   renders. Write `.gray` in new markup.
 
+## Every member page uses the Today look
+
+The dashboard's Today tab sets the style: a soft green `.zone` panel with a
+large heading and one muted line (`.zone-head`), white `.card`s inside, small
+`.kicker` labels and `.badge` pills, all in `site/assets/styles.css`. Every
+dashboard tab and every new member page or tab follows it. `docs/design.md`
+is the guide.
+
 ## `documents/` is generated
 
 Never hand-edit `documents/`. It is built from `data/` by the generator:

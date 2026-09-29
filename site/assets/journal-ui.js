@@ -74,9 +74,7 @@ export async function mountJournal(host, a, promptId = null) {
   function paint(list){
     host.innerHTML = `
     <div class="journal-grid">
-      <div>
-        <h2 style="margin-top:0">Journal</h2>
-        <p class="muted">Private to your account. Nobody else can read it — not therapists, not us.</p>
+      <div class="card">
         ${prompt ? `<div class="prompt-box" id="j-pbox">${esc(prompt.body)}</div>
           <div class="row" style="margin:10px 0 18px">
             <button class="btn sm ghost" id="j-newprompt">Give me another prompt</button>
@@ -90,7 +88,7 @@ export async function mountJournal(host, a, promptId = null) {
         <div class="row"><button class="btn" id="j-save">Save entry</button>
           <span class="faint" id="j-status"></span></div>
       </div>
-      <div>
+      <div class="card">
         <h3 style="font-size:1.2rem;margin-top:0">Earlier entries</h3>
         <div class="field" style="margin-top:14px">
           <label for="j-q">Search your entries</label>

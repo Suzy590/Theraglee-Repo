@@ -16,7 +16,6 @@
     line-height:1.3;color:var(--ink);margin:0}
   .daily{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(258px,1fr))}
   .daily .card{display:flex;flex-direction:column;gap:10px}
-  .daily .k{font-size:.74rem;text-transform:uppercase;letter-spacing:.09em;color:var(--faint);font-weight:600}
   .daily p{margin:0;font-size:.98rem}
   .streak{font-size:2.2rem;font-weight:300;letter-spacing:-.03em;line-height:1}
   /* The top of the dashboard sits right under the feature showcase. */
@@ -33,8 +32,9 @@
      in the upper right corner, with what it does written underneath. */
   /* Today's affirmation and daily cards, a size down so they fit beside Match Mode. */
   .today-top[data-panel].on{display:flex;flex-direction:column;gap:14px}
-  #affirm-card{padding:18px 20px}
-  #affirm-card .hero-line{font-size:clamp(1.2rem,2.3vw,1.55rem);margin-top:10px!important}
+  .tab-intro[data-panel].on{align-self:start}
+  #affirm-card,.tab-intro{padding:18px 20px}
+  #affirm-card .hero-line,.tab-intro .hero-line{font-size:clamp(1.2rem,2.3vw,1.55rem);margin-top:10px!important}
   .today-top .daily{gap:14px;grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
   .today-top .daily .card{padding:16px 18px;gap:8px}
   .today-top .daily p{font-size:.9rem;line-height:1.5}
@@ -92,14 +92,9 @@
   [data-panel]{display:none}
   [data-panel].on{display:block}
   /* Room for the sticky header when a link lands on one of these (dashboard.html#match-mode). */
-  /* The mood check-in on Today sits in its own tinted panel, below the daily
-     cards and Match Mode (.dash-top already leaves the gap). */
-  .mood-zone{margin-top:0;padding:26px;border-radius:var(--r-lg);background:var(--soft);
-    border:1px solid var(--mist)}
-  .mood-zone-head{margin:0 0 20px}
-  .mood-zone-head h2{margin:0}
-  .mood-zone-head p{margin:4px 0 0}
-  @media(max-width:560px){.mood-zone{padding:18px 14px}}
+  /* Every tab is a .zone (assets/styles.css), the tinted panel the mood
+     check-in on Today started with; .dash-top already leaves the gap above. */
+  .zone h2.zone-sub{margin:30px 0 14px}
   #affirm-card,.daily .card,#mood-card,#mood-factors,#mood-patterns,#match-mode{scroll-margin-top:104px}
   .tile .tile-remove{align-self:flex-start;margin-top:10px;padding:4px 10px;font-size:.78rem;color:var(--faint)}
   .tile .tile-remove:hover{color:var(--danger)}
@@ -140,6 +135,36 @@
             <div class="card"><div class="skeleton"></div></div>
           </div>
         </div>
+
+        <!-- Every other tab opens the same way: a card in the affirmation's place. -->
+        <div class="card tab-intro" data-panel="progress">
+          <span class="badge">Progress</span>
+          <p class="hero-line">Every small step counts, and they all add up here.</p>
+        </div>
+        <div class="card tab-intro" data-panel="journal">
+          <span class="badge">Journal</span>
+          <p class="hero-line">Put what is on your mind somewhere safe.</p>
+        </div>
+        <div class="card tab-intro" data-panel="playlists">
+          <span class="badge">Playlists</span>
+          <p class="hero-line">Let music meet you where you are.</p>
+        </div>
+        <div class="card tab-intro" data-panel="explore">
+          <span class="badge">Explore Library</span>
+          <p class="hero-line">Everything on Theraglee, gathered in one place.</p>
+        </div>
+        <div class="card tab-intro" data-panel="discover">
+          <span class="badge">Self-Discovery</span>
+          <p class="hero-line">A few quiet minutes to learn more about yourself.</p>
+        </div>
+        <div class="card tab-intro" data-panel="tools">
+          <span class="badge">Tools</span>
+          <p class="hero-line">Pick up something small, and see where it leads.</p>
+        </div>
+        <div class="card tab-intro" data-panel="messages">
+          <span class="badge">Messages</span>
+          <p class="hero-line">Hear from the therapists you chose to let in.</p>
+        </div>
       </div>
       <div class="mm" id="match-mode">
         <div class="mm-row">
@@ -156,8 +181,8 @@
     </div>
 
     <section data-panel="today">
-      <section class="mood-zone" aria-labelledby="mood-zone-title">
-        <div class="mood-zone-head">
+      <section class="zone" aria-labelledby="mood-zone-title">
+        <div class="zone-head">
           <h2 id="mood-zone-title">Mood</h2>
           <p class="muted">Your daily check-in, and what may be shaping how you feel.</p>
         </div>
@@ -166,53 +191,89 @@
     </section>
 
     <section data-panel="journal">
-      <div id="journal-host"><div class="card"><div class="skeleton" style="height:120px"></div></div></div>
+      <section class="zone" aria-labelledby="journal-zone-title">
+        <div class="zone-head">
+          <h2 id="journal-zone-title">Journal</h2>
+          <p class="muted">Private to your account. Nobody else can read it — not therapists, not us.</p>
+        </div>
+        <div id="journal-host"><div class="card"><div class="skeleton" style="height:120px"></div></div></div>
+      </section>
     </section>
 
     <section data-panel="playlists">
-      <div id="playlists-host"><div class="card"><div class="skeleton" style="height:120px"></div></div></div>
+      <section class="zone" aria-labelledby="playlists-zone-title">
+        <div class="zone-head">
+          <h2 id="playlists-zone-title">Playlists</h2>
+          <p class="muted">Pick a genre, then a mood, and get forty songs to play right here.</p>
+        </div>
+        <div id="playlists-host"><div class="card"><div class="skeleton" style="height:120px"></div></div></div>
+      </section>
     </section>
 
     <section data-panel="explore">
-      <h2 style="margin-top:0">Explore Library</h2>
-      <p class="muted" style="max-width:56ch;margin-top:-6px">Everything on Theraglee in one place.</p>
-      <div id="explore-host" style="margin-top:22px"></div>
+      <section class="zone" aria-labelledby="explore-zone-title">
+        <div class="zone-head">
+          <h2 id="explore-zone-title">Explore Library</h2>
+          <p class="muted">Everything on Theraglee in one place.</p>
+        </div>
+        <div id="explore-host"></div>
+      </section>
     </section>
 
     <section data-panel="discover">
-      <h2 style="margin-top:0">Discover more about yourself</h2>
-      <p class="muted" style="max-width:60ch;margin-top:-6px">Short, interactive tools for noticing your own patterns. Each one takes just a few minutes. None of them diagnoses or treats any mental health condition. Rather, they aim to help you learn about yourself.</p>
-      <div id="discover-host" style="margin-top:22px"></div>
+      <section class="zone" aria-labelledby="discover-zone-title">
+        <div class="zone-head">
+          <h2 id="discover-zone-title">Discover more about yourself</h2>
+          <p class="muted">Short, interactive tools for noticing your own patterns. Each one takes just a few minutes. None of them diagnoses or treats any mental health condition. Rather, they aim to help you learn about yourself.</p>
+        </div>
+        <div id="discover-host"></div>
+      </section>
     </section>
 
     <section data-panel="progress">
-      <div class="card" id="streak-card">
-        <h3>Your week</h3>
-        <div class="row" style="gap:30px;margin-top:10px">
-          <div><div class="streak" id="n-entries">—</div><div class="faint">journal entries</div></div>
-          <div><div class="streak" id="n-active">—</div><div class="faint">active challenges</div></div>
-          <div><div class="streak" id="n-done">—</div><div class="faint">activities completed</div></div>
-          <div><div class="streak" id="n-quiz">—</div><div class="faint">quizzes taken</div></div>
+      <section class="zone" aria-labelledby="progress-zone-title">
+        <div class="zone-head">
+          <h2 id="progress-zone-title">Progress</h2>
+          <p class="muted">Your week at a glance, and everything you have started, saved or favorited.</p>
         </div>
-      </div>
+        <div class="card" id="streak-card">
+          <h3>Your week</h3>
+          <div class="row" style="gap:30px;margin-top:10px">
+            <div><div class="streak" id="n-entries">—</div><div class="faint">journal entries</div></div>
+            <div><div class="streak" id="n-active">—</div><div class="faint">active challenges</div></div>
+            <div><div class="streak" id="n-done">—</div><div class="faint">activities completed</div></div>
+            <div><div class="streak" id="n-quiz">—</div><div class="faint">quizzes taken</div></div>
+          </div>
+        </div>
 
-      <div id="challenges-live"></div>
-      <div id="library-live"></div>
-      <div id="progress-empty" class="empty" style="margin-top:26px;display:none">
-        Nothing in progress yet. Start a challenge, save a favorite, or pick up a tool from the
-        <a href="#tools">Tools</a> tab and it will show up here.
-      </div>
+        <div id="challenges-live"></div>
+        <div id="library-live"></div>
+        <div id="progress-empty" class="empty" style="margin-top:26px;display:none">
+          Nothing in progress yet. Start a challenge, save a favorite, or pick up a tool from the
+          <a href="#tools">Tools</a> tab and it will show up here.
+        </div>
+      </section>
     </section>
 
     <section data-panel="tools">
-      <h2 style="margin-top:0">Pick up something small</h2>
-      <div class="grid g4" id="quick"></div>
-
-      <div id="upsell" style="margin-top:34px"></div>
+      <section class="zone" aria-labelledby="tools-zone-title">
+        <div class="zone-head">
+          <h2 id="tools-zone-title">Tools</h2>
+          <p class="muted">Pick up something small.</p>
+        </div>
+        <div class="grid g4" id="quick"></div>
+      </section>
+      <section class="zone" id="upsell" hidden></section>
     </section>
 
     <section data-panel="messages">
-      <div id="inbox-host"><div class="skeleton" style="height:120px"></div></div>
+      <section class="zone" aria-labelledby="messages-zone-title">
+        <div class="zone-head">
+          <h2 id="messages-zone-title">Messages</h2>
+          <p class="muted">Notes from therapists you have let reach out to you.</p>
+        </div>
+        <div id="inbox-host"><div class="skeleton" style="height:120px"></div></div>
+      </section>
     </section>
   </div>
 </main>
@@ -295,7 +356,7 @@ function showTab(next) {
     if (a.level < 3) lockNotice(host, 3, 'Playlists'); else mountPlaylists(host);
   }
   // Messages are read fresh each time the tab opens, so a new one shows up.
-  if (tab === 'messages') mountInbox(document.getElementById('inbox-host'), a);
+  if (tab === 'messages') mountInbox(document.getElementById('inbox-host'), a, { heading: false });
   if (!PANELS.includes(next)) scrollToHash();
 }
 // Scrolls to the element the hash names, if there is one, once its tab is open.
@@ -326,11 +387,11 @@ document.getElementById('affirm-card').innerHTML = picks.affirmation
   : `<p class="muted">No affirmation available yet.</p>`;
 
 const cards = [];
-if (picks.quote) cards.push(`<div class="card" id="daily-quote"><span class="k">Quote</span>
+if (picks.quote) cards.push(`<div class="card" id="daily-quote"><span class="kicker">Quote</span>
   <p style="font-family:var(--serif);font-style:italic;font-size:1.1rem">“${esc(picks.quote.body)}”</p>
   <span class="faint">— ${esc(picks.quote.author||'Unknown')}</span></div>`);
-if (picks.tip) cards.push(`<div class="card" id="daily-tip"><span class="k">Tip</span><p>${esc(picks.tip.body)}</p></div>`);
-if (picks.fun_fact) cards.push(`<div class="card" id="daily-fact"><span class="k">Did you know</span><p>${esc(picks.fun_fact.body)}</p></div>`);
+if (picks.tip) cards.push(`<div class="card" id="daily-tip"><span class="kicker">Tip</span><p>${esc(picks.tip.body)}</p></div>`);
+if (picks.fun_fact) cards.push(`<div class="card" id="daily-fact"><span class="kicker">Did you know</span><p>${esc(picks.fun_fact.body)}</p></div>`);
 document.getElementById('daily').innerHTML = cards.join('') ||
   `<div class="empty">Daily content is being set up.</div>`;
 // The daily cards arrive after the page opened, so a link to one of them
@@ -401,7 +462,7 @@ async function paintChallenges() {
   const done = {};
   (prog||[]).forEach(r => { (done[r.user_challenge_id] ||= new Set()).add(r.day); });
   host.innerHTML = `
-    <h2 style="margin-top:26px">Challenges in progress</h2>
+    <h2 class="zone-sub">Challenges in progress</h2>
     <div class="grid g2">${live.map(c=>{
       const n = done[c.id]?.size || 0;
       const pct = Math.round(n / c.total_days * 100);
@@ -498,9 +559,9 @@ async function paintLibrary() {
   };
 
   const section = (title, keys, empty, removable = false) => keys.length
-    ? `<h2 style="margin-top:44px">${title}</h2>
+    ? `<h2 class="zone-sub">${title}</h2>
        <div class="grid g3">${keys.map(k => tile(k, removable)).join('')}</div>`
-    : (empty ? `<h2 style="margin-top:44px">${title}</h2><div class="empty">${empty}</div>` : '');
+    : (empty ? `<h2 class="zone-sub">${title}</h2><div class="empty">${empty}</div>` : '');
 
   const inProgress = [...lib.progress.values()]
     .filter(p => p.status === 'started')
@@ -571,9 +632,13 @@ document.getElementById('quick').innerHTML = quick.map(([label, href, need, ownG
 
 /* ---- upsell: the same three tiers as the landing page (assets/plans.js) ---- */
 if (a.level < 3) {
-  document.getElementById('upsell').innerHTML = `
-    <h2 style="margin:0 0 6px">${esc(PLANS_INTRO.title)}</h2>
-    <p class="muted" style="margin:0 0 24px">${esc(PLANS_INTRO.lede)}</p>
+  const upsell = document.getElementById('upsell');
+  upsell.hidden = false;
+  upsell.innerHTML = `
+    <div class="zone-head">
+      <h2>${esc(PLANS_INTRO.title)}</h2>
+      <p class="muted">${esc(PLANS_INTRO.lede)}</p>
+    </div>
     ${tierCards({ prices: await loadPrices(sb), level: a.level })}
     <p class="tiers-note">${esc(PLANS_NOTE)}</p>`;
 }

@@ -171,6 +171,23 @@ a.tile:hover{transform:translateY(-5px);box-shadow:var(--shadow-2);color:inherit
 .tile .meta{font-size:.82rem;color:var(--faint)}
 .tile.locked{background:linear-gradient(180deg,var(--paper),var(--sand))}
 
+/* ---------- zones: the look of the dashboard's Today tab ----------
+   A member page is built from zones: a soft green panel with a large
+   heading and one muted line under it (.zone-head), holding white cards.
+   Small labels on a card ("Quote", "Tip") use .kicker; a status or tier is a
+   .badge pill. Every dashboard tab and every new member page follows this.
+   docs/design.md is the guide. */
+.zone{padding:26px;border-radius:var(--r-lg);background:var(--soft);border:1px solid var(--mist)}
+.zone + .zone{margin-top:28px}
+.zone-head{margin:0 0 20px}
+.zone-head h2,.zone .zone-head h2{margin:0;font-size:clamp(1.5rem,2.8vw,2.2rem)}
+.zone-head p{margin:4px 0 0;max-width:62ch}
+/* Headings further down a zone sit a size below the zone's own. */
+.zone h2{font-size:1.35rem}
+.zone .notice:not(.warn):not(.err){background:var(--paper)}
+.kicker{display:block;font-size:.74rem;text-transform:uppercase;letter-spacing:.09em;color:var(--faint);font-weight:600}
+@media(max-width:560px){.zone{padding:18px 14px}}
+
 /* ---------- badges / pills ---------- */
 .badge{display:inline-flex;align-items:center;gap:6px;padding:3px 11px;border-radius:var(--r-pill);
   font-size:.74rem;font-weight:500;letter-spacing:.01em;background:var(--soft);color:var(--green-deep);
