@@ -147,7 +147,7 @@ PLAYLISTS.pop = {
     ['Never Really Over', 'Katy Perry'], ['Teenage Dream', 'Katy Perry'], ['Chained to the Rhythm', 'Katy Perry & Skip Marley'],
     ['Strawberries & Cigarettes', 'Troye Sivan'], ['New Light', 'John Mayer'], ['Daughters', 'John Mayer'],
   ] },
-  lonely: { title: 'Pop to keep you company', blurb: 'Songs about friendship and being there, from voices you already know.', spotify: '', songs: [
+  lonely: { title: 'Pop to keep you company', blurb: 'Songs about friendship and being there, from voices you already know.', spotify: '5GOskm0GYKp0t8D6we6vCG', songs: [
     ['I\'ll Be There for You', 'The Rembrandts'], ['Stand by You', 'Rachel Platten'], ['Hold My Hand', 'Jess Glynne'],
     ['Don\'t Be So Hard on Yourself', 'Jess Glynne'], ['True Colors', 'Cyndi Lauper'], ['Friends', 'Marshmello & Anne-Marie'],
     ['See You Again', 'Wiz Khalifa & Charlie Puth'], ['I Lived', 'OneRepublic'], ['She Used to Be Mine', 'Sara Bareilles'],
