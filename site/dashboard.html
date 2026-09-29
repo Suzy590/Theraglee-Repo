@@ -21,11 +21,17 @@
   .streak{font-size:2.2rem;font-weight:300;letter-spacing:-.03em;line-height:1}
   /* The top of the dashboard sits right under the feature showcase. */
   main.section{padding-top:26px}
-  .dash-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,320px);gap:18px 28px;align-items:start;margin-bottom:28px}
+  /* Two rows shared by both columns (subgrid): the greeting beside the
+     Match Mode switch, then today's cards beside the Match Mode box, so the
+     box's top lines up with the affirmation card's and the switch rests
+     just above it. */
+  .dash-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,320px);
+    grid-template-rows:auto auto;gap:14px 28px;margin-bottom:28px}
+  .dash-left,.mm{grid-row:span 2;display:grid;grid-template-rows:subgrid;align-content:start}
+  .dash-hello{align-self:end}
   /* Theraglee Match Mode: a smaller copy of the switch on the landing page,
      in the upper right corner, with what it does written underneath. */
   /* Today's affirmation and daily cards, a size down so they fit beside Match Mode. */
-  .today-top{margin-top:18px}
   .today-top[data-panel].on{display:flex;flex-direction:column;gap:14px}
   #affirm-card{padding:18px 20px}
   #affirm-card .hero-line{font-size:clamp(1.2rem,2.3vw,1.55rem);margin-top:10px!important}
@@ -33,8 +39,9 @@
   .today-top .daily .card{padding:16px 18px;gap:8px}
   .today-top .daily p{font-size:.9rem;line-height:1.5}
   .today-top #daily-quote p{font-size:1rem!important}
-  .mm{display:flex;flex-direction:column;align-items:flex-end;text-align:right}
-  .mm-row{display:flex;align-items:center;gap:12px}
+  .mm{text-align:right}
+  .mm-row{display:flex;align-items:center;gap:12px;justify-self:end;align-self:end}
+  .mm-body{display:flex;flex-direction:column}
   .mm-switch{position:relative;flex:0 0 auto;width:72px;height:36px;border-radius:100px;cursor:pointer;padding:0;
     background:#DCD8C9;border:2px solid #CFCAB8;
     transition:background .5s ease,border-color .5s ease,box-shadow .5s ease}
@@ -50,7 +57,7 @@
   /* The consent wording sits left-aligned in a soft card: a short lead, then
      the details as a list. The words are recorded in
      docs/match-mode-consent.md; change both together. */
-  .mm-desc{margin:10px 0 0;padding:12px 14px;text-align:left;font-size:.78rem;line-height:1.5;
+  .mm-desc{margin:0;padding:12px 14px;text-align:left;font-size:.78rem;line-height:1.5;
     background:var(--paper);border:1px solid var(--hair);border-radius:var(--r);box-shadow:var(--shadow-1)}
   .mm-desc .mm-lead strong{font-size:.9rem}
   #vis-summary{align-self:stretch;margin:8px 0 0;padding:10px 14px;text-align:left;font-size:.78rem;line-height:1.5;
@@ -60,9 +67,12 @@
   #vis-summary a{font-weight:500;white-space:nowrap}
   #vis-summary:empty{display:none}
   @media(max-width:720px){
-    .dash-top{grid-template-columns:1fr}
-    .mm{align-items:flex-start;text-align:left}
-    .mm-desc{align-self:stretch}
+    .dash-top{grid-template-columns:1fr;grid-template-rows:none}
+    .dash-left,.mm{grid-row:auto;display:block}
+    .dash-hello{margin-bottom:14px}
+    .mm{text-align:left}
+    .mm-row{justify-self:start}
+    .mm-body{margin-top:10px}
   }
   @media(prefers-reduced-motion:reduce){.mm-switch,.mm-switch i{transition:none}}
   .tabs{display:flex;gap:4px;border-bottom:1px solid var(--hair);margin:0 0 22px;overflow-x:auto}
@@ -111,11 +121,13 @@
 
     <div class="dash-top">
       <div class="dash-left">
-        <div style="display:flex;align-items:center;gap:.6em;flex-wrap:wrap">
-          <p class="faint" id="datestr" style="margin:0"></p>
-          <span class="badge" id="tierbadge"></span>
+        <div class="dash-hello">
+          <div style="display:flex;align-items:center;gap:.6em;flex-wrap:wrap">
+            <p class="faint" id="datestr" style="margin:0"></p>
+            <span class="badge" id="tierbadge"></span>
+          </div>
+          <h1 style="margin:.1em 0 0" id="greet">Your dashboard</h1>
         </div>
-        <h1 style="margin:.1em 0 .3em" id="greet">Your dashboard</h1>
 
         <!-- Today's picks sit beside Match Mode, and only on the Today tab. -->
         <div class="today-top" data-panel="today">
@@ -135,9 +147,11 @@
           <button class="mm-switch" id="vis" type="button" role="switch" aria-checked="false"
             aria-labelledby="mm-label" aria-describedby="mm-desc"><i></i></button>
         </div>
-        <!-- Filled from MATCH_BLURB in assets/match.js. -->
-        <div class="mm-desc muted" id="mm-desc"></div>
-        <p id="vis-summary" class="muted"></p>
+        <div class="mm-body">
+          <!-- Filled from MATCH_BLURB in assets/match.js. -->
+          <div class="mm-desc muted" id="mm-desc"></div>
+          <p id="vis-summary" class="muted"></p>
+        </div>
       </div>
     </div>
 
