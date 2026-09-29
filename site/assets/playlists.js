@@ -853,7 +853,7 @@ PLAYLISTS.softrock = {
     ['Doctor My Eyes', 'Jackson Browne'], ['Don\'t Do Me Like That', 'Tom Petty and the Heartbreakers'], ['Still the Same', 'Bob Seger'],
     ['Hollywood Nights', 'Bob Seger'], ['Bang the Drum All Day', 'Todd Rundgren'], ['Everybody Wants to Rule the World', 'Tears for Fears'],
   ] },
-  restless: { title: 'Soft rock to move to', blurb: 'Upbeat classics with a groove for walking, cleaning or driving.', spotify: '', songs: [
+  restless: { title: 'Soft rock to move to', blurb: 'Upbeat classics with a groove for walking, cleaning or driving.', spotify: '0nIl24D75wlBjMtjltgj9B', songs: [
     ['Listen to the Music', 'The Doobie Brothers'], ['China Grove', 'The Doobie Brothers'], ['Long Train Runnin\'', 'The Doobie Brothers'],
     ['Lido Shuffle', 'Boz Scaggs'], ['Lowdown', 'Boz Scaggs'], ['One of These Nights', 'Eagles'], ['Rikki Don\'t Lose That Number', 'Steely Dan'],
     ['Reelin\' in the Years', 'Steely Dan'], ['Do It Again', 'Steely Dan'], ['Peg', 'Steely Dan'], ['Private Eyes', 'Daryl Hall & John Oates'],
