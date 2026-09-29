@@ -111,9 +111,11 @@
 
     <div class="dash-top">
       <div class="dash-left">
-        <p class="faint" id="datestr" style="margin:0"></p>
+        <div style="display:flex;align-items:center;gap:.6em;flex-wrap:wrap">
+          <p class="faint" id="datestr" style="margin:0"></p>
+          <span class="badge" id="tierbadge"></span>
+        </div>
         <h1 style="margin:.1em 0 .3em" id="greet">Your dashboard</h1>
-        <span class="badge" id="tierbadge"></span>
 
         <!-- Today's picks sit beside Match Mode, and only on the Today tab. -->
         <div class="today-top" data-panel="today">
