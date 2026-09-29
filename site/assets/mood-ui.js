@@ -1,5 +1,6 @@
 /* ==========================================================================
-   Theraglee — the Mood tab on the member dashboard.
+   Theraglee — the mood check-in on the member dashboard's Today tab
+   (and the Mood tab on the admin and practice dashboards).
    One tap for the day's mood (saved straight away), then a one-tap 1 to 10
    rating for each factor that may be shaping it, and the weather. Those are
    sent together with Submit, which works only once all of them are answered.

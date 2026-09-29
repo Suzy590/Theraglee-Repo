@@ -1,9 +1,10 @@
-# The Mood tab
+# The mood check-in
 
-The member dashboard has a **Mood** tab (`dashboard.html#mood`), open to every
-signed-in member. The admin screen (`admin.html#mood`) and the therapist
-practice dashboard (`therapist-dashboard.html#mood`) have the same tab, drawn by
-the same code, for that account's own check-in. Every copy reads and writes the
+The member dashboard shows the mood check-in on its **Today** tab, below the
+daily cards, open to every signed-in member. It had a Mood tab of its own until
+2026-09-29; `dashboard.html#mood` still opens Today and scrolls to it. The admin
+screen (`admin.html#mood`) and the therapist practice dashboard
+(`therapist-dashboard.html#mood`) have a Mood tab drawn by the same code, for that account's own check-in. Every copy reads and writes the
 signed-in account's own `mood_logs` rows, so a day submitted on one tab shows as
 submitted on the others. It does three things:
 
@@ -44,7 +45,7 @@ Every rating runs the same way, so a higher number is always the better day:
 
 | Piece | Where |
 |---|---|
-| The tab | `site/assets/mood-ui.js`, mounted by `site/dashboard.html`, `site/admin.html` and `site/therapist-dashboard.html` when their Mood tab opens |
+| The tab | `site/assets/mood-ui.js`, mounted by `site/dashboard.html` when its Today tab first opens, and by `site/admin.html` and `site/therapist-dashboard.html` when their Mood tab opens |
 | Styles | `site/assets/mood.css`, linked from all three pages |
 | Factors, weather, and the analysis | `site/assets/mood-patterns.js` (no imports) |
 | Columns | `supabase/migrations/20260925120000_mood_factors.sql` adds `sleep`, `home_stress`, `work_stress`, `nutrition`, `hunger`, `loneliness`, `thoughts`, `activity`, `social` (1 to 10) and `weather` to `mood_logs` |
@@ -79,6 +80,6 @@ cause.
 The account page's data export includes every column because it selects `*`.
 The Premium **Goals & tracking** page no longer has a Mood tab (removed
 2026-09-25) or a Playlists tab (moved to the dashboard 2026-09-26); it links
-to the dashboard's Mood and Playlists tabs instead. Before 2026-09-25
+to the dashboard's mood check-in (on Today) and Playlists tab instead. Before 2026-09-25
 "today" was the UTC date, which in the US turns over in the evening, so an
 evening check-in from before then may sit on the following day.

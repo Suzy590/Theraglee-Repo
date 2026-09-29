@@ -51,8 +51,8 @@ and the What helped box repeat the pathway to help.
 5. **Changing course.** "Adjust" edits the quest in place. "Start a new quest"
    keeps the old one (inactive) and all days shown up carry over.
 
-"Today" is the member's own calendar day (browser local date), as on the
-Mood tab.
+"Today" is the member's own calendar day (browser local date), as in the
+mood check-in.
 
 ## The suggestion helper
 

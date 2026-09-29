@@ -92,7 +92,6 @@
 
     <div class="tabs" id="tabs" role="tablist">
       <button data-tab="today" role="tab">Today</button>
-      <button data-tab="mood" role="tab">Mood</button>
       <button data-tab="playlists" role="tab">Playlists</button>
       <button data-tab="explore" role="tab">Explore Library</button>
       <button data-tab="discover" role="tab">Discover</button>
@@ -112,14 +111,7 @@
         <div class="card"><div class="skeleton"></div></div>
       </div>
 
-      <a class="card mood-nudge" href="#mood" style="margin-top:26px;display:block;color:inherit">
-        <h3 style="margin:0">How are you today?</h3>
-        <p class="faint" style="margin:4px 0 0">Check in on the Mood tab, and see what may be shaping how you feel.</p>
-      </a>
-    </section>
-
-    <section data-panel="mood">
-      <div id="mood-host"><div class="card"><div class="skeleton" style="height:120px"></div></div></div>
+      <div id="mood-host" style="margin-top:26px"><div class="card"><div class="skeleton" style="height:120px"></div></div></div>
     </section>
 
     <section data-panel="playlists">
@@ -203,15 +195,17 @@ document.getElementById('tierbadge').textContent = tierName(a.level) + ' members
    The dashboard opens on Today. The other tabs are reached by their buttons or
    by address (dashboard.html#progress), and the address follows the tab so a
    refresh or a shared link comes back to the same one. */
-const PANELS = ['today', 'mood', 'playlists', 'explore', 'discover', 'progress', 'tools', 'messages'];
+const PANELS = ['today', 'playlists', 'explore', 'discover', 'progress', 'tools', 'messages'];
 let tab = 'today';
 // A hash that names something inside a tab (dashboard.html#match-mode, #daily-quote)
 // opens that tab and scrolls to it. The feature showcase under the header links this way.
 const panelOf = (id) => document.getElementById(id)?.closest('[data-panel]')?.dataset.panel;
 function showTab(next) {
-  // The Mood tab is drawn when it opens, so its cards (#mood-card and the rest)
-  // are not on the page yet when a link to one of them arrives.
-  tab = PANELS.includes(next) ? next : next.startsWith('mood-') ? 'mood' : panelOf(next) || 'today';
+  // The mood check-in is drawn when Today first opens, so its cards (#mood-card
+  // and the rest) are not on the page yet when a link to one of them arrives.
+  // It used to have a Mood tab of its own, so #mood still leads to it.
+  const moodLink = next === 'mood' || next.startsWith('mood-');
+  tab = PANELS.includes(next) ? next : moodLink ? 'today' : panelOf(next) || 'today';
   document.querySelectorAll('[data-panel]').forEach(el => el.classList.toggle('on', el.dataset.panel === tab));
   document.querySelectorAll('#tabs button').forEach(b => {
     const on = b.dataset.tab === tab;
@@ -224,7 +218,7 @@ function showTab(next) {
     mounted.explore = true;
     mountLibrary(document.getElementById('explore-host'), a);
   }
-  if (tab === 'mood' && !mounted.mood) {
+  if (tab === 'today' && !mounted.mood) {
     mounted.mood = mountMood(document.getElementById('mood-host'), p).then(() => {
       if (!PANELS.includes(next)) scrollToHash();
     });
@@ -246,7 +240,8 @@ function showTab(next) {
 // Scrolls to the element the hash names, if there is one, once its tab is open.
 // Match Mode sits above the tabs, so it is always showing.
 function scrollToHash() {
-  const el = document.getElementById(location.hash.replace('#', ''));
+  const id = location.hash.replace('#', '');
+  const el = document.getElementById(id === 'mood' ? 'mood-card' : id);
   const panel = el?.closest('[data-panel]');
   if (el && (!panel || panel.classList.contains('on'))) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
