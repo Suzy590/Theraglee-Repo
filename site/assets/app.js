@@ -278,6 +278,37 @@ const THERAPIST_NAV = [
   ['Directory',       'therapists.html'],
 ];
 
+// The dashboard's own tab row, repeated on the pages its Tools tab (and its
+// other tabs) lead to, so a member can always get back to any part of the
+// dashboard. Keep it in step with the tab buttons in dashboard.html.
+const DASH_TABS = [
+  ['Today',           'today'],
+  ['Playlists',       'playlists'],
+  ['Explore Library', 'explore'],
+  ['Discover',        'discover'],
+  ['Progress',        'progress'],
+  ['Tools',           'tools'],
+  ['Messages',        'messages'],
+];
+// The member pages that show that row, and the tab each one sits under.
+const DASH_PAGES = {
+  'discover.html': 'discover',
+  'journal.html': 'tools', 'explore.html': 'tools', 'challenges.html': 'tools',
+  'checklist.html': 'tools', 'quiz.html': 'tools', 'worksheet.html': 'tools',
+  'pet.html': 'tools', 'trivia.html': 'tools', 'goals.html': 'tools',
+  'mandalas.html': 'tools', 'therapists.html': 'tools', 'therapist.html': 'tools',
+  'articles.html': 'explore', 'article.html': 'explore',
+};
+
+function dashTabs(here) {
+  const nav = document.createElement('nav');
+  nav.className = 'dash-tabs';
+  nav.setAttribute('aria-label', 'Dashboard');
+  nav.innerHTML = `<div class="wrap"><div class="dash-tabs-row">${DASH_TABS.map(([label, tab]) =>
+    `<a href="dashboard.html#${tab}"${DASH_PAGES[here] === tab ? ' class="on"' : ''}>${label}</a>`).join('')}</div></div>`;
+  return nav;
+}
+
 export async function chrome({ active = '', showcase = true } = {}) {
   const a = await access();
   const here = location.pathname.split('/').pop() || 'index.html';
@@ -323,6 +354,15 @@ export async function chrome({ active = '', showcase = true } = {}) {
   // `showcase: false`.
   const therapistPages = [DOORS.therapist.home, DOORS.therapist.signin, DOORS.therapist.signup];
   if (showcase && !therapistPages.includes(here)) mountShowcase(a, $('.topbar'));
+
+  // A signed-in member keeps the dashboard's tabs on every page they lead to.
+  const main = document.querySelector('main');
+  if (a.authenticated && !therapist && DASH_PAGES[here] && main) {
+    main.before(dashTabs(here));
+    // On a phone the row scrolls sideways; bring the current tab into view.
+    const row = $('.dash-tabs-row'), on = row.querySelector('.on');
+    if (on) row.scrollLeft = on.offsetLeft - row.offsetLeft - (row.clientWidth - on.offsetWidth) / 2;
+  }
 
   $('#burger')?.addEventListener('click', (e) => {
     const l = $('#navlinks'); l.classList.toggle('open');

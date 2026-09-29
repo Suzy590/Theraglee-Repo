@@ -57,6 +57,13 @@ em.script{font-family:var(--serif);font-style:italic;font-weight:400;color:var(-
 .nav .links a{font-size:.95rem;color:var(--ink);letter-spacing:-.01em;white-space:nowrap;transition:opacity .2s}
 .nav .links a:hover{opacity:.6}
 .nav .links a.active{color:var(--green);font-weight:500}
+/* The dashboard's tab row, repeated under the header on the member pages it leads to. */
+.dash-tabs{padding-top:18px}
+.dash-tabs-row{display:flex;gap:4px;border-bottom:1px solid var(--hair);overflow-x:auto}
+.dash-tabs-row a{font-size:.95rem;padding:12px 18px;color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap}
+.dash-tabs-row a:hover{color:var(--ink)}
+.dash-tabs-row a.on{color:var(--green);border-bottom-color:var(--green);font-weight:500}
+.dash-tabs + main.section{padding-top:36px}
 /* .nav .links a sets the ink link color, which outranks .btn's own white text.
    Put it back for solid buttons in the header; ghost and lime keep their ink. */
 .nav .links a.btn:not(.ghost):not(.lime){color:#fff}
