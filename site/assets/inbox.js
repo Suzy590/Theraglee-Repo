@@ -10,8 +10,10 @@ import { sb, esc, busy, toast, fmtDate } from './app.js';
 
 // Draws the inbox into `host`. `where` finishes the sentence saying where the
 // member turns Match Mode on, so each page can point at its own switch.
-export async function mountInbox(host, a, { where = 'on your dashboard' } = {}){
-  const again = () => mountInbox(host, a, { where });
+// `heading: false` leaves out the title, for a page that already has one
+// above the inbox (the dashboard's Messages tab).
+export async function mountInbox(host, a, { where = 'on your dashboard', heading = true } = {}){
+  const again = () => mountInbox(host, a, { where, heading });
   const [{ data: sent }, { data: replies }, { data: blocks }] = await Promise.all([
     sb.from('therapist_outreach')
       .select('*, therapist_profiles(first_name,last_name,credentials,slug)')
@@ -40,7 +42,7 @@ export async function mountInbox(host, a, { where = 'on your dashboard' } = {}){
   const lastName = (replies || []).at(-1)?.member_name || '';
 
   host.innerHTML = `
-    <h2 style="margin-top:0">Messages from therapists</h2>
+    ${heading ? '<h2 style="margin-top:0">Messages from therapists</h2>' : ''}
     <p class="muted">Only therapists you allowed to reach you by turning on <strong>Theraglee Match
       Mode</strong> ${where}. They see your pseudonymous profile, not your name. If you
       reply, your reply carries your real name to that one therapist, so they know who they will

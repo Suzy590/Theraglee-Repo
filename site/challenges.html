@@ -88,7 +88,10 @@ async function viewIndex(){
       check off one small to-do each day. Every registered member can run any theme for a week;
       Basic and Premium choose any length up to a full year.</p>
 
-    ${mine.length ? `<h2 style="margin-top:36px">Yours</h2><div class="grid g2" id="mine">${mine.map(c=>{
+    ${mine.length ? `<section class="zone" id="mine-zone" style="margin-top:30px">
+      <div class="zone-head"><h2>Yours</h2>
+        <p class="muted">The challenges you have started. Open one to check off today's to-do.</p></div>
+      <div class="grid g2" id="mine">${mine.map(c=>{
         const n = doneMap[c.id]?.size || 0, pct = Math.round(n/c.total_days*100);
         return `<div class="tile" data-run="${c.id}">
           <h3><a href="challenges.html?open=${c.id}">${esc(c.title)}</a></h3>
@@ -97,15 +100,21 @@ async function viewIndex(){
           <div class="row" style="margin-top:12px">
             <a class="btn sm" href="challenges.html?open=${c.id}">Open</a>
             <button class="btn ghost sm" data-remove="${c.id}" data-title="${esc(c.title)}">Remove</button></div>
-        </div>`; }).join('')}</div>` : ''}
+        </div>`; }).join('')}</div>
+    </section>` : ''}
 
-    <h2 style="margin-top:40px">Pick a theme</h2>
-    <div class="field" style="margin-top:14px;max-width:48ch">
-      <label for="q">Search the themes</label>
-      <input id="q" type="search" placeholder="Try “gratitude”, “sleep”, “worry”…" autocomplete="off">
-    </div>
-    <p class="faint" id="count"></p>
-    <div class="grid g3" id="themes" style="margin-top:14px"></div>
+    <section class="zone" style="margin-top:30px">
+      <div class="zone-head"><h2>Pick a theme</h2>
+        <p class="muted">Each theme has a small to-do for every day. You choose how many days it runs.</p></div>
+      <div class="card">
+        <div class="field" style="margin:0;max-width:48ch">
+          <label for="q">Search the themes</label>
+          <input id="q" type="search" placeholder="Try “gratitude”, “sleep”, “worry”…" autocomplete="off">
+        </div>
+      </div>
+      <p class="faint" id="count" style="margin-top:18px"></p>
+      <div class="grid g3" id="themes" style="margin-top:14px"></div>
+    </section>
     <p class="faint" style="margin-top:32px;max-width:64ch">${NOTICE}</p>`;
 
   const themes = (cat || []).map(r => ({ r, text: [r.title, r.description, r.category, ...(r.tags||[])].join(' ').toLowerCase() }));
@@ -130,7 +139,7 @@ async function viewIndex(){
     confirmRemove(b.dataset.remove, b.dataset.title, () => {
       b.closest('[data-run]').remove();
       const grid = document.getElementById('mine');
-      if (grid && !grid.children.length) { grid.previousElementSibling.remove(); grid.remove(); }
+      if (grid && !grid.children.length) document.getElementById('mine-zone').remove();
     });
   }));
 }
