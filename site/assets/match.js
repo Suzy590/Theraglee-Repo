@@ -105,19 +105,22 @@ function listWords(words) {
 }
 
 /* The short explanation under every Match Mode switch (the dashboard and the
-   account page): a bold lead and one sentence, then the details as a list
-   beside a circled "i". Styled by .mm-lead and .mm-info in styles.css.
-   docs/match-mode-consent.md records these words; change both together. */
+   account page): a bold lead and one sentence, then a circled "i" with
+   "How it works". The details list opens when the member hovers over it or
+   clicks (or taps) it, and a second click closes it. Styled by .mm-lead and
+   .mm-info in styles.css. docs/match-mode-consent.md records these words;
+   change both together. One per page. */
 export const MATCH_BLURB = `
   <p class="mm-lead"><strong>Let therapists reach out to you.</strong> Verified therapists can see a
     private, pseudonymous profile and message you in your Theraglee inbox.</p>
   <div class="mm-info">
-    <svg class="mm-i" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
-      <circle cx="10" cy="10" r="8.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
-      <circle cx="10" cy="6.2" r="1.1" fill="currentColor"/>
-      <path d="M10 9v5.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
-    </svg>
-    <ul>
+    <button type="button" class="mm-how" aria-expanded="false" aria-controls="mm-how-list">
+      <svg class="mm-i" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+        <circle cx="10" cy="10" r="8.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        <circle cx="10" cy="6.2" r="1.1" fill="currentColor"/>
+        <path d="M10 9v5.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+      </svg>How it works</button>
+    <ul id="mm-how-list">
       <li>What therapists see: Your pseudonym, age range, gender, broad topics you’d like to work
         on with a therapist, whether you’d prefer in-person/telehealth (video)/either, your
         insurance, and the first 3 digits of your ZIP.</li>
@@ -128,6 +131,16 @@ export const MATCH_BLURB = `
       <li>Turning Theraglee Match Mode off makes you invisible to therapists again.</li>
     </ul>
   </div>`;
+
+// Clicking "How it works" pins the list open, or closes it again.
+if (typeof document !== 'undefined') document.addEventListener('click', (e) => {
+  const btn = e.target.closest?.('.mm-how');
+  if (!btn) return;
+  const box = btn.closest('.mm-info');
+  const open = !box.classList.contains('open');
+  box.classList.toggle('open', open);
+  btn.setAttribute('aria-expanded', String(open));
+});
 
 /* Ask for the details, save them, and switch Match Mode on.
    Resolves with the saved fields, or null if the member closed the window. */
