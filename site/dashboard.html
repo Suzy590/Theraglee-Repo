@@ -32,7 +32,13 @@
      in the upper right corner, with what it does written underneath. */
   /* Today's affirmation and daily cards, a size down so they fit beside Match Mode. */
   .today-top[data-panel].on{display:flex;flex-direction:column;gap:14px}
-  .tab-intro[data-panel].on{align-self:start}
+  /* Every other tab: its intro card, then the tab's own panel right under
+     it, both beside Match Mode. The Match Mode box keeps its own height
+     rather than stretching down the side of a long panel. */
+  .tab-top[data-panel].on{display:flex;flex-direction:column;gap:14px;min-width:0}
+  .tab-top .zone{padding:22px}
+  .tab-top .zone + .zone{margin-top:0}
+  .dash-top:has(.tab-top.on) .mm-body{align-self:start}
   #affirm-card,.tab-intro{padding:18px 20px}
   #affirm-card .hero-line,.tab-intro .hero-line{font-size:clamp(1.2rem,2.3vw,1.55rem);margin-top:10px!important}
   .today-top .daily{gap:14px;grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
@@ -75,6 +81,9 @@
   @media(max-width:720px){
     .dash-top{grid-template-columns:1fr;grid-template-rows:none}
     .dash-left,.mm{grid-row:auto;display:block}
+    /* On a phone the tab's panel drops below Match Mode, as before. */
+    .dash-left,.tab-top[data-panel].on{display:contents}
+    .dash-top .tab-top .zone{order:2}
     .dash-hello{margin-bottom:14px}
     .mm{text-align:left}
     .mm-row{justify-content:flex-start}
@@ -142,33 +151,112 @@
         </div>
 
         <!-- Every other tab opens the same way: a card in the affirmation's place. -->
-        <div class="card tab-intro" data-panel="progress">
-          <span class="badge">Progress</span>
-          <p class="hero-line">Every small step counts, and they all add up here.</p>
+        <div class="tab-top" data-panel="progress">
+          <div class="card tab-intro">
+            <span class="badge">Progress</span>
+            <p class="hero-line">Every small step counts, and they all add up here.</p>
+          </div>
+          <section class="zone" aria-labelledby="progress-zone-title">
+            <div class="zone-head">
+              <h2 id="progress-zone-title">Progress</h2>
+              <p class="muted">Your week at a glance, and everything you have started, saved or favorited.</p>
+            </div>
+            <div class="card" id="streak-card">
+              <h3>Your week</h3>
+              <div class="row" style="gap:30px;margin-top:10px">
+                <div><div class="streak" id="n-entries">—</div><div class="faint">journal entries</div></div>
+                <div><div class="streak" id="n-active">—</div><div class="faint">active challenges</div></div>
+                <div><div class="streak" id="n-done">—</div><div class="faint">activities completed</div></div>
+                <div><div class="streak" id="n-quiz">—</div><div class="faint">quizzes taken</div></div>
+              </div>
+            </div>
+
+            <div id="challenges-live"></div>
+            <div id="library-live"></div>
+            <div id="progress-empty" class="empty" style="margin-top:26px;display:none">
+              Nothing in progress yet. Start a challenge, save a favorite, or pick up a tool from the
+              <a href="#tools">Tools</a> tab and it will show up here.
+            </div>
+          </section>
         </div>
-        <div class="card tab-intro" data-panel="journal">
-          <span class="badge">Journal</span>
-          <p class="hero-line">Put what is on your mind somewhere safe.</p>
+        <div class="tab-top" data-panel="journal">
+          <div class="card tab-intro">
+            <span class="badge">Journal</span>
+            <p class="hero-line">Put what is on your mind somewhere safe.</p>
+          </div>
+          <section class="zone" aria-labelledby="journal-zone-title">
+            <div class="zone-head">
+              <h2 id="journal-zone-title">Journal</h2>
+              <p class="muted">Private to your account. Nobody else can read it — not therapists, not us.</p>
+            </div>
+            <div id="journal-host"><div class="card"><div class="skeleton" style="height:120px"></div></div></div>
+          </section>
         </div>
-        <div class="card tab-intro" data-panel="playlists">
-          <span class="badge">Playlists</span>
-          <p class="hero-line">Let music meet you where you are.</p>
+        <div class="tab-top" data-panel="playlists">
+          <div class="card tab-intro">
+            <span class="badge">Playlists</span>
+            <p class="hero-line">Let music meet you where you are.</p>
+          </div>
+          <section class="zone" aria-labelledby="playlists-zone-title">
+            <div class="zone-head">
+              <h2 id="playlists-zone-title">Playlists</h2>
+              <p class="muted">Pick a genre, then a mood, and get forty songs to play right here.</p>
+            </div>
+            <div id="playlists-host"><div class="card"><div class="skeleton" style="height:120px"></div></div></div>
+          </section>
         </div>
-        <div class="card tab-intro" data-panel="explore">
-          <span class="badge">Explore Library</span>
-          <p class="hero-line">Everything on Theraglee, gathered in one place.</p>
+        <div class="tab-top" data-panel="explore">
+          <div class="card tab-intro">
+            <span class="badge">Explore Library</span>
+            <p class="hero-line">Everything on Theraglee, gathered in one place.</p>
+          </div>
+          <section class="zone" aria-labelledby="explore-zone-title">
+            <div class="zone-head">
+              <h2 id="explore-zone-title">Explore Library</h2>
+              <p class="muted">Everything on Theraglee in one place.</p>
+            </div>
+            <div id="explore-host"></div>
+          </section>
         </div>
-        <div class="card tab-intro" data-panel="discover">
-          <span class="badge">Self-Discovery</span>
-          <p class="hero-line">A few quiet minutes to learn more about yourself.</p>
+        <div class="tab-top" data-panel="discover">
+          <div class="card tab-intro">
+            <span class="badge">Self-Discovery</span>
+            <p class="hero-line">A few quiet minutes to learn more about yourself.</p>
+          </div>
+          <section class="zone" aria-labelledby="discover-zone-title">
+            <div class="zone-head">
+              <h2 id="discover-zone-title">Discover more about yourself</h2>
+              <p class="muted">Short, interactive tools for noticing your own patterns. Each one takes just a few minutes. None of them diagnoses or treats any mental health condition. Rather, they aim to help you learn about yourself.</p>
+            </div>
+            <div id="discover-host"></div>
+          </section>
         </div>
-        <div class="card tab-intro" data-panel="tools">
-          <span class="badge">Tools</span>
-          <p class="hero-line">Pick up something small, and see where it leads.</p>
+        <div class="tab-top" data-panel="tools">
+          <div class="card tab-intro">
+            <span class="badge">Tools</span>
+            <p class="hero-line">Pick up something small, and see where it leads.</p>
+          </div>
+          <section class="zone" aria-labelledby="tools-zone-title">
+            <div class="zone-head">
+              <h2 id="tools-zone-title">Tools</h2>
+              <p class="muted">Pick up something small.</p>
+            </div>
+            <div class="grid g4" id="quick"></div>
+          </section>
+          <section class="zone" id="upsell" hidden></section>
         </div>
-        <div class="card tab-intro" data-panel="messages">
-          <span class="badge">Messages</span>
-          <p class="hero-line">Hear from the therapists you chose to let in.</p>
+        <div class="tab-top" data-panel="messages">
+          <div class="card tab-intro">
+            <span class="badge">Messages</span>
+            <p class="hero-line">Hear from the therapists you chose to let in.</p>
+          </div>
+          <section class="zone" aria-labelledby="messages-zone-title">
+            <div class="zone-head">
+              <h2 id="messages-zone-title">Messages</h2>
+              <p class="muted">Notes from therapists you have let reach out to you.</p>
+            </div>
+            <div id="inbox-host"><div class="skeleton" style="height:120px"></div></div>
+          </section>
         </div>
       </div>
       <div class="mm" id="match-mode">
@@ -195,91 +283,6 @@
       </section>
     </section>
 
-    <section data-panel="journal">
-      <section class="zone" aria-labelledby="journal-zone-title">
-        <div class="zone-head">
-          <h2 id="journal-zone-title">Journal</h2>
-          <p class="muted">Private to your account. Nobody else can read it — not therapists, not us.</p>
-        </div>
-        <div id="journal-host"><div class="card"><div class="skeleton" style="height:120px"></div></div></div>
-      </section>
-    </section>
-
-    <section data-panel="playlists">
-      <section class="zone" aria-labelledby="playlists-zone-title">
-        <div class="zone-head">
-          <h2 id="playlists-zone-title">Playlists</h2>
-          <p class="muted">Pick a genre, then a mood, and get forty songs to play right here.</p>
-        </div>
-        <div id="playlists-host"><div class="card"><div class="skeleton" style="height:120px"></div></div></div>
-      </section>
-    </section>
-
-    <section data-panel="explore">
-      <section class="zone" aria-labelledby="explore-zone-title">
-        <div class="zone-head">
-          <h2 id="explore-zone-title">Explore Library</h2>
-          <p class="muted">Everything on Theraglee in one place.</p>
-        </div>
-        <div id="explore-host"></div>
-      </section>
-    </section>
-
-    <section data-panel="discover">
-      <section class="zone" aria-labelledby="discover-zone-title">
-        <div class="zone-head">
-          <h2 id="discover-zone-title">Discover more about yourself</h2>
-          <p class="muted">Short, interactive tools for noticing your own patterns. Each one takes just a few minutes. None of them diagnoses or treats any mental health condition. Rather, they aim to help you learn about yourself.</p>
-        </div>
-        <div id="discover-host"></div>
-      </section>
-    </section>
-
-    <section data-panel="progress">
-      <section class="zone" aria-labelledby="progress-zone-title">
-        <div class="zone-head">
-          <h2 id="progress-zone-title">Progress</h2>
-          <p class="muted">Your week at a glance, and everything you have started, saved or favorited.</p>
-        </div>
-        <div class="card" id="streak-card">
-          <h3>Your week</h3>
-          <div class="row" style="gap:30px;margin-top:10px">
-            <div><div class="streak" id="n-entries">—</div><div class="faint">journal entries</div></div>
-            <div><div class="streak" id="n-active">—</div><div class="faint">active challenges</div></div>
-            <div><div class="streak" id="n-done">—</div><div class="faint">activities completed</div></div>
-            <div><div class="streak" id="n-quiz">—</div><div class="faint">quizzes taken</div></div>
-          </div>
-        </div>
-
-        <div id="challenges-live"></div>
-        <div id="library-live"></div>
-        <div id="progress-empty" class="empty" style="margin-top:26px;display:none">
-          Nothing in progress yet. Start a challenge, save a favorite, or pick up a tool from the
-          <a href="#tools">Tools</a> tab and it will show up here.
-        </div>
-      </section>
-    </section>
-
-    <section data-panel="tools">
-      <section class="zone" aria-labelledby="tools-zone-title">
-        <div class="zone-head">
-          <h2 id="tools-zone-title">Tools</h2>
-          <p class="muted">Pick up something small.</p>
-        </div>
-        <div class="grid g4" id="quick"></div>
-      </section>
-      <section class="zone" id="upsell" hidden></section>
-    </section>
-
-    <section data-panel="messages">
-      <section class="zone" aria-labelledby="messages-zone-title">
-        <div class="zone-head">
-          <h2 id="messages-zone-title">Messages</h2>
-          <p class="muted">Notes from therapists you have let reach out to you.</p>
-        </div>
-        <div id="inbox-host"><div class="skeleton" style="height:120px"></div></div>
-      </section>
-    </section>
   </div>
 </main>
 
