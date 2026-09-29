@@ -10,23 +10,6 @@ request.
 
 ## What the member agrees to
 
-> Let therapists reach out to you. Toggling ON Theraglee Match Mode lets
-> verified therapists see a pseudonymous profile that includes: your pseudonym, your age range, gender
-> (you can prefer not to answer), the broad topic(s) you would like to work on with a therapist,
-> whether you prefer in-person/video/either, your insurance plan (or that you plan to pay out of
-> pocket), and the first three digits of your zip code so they know you're nearby. If you indicate
-> you are open to video sessions, you may have therapists anywhere in your state reach out to you.
-> Therapists will reach out to you by messaging your Theraglee inbox. Your real name goes to a
-> therapist only if you choose to reply to them, and you can block any therapist with one tap.
-> Toggling OFF Theraglee Match Mode makes you invisible to therapists again.
-
-This is `MATCH_BLURB` in `site/assets/match.js`, shown under the switch on the
-account page.
-
-On the dashboard, the box under the switch (`site/dashboard.html`) says the same
-thing more briefly: a bold lead and one sentence, then a list beside a circled
-"i":
-
 > **Let therapists reach out to you.** Verified therapists can see a private,
 > pseudonymous profile and message you in your Theraglee inbox.
 >
@@ -40,7 +23,9 @@ thing more briefly: a bold lead and one sentence, then a list beside a circled
 > - You can block any therapist with one tap.
 > - Turning Theraglee Match Mode off makes you invisible to therapists again.
 
-Both versions describe the same facts below; when one changes, check the other. When the switch is turned on, a window asks for every
+This is `MATCH_BLURB` in `site/assets/match.js`, shown under the Match Mode
+switch on the dashboard and on the account page: the bold lead and one
+sentence, then the list beside a circled "i". When the switch is turned on, a window asks for every
 detail below, all required. It suggests a pseudonym ("Quiet Harbor 27") that
 the member can keep, replace with another suggestion, or type over, and says it
 will be shared with therapists and must not be their real name.

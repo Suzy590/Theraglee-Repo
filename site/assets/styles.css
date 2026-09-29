@@ -331,3 +331,14 @@ table.data td{padding:12px;border-bottom:1px solid var(--hair);vertical-align:to
 .tier li.lead::before{display:none}
 .tier .tier-current{cursor:default;opacity:.7}
 .tiers-note{text-align:center;color:var(--muted);font-size:.92rem;margin:22px auto 0;max-width:60ch}
+
+/* Theraglee Match Mode's explanation (MATCH_BLURB in match.js), on the
+   dashboard and the account page: a bold lead, then the details as a list
+   beside a circled "i". */
+.mm-lead{margin:0}
+.mm-lead strong{display:block;margin-bottom:2px;color:var(--ink)}
+.mm-info{display:flex;gap:10px;align-items:flex-start;margin-top:10px;padding-top:10px;border-top:1px solid var(--hair)}
+.mm-i{flex:0 0 auto;width:18px;height:18px;margin-top:1px;color:var(--green)}
+.mm-info ul{margin:0;padding-left:1.1em}
+.mm-info li{margin:0 0 5px}
+.mm-info li:last-child{margin-bottom:0}

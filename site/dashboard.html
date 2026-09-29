@@ -52,14 +52,7 @@
      docs/match-mode-consent.md; change both together. */
   .mm-desc{margin:10px 0 0;padding:12px 14px;text-align:left;font-size:.78rem;line-height:1.5;
     background:var(--paper);border:1px solid var(--hair);border-radius:var(--r);box-shadow:var(--shadow-1)}
-  .mm-lead{margin:0}
-  .mm-lead strong{display:block;margin-bottom:2px;font-size:.9rem;color:var(--ink)}
-  /* The details, as a list beside a circled "i". */
-  .mm-info{display:flex;gap:10px;align-items:flex-start;margin-top:10px;padding-top:10px;border-top:1px solid var(--hair)}
-  .mm-i{flex:0 0 auto;width:18px;height:18px;margin-top:1px;color:var(--green)}
-  .mm-info ul{margin:0;padding-left:1.1em}
-  .mm-info li{margin:0 0 5px}
-  .mm-info li:last-child{margin-bottom:0}
+  .mm-desc .mm-lead strong{font-size:.9rem}
   #vis-summary{align-self:stretch;margin:8px 0 0;padding:10px 14px;text-align:left;font-size:.78rem;line-height:1.5;
     background:var(--soft);border-left:3px solid var(--lime);border-radius:var(--r-sm)}
   #vis-summary strong{display:block;margin-bottom:2px;font-size:.72rem;font-weight:600;letter-spacing:.08em;
@@ -138,27 +131,8 @@
           <button class="mm-switch" id="vis" type="button" role="switch" aria-checked="false"
             aria-labelledby="mm-label" aria-describedby="mm-desc"><i></i></button>
         </div>
-        <div class="mm-desc muted" id="mm-desc">
-          <p class="mm-lead"><strong>Let therapists reach out to you.</strong> Verified therapists can see a
-            private, pseudonymous profile and message you in your Theraglee inbox.</p>
-          <div class="mm-info">
-            <svg class="mm-i" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
-              <circle cx="10" cy="10" r="8.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
-              <circle cx="10" cy="6.2" r="1.1" fill="currentColor"/>
-              <path d="M10 9v5.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
-            </svg>
-            <ul>
-              <li>What therapists see: Your pseudonym, age range, gender, broad topics you’d like to work
-                on with a therapist, whether you’d prefer in-person/telehealth (video)/either, your
-                insurance, and the first 3 digits of your ZIP.</li>
-              <li>If you indicate that you are open to telehealth (video) sessions, therapists anywhere in
-                your state can reach out to you.</li>
-              <li>Your real name is shared only if you reply.</li>
-              <li>You can block any therapist with one tap.</li>
-              <li>Turning Theraglee Match Mode off makes you invisible to therapists again.</li>
-            </ul>
-          </div>
-        </div>
+        <!-- Filled from MATCH_BLURB in assets/match.js. -->
+        <div class="mm-desc muted" id="mm-desc"></div>
         <p id="vis-summary" class="muted"></p>
       </div>
     </div>
@@ -231,7 +205,7 @@ import { chrome, sb, access, requireAuth, esc, tierName, toast, fmtDate,
 import { library, isFavorite, favButton, statusBadge, bindLibrary } from './assets/library.js';
 import { TOOLS } from './assets/discover-tools.js';
 import { SETS as TRIVIA } from './assets/trivia-sets.js';
-import { matchDetailsModal, matchSummary, matchComplete } from './assets/match.js';
+import { matchDetailsModal, matchSummary, matchComplete, MATCH_BLURB } from './assets/match.js';
 import { mountInbox } from './assets/inbox.js';
 import { mountLibrary } from './assets/explore-ui.js';
 import { mountDiscover } from './assets/discover-ui.js';
@@ -239,6 +213,7 @@ import { mountMood } from './assets/mood-ui.js';
 import { mountJournal } from './assets/journal-ui.js';
 import { mountPlaylists } from './assets/playlists-ui.js';
 import { loadPrices, tierCards, PLANS_INTRO, PLANS_NOTE } from './assets/plans.js';
+document.getElementById('mm-desc').innerHTML = MATCH_BLURB;
 await chrome({ active:'dashboard.html' });
 const a = await requireAuth();
 const c = await contentCounts();

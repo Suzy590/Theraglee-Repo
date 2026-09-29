@@ -104,16 +104,30 @@ function listWords(words) {
   return words.slice(0, -1).join(', ') + ' and ' + words[words.length - 1];
 }
 
-/* The short explanation under every Match Mode switch. */
-export const MATCH_BLURB = `Let therapists reach out to you. Toggling ON Theraglee Match Mode lets
-  verified therapists see a pseudonymous profile that includes: your pseudonym, your age range, gender
-  (you can prefer not to answer), the broad topic(s) you would like to work on with a therapist,
-  whether you prefer in-person/video/either, your insurance plan (or that you plan to pay out of
-  pocket), and the first three digits of your zip code so they know you're nearby. If you indicate
-  you are open to video sessions, you may have therapists anywhere in your state reach out to you.
-  Therapists will reach out to you by messaging your Theraglee inbox. Your real name goes to a
-  therapist only if you choose to reply to them, and you can block any therapist with one tap.
-  Toggling OFF Theraglee Match Mode makes you invisible to therapists again.`;
+/* The short explanation under every Match Mode switch (the dashboard and the
+   account page): a bold lead and one sentence, then the details as a list
+   beside a circled "i". Styled by .mm-lead and .mm-info in styles.css.
+   docs/match-mode-consent.md records these words; change both together. */
+export const MATCH_BLURB = `
+  <p class="mm-lead"><strong>Let therapists reach out to you.</strong> Verified therapists can see a
+    private, pseudonymous profile and message you in your Theraglee inbox.</p>
+  <div class="mm-info">
+    <svg class="mm-i" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+      <circle cx="10" cy="10" r="8.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      <circle cx="10" cy="6.2" r="1.1" fill="currentColor"/>
+      <path d="M10 9v5.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+    </svg>
+    <ul>
+      <li>What therapists see: Your pseudonym, age range, gender, broad topics you’d like to work
+        on with a therapist, whether you’d prefer in-person/telehealth (video)/either, your
+        insurance, and the first 3 digits of your ZIP.</li>
+      <li>If you indicate that you are open to telehealth (video) sessions, therapists anywhere in
+        your state can reach out to you.</li>
+      <li>Your real name is shared only if you reply.</li>
+      <li>You can block any therapist with one tap.</li>
+      <li>Turning Theraglee Match Mode off makes you invisible to therapists again.</li>
+    </ul>
+  </div>`;
 
 /* Ask for the details, save them, and switch Match Mode on.
    Resolves with the saved fields, or null if the member closed the window. */
