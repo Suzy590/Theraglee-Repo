@@ -20,8 +20,27 @@ request.
 > therapist only if you choose to reply to them, and you can block any therapist with one tap.
 > Toggling OFF Theraglee Match Mode makes you invisible to therapists again.
 
-This is `MATCH_BLURB` in `site/assets/match.js`, and the four paragraphs under the
-switch on the dashboard (there the first and last sentences are bold). When the switch is turned on, a window asks for every
+This is `MATCH_BLURB` in `site/assets/match.js`, shown under the switch on the
+account page.
+
+On the dashboard, the box under the switch (`site/dashboard.html`) says the same
+thing more briefly: a bold lead and one sentence, then a list beside a circled
+"i":
+
+> **Let therapists reach out to you.** Verified therapists can see a private,
+> pseudonymous profile and message you in your Theraglee inbox.
+>
+> - What therapists see: Your pseudonym, age range, gender, broad topics you’d
+>   like to work on with a therapist, whether you’d prefer
+>   in-person/telehealth (video)/either, your insurance, and the first 3 digits
+>   of your ZIP.
+> - If you indicate that you are open to telehealth (video) sessions, therapists
+>   anywhere in your state can reach out to you.
+> - Your real name is shared only if you reply.
+> - You can block any therapist with one tap.
+> - Turning Theraglee Match Mode off makes you invisible to therapists again.
+
+Both versions describe the same facts below; when one changes, check the other. When the switch is turned on, a window asks for every
 detail below, all required. It suggests a pseudonym ("Quiet Harbor 27") that
 the member can keep, replace with another suggestion, or type over, and says it
 will be shared with therapists and must not be their real name.

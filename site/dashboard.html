@@ -47,15 +47,19 @@
   .mm-label{font-family:var(--serif);font-style:italic;font-size:1rem;color:var(--ink-2);line-height:1.25}
   .mm-label b{font-family:var(--sans);font-style:normal;font-weight:600;letter-spacing:.08em;color:var(--muted)}
   .mm.on .mm-label b{color:var(--green)}
-  /* The consent wording sits left-aligned in a soft card, so the ragged
-     right edge is gone and each paragraph reads as its own step. The words
-     themselves are fixed: docs/match-mode-consent.md. */
+  /* The consent wording sits left-aligned in a soft card: a short lead, then
+     the details as a list. The words are recorded in
+     docs/match-mode-consent.md; change both together. */
   .mm-desc{margin:10px 0 0;padding:12px 14px;text-align:left;font-size:.78rem;line-height:1.5;
     background:var(--paper);border:1px solid var(--hair);border-radius:var(--r);box-shadow:var(--shadow-1)}
-  .mm-desc p{margin:0 0 8px}
-  .mm-desc p:first-child strong{display:block;margin-bottom:2px;font-size:.9rem;color:var(--ink)}
-  .mm-desc p:last-child{margin:10px 0 0;padding-top:8px;border-top:1px solid var(--hair)}
-  .mm-desc strong{color:var(--ink-2)}
+  .mm-lead{margin:0}
+  .mm-lead strong{display:block;margin-bottom:2px;font-size:.9rem;color:var(--ink)}
+  /* The details, as a list beside a circled "i". */
+  .mm-info{display:flex;gap:10px;align-items:flex-start;margin-top:10px;padding-top:10px;border-top:1px solid var(--hair)}
+  .mm-i{flex:0 0 auto;width:18px;height:18px;margin-top:1px;color:var(--green)}
+  .mm-info ul{margin:0;padding-left:1.1em}
+  .mm-info li{margin:0 0 5px}
+  .mm-info li:last-child{margin-bottom:0}
   #vis-summary{align-self:stretch;margin:8px 0 0;padding:10px 14px;text-align:left;font-size:.78rem;line-height:1.5;
     background:var(--soft);border-left:3px solid var(--lime);border-radius:var(--r-sm)}
   #vis-summary strong{display:block;margin-bottom:2px;font-size:.72rem;font-weight:600;letter-spacing:.08em;
@@ -135,18 +139,25 @@
             aria-labelledby="mm-label" aria-describedby="mm-desc"><i></i></button>
         </div>
         <div class="mm-desc muted" id="mm-desc">
-          <p><strong>Let therapists reach out to you.</strong> Toggling ON Theraglee Match Mode lets
-            verified therapists see a pseudonymous profile that includes: your pseudonym, your age
-            range, gender (you can prefer not to answer), the broad topic(s) you would like to work on
-            with a therapist, whether you prefer in-person/video/either, your insurance plan (or that
-            you plan to pay out of pocket), and the first three digits of your zip code so they know
-            you're nearby.</p>
-          <p>If you indicate you are open to video sessions, you may have therapists anywhere in your
-            state reach out to you.</p>
-          <p>Therapists will reach out to you by messaging your Theraglee inbox. Your real name goes to
-            a therapist only if you choose to reply to them, and you can block any therapist with one
-            tap.</p>
-          <p><strong>Toggling OFF Theraglee Match Mode makes you invisible to therapists again.</strong></p>
+          <p class="mm-lead"><strong>Let therapists reach out to you.</strong> Verified therapists can see a
+            private, pseudonymous profile and message you in your Theraglee inbox.</p>
+          <div class="mm-info">
+            <svg class="mm-i" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+              <circle cx="10" cy="10" r="8.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+              <circle cx="10" cy="6.2" r="1.1" fill="currentColor"/>
+              <path d="M10 9v5.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+            </svg>
+            <ul>
+              <li>What therapists see: Your pseudonym, age range, gender, broad topics you’d like to work
+                on with a therapist, whether you’d prefer in-person/telehealth (video)/either, your
+                insurance, and the first 3 digits of your ZIP.</li>
+              <li>If you indicate that you are open to telehealth (video) sessions, therapists anywhere in
+                your state can reach out to you.</li>
+              <li>Your real name is shared only if you reply.</li>
+              <li>You can block any therapist with one tap.</li>
+              <li>Turning Theraglee Match Mode off makes you invisible to therapists again.</li>
+            </ul>
+          </div>
         </div>
         <p id="vis-summary" class="muted"></p>
       </div>
