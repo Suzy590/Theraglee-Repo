@@ -21,7 +21,7 @@
   .streak{font-size:2.2rem;font-weight:300;letter-spacing:-.03em;line-height:1}
   /* The top of the dashboard sits right under the feature showcase. */
   main.section{padding-top:26px}
-  .dash-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,380px);gap:18px 32px;align-items:start;margin-bottom:28px}
+  .dash-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,320px);gap:18px 28px;align-items:start;margin-bottom:28px}
   /* Theraglee Match Mode: a smaller copy of the switch on the landing page,
      in the upper right corner, with what it does written underneath. */
   /* Today's affirmation and daily cards, a size down so they fit beside Match Mode. */
@@ -34,29 +34,26 @@
   .today-top .daily p{font-size:.9rem;line-height:1.5}
   .today-top #daily-quote p{font-size:1rem!important}
   .mm{display:flex;flex-direction:column;align-items:flex-end;text-align:right}
-  .mm-row{display:flex;align-items:center;gap:14px}
-  .mm-switch{position:relative;flex:0 0 auto;width:92px;height:46px;border-radius:100px;cursor:pointer;padding:0;
+  .mm-row{display:flex;align-items:center;gap:12px}
+  .mm-switch{position:relative;flex:0 0 auto;width:72px;height:36px;border-radius:100px;cursor:pointer;padding:0;
     background:#DCD8C9;border:2px solid #CFCAB8;
     transition:background .5s ease,border-color .5s ease,box-shadow .5s ease}
   .mm-switch:focus-visible{outline:3px solid var(--green);outline-offset:4px}
-  .mm-switch i{position:absolute;top:4px;left:4px;width:34px;height:34px;border-radius:50%;background:#fff;
+  .mm-switch i{position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;background:#fff;
     box-shadow:0 3px 9px rgba(0,0,0,.22);transition:transform .6s cubic-bezier(.22,1,.36,1)}
   .mm.on .mm-switch{background:var(--lime);border-color:var(--lime);
     box-shadow:0 0 0 6px rgba(141,198,29,.18),0 0 32px rgba(141,198,29,.5)}
-  .mm.on .mm-switch i{transform:translateX(46px)}
-  .mm-label{font-family:var(--serif);font-style:italic;font-size:1.15rem;color:var(--ink-2);line-height:1.25}
+  .mm.on .mm-switch i{transform:translateX(36px)}
+  .mm-label{font-family:var(--serif);font-style:italic;font-size:1rem;color:var(--ink-2);line-height:1.25}
   .mm-label b{font-family:var(--sans);font-style:normal;font-weight:600;letter-spacing:.08em;color:var(--muted)}
   .mm.on .mm-label b{color:var(--green)}
-  /* The consent wording sits left-aligned in a soft card, so the ragged
-     right edge is gone and each paragraph reads as its own step. The words
-     themselves are fixed: docs/match-mode-consent.md. */
-  .mm-desc{margin:14px 0 0;padding:16px 18px;text-align:left;font-size:.86rem;line-height:1.55;
+  /* The consent wording sits left-aligned in a soft card: a short lead, then
+     the details as a list. The words are recorded in
+     docs/match-mode-consent.md; change both together. */
+  .mm-desc{margin:10px 0 0;padding:12px 14px;text-align:left;font-size:.78rem;line-height:1.5;
     background:var(--paper);border:1px solid var(--hair);border-radius:var(--r);box-shadow:var(--shadow-1)}
-  .mm-desc p{margin:0 0 10px}
-  .mm-desc p:first-child strong{display:block;margin-bottom:4px;font-size:1rem;color:var(--ink)}
-  .mm-desc p:last-child{margin:14px 0 0;padding-top:12px;border-top:1px solid var(--hair)}
-  .mm-desc strong{color:var(--ink-2)}
-  #vis-summary{align-self:stretch;margin:10px 0 0;padding:12px 16px;text-align:left;font-size:.86rem;line-height:1.55;
+  .mm-desc .mm-lead strong{font-size:.9rem}
+  #vis-summary{align-self:stretch;margin:8px 0 0;padding:10px 14px;text-align:left;font-size:.78rem;line-height:1.5;
     background:var(--soft);border-left:3px solid var(--lime);border-radius:var(--r-sm)}
   #vis-summary strong{display:block;margin-bottom:2px;font-size:.72rem;font-weight:600;letter-spacing:.08em;
     text-transform:uppercase;color:var(--green)}
@@ -134,20 +131,8 @@
           <button class="mm-switch" id="vis" type="button" role="switch" aria-checked="false"
             aria-labelledby="mm-label" aria-describedby="mm-desc"><i></i></button>
         </div>
-        <div class="mm-desc muted" id="mm-desc">
-          <p><strong>Let therapists reach out to you.</strong> Toggling ON Theraglee Match Mode lets
-            verified therapists see a pseudonymous profile that includes: your pseudonym, your age
-            range, gender (you can prefer not to answer), the broad topic(s) you would like to work on
-            with a therapist, whether you prefer in-person/video/either, your insurance plan (or that
-            you plan to pay out of pocket), and the first three digits of your zip code so they know
-            you're nearby.</p>
-          <p>If you indicate you are open to video sessions, you may have therapists anywhere in your
-            state reach out to you.</p>
-          <p>Therapists will reach out to you by messaging your Theraglee inbox. Your real name goes to
-            a therapist only if you choose to reply to them, and you can block any therapist with one
-            tap.</p>
-          <p><strong>Toggling OFF Theraglee Match Mode makes you invisible to therapists again.</strong></p>
-        </div>
+        <!-- Filled from MATCH_BLURB in assets/match.js. -->
+        <div class="mm-desc muted" id="mm-desc"></div>
         <p id="vis-summary" class="muted"></p>
       </div>
     </div>
@@ -220,7 +205,7 @@ import { chrome, sb, access, requireAuth, esc, tierName, toast, fmtDate,
 import { library, isFavorite, favButton, statusBadge, bindLibrary } from './assets/library.js';
 import { TOOLS } from './assets/discover-tools.js';
 import { SETS as TRIVIA } from './assets/trivia-sets.js';
-import { matchDetailsModal, matchSummary, matchComplete } from './assets/match.js';
+import { matchDetailsModal, matchSummary, matchComplete, MATCH_BLURB } from './assets/match.js';
 import { mountInbox } from './assets/inbox.js';
 import { mountLibrary } from './assets/explore-ui.js';
 import { mountDiscover } from './assets/discover-ui.js';
@@ -228,6 +213,7 @@ import { mountMood } from './assets/mood-ui.js';
 import { mountJournal } from './assets/journal-ui.js';
 import { mountPlaylists } from './assets/playlists-ui.js';
 import { loadPrices, tierCards, PLANS_INTRO, PLANS_NOTE } from './assets/plans.js';
+document.getElementById('mm-desc').innerHTML = MATCH_BLURB;
 await chrome({ active:'dashboard.html' });
 const a = await requireAuth();
 const c = await contentCounts();
