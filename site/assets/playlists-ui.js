@@ -8,7 +8,8 @@
    Spotify and Apple Music, and a button to copy the list. Either way nothing
    about the member's listening comes back to Theraglee.
    The last genre and mood picked are kept in this browser, so the tab
-   reopens where the member left it.
+   reopens where the member left it; Start over clears both and goes back to
+   the first step.
    ========================================================================== */
 import { esc, toast } from './app.js';
 import { GENRES, MOODS, PLAYLISTS } from './playlists.js';
@@ -16,9 +17,13 @@ import { GENRES, MOODS, PLAYLISTS } from './playlists.js';
 const REMEMBER = 'tg.playlists';
 
 const STYLE = `
+  .pl-intro{margin:0 0 18px;max-width:68ch;font-size:.95rem;color:var(--muted);line-height:1.6}
   .pl-steps{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 18px;font-size:.86rem;color:var(--faint)}
   .pl-steps b{font-weight:500;color:var(--ink)}
   .pl-steps button{border:0;background:none;font:inherit;padding:0;cursor:pointer;color:var(--green);text-decoration:underline}
+  .pl-steps .pl-reset{margin-left:auto;text-decoration:none;border:1px solid var(--hair);border-radius:var(--r-pill);
+    padding:4px 12px;color:var(--ink);background:var(--paper)}
+  .pl-steps .pl-reset:hover,.pl-steps .pl-reset:focus-visible{border-color:var(--green);color:var(--green)}
   .pl-pick{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
   .pl-pick button{text-align:left;font:inherit;cursor:pointer;background:var(--paper);border:1px solid var(--hair);
     border-radius:var(--r);padding:18px 20px;display:flex;flex-direction:column;gap:6px;color:var(--ink);
@@ -72,12 +77,16 @@ export function mountPlaylists(host) {
 
   function steps() {
     const g = genreOf(), m = moodOf();
-    return `<div class="pl-steps" aria-label="Your picks">
+    return `<p class="pl-intro">Music reaches the parts of the brain that handle feeling, memory and movement,
+      which is why a song can slow your breathing, lift your energy or give a hard feeling somewhere to go.
+      It works best when it meets you where you are, so start with how you feel right now.</p>
+      <div class="pl-steps" aria-label="Your picks">
       <span>1. Genre${g ? `: <b>${esc(g.name)}</b> <button type="button" data-step="genre">change</button>` : ''}</span>
       <span aria-hidden="true">·</span>
       <span>2. Mood${m ? `: <b>${esc(m.name)}</b> <button type="button" data-step="mood">change</button>` : ''}</span>
       <span aria-hidden="true">·</span>
-      <span>3. Your 40 songs</span></div>`;
+      <span>3. Your 40 songs</span>
+      ${g ? '<button type="button" class="pl-reset" data-step="reset">Start over</button>' : ''}</div>`;
   }
 
   function render() {
@@ -135,7 +144,7 @@ export function mountPlaylists(host) {
     host.querySelectorAll('[data-genre]').forEach(b => b.onclick = () => { genre = b.dataset.genre; mood = null; save(); render(); });
     host.querySelectorAll('[data-mood]').forEach(b => b.onclick = () => { mood = b.dataset.mood; save(); render(); });
     host.querySelectorAll('[data-step]').forEach(b => b.onclick = () => {
-      if (b.dataset.step === 'genre') { genre = null; mood = null; } else mood = null;
+      if (b.dataset.step === 'mood') mood = null; else { genre = null; mood = null; }
       save(); render();
     });
     if (drawn) host.scrollIntoView?.({ block: 'nearest' });

@@ -116,7 +116,7 @@ never the other way round.
 ## Playlists are a genre, then a mood, then forty songs
 
 The Playlists tab on the dashboard (`site/assets/playlists-ui.js`) draws its
-lists from `site/assets/playlists.js`: six genres by six moods, forty songs
+lists from `site/assets/playlists.js`: ten genres by eight moods, forty songs
 each, every one on Apple Music and Spotify, none repeated within a genre.
 Each list is a public playlist in Theraglee's Spotify account, made by
 `node tools/spotify_playlists.mjs` and played on the page; the playlist's

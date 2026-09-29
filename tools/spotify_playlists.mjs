@@ -92,7 +92,7 @@ async function token() {
 }
 
 async function api(path, { method = 'GET', body } = {}) {
-  for (let tries = 0; tries < 5; tries++) {
+  for (let tries = 0; tries < 10; tries++) {
     const r = await fetch(path.startsWith('http') ? path : API + path, { method,
       headers: { Authorization: `Bearer ${await token()}`, ...(body ? { 'Content-Type': 'application/json' } : {}) },
       body: body ? JSON.stringify(body) : undefined });
@@ -102,14 +102,14 @@ async function api(path, { method = 'GET', body } = {}) {
       await new Promise(ok => setTimeout(ok, wait * 1000)); continue;
     }
     if (r.status >= 500) {                        // Spotify hiccup: try again in a moment
-      await new Promise(ok => setTimeout(ok, 3000 * (tries + 1))); continue;
+      await new Promise(ok => setTimeout(ok, Math.min(60_000, 3000 * 2 ** tries))); continue;
     }
     if (r.status === 204) return {};
     const j = await r.json().catch(() => ({}));
     if (!r.ok) throw new Error(`${method} ${path}: ${r.status} ${JSON.stringify(j.error || j)}`);
     return j;
   }
-  throw new Error(`${method} ${path}: rate limited too long`);
+  throw new Error(`${method} ${path}: Spotify kept refusing or failing; run build again later, lists already made are kept`);
 }
 
 const norm = (s) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -127,11 +127,14 @@ async function findTrack(title, artist) {
     const items = r.tracks?.items || [];
     const want = norm(title), wantArtist = norm(firstArtist(artist));
     const hit = items.find(t => norm(t.name).startsWith(want) && t.artists.some(a => norm(a.name) === wantArtist))
-             || items.find(t => norm(t.name).includes(want) && t.artists.some(a => norm(a.name).includes(wantArtist) || wantArtist.includes(norm(a.name))))
-             || items.find(t => t.artists.some(a => norm(a.name) === wantArtist));
+             || items.find(t => norm(t.name).includes(want) && t.artists.some(a => norm(a.name).includes(wantArtist) || wantArtist.includes(norm(a.name))));
     if (hit) return hit;
   }
-  return null;
+  // Last resort: the right artist but a title that does not match (a renamed
+  // single, a live cut). Kept, but marked so the run reports it for a look.
+  const r = await api(`/search?${new URLSearchParams({ q: `${title} ${firstArtist(artist)}`, type: 'track', market: 'US', limit: '5' })}`);
+  const near = (r.tracks?.items || []).find(t => t.artists.some(a => norm(a.name) === norm(firstArtist(artist))));
+  return near ? { ...near, loose: true } : null;
 }
 
 /* Writes a playlist id into site/assets/playlists.js, next to that list's title. */
@@ -166,7 +169,7 @@ if (cmd === 'build') {
   const me = await api('/me');
   console.log(`Signed in as ${me.display_name || me.id}.`);
   const existing = await myPlaylists();
-  const missing = [];
+  const missing = [], loose = [];
   for (const { g, m, list } of pairs(args)) {
     const tag = `${g.key}/${m.key}`;
     if (list.spotify) { console.log(`${tag}: already made (${list.spotify})`); continue; }
@@ -175,7 +178,8 @@ if (cmd === 'build') {
     for (const [t, a] of list.songs) {
       const hit = await findTrack(t, a);
       if (hit) uris.push(hit.uri); else missing.push(`${tag}: ${t} — ${a}`);
-      process.stdout.write(hit ? '.' : 'x');
+      if (hit?.loose) loose.push(`${tag}: ${t} — ${a}  →  Spotify has "${hit.name}"`);
+      process.stdout.write(!hit ? 'x' : hit.loose ? '~' : '.');
     }
     const name = `Theraglee · ${g.name} · ${m.name}`;
     const pl = existing.has(name) ? { id: existing.get(name) } : await api('/me/playlists', { method: 'POST', body: {
@@ -188,6 +192,7 @@ if (cmd === 'build') {
     writeId(list, pl.id); list.spotify = pl.id;
     console.log(` ${uris.length} added → ${pl.id}`);
   }
+  if (loose.length) console.log(`\nMatched on the artist only (check the song is the one meant; swap it if not):\n  ${loose.join('\n  ')}`);
   if (missing.length) console.log(`\nNot found on Spotify (swap these in playlists.js, then run build for those pairs again after clearing their id):\n  ${missing.join('\n  ')}`);
   console.log('\nDone. Run node tests/playlists-fixture/check.mjs, then commit site/assets/playlists.js.');
 }

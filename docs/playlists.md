@@ -64,11 +64,17 @@ started is picked back up by name, never made twice).
 `build` lists any song it could not find on Spotify. Swap that song in
 `playlists.js` for one that is there, clear the list's `spotify` id, and run
 `build pop/low` (the genre and mood keys) to remake just that list.
+`build` also lists any song it could match only on the artist, with the
+title Spotify has, so a renamed single or a different song can be checked.
 `verify` reads every playlist back and reports how many songs it holds.
 
 The last genre and mood picked are kept in the browser (`localStorage`, key
-`tg.playlists`), so the tab reopens where the member left it. Nothing is
-stored on the server.
+`tg.playlists`), so the tab reopens where the member left it. **Start over**
+clears both and goes back to the first step. Nothing is stored on the server.
+
+A short note above the steps says how music reaches feeling, memory and
+movement, and invites the member to start from how they feel right now. It
+stays general: no claim that a list treats or fixes anything.
 
 Until 2026-09-26 the tab lived on the Goals & tracking page
 (`goals.html#music`) and offered six moods, each opening a search on the two
@@ -77,16 +83,19 @@ services. That address now redirects to `dashboard.html#playlists`.
 ## The shape of the data
 
 ```js
-GENRES     [{ key, name, blurb }]              six, in the order shown
-MOODS      [{ key, name, blurb, wants }]       six, in the order shown
+GENRES     [{ key, name, blurb }]              in the order shown
+MOODS      [{ key, name, blurb, wants }]       in the order shown
 PLAYLISTS  { [genre.key]: { [mood.key]: { title, blurb, spotify, songs } } }
 spotify    the public playlist's id on Spotify, or '' until it is made
 songs      [[title, artist], ...]              exactly forty
 ```
 
-The genres are Pop, Rock, Hip-hop & R&B, Country, Indie & folk, and
-Electronic & chill. The moods are the six the old tab used: Low and heavy,
-Anxious, Flat or unmotivated, Angry, Restless, and Okay, keeping it there.
+There are ten genres: Pop, Rock, Soft rock & easy listening, Hip-hop & R&B,
+Soul & Motown, Country, Indie & folk, Latin, Jazz, and Electronic & chill.
+There are eight moods: Low and heavy, Anxious, Lonely, Flat or unmotivated,
+Angry, Restless, Okay, keeping it there, and Winding down. That is eighty
+lists and 3,200 songs. Soft rock, Soul, Latin, Jazz, Lonely and Winding down
+were added on 2026-09-29.
 
 ## Writing rules
 
@@ -102,6 +111,9 @@ Anxious, Flat or unmotivated, Angry, Restless, and Okay, keeping it there.
   never tells the member how they should feel afterward.
 - **"Angry" gives the feeling somewhere to go.** Loud is fine; nothing on it
   glorifies harm to anyone.
+- **"Lonely" is company.** Songs about friends, home and showing up for each
+  other, not songs that dwell on being alone.
+- **"Winding down" is slow and soft**, for the last hour before sleep.
 - **US spelling** everywhere, as in the rest of the repo.
 
 ## Adding or changing a list
