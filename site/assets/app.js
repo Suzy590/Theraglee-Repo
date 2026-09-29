@@ -285,7 +285,7 @@ const DASH_TABS = [
   ['Today',           'today'],
   ['Playlists',       'playlists'],
   ['Explore Library', 'explore'],
-  ['Discover',        'discover'],
+  ['Self-Discovery',  'discover'],
   ['Progress',        'progress'],
   ['Tools',           'tools'],
   ['Messages',        'messages'],
