@@ -39,6 +39,14 @@ use them.
 Headings further down a zone use `h2` too and come out a size smaller on
 their own; add `class="zone-sub"` on the dashboard for the usual spacing.
 
+## Pages outside the dashboard
+
+Challenges, Goals & tracking and Mandalas show the same pattern on a page of
+their own: the page's `h1` and a muted line of introduction, then each section
+in a `.zone` with its `.zone-head`, cards inside. Goals & tracking keeps its
+wellness note above the zone, and the zone's heading follows the tab that is
+open. A new member page starts the same way.
+
 ## Adding a new dashboard tab
 
 - Add its button to `#tabs` and its name to `PANELS` in `site/dashboard.html`.

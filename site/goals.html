@@ -89,6 +89,14 @@ const WELLNESS = `<div class="wellness" role="note"><span aria-hidden="true">�
   <a href="therapists.html">Find a therapist</a> · <a href="#map" data-go="map">Help near you</a> ·
   In crisis, call or text <a href="tel:988">988</a>, or call 911.</div></div>`;
 
+/* Each tab's heading and line, over its content in the page's green zone. */
+const HEADS = {
+  quest:   ['Your quest', 'Small actions you pick, on a map that only ever grows.'],
+  goals:   ['Goals', 'Everyday actions you choose, sized so they fit.'],
+  reflect: ['What helped', 'A line or two about what felt good today, only if you want to.'],
+  data:    ['Your data', 'Your quest, goals and notes are yours to download or delete.'],
+  map:     ['Nearby help', 'Support near you, for when you would like more than this page.'],
+};
 const shell = (body) => `
   <h1>Goals &amp; tracking</h1>
   <p class="muted" style="max-width:60ch">A map for the everyday things you would like more of.
@@ -99,7 +107,13 @@ const shell = (body) => `
       ['data','Your data'],['map','Nearby help']]
     .map(([k,l])=>`<button data-tab="${k}" class="${tab===k?'on':''}">${l}</button>`).join('')}</div>
   ${WELLNESS}
-  <div id="body">${body}</div>`;
+  <section class="zone" aria-labelledby="goals-zone-title">
+    <div class="zone-head">
+      <h2 id="goals-zone-title">${(HEADS[tab] || HEADS.quest)[0]}</h2>
+      <p class="muted">${(HEADS[tab] || HEADS.quest)[1]}</p>
+    </div>
+    <div id="body">${body}</div>
+  </section>`;
 
 const body = () => document.getElementById('body');
 
@@ -379,10 +393,9 @@ async function goalsView(){
   const active = goals.filter(g=>g.active);
 
   body().innerHTML = `
-    <div class="spread"><h2 style="margin:0">Your goals</h2>
+    <div class="spread"><p class="muted" style="max-width:62ch;margin:0">Every day you log a goal also
+      counts as a day shown up on your quest map.</p>
       <button class="btn" id="add">Add a goal</button></div>
-    <p class="muted" style="max-width:62ch;margin-top:8px">Everyday actions you choose, sized so they fit.
-      Every day you log a goal also counts as a day shown up on your quest map.</p>
     ${active.length ? `<div class="grid g2" style="margin-top:20px">
       ${active.map(g=>{
         const mine = logs.filter(l=>l.goal_id===g.id).map(l=>l.logged_on);
