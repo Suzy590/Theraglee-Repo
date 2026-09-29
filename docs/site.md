@@ -429,19 +429,19 @@ whichever tab is open.
 ## Theraglee Match Mode is pseudonymous until the member replies
 
 A member who switches Match Mode on is asked, right then, for the things a
-therapist gets to see: an age range, the broad topics they want to work on (the
+therapist gets to see: an age range, a gender (with "Prefer not to answer"), the broad topics they want to work on (the
 same `profiles.issues` that shape daily content), whether they prefer in-person
 or video sessions, and their zip code, of which therapists see only the first
 three digits. Therapists read one line per member, such as "35–44 · seeks help
-with anxiety · seeking video sessions · in the 902xx area". No name, no gender,
+with anxiety · seeking video sessions · in the 902xx area". No name,
 no exact age and no exact location on that screen. The wording members agree to
 is in `docs/match-mode-consent.md`.
 
 | Piece | Where |
 |---|---|
-| The details | `profiles.match_age_range`, `match_delivery`, plus `issues` and `zip` (`match_gender` and `match_age` are kept but no longer shown or asked for) |
+| The details | `profiles.match_age_range`, `match_delivery`, plus `issues` and `zip` `match_gender` (asked for again since `20260929190000_match_mode_gender.sql`; `match_age` is kept but no longer shown or asked for) |
 | The window that asks for them, and the one-line summary | `site/assets/match.js` (`matchDetailsModal`, `matchSummary`) |
-| What a therapist can read | the `member_discovery` view: `age_range`, `delivery`, `issues`, `area`, `already_contacted`, `has_replied`. No name, gender, age or zip column, and members who blocked the viewing therapist are left out. |
+| What a therapist can read | the `member_discovery` view: `age_range`, `delivery`, `issues`, `area`, `already_contacted`, `has_replied`, `pseudonym`, `insurance`, `gender`. No name, exact age or zip column, and members who blocked the viewing therapist are left out. |
 | Blocking a therapist | `member_blocks`, written from the member's Inbox on the account page. `member_blocked()` keeps a blocked therapist out of the view and out of `therapist_outreach`, even after a reply. |
 | A therapist's message | `therapist_outreach` (unchanged) |
 | A member's reply | `outreach_replies`. `member_name` is required by a check constraint: the real name travels only here, and only to that therapist. |
