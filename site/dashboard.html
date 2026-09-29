@@ -375,7 +375,7 @@ async function paintLibrary() {
 
   const { data: cat } = await sb.from('content_catalog').select('*');
   const byKey = new Map((cat || []).map(r => [r.kind + ':' + r.id, r]));
-  // The free discovery tools are not in the catalog table; they ship with the site.
+  // The self-discovery tools are not in the catalog table; they ship with the site.
   for (const t of TOOLS) byKey.set('discover:' + t.id, { kind: 'discover', id: t.id, slug: t.slug, title: t.title });
   // Same for the trivia quizzes.
   for (const t of TRIVIA) byKey.set('trivia:' + t.id, { kind: 'trivia', id: t.id, slug: t.slug, title: t.title });
@@ -420,7 +420,7 @@ await paintLibrary();
 
 /* ---- quick links ---- */
 const quick = [
-  ['Free discovery tools', 'discover.html', 0],
+  ['Self-discovery tools', 'discover.html', 0],
   ['Journal', 'journal.html', 1],
   ['Checklists', 'explore.html?type=checklist', 1],
   ['Challenges', 'challenges.html', 1],

@@ -33,7 +33,7 @@ const SHELL = `
     </div>
     <div class="chips" data-types>
       <button class="chip on" data-t="">Everything</button>
-      <button class="chip" data-t="discover">Free discovery tools</button>
+      <button class="chip" data-t="discover">Self-discovery tools</button>
       <button class="chip" data-t="quiz">Quizzes</button>
       <button class="chip" data-t="worksheet">Worksheets</button>
       <button class="chip" data-t="checklist">Checklists</button>

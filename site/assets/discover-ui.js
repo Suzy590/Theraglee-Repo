@@ -1,6 +1,6 @@
 /* ==========================================================================
    Theraglee — the Discover browser: search, topic chips and the grid of the
-   360 free discovery tools. Shared by discover.html and the Discover tab on
+   360 self-discovery tools. Shared by discover.html and the Discover tab on
    the member dashboard, so both show the same thing.
    ========================================================================== */
 import { esc } from './app.js';

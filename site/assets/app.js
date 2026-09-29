@@ -393,7 +393,7 @@ function footer() {
           therapists when you want more support.</p>
       </div>
       <div><h4>Explore</h4>
-        <a href="explore.html">Explore Library</a><a href="discover.html">Free discovery tools</a>
+        <a href="explore.html">Explore Library</a><a href="discover.html">Self-discovery tools</a>
         <a href="challenges.html">Challenges</a>
         <a href="journal.html">Journal</a><a href="articles.html">Articles</a>
         <a href="therapists.html">Find a therapist</a></div>
