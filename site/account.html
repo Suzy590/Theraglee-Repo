@@ -302,7 +302,7 @@ async function historyTab(){
       : '<div class="empty">Nothing saved yet.</div>'}
 
     <h2 style="margin-top:34px">Journal</h2>
-    <p class="muted">${nJ||0} entr${nJ===1?'y':'ies'} — <a href="journal.html">open your journal</a>.</p>`;
+    <p class="muted">${nJ||0} entr${nJ===1?'y':'ies'} — <a href="dashboard.html#journal">open your journal</a>.</p>`;
 }
 
 function chipVals(id){ return [...document.querySelectorAll(`#${id} .chip.on`)].map(c=>c.dataset.v); }

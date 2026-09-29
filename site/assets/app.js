@@ -283,6 +283,7 @@ const THERAPIST_NAV = [
 // dashboard. Keep it in step with the tab buttons in dashboard.html.
 const DASH_TABS = [
   ['Today',           'today'],
+  ['Journal',         'journal'],
   ['Playlists',       'playlists'],
   ['Explore Library', 'explore'],
   ['Self-Discovery',  'discover'],
@@ -293,7 +294,7 @@ const DASH_TABS = [
 // The member pages that show that row, and the tab each one sits under.
 const DASH_PAGES = {
   'discover.html': 'discover',
-  'journal.html': 'tools', 'explore.html': 'tools', 'challenges.html': 'tools',
+  'explore.html': 'tools', 'challenges.html': 'tools',
   'checklist.html': 'tools', 'quiz.html': 'tools', 'worksheet.html': 'tools',
   'pet.html': 'tools', 'trivia.html': 'tools', 'goals.html': 'tools',
   'mandalas.html': 'tools', 'therapists.html': 'tools', 'therapist.html': 'tools',
@@ -435,7 +436,7 @@ function footer() {
       <div><h4>Explore</h4>
         <a href="explore.html">Explore Library</a><a href="discover.html">Self-discovery tools</a>
         <a href="challenges.html">Challenges</a>
-        <a href="journal.html">Journal</a><a href="articles.html">Articles</a>
+        <a href="dashboard.html#journal">Journal</a><a href="articles.html">Articles</a>
         <a href="therapists.html">Find a therapist</a></div>
       <div><h4>Membership</h4>
         <a href="pricing.html">Membership plans</a><a href="${DOORS.member.signup}">Join free</a>

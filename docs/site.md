@@ -38,8 +38,10 @@ the other.
 | Header links | Dashboard (signed in only), For Therapists; visitors also get Sign in and Join free | Dashboard, Referrals, Messages, Member requests, Library, My profile, Directory |
 
 The member dashboard opens on a **Today** tab (the daily affirmation, quote,
-tip, fun fact and journal prompt, plus a link to the mood check-in), which is
-what a member sees first after signing in. Its other tabs are **Mood** (the
+tip and fun fact, beside the Match Mode switch, plus the mood check-in), which
+is what a member sees first after signing in. The tab row sits at the very top,
+above the date. Its other tabs are **Journal** (the day's prompt, the entry
+form and earlier entries with search; `journal.html` forwards there), **Mood** (the
 one-tap mood check-in, a 1 to 10 rating of what may be shaping it, the weather,
 and after seven days the patterns; see [`mood.md`](mood.md)), **Playlists**
 (Premium: pick a genre, then a mood, and get forty songs curated for the pair,
@@ -383,7 +385,7 @@ gated by tier, so Basic and Premium have them too:
 |---|---|---|
 | Dashboard to track your progress | `dashboard.html` — counts, challenges in progress, picked-up items | `requireAuth()`: any signed-in member |
 | Keep favorites in your dashboard | `favorites` table via `assets/library.js`; "Your favorites" on the dashboard | RLS `own rows` |
-| Tons of journal prompts | 374 `daily_content` rows of kind `journal_prompt`, `journal.html` | `min_level = 1` |
+| Tons of journal prompts | 374 `daily_content` rows of kind `journal_prompt`, the Journal tab on the dashboard (`dashboard.html#journal`, drawn by `site/assets/journal-ui.js`; `journal.html` forwards there) | `min_level = 1` |
 | Articles sent to your inbox | the `daily-digest` Edge Function, below | `profiles.daily_email` |
 | Themed challenges, 7 days at a time | 30 `challenge_templates` at `min_level = 1`, two more added every day; one to-do a day from `challenge_days`, runs in `user_challenges`, ticks in `user_challenge_progress`; `guard_challenge_length()` keeps a Free member's run to 7 days — see [`challenges.md`](challenges.md) | `min_level`, RLS `own rows` |
 | Checklists with progress tracked | 22 `checklists` at `min_level = 1`, two more added every day, `checklist_progress` + `item_progress` | `min_level`, RLS `own rows` |
@@ -423,7 +425,7 @@ The list of features, with where each opens and the tier it needs, is
 `FEATURES` at the top of `showcase.js`. The daily picks and Theraglee Match Mode
 open the right tab of the dashboard by address (`dashboard.html#daily-quote`,
 `dashboard.html#match-mode`): a hash naming something inside a tab opens that
-tab and scrolls to it. The Match Mode switch sits above the tabs, so it shows
+tab and scrolls to it. The Match Mode switch sits outside the tabs, so it shows
 whichever tab is open.
 
 ## Theraglee Match Mode is pseudonymous until the member replies
