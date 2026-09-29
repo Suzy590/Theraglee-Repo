@@ -94,6 +94,8 @@
   .mood-zone-head p{margin:4px 0 0}
   @media(max-width:560px){.mood-zone{padding:18px 14px}}
   #affirm-card,.daily .card,#mood-card,#mood-factors,#mood-patterns,#match-mode{scroll-margin-top:104px}
+  .tile .tile-remove{align-self:flex-start;margin-top:10px;padding:4px 10px;font-size:.78rem;color:var(--faint)}
+  .tile .tile-remove:hover{color:var(--danger)}
 </style>
 </head>
 <body>
@@ -101,11 +103,11 @@
   <div class="wrap">
     <div class="tabs" id="tabs" role="tablist">
       <button data-tab="today" role="tab">Today</button>
+      <button data-tab="progress" role="tab">Progress</button>
       <button data-tab="journal" role="tab">Journal</button>
       <button data-tab="playlists" role="tab">Playlists</button>
       <button data-tab="explore" role="tab">Explore Library</button>
       <button data-tab="discover" role="tab">Self-Discovery</button>
-      <button data-tab="progress" role="tab">Progress</button>
       <button data-tab="tools" role="tab">Tools</button>
       <button data-tab="messages" role="tab">Messages</button>
     </div>
@@ -216,7 +218,7 @@
 
 <script type="module">
 import { chrome, sb, access, requireAuth, esc, tierName, toast, fmtDate,
-         contentCounts, counted, lockNotice } from './assets/app.js';
+         contentCounts, counted, lockNotice, modal, busy } from './assets/app.js';
 import { library, isFavorite, favButton, statusBadge, bindLibrary } from './assets/library.js';
 import { TOOLS } from './assets/discover-tools.js';
 import { SETS as TRIVIA } from './assets/trivia-sets.js';
@@ -382,28 +384,72 @@ const [{ count: nJ }, { data: ch }, { count: nQ }, { count: nD }] = await Promis
   sb.from('item_progress').select('item_id', { count:'exact', head:true }).eq('user_id', p.id).eq('status', 'completed'),
 ]);
 document.getElementById('n-entries').textContent = nJ ?? 0;
-document.getElementById('n-active').textContent  = ch?.length ?? 0;
 document.getElementById('n-quiz').textContent    = nQ ?? 0;
 document.getElementById('n-done').textContent    = nD ?? 0;
 
 /* ---- live challenges ---- */
-if (ch?.length) {
-  const ids = ch.map(c=>c.id);
+let live = ch || [];
+async function paintChallenges() {
+  const host = document.getElementById('challenges-live');
+  document.getElementById('n-active').textContent = live.length;
+  if (!live.length) { host.innerHTML = ''; return; }
+  const ids = live.map(c=>c.id);
   const { data: prog } = await sb.from('user_challenge_progress')
     .select('user_challenge_id, day').in('user_challenge_id', ids);
   const done = {};
   (prog||[]).forEach(r => { (done[r.user_challenge_id] ||= new Set()).add(r.day); });
-  document.getElementById('challenges-live').innerHTML = `
+  host.innerHTML = `
     <h2 style="margin-top:26px">Challenges in progress</h2>
-    <div class="grid g2">${ch.map(c=>{
+    <div class="grid g2">${live.map(c=>{
       const n = done[c.id]?.size || 0;
       const pct = Math.round(n / c.total_days * 100);
       return `<a class="tile" href="challenges.html?open=${c.id}">
         <h3>${esc(c.title)}</h3>
         <div class="bar"><i style="width:${pct}%"></i></div>
-        <span class="meta">${n} of ${c.total_days} days · started ${fmtDate(c.started_on)}</span></a>`;
+        <span class="meta">${n} of ${c.total_days} days · started ${fmtDate(c.started_on)}</span>
+        <button type="button" class="btn ghost sm tile-remove" data-remove-challenge="${c.id}">Remove</button></a>`;
     }).join('')}</div>`;
 }
+await paintChallenges();
+
+/* Removing asks first. A challenge goes with the days checked off on it, the same as
+   Remove on the Challenges page; a picked-up activity only loses its progress, so it
+   stays in favorites or saved for later if it is there too. */
+function confirmRemove({ heading, body, run }) {
+  const back = modal(`
+    <h2>${heading}</h2>
+    <p class="muted">${body}</p>
+    <div class="row" style="margin-top:18px;justify-content:flex-end">
+      <button class="btn ghost" id="keep">Keep it</button>
+      <button class="btn danger" id="remove">Remove</button></div>`);
+  back.querySelector('#keep').onclick = () => back.remove();
+  back.querySelector('#remove').onclick = async (e) => {
+    busy(e.target, true, 'Removing…');
+    const ok = await run();
+    busy(e.target, false);
+    if (ok) back.remove();
+  };
+}
+
+document.getElementById('challenges-live').addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-remove-challenge]');
+  if (!btn) return;
+  e.preventDefault(); e.stopPropagation();
+  const c = live.find(x => String(x.id) === btn.dataset.removeChallenge);
+  if (!c) return;
+  confirmRemove({
+    heading: 'Remove this challenge?',
+    body: `“${esc(c.title)}” and the days you have checked off on it will be deleted. This cannot be undone.`,
+    run: async () => {
+      const { error } = await sb.from('user_challenges').delete().eq('id', c.id);
+      if (error) { toast(error.message, 'err'); return false; }
+      live = live.filter(x => x.id !== c.id);
+      await paintChallenges(); paintProgressEmpty();
+      toast('Challenge removed.', 'ok');
+      return true;
+    },
+  });
+});
 
 /* ---- favorites, saved for later, in progress ---- */
 const HREF = {
@@ -434,7 +480,7 @@ async function paintLibrary() {
   // Same for the trivia quizzes.
   for (const t of TRIVIA) byKey.set('trivia:' + t.id, { kind: 'trivia', id: t.id, slug: t.slug, title: t.title });
 
-  const tile = (k) => {
+  const tile = (k, removable) => {
     const r = byKey.get(k);
     if (!r) return '';                       // content removed since it was saved
     const p = lib.progress.get(k);
@@ -445,12 +491,13 @@ async function paintLibrary() {
       <span class="meta">${KIND[r.kind] || r.kind}</span>
       <div class="row" style="gap:7px;margin-top:2px">${statusBadge(p)}</div>
       ${pct ? `<div class="prog"><i style="width:${pct}%"></i></div>` : ''}
+      ${removable ? `<button type="button" class="btn ghost sm tile-remove" data-remove-progress="${k}">Remove</button>` : ''}
     </a>`;
   };
 
-  const section = (title, keys, empty) => keys.length
+  const section = (title, keys, empty, removable = false) => keys.length
     ? `<h2 style="margin-top:44px">${title}</h2>
-       <div class="grid g3">${keys.map(tile).join('')}</div>`
+       <div class="grid g3">${keys.map(k => tile(k, removable)).join('')}</div>`
     : (empty ? `<h2 style="margin-top:44px">${title}</h2><div class="empty">${empty}</div>` : '');
 
   const inProgress = [...lib.progress.values()]
@@ -461,7 +508,8 @@ async function paintLibrary() {
       section('Your favorites', [...lib.favorite],
               'Nothing yet. Tap the <strong>ee</strong> on any activity to keep it here.')
     + section('Saved for later', [...lib.later])
-    + section('Picked up but not finished', inProgress);
+    + section('Picked up but not finished', inProgress, '', true);
+  titles = byKey;
   paintProgressEmpty();
 }
 function paintProgressEmpty() {
@@ -469,7 +517,29 @@ function paintProgressEmpty() {
              && !document.getElementById('library-live').innerHTML.trim();
   document.getElementById('progress-empty').style.display = empty ? '' : 'none';
 }
+let titles = new Map();
 bindLibrary(document.getElementById('library-live'), () => paintLibrary());
+document.getElementById('library-live').addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-remove-progress]');
+  if (!btn) return;
+  e.preventDefault(); e.stopPropagation();
+  const k = btn.dataset.removeProgress;
+  const [kind, id] = k.split(':');
+  const title = titles.get(k)?.title || 'this activity';
+  confirmRemove({
+    heading: 'Remove this from your list?',
+    body: `Your progress on “${esc(title)}” will be cleared, so it no longer shows here.
+      It stays in your favorites or saved for later if it is there.`,
+    run: async () => {
+      const { error } = await sb.from('item_progress').delete()
+        .eq('user_id', p.id).eq('item_type', kind).eq('item_id', id);
+      if (error) { toast(error.message, 'err'); return false; }
+      await paintLibrary();
+      toast('Removed.', 'ok');
+      return true;
+    },
+  });
+});
 await paintLibrary();
 
 /* ---- quick links ---- */
