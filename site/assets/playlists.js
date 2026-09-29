@@ -269,7 +269,7 @@ PLAYLISTS.rock = {
     ['Live Forever', 'Oasis'], ['Don\'t Look Back in Anger', 'Oasis'], ['Bittersweet Symphony', 'The Verve'],
     ['The Man Who Sold the World', 'Nirvana'], ['Sex on Fire', 'Kings of Leon'], ['Use Somebody', 'Kings of Leon'],
   ] },
-  lonely: { title: 'Rock to keep you company', blurb: 'Anthems about friends and holding on, the kind you sing along to.', spotify: '', songs: [
+  lonely: { title: 'Rock to keep you company', blurb: 'Anthems about friends and holding on, the kind you sing along to.', spotify: '6jCDDbjamfsx18zTyqUVMj', songs: [
     ['With a Little Help from My Friends', 'The Beatles'], ['Stand by Me', 'Oasis'], ['Bitter Sweet Symphony', 'The Verve'],
     ['Hand in My Pocket', 'Alanis Morissette'], ['Human', 'The Killers'], ['All These Things That I\'ve Done', 'The Killers'],
     ['Good Riddance (Time of Your Life)', 'Green Day'], ['Here Without You', '3 Doors Down'], ['Kryptonite', '3 Doors Down'],
