@@ -41,7 +41,7 @@ export const FEATURES = [
    'journal.html', 1],
   ['Mood Tracker',
    'Log how you feel in one tap, rate what shaped it, and see which factors move with your mood.',
-   'dashboard.html#mood', 1],
+   'dashboard.html#mood-card', 1],
   ['Self-Discovery Tools',
    'Short, interactive ways to notice your own patterns. Free for everyone.',
    'discover.html', 0],
