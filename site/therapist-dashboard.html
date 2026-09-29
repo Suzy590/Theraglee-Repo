@@ -33,6 +33,10 @@
   .msg{background:var(--paper);border:1px solid var(--hair);border-radius:var(--r);
     padding:20px;margin-bottom:12px}
   .msg.unread{border-color:var(--lime-2);background:linear-gradient(180deg,var(--soft),var(--paper) 40%)}
+  /* A Match Mode member's card: one labeled row per detail they share. */
+  .mm-facts{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:12px 0 0;font-size:.9rem}
+  .mm-facts dt{color:var(--muted)}
+  .mm-facts dd{margin:0;color:var(--ink-2)}
   .msg .who{font-family:var(--sans);font-weight:600}
   .res{background:var(--paper);border:1px solid var(--hair);border-radius:var(--r);padding:20px;
     display:flex;flex-direction:column;gap:8px;cursor:pointer;transition:transform .3s,box-shadow .3s}
@@ -68,7 +72,7 @@ import { chrome, sb, requireAuth, access, clearAccess, esc, toast, busy, fmtDate
          modal, openPortal, startCheckout, startIdentity, connectAction, callStripeFn,
          discountCodeBox, wireDiscountCode,
          FN, qs } from './assets/app.js';
-import { matchSummary, takesInsurance } from './assets/match.js';
+import { matchSummary, takesInsurance, genderLabel, rangeLabel, sessionLabel } from './assets/match.js';
 import { mountMood } from './assets/mood-ui.js';
 import { foundingOffer } from './assets/plans.js';
 import { SPECIALTIES, MODALITIES, INSURANCES, AGE_RANGES, PARTICIPANTS,
@@ -466,8 +470,8 @@ async function members(){
   render(`
     <h2>Members who have toggled ON <strong>Theraglee Match Mode</strong></h2>
     <p class="muted">Theraglee members who switched on <strong>Theraglee Match Mode</strong>. Each
-      one is pseudonymous: you see their pseudonym, their age range, the broad topics they want to work on, whether
-      they prefer in-person, video, or either, their insurance plan (or that they plan to pay out of
+      one is pseudonymous: you see their pseudonym, their age range, their gender (they can prefer not
+      to answer), the broad topics they want to work on, whether they prefer in-person, video, or either, their insurance plan (or that they plan to pay out of
       pocket), and the first three digits of their zip code. Members whose plan is among the insurance
       you accept on your listing are marked <strong>Takes your insurance</strong>. Never a
       name, an exact location or an email address, and never anything they have written in their
@@ -502,15 +506,22 @@ async function members(){
       <input type="checkbox" id="ins-only" ${insOnly?'checked':''}> Only members with an insurance plan I accept</label>` : ''}
     ${shown.length ? `<div class="grid g3" style="margin-top:14px">${shown.map(m=>`
       <div class="card">
-        <div class="spread"><strong>${esc(line(m))}</strong>
+        <div class="spread"><strong>${esc(m.pseudonym || 'Theraglee member')}</strong>
           ${m.has_replied ? '<span class="badge">Replied</span>'
             : m.already_contacted ? '<span class="badge gray">Contacted</span>' : ''}</div>
+        <dl class="mm-facts">
+          <dt>Age range</dt><dd>${esc(m.age_range ? rangeLabel(m.age_range) : 'Not shared')}</dd>
+          <dt>Gender</dt><dd>${esc(genderLabel(m.gender))}</dd>
+          <dt>Sessions</dt><dd>${esc(sessionLabel(m.delivery).replace(/^./, c => c.toUpperCase()) || 'Not shared')}</dd>
+          <dt>Insurance</dt><dd>${esc(m.insurance === 'self_pay' ? 'Paying out of pocket'
+            : m.insurance === 'unsure' ? 'Not sure yet' : m.insurance || 'Not shared')}</dd>
+          <dt>Area</dt><dd>${m.area ? 'The ' + esc(m.area) + ' area' : 'Not shared'}</dd>
+        </dl>
         <div class="chips" style="margin:12px 0">${
           (m.issues||[]).map(i=>`<span class="badge">${esc(i)}</span>`).join('')
           || '<span class="faint">No topics listed</span>'}${
           takesInsurance(T.insurances, m.insurance) ? '<span class="badge live">Takes your insurance</span>' : ''}</div>
-        <p class="faint" style="margin:0">${m.area?'In the '+esc(m.area)+' area':'Area not shared'}
-          · joined ${fmtDate(m.created_at)}</p>
+        <p class="faint" style="margin:0">Joined ${fmtDate(m.created_at)}</p>
         <button class="btn sm" style="margin-top:14px" data-reach="${m.id}"
           ${(!liveListing || m.already_contacted)?'disabled':''}>
           ${m.already_contacted?'Already contacted':'<strong>Theraglee Match Mode</strong>'}</button>

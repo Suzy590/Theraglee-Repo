@@ -10,18 +10,18 @@ request.
 
 ## What the member agrees to
 
-> Let therapists reach out to you. Verified therapists see a pseudonymous
-> profile that includes: your pseudonym, your age range, the broad topic(s) you
-> would like to work on with a therapist, whether you prefer in-person, video,
-> or either, your insurance plan (or that you plan to pay out of pocket), and
-> the first three digits of your zip code so they know you're nearby. If you indicate you are open to video sessions, you may have
-> therapists anywhere in your state reach out to you. Therapists will reach out
-> to you by messaging your Theraglee inbox. Your real name goes to a therapist
-> only if you choose to reply to them, and you can block any therapist with one
-> tap. Toggling OFF Theraglee Match Mode makes you invisible to therapists.
+> Let therapists reach out to you. Toggling ON Theraglee Match Mode lets
+> verified therapists see a pseudonymous profile that includes: your pseudonym, your age range, gender
+> (you can prefer not to answer), the broad topic(s) you would like to work on with a therapist,
+> whether you prefer in-person/video/either, your insurance plan (or that you plan to pay out of
+> pocket), and the first three digits of your zip code so they know you're nearby. If you indicate
+> you are open to video sessions, you may have therapists anywhere in your state reach out to you.
+> Therapists will reach out to you by messaging your Theraglee inbox. Your real name goes to a
+> therapist only if you choose to reply to them, and you can block any therapist with one tap.
+> Toggling OFF Theraglee Match Mode makes you invisible to therapists again.
 
-This is `MATCH_BLURB` in `site/assets/match.js`, and the paragraph under the
-switch on the dashboard. When the switch is turned on, a window asks for every
+This is `MATCH_BLURB` in `site/assets/match.js`, and the four paragraphs under the
+switch on the dashboard (there the first and last sentences are bold). When the switch is turned on, a window asks for every
 detail below, all required. It suggests a pseudonym ("Quiet Harbor 27") that
 the member can keep, replace with another suggestion, or type over, and says it
 will be shared with therapists and must not be their real name.
@@ -31,13 +31,14 @@ will be shared with therapists and must not be their real name.
 | Detail | Where it comes from | What a therapist reads |
 | --- | --- | --- |
 | Pseudonym | `profiles.match_pseudonym`, 2 to 30 letters, digits, spaces and `. ' _ -`, chosen by the member | "Quiet Harbor 27" |
+| Gender | `profiles.match_gender`: `male`, `female`, `non_binary` or `prefer_not` (Male, Female, Non-binary, Prefer not to answer). "Prefer not to answer" leaves it out of the line | "female"; the practice dashboard card reads "Prefers not to answer" |
 | Age range | `profiles.match_age_range`, one of `18-24`, `25-34`, `35-44`, `45-54`, `55-64`, `65+` | "35–44" |
 | Broad topics | `profiles.match_topics`, from Anxiety, Panic, Depression, Stress, Life transition, Grief/loss, Relationship issues, Family issues, Trauma, Personal growth, Other. Separate from `profiles.issues`, which shapes daily content; the view falls back to `issues` for members who switched Match Mode on before `match_topics` existed | "seeks help with anxiety and stress" |
 | Session preference | `profiles.match_delivery`: `in_person`, `telehealth` (video) or `both` | "seeking video sessions" |
 | How they plan to pay | `profiles.match_insurance`: a plan name from `INSURANCES` in `site/assets/lists.js` (the same list therapists pick the plans they accept from), `self_pay` or `unsure`. The practice dashboard marks members whose plan is in the therapist's `insurances` and can show only those | "has Aetna insurance", "paying out of pocket", "not sure about insurance yet" |
 | First three digits of the zip code | `left(profiles.zip, 3)`, exposed by the view as `area`; the zip code is required to switch on | "in the 902xx area" |
 
-Nothing else. The view has no real name, gender, age, zip, email or content column.
+Nothing else. The view has no real name, exact age, zip, email or content column.
 
 ## How the answers are loaded
 
@@ -51,8 +52,8 @@ saved. Add any new Match Mode column there too.
 
 The member's name, exact location, email address, journal, quiz results,
 worksheet results, mood or goal logs, or anything else in their private
-dashboard. Gender and exact age are no longer collected for Match Mode; older
-rows may still hold them, but no view exposes them.
+dashboard. Exact age is no longer collected for Match Mode; older rows may
+still hold it, but no view exposes it.
 
 ## When the real name is shared
 

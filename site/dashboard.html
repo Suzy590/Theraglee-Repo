@@ -39,6 +39,8 @@
   .mm-label b{font-family:var(--sans);font-style:normal;font-weight:600;letter-spacing:.08em;color:var(--muted)}
   .mm.on .mm-label b{color:var(--green)}
   .mm-desc{margin:10px 0 0;font-size:.86rem;line-height:1.5}
+  .mm-desc p{margin:0 0 10px}
+  .mm-desc strong{color:var(--ink-2)}
   #vis-summary{margin:8px 0 0;font-size:.86rem}
   #vis-summary:empty{display:none}
   @media(max-width:720px){
@@ -70,15 +72,20 @@
           <button class="mm-switch" id="vis" type="button" role="switch" aria-checked="false"
             aria-labelledby="mm-label" aria-describedby="mm-desc"><i></i></button>
         </div>
-        <p class="mm-desc muted" id="mm-desc">Let therapists reach out to you. Verified therapists see a
-          pseudonymous profile that includes: your pseudonym, your age range, the broad topic(s) you
-          would like to work on with a therapist, whether you prefer in-person, video, or either, your
-          insurance plan (or that you plan to pay out of pocket), and the first three digits of your
-          zip code so they know you're nearby. If you indicate you are
-          open to video sessions, you may have therapists anywhere in your state reach out to you.
-          Therapists will reach out to you by messaging your Theraglee inbox. Your real name goes to a
-          therapist only if you choose to reply to them, and you can block any therapist with one tap.
-          Toggling OFF Theraglee Match Mode makes you invisible to therapists.</p>
+        <div class="mm-desc muted" id="mm-desc">
+          <p><strong>Let therapists reach out to you.</strong> Toggling ON Theraglee Match Mode lets
+            verified therapists see a pseudonymous profile that includes: your pseudonym, your age
+            range, gender (you can prefer not to answer), the broad topic(s) you would like to work on
+            with a therapist, whether you prefer in-person/video/either, your insurance plan (or that
+            you plan to pay out of pocket), and the first three digits of your zip code so they know
+            you're nearby.</p>
+          <p>If you indicate you are open to video sessions, you may have therapists anywhere in your
+            state reach out to you.</p>
+          <p>Therapists will reach out to you by messaging your Theraglee inbox. Your real name goes to
+            a therapist only if you choose to reply to them, and you can block any therapist with one
+            tap.</p>
+          <p><strong>Toggling OFF Theraglee Match Mode makes you invisible to therapists again.</strong></p>
+        </div>
         <p id="vis-summary" class="muted"></p>
       </div>
     </div>

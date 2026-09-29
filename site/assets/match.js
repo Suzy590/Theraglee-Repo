@@ -11,6 +11,19 @@ import { INSURANCES } from './lists.js';
 
 export const AGE_RANGES = ['18-24', '25-34', '35-44', '45-54', '55-64', '65+'];
 
+/* profiles.match_gender; the database accepts only these keys
+   (profiles_match_gender_check in 20260913200000_match_mode_anonymous.sql). */
+export const GENDERS = [
+  ['male',       'Male'],
+  ['female',     'Female'],
+  ['non_binary', 'Non-binary'],
+  ['prefer_not', 'Prefer not to answer'],
+];
+const GENDER_LINE = { male: 'male', female: 'female', non_binary: 'non-binary', prefer_not: '' };
+/* What a therapist's member card says under "Gender". */
+export const genderLabel = (g) =>
+  g === 'prefer_not' ? 'Prefers not to answer' : (GENDERS.find(([k]) => k === g)?.[1] || 'Not shared');
+
 export const SESSION_PREFS = [
   ['in_person',  'In person'],
   ['telehealth', 'Video (telehealth)'],
@@ -54,7 +67,7 @@ export const suggestPseudonym = () =>
   `${pick(P_WORDS)} ${pick(P_NOUNS)} ${10 + Math.floor(Math.random() * 90)}`;
 
 export const sessionLabel = (k) => SESSION_LINE[k] || '';
-const rangeLabel = (r) => r ? String(r).replace('-', '–') : '';
+export const rangeLabel = (r) => r ? String(r).replace('-', '–') : '';
 
 /* The only location a therapist sees: the first three digits of the zip code. */
 export const areaOf = (zip) => (/^\d{5}/.test(zip || '') ? zip.slice(0, 3) + 'xx' : '');
@@ -62,9 +75,9 @@ export const areaOf = (zip) => (/^\d{5}/.test(zip || '') ? zip.slice(0, 3) + 'xx
 /* True once the member has answered everything the window asks for. */
 export const matchComplete = (p) =>
   Boolean(p?.match_pseudonym && p?.match_age_range && p?.match_delivery
-    && (p?.match_topics || []).length && p?.match_insurance && areaOf(p?.zip));
+    && p?.match_gender && (p?.match_topics || []).length && p?.match_insurance && areaOf(p?.zip));
 
-/* "Quiet Harbor 27 · 35–44 · seeks help with anxiety and stress · seeking video sessions ·
+/* "Quiet Harbor 27 · 35–44 · female · seeks help with anxiety and stress · seeking video sessions ·
    has Aetna insurance · in the 902xx area"
    Accepts a member's own profile (match_* fields plus zip) or a member_discovery row.
    A member who switched Match Mode on before match_topics existed still shows issues. */
@@ -76,6 +89,7 @@ export function matchSummary(m, { withArea = true } = {}) {
   const parts = [
     m.match_pseudonym ?? m.pseudonym ?? '',
     range ? rangeLabel(range) : 'Theraglee member',
+    GENDER_LINE[m.match_gender ?? m.gender] || '',
     topics.length ? 'seeks help with ' + listWords(topics) : 'topics not chosen yet',
     sessionLabel(m.match_delivery ?? m.delivery),
     insuranceLabel(m.match_insurance ?? m.insurance),
@@ -91,14 +105,15 @@ function listWords(words) {
 }
 
 /* The short explanation under every Match Mode switch. */
-export const MATCH_BLURB = `Let therapists reach out to you. Verified therapists see a pseudonymous
-  profile that includes: your pseudonym, your age range, the broad topic(s) you would like to work on
-  with a therapist, whether you prefer in-person, video, or either, your insurance plan (or that you
-  plan to pay out of pocket), and the first three digits of your zip code so they know you're nearby. If you indicate you are open to video sessions, you may have
-  therapists anywhere in your state reach out to you. Therapists will reach out to you by messaging
-  your Theraglee inbox. Your real name goes to a therapist only if you choose to reply to them, and
-  you can block any therapist with one tap. Toggling OFF Theraglee Match Mode makes you invisible to
-  therapists.`;
+export const MATCH_BLURB = `Let therapists reach out to you. Toggling ON Theraglee Match Mode lets
+  verified therapists see a pseudonymous profile that includes: your pseudonym, your age range, gender
+  (you can prefer not to answer), the broad topic(s) you would like to work on with a therapist,
+  whether you prefer in-person/video/either, your insurance plan (or that you plan to pay out of
+  pocket), and the first three digits of your zip code so they know you're nearby. If you indicate
+  you are open to video sessions, you may have therapists anywhere in your state reach out to you.
+  Therapists will reach out to you by messaging your Theraglee inbox. Your real name goes to a
+  therapist only if you choose to reply to them, and you can block any therapist with one tap.
+  Toggling OFF Theraglee Match Mode makes you invisible to therapists again.`;
 
 /* Ask for the details, save them, and switch Match Mode on.
    Resolves with the saved fields, or null if the member closed the window. */
@@ -129,6 +144,9 @@ export function matchDetailsModal(p, { editing = false } = {}) {
 
       <div class="field"><label>Your age range</label>
         ${chips('mm-age', AGE_RANGES.map(r => [r, rangeLabel(r)]), r => p.match_age_range === r, true)}</div>
+
+      <div class="field"><label>Your gender</label>
+        ${chips('mm-gender', GENDERS, g => p.match_gender === g, true)}</div>
 
       <div class="field"><label>What would you like to work on in therapy?</label>
         ${chips('mm-issues', MATCH_TOPICS.map(t => [t, t]), t => (p.match_topics || []).includes(t))}
@@ -166,6 +184,7 @@ export function matchDetailsModal(p, { editing = false } = {}) {
     const read = () => ({
       match_pseudonym: $('#mm-name').value.trim().replace(/\s+/g, ' ') || null,
       match_age_range: one('mm-age'),
+      match_gender:    one('mm-gender'),
       match_topics:    [...back.querySelectorAll('#mm-issues .chip.on')].map(c => c.dataset.v),
       match_delivery:  one('mm-delivery'),
       match_insurance: $('#mm-ins').value || null,
@@ -175,7 +194,7 @@ export function matchDetailsModal(p, { editing = false } = {}) {
       $('#mm-preview').innerHTML = `<strong>Therapists will read:</strong> ${esc(matchSummary(read()))}`;
     };
     preview();
-    // Age range and how to meet take one answer; topics take any number.
+    // Age range, gender and how to meet take one answer; topics take any number.
     back.querySelectorAll('.chips .chip').forEach(c => c.addEventListener('click', () => {
       const group = c.parentElement;
       if (group.hasAttribute('data-single')) group.querySelectorAll('.chip').forEach(x => {
@@ -198,6 +217,7 @@ export function matchDetailsModal(p, { editing = false } = {}) {
       if (!v.match_pseudonym || !PSEUDONYM_RE.test(v.match_pseudonym))
         return toast('Please choose a pseudonym of 2 to 30 letters or numbers.', 'err');
       if (!v.match_age_range)  return toast('Please choose your age range. Theraglee is for adults 18 and over.', 'err');
+      if (!v.match_gender)     return toast('Please choose your gender, or "Prefer not to answer".', 'err');
       if (!v.match_topics.length) return toast('Pick at least one topic so therapists know how to help.', 'err');
       if (!v.match_delivery)   return toast('Let therapists know whether you prefer in-person, video, or either.', 'err');
       if (!v.match_insurance)  return toast('Let therapists know your insurance, or that you will pay out of pocket.', 'err');
