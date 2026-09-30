@@ -334,17 +334,23 @@ export async function chrome({ active = '', showcase = true } = {}) {
        <a class="btn sm ghost" href="#" id="signout">Sign out</a>`
     : `<a class="btn sm" href="${DOORS.member.signin}">Sign in</a>`;
 
+  // On the landing page a signed-in member or therapist is greeted by name in
+  // the top right corner, so it is plain they are still signed in.
+  const who = (a.profile?.full_name || '').trim().split(/\s+/)[0] || (a.profile?.email || '').split('@')[0];
+  const hello = a.authenticated && here === 'index.html' && who
+    ? `<span class="hello" title="You're signed in">Hello, ${esc(who)}</span>` : '';
+
   const header = document.createElement('div');
   header.innerHTML = `
     <div class="crisis">In crisis? Call or text <a href="tel:988">988</a> (US Suicide &amp; Crisis Lifeline),
       or text HOME to <a href="sms:741741">741741</a>. If you are in danger, call 911.</div>
     <header class="topbar"><div class="wrap"><nav class="nav">
-      <a class="brand" href="${a.authenticated ? homeFor(a.profile) : 'index.html'}">
+      <a class="brand" href="index.html">
         <img src="assets/logo.png" alt="Theraglee"></a>
       <button class="burger" id="burger" aria-label="Menu" aria-expanded="false">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
           <path d="M3 6h18M3 12h18M3 18h18" stroke-linecap="round"/></svg></button>
-      <div class="links" id="navlinks">${links}${right}</div>
+      <div class="links" id="navlinks">${links}${right}</div>${hello}
     </nav></div></header>`;
   document.body.prepend(...header.childNodes);
 
