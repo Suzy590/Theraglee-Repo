@@ -57,10 +57,11 @@ unfinished items), **Tools** (quick links into the library) and **Messages**
 (messages from therapists who reached out through Match Mode, with the
 member's replies and blocks, drawn from `site/assets/inbox.js`, the same inbox
 as the account page's Inbox tab). Each tab has an address, for
-example `dashboard.html#progress`. Above the tabs, in the upper right corner
-just under the feature showcase, sits the **Theraglee Match Mode** switch, a
-smaller copy of the one on the landing page, with what it does written
-underneath. The morning email is switched on and off on the account page
+example `dashboard.html#progress`. To the right of the greeting sits
+**Theraglee Match Mode** in one row, left to right: the switch (a smaller copy
+of the one on the landing page), what it does, then the line therapists read.
+On narrower screens the row moves under the greeting, and on a phone its three
+parts stack. The morning email is switched on and off on the account page
 (`account.html#profile`). The header no longer links to Today, the
 library, Discover, Challenges, Journal, Articles or the therapist directory: the
 dashboard, the landing page's feature showcase and the pages themselves do.
