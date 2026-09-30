@@ -180,7 +180,7 @@ PLAYLISTS.pop = {
     ['Mirrorball', 'Taylor Swift'], ['Lost Stars', 'Adam Levine'], ['Goodnight n Go', 'Ariana Grande'], ['Can I Be Him', 'James Arthur'],
     ['Willow', 'Taylor Swift'],
   ] },
-  happy: { title: 'Pop for a good day', blurb: 'Bright, sunny songs that match a good mood and keep it going.', spotify: '', songs: [
+  happy: { title: 'Pop for a good day', blurb: 'Bright, sunny songs that match a good mood and keep it going.', spotify: '0N8Sq61YFgjBrIaTVkAT8G', songs: [
     ['Dance the Night', 'Dua Lipa'], ['Houdini', 'Dua Lipa'], ['24K Magic', 'Bruno Mars'], ['Moves Like Jagger', 'Maroon 5'],
     ['Good Feeling', 'Flo Rida'], ['Classic', 'MKTO'], ['Espresso', 'Sabrina Carpenter'], ['Please Please Please', 'Sabrina Carpenter'],
     ['Karma', 'Taylor Swift'], ['Pocketful of Sunshine', 'Natasha Bedingfield'], ['Tongue Tied', 'Grouplove'],
@@ -194,7 +194,7 @@ PLAYLISTS.pop = {
     ['Bye Bye Bye', '*NSYNC'], ['Oops!... I Did It Again', 'Britney Spears'], ['Can\'t Get You Out of My Head', 'Kylie Minogue'],
     ['Padam Padam', 'Kylie Minogue'], ['Into the Groove', 'Madonna'], ['Holiday', 'Madonna'], ['Material Girl', 'Madonna'],
   ] },
-  love: { title: 'Pop for being in love', blurb: 'Sweet, swooning love songs for when someone has your whole heart.', spotify: '', songs: [
+  love: { title: 'Pop for being in love', blurb: 'Sweet, swooning love songs for when someone has your whole heart.', spotify: '6f73nA2mnqkMvBY8iGgGn8', songs: [
     ['Love Story', 'Taylor Swift'], ['You Belong with Me', 'Taylor Swift'], ['Paper Rings', 'Taylor Swift'],
     ['Wildest Dreams', 'Taylor Swift'], ['Lavender Haze', 'Taylor Swift'], ['Everything Has Changed', 'Taylor Swift & Ed Sheeran'],
     ['Die with a Smile', 'Lady Gaga & Bruno Mars'], ['Marry You', 'Bruno Mars'], ['Love Me Like You Do', 'Ellie Goulding'],
@@ -330,7 +330,7 @@ PLAYLISTS.rock = {
     ['Tangerine', 'Led Zeppelin'], ['That\'s the Way', 'Led Zeppelin'], ['Simple Twist of Fate', 'Bob Dylan'],
     ['Let Down', 'Radiohead'], ['Mother', 'Pink Floyd'], ['Brain Damage', 'Pink Floyd'], ['Goodbye Blue Sky', 'Pink Floyd'],
   ] },
-  happy: { title: 'Rock for a good day', blurb: 'Sunny riffs and sing-along choruses for a day that is going well.', spotify: '', songs: [
+  happy: { title: 'Rock for a good day', blurb: 'Sunny riffs and sing-along choruses for a day that is going well.', spotify: '5YUrsSUcDlztHNpD8UgDdG', songs: [
     ['Good Vibrations', 'The Beach Boys'], ['Surfin\' U.S.A.', 'The Beach Boys'], ['I Get Around', 'The Beach Boys'],
     ['I Saw Her Standing There', 'The Beatles'], ['All You Need Is Love', 'The Beatles'], ['Ob-La-Di, Ob-La-Da', 'The Beatles'],
     ['Oh, Pretty Woman', 'Roy Orbison'], ['Johnny B. Goode', 'Chuck Berry'], ['Take On Me', 'a-ha'], ['I\'m a Believer', 'The Monkees'],
@@ -344,7 +344,7 @@ PLAYLISTS.rock = {
     ['Sharp Dressed Man', 'ZZ Top'], ['La Grange', 'ZZ Top'], ['Surrender', 'Cheap Trick'], ['Rock and Roll', 'Led Zeppelin'],
     ['Hold On Tight', 'Electric Light Orchestra'], ['Summertime Blues', 'Eddie Cochran'],
   ] },
-  love: { title: 'Rock for being in love', blurb: 'Big ballads and warm guitar songs about the person who has your heart.', spotify: '', songs: [
+  love: { title: 'Rock for being in love', blurb: 'Big ballads and warm guitar songs about the person who has your heart.', spotify: '69zo0owg3ukrs0ybOzPGMN', songs: [
     ['And I Love Her', 'The Beatles'], ['I Want to Hold Your Hand', 'The Beatles'], ['I Will', 'The Beatles'],
     ['Here, There and Everywhere', 'The Beatles'], ['More Than Words', 'Extreme'], ['Heaven', 'Bryan Adams'],
     ['(Everything I Do) I Do It for You', 'Bryan Adams'], ['I Don\'t Want to Miss a Thing', 'Aerosmith'], ['Maybe I\'m Amazed', 'Paul McCartney'],
@@ -477,7 +477,7 @@ PLAYLISTS.hiphop = {
     ['Garden (Say It Like Dat)', 'SZA'], ['The Weekend', 'SZA'], ['20 Something', 'SZA'], ['Special', 'SZA'],
     ['Nobody Gets Me', 'SZA'], ['Streetcar', 'Daniel Caesar'], ['Loose', 'Daniel Caesar'], ['We Find Love', 'Daniel Caesar'],
   ] },
-  happy: { title: 'Hip-hop and R&B for a good day', blurb: 'Feel-good hooks and sunny beats for a day that is going right.', spotify: '', songs: [
+  happy: { title: 'Hip-hop and R&B for a good day', blurb: 'Feel-good hooks and sunny beats for a day that is going right.', spotify: '22RQKctYxH2tDcA0Pc5COl', songs: [
     ['It Was a Good Day', 'Ice Cube'], ['Gettin\' Jiggy wit It', 'Will Smith'], ['Summertime', 'DJ Jazzy Jeff & The Fresh Prince'],
     ['Men in Black', 'Will Smith'], ['OMG', 'Usher'], ['Rapper\'s Delight', 'The Sugarhill Gang'], ['Push It', 'Salt-N-Pepa'],
     ['Whatta Man', 'Salt-N-Pepa & En Vogue'], ['Downtown', 'Macklemore & Ryan Lewis'], ['About Damn Time', 'Lizzo'],
@@ -491,7 +491,7 @@ PLAYLISTS.hiphop = {
     ['Me, Myself and I', 'De La Soul'], ['Buddy', 'De La Soul'], ['The Humpty Dance', 'Digital Underground'],
     ['Whoomp! (There It Is)', 'Tag Team'], ['Rump Shaker', 'Wreckx-N-Effect'],
   ] },
-  love: { title: 'Hip-hop and R&B for being in love', blurb: 'Slow jams and sweet verses for when someone has your whole heart.', spotify: '', songs: [
+  love: { title: 'Hip-hop and R&B for being in love', blurb: 'Slow jams and sweet verses for when someone has your whole heart.', spotify: '6pbLLKMeGeOF6diZmMaLP4', songs: [
     ['03\' Bonnie & Clyde', 'JAY-Z & Beyoncé'], ['Poetic Justice', 'Kendrick Lamar'], ['You Make Me Wanna...', 'Usher'],
     ['U Remind Me', 'Usher'], ['Nice & Slow', 'Usher'], ['I Wanna Know', 'Joe'], ['All My Life', 'K-Ci & JoJo'],
     ['Let Me Love You', 'Mario'], ['Beautiful', 'Snoop Dogg & Pharrell'], ['I\'ll Make Love to You', 'Boyz II Men'],
@@ -631,7 +631,7 @@ PLAYLISTS.country = {
     ['Night Life', 'Ray Price'], ['She\'s Got You', 'Patsy Cline'], ['I Fall to Pieces', 'Patsy Cline'], ['Keep on the Sunny Side', 'The Carter Family'],
     ['Love Hurts', 'Gram Parsons & Emmylou Harris'], ['Revival', 'Zach Bryan'], ['Heading South', 'Zach Bryan'],
   ] },
-  happy: { title: 'Country for a good day', blurb: 'Windows-down, sunny songs for a day that is going just right.', spotify: '', songs: [
+  happy: { title: 'Country for a good day', blurb: 'Windows-down, sunny songs for a day that is going just right.', spotify: '2UviiokmEbnZLTSNDShAyL', songs: [
     ['Good Directions', 'Billy Currington'], ['I Love This Bar', 'Toby Keith'], ['Should\'ve Been a Cowboy', 'Toby Keith'],
     ['It\'s Five O\'Clock Somewhere', 'Alan Jackson & Jimmy Buffett'], ['Summer Nights', 'Rascal Flatts'],
     ['Mud on the Tires', 'Brad Paisley'], ['Water', 'Brad Paisley'], ['Online', 'Brad Paisley'], ['When the Sun Goes Down', 'Kenny Chesney & Uncle Kracker'],
@@ -646,7 +646,7 @@ PLAYLISTS.country = {
     ['Here You Come Again', 'Dolly Parton'], ['Why Haven\'t I Heard from You', 'Reba McEntire'], ['She\'s in Love with the Boy', 'Trisha Yearwood'],
     ['XXL', 'Keith Anderson'], ['Hillbilly Bone', 'Blake Shelton & Trace Adkins'], ['Hot Mama', 'Trace Adkins'],
   ] },
-  love: { title: 'Country for being in love', blurb: 'Front-porch love songs and first-dance ballads for someone special.', spotify: '', songs: [
+  love: { title: 'Country for being in love', blurb: 'Front-porch love songs and first-dance ballads for someone special.', spotify: '4gtEo6JAVMjUokjP2GatGg', songs: [
     ['From This Moment On', 'Shania Twain'], ['Just a Kiss', 'Lady A'], ['Wanted', 'Hunter Hayes'], ['I Want Crazy', 'Hunter Hayes'],
     ['It\'s Your Love', 'Tim McGraw & Faith Hill'], ['This Kiss', 'Faith Hill'], ['Breathe', 'Faith Hill'],
     ['Let\'s Make Love', 'Faith Hill & Tim McGraw'], ['My Best Friend', 'Tim McGraw'], ['I Swear', 'John Michael Montgomery'],
@@ -776,7 +776,7 @@ PLAYLISTS.indie = {
     ['Down the Line', 'José González'], ['Riverside', 'Agnes Obel'], ['Familiar', 'Agnes Obel'], ['Fuel to Fire', 'Agnes Obel'],
     ['Halah', 'Mazzy Star'], ['Look on Down from the Bridge', 'Mazzy Star'], ['These Days', 'Nico'], ['Norway', 'Beach House'],
   ] },
-  happy: { title: 'Indie for a good day', blurb: 'Bright guitars and hand-clap choruses for a day that is going well.', spotify: '', songs: [
+  happy: { title: 'Indie for a good day', blurb: 'Bright guitars and hand-clap choruses for a day that is going well.', spotify: '5zBf3fJW0fMWom9GVeXBgW', songs: [
     ['Cape Cod Kwassa Kwassa', 'Vampire Weekend'], ['Fluorescent Adolescent', 'Arctic Monkeys'], ['Blister in the Sun', 'Violent Femmes'],
     ['Anna Sun', 'Walk the Moon'], ['Sprawl II (Mountains Beyond Mountains)', 'Arcade Fire'], ['Stolen Dance', 'Milky Chance'],
     ['Harlem', 'New Politics'], ['Chocolate', 'The 1975'], ['The Sound', 'The 1975'], ['Girls', 'The 1975'],
@@ -790,7 +790,7 @@ PLAYLISTS.indie = {
     ['Life on the Nickel', 'Foster the People'], ['Coming of Age', 'Foster the People'], ['Daylight', 'Matt and Kim'],
     ['Let\'s Go', 'Matt and Kim'],
   ] },
-  love: { title: 'Indie for being in love', blurb: 'Close, tender songs for the person who makes the room feel warmer.', spotify: '', songs: [
+  love: { title: 'Indie for being in love', blurb: 'Close, tender songs for the person who makes the room feel warmer.', spotify: '1auRDSkXGFw68L9roj9KtC', songs: [
     ['Nothing\'s Gonna Hurt You Baby', 'Cigarettes After Sex'], ['Each Time You Fall in Love', 'Cigarettes After Sex'],
     ['Sweet', 'Cigarettes After Sex'], ['Juna', 'Clairo'], ['Fool for Love', 'Lord Huron'], ['She Lit a Fire', 'Lord Huron'],
     ['Lover Is a Day', 'Cuco'], ['Falling Slowly', 'Glen Hansard & Markéta Irglová'], ['If You Want Me', 'Glen Hansard & Markéta Irglová'],
@@ -1076,7 +1076,7 @@ PLAYLISTS.softrock = {
     ['Vienna', 'Billy Joel'], ['Lullabye (Goodnight, My Angel)', 'Billy Joel'], ['Kiss from a Rose', 'Seal'],
     ['Fragile', 'Sting'], ['Jealous Guy', 'John Lennon'], ['Imagine', 'John Lennon'],
   ] },
-  happy: { title: 'Soft rock for a good day', blurb: 'Sunny radio favorites and easy sing-alongs for a day that is going well.', spotify: '', songs: [
+  happy: { title: 'Soft rock for a good day', blurb: 'Sunny radio favorites and easy sing-alongs for a day that is going well.', spotify: '1dEAcvfLhqXEMucNikiSNR', songs: [
     ['Right Back Where We Started From', 'Maxine Nightingale'], ['Afternoon Delight', 'Starland Vocal Band'],
     ['Love Will Keep Us Together', 'Captain & Tennille'], ['Waterloo', 'ABBA'], ['Super Trouper', 'ABBA'],
     ['Does Your Mother Know', 'ABBA'], ['Summer Nights', 'John Travolta & Olivia Newton-John'], ['You\'re the One That I Want', 'John Travolta & Olivia Newton-John'],
@@ -1092,7 +1092,7 @@ PLAYLISTS.softrock = {
     ['Spirit in the Sky', 'Norman Greenbaum'], ['Good Day Sunshine', 'The Beatles'], ['Lovely Day', 'Bill Withers'],
     ['Beach Baby', 'The First Class'], ['Sugar Baby Love', 'The Rubettes'],
   ] },
-  love: { title: 'Soft rock for being in love', blurb: 'Tender ballads and warm duets for when someone has your whole heart.', spotify: '', songs: [
+  love: { title: 'Soft rock for being in love', blurb: 'Tender ballads and warm duets for when someone has your whole heart.', spotify: '4aO7LayDYS8x9NpGWGL7EF', songs: [
     ['Endless Love', 'Diana Ross & Lionel Richie'], ['Up Where We Belong', 'Joe Cocker & Jennifer Warnes'],
     ['(I\'ve Had) The Time of My Life', 'Bill Medley & Jennifer Warnes'], ['You\'re the Inspiration', 'Chicago'],
     ['Baby, I Love Your Way', 'Peter Frampton'], ['Have I Told You Lately', 'Van Morrison'], ['Do That to Me One More Time', 'Captain & Tennille'],
@@ -1237,7 +1237,7 @@ PLAYLISTS.soul = {
     ['Love & Hate', 'Michael Kiwanuka'], ['I\'ll Get Along', 'Michael Kiwanuka'], ['Tender Love', 'Force MD\'s'],
     ['Tonight, I Celebrate My Love', 'Peabo Bryson & Roberta Flack'], ['Love\'s in Need of Love Today', 'Stevie Wonder'],
   ] },
-  happy: { title: 'Soul for a good day', blurb: 'Disco, funk and Motown joy for a day that is going well.', spotify: '', songs: [
+  happy: { title: 'Soul for a good day', blurb: 'Disco, funk and Motown joy for a day that is going well.', spotify: '0AQG9bXv53w7029P6d4QuZ', songs: [
     ['Lady Marmalade', 'Labelle'], ['Hot Stuff', 'Donna Summer'], ['Last Dance', 'Donna Summer'], ['I Will Survive', 'Gloria Gaynor'],
     ['Car Wash', 'Rose Royce'], ['Disco Inferno', 'The Trammps'], ['Boogie Oogie Oogie', 'A Taste of Honey'],
     ['Ladies\' Night', 'Kool & The Gang'], ['Fantasy', 'Earth, Wind & Fire'], ['Everybody Dance', 'Chic'],
@@ -1253,7 +1253,7 @@ PLAYLISTS.soul = {
     ['Stomp!', 'The Brothers Johnson'], ['Ain\'t Nothin\' Goin\' On but the Rent', 'Gwen Guthrie'], ['Rock the Boat', 'The Hues Corporation'],
     ['Kung Fu Fighting', 'Carl Douglas'], ['Love Hangover', 'Diana Ross'],
   ] },
-  love: { title: 'Soul for being in love', blurb: 'Slow dances, sweet harmonies and voices that mean every word.', spotify: '', songs: [
+  love: { title: 'Soul for being in love', blurb: 'Slow dances, sweet harmonies and voices that mean every word.', spotify: '7lS7bURyYUQDXxqVuzDD0S', songs: [
     ['Can\'t Get Enough of Your Love, Babe', 'Barry White'], ['You\'re the First, the Last, My Everything', 'Barry White'],
     ['How Sweet It Is (To Be Loved by You)', 'Marvin Gaye'], ['Unchained Melody', 'The Righteous Brothers'],
     ['Stay in My Corner', 'The Dells'], ['Oh, What a Night', 'The Dells'], ['This Will Be (An Everlasting Love)', 'Natalie Cole'],
@@ -1288,7 +1288,7 @@ PLAYLISTS.latin = {
     ['Tan Sólo Tú', 'Franco De Vita & Alejandra Guzmán'], ['Te Amo', 'Franco De Vita'], ['Ahora Quién', 'Marc Anthony'],
     ['Hasta Ayer', 'Marc Anthony'], ['Historia de un Amor', 'Eydie Gormé & Trío Los Panchos'],
   ] },
-  anxious: { title: 'Steady Latin to breathe with', blurb: 'Gentle guitars, easy son and soft voices at an unhurried pace.', spotify: '', songs: [
+  anxious: { title: 'Steady Latin to breathe with', blurb: 'Gentle guitars, easy son and soft voices at an unhurried pace.', spotify: '6sIJlO49FejBrtwOSKqc6e', songs: [
     ['Chan Chan', 'Buena Vista Social Club'], ['Silencio', 'Ibrahim Ferrer'], ['Guantanamera', 'Celia Cruz'],
     ['Inspiration', 'Gipsy Kings'], ['Un Amor', 'Gipsy Kings'], ['Clandestino', 'Manu Chao'], ['Me Gustas Tú', 'Manu Chao'],
     ['Mas Que Nada', 'Sérgio Mendes & Brasil \'66'], ['Águas de Março', 'Elis Regina & Tom Jobim'], ['Quizás, Quizás, Quizás', 'Nat King Cole'],
@@ -1303,7 +1303,7 @@ PLAYLISTS.latin = {
     ['Mi Persona Favorita', 'Alejandro Sanz & Camila Cabello'], ['Robarte un Beso', 'Carlos Vives & Sebastián Yatra'],
     ['Un Año', 'Sebastián Yatra & Reik'], ['Bachata en Fukuoka', 'Juan Luis Guerra'],
   ] },
-  lonely: { title: 'Latin to keep you company', blurb: 'Warm ballads about love and friendship, like a voice in the next room.', spotify: '', songs: [
+  lonely: { title: 'Latin to keep you company', blurb: 'Warm ballads about love and friendship, like a voice in the next room.', spotify: '33p5W3WZVsLA6zdgrN5MjO', songs: [
     ['Burbujas de Amor', 'Juan Luis Guerra'], ['Ojalá Que Llueva Café', 'Juan Luis Guerra'], ['Amigo', 'Roberto Carlos'],
     ['El Día Que Me Quieras', 'Carlos Gardel'], ['Cuando Me Enamoro', 'Enrique Iglesias & Juan Luis Guerra'],
     ['Héroe', 'Enrique Iglesias'], ['Experiencia Religiosa', 'Enrique Iglesias'], ['No Me Doy por Vencido', 'Luis Fonsi'],

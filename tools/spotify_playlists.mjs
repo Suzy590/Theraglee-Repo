@@ -174,11 +174,11 @@ if (cmd === 'build') {
     const tag = `${g.key}/${m.key}`;
     if (list.spotify) { console.log(`${tag}: already made (${list.spotify})`); continue; }
     process.stdout.write(`${tag}: finding ${list.songs.length} songs`);
-    const uris = [];
+    const uris = [], notes = [];
     for (const [t, a] of list.songs) {
       const hit = await findTrack(t, a);
-      if (hit) uris.push(hit.uri); else missing.push(`${tag}: ${t} — ${a}`);
-      if (hit?.loose) loose.push(`${tag}: ${t} — ${a}  →  Spotify has "${hit.name}"`);
+      if (hit) uris.push(hit.uri); else { missing.push(`${tag}: ${t} — ${a}`); notes.push(`    x not found: ${t} — ${a}`); }
+      if (hit?.loose) { loose.push(`${tag}: ${t} — ${a}  →  Spotify has "${hit.name}"`); notes.push(`    ~ artist only: ${t} — ${a}  →  "${hit.name}"`); }
       process.stdout.write(!hit ? 'x' : hit.loose ? '~' : '.');
     }
     const name = `Theraglee · ${g.name} · ${m.name}`;
@@ -191,6 +191,7 @@ if (cmd === 'build') {
       await api(`/playlists/${pl.id}/items`, { method: 'POST', body: { uris: uris.slice(i, i + 100) } });
     writeId(list, pl.id); list.spotify = pl.id;
     console.log(` ${uris.length} added → ${pl.id}`);
+    if (notes.length) console.log(notes.join('\n'));  // printed as it goes, so a run cut short still says what to fix
   }
   if (loose.length) console.log(`\nMatched on the artist only (check the song is the one meant; swap it if not):\n  ${loose.join('\n  ')}`);
   if (missing.length) console.log(`\nNot found on Spotify (swap these in playlists.js, then run build for those pairs again after clearing their id):\n  ${missing.join('\n  ')}`);
