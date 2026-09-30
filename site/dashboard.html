@@ -43,7 +43,8 @@
      switch, the consent card, then the line therapists read. */
   .mm{grid-column:2;grid-row:1;display:flex;align-items:stretch;gap:12px;padding:12px;
     background:var(--sand);border:1px solid #D9D3BF;border-radius:var(--r-lg)}
-  .mm-row{flex:0 0 auto;display:flex;align-items:center;gap:12px;padding:0 6px}
+  /* The words sit above the switch, both left-aligned. */
+  .mm-row{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:10px;padding:0 6px}
   .mm-body{flex:1 1 auto;min-width:0;display:flex;gap:12px;align-items:stretch}
   .mm-body>*{flex:1 1 0;min-width:0}
   .mm-switch{position:relative;flex:0 0 auto;width:72px;height:36px;border-radius:100px;cursor:pointer;padding:0;
