@@ -39,13 +39,13 @@
   .today-top .daily .card{padding:16px 18px;gap:8px}
   .today-top .daily p{font-size:.9rem;line-height:1.5}
   .today-top #daily-quote p{font-size:1rem!important}
-  /* Theraglee Match Mode reads left to right in one soft outlined box: the
-     switch, the consent card, then the line therapists read. */
+  /* Beside the greeting, one soft outlined box holds what Match Mode does
+     and the line therapists read. */
   .mm{grid-column:2;grid-row:1;display:flex;align-items:stretch;gap:12px;padding:12px;
     background:var(--sand);border:1px solid #D9D3BF;border-radius:var(--r-lg)}
-  /* The words sit above the switch, level with the top of the consent card,
-     and ON or OFF sits just to the right of the switch. All left-aligned. */
-  .mm-row{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:12px;padding:0 6px}
+  /* The switch sits under the greeting: the words above it, and ON or OFF
+     just to its right, all left-aligned. */
+  .mm-row{display:flex;flex-direction:column;align-items:flex-start;gap:10px;margin-top:18px}
   .mm-toggle{display:flex;align-items:center;gap:12px}
   .mm-body{flex:1 1 auto;min-width:0;display:flex;gap:12px;align-items:stretch}
   .mm-body>*{flex:1 1 0;min-width:0}
@@ -55,12 +55,12 @@
   .mm-switch:focus-visible{outline:3px solid var(--green);outline-offset:4px}
   .mm-switch i{position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;background:#fff;
     box-shadow:0 3px 9px rgba(0,0,0,.22);transition:transform .6s cubic-bezier(.22,1,.36,1)}
-  .mm.on .mm-switch{background:var(--lime);border-color:var(--lime);
+  .mm-row.on .mm-switch{background:var(--lime);border-color:var(--lime);
     box-shadow:0 0 0 6px rgba(141,198,29,.18),0 0 32px rgba(141,198,29,.5)}
-  .mm.on .mm-switch i{transform:translateX(36px)}
+  .mm-row.on .mm-switch i{transform:translateX(36px)}
   .mm-label{font-family:var(--serif);font-style:italic;font-size:1rem;color:var(--ink-2);line-height:1.25}
   .mm-state{font-family:var(--sans);font-weight:600;letter-spacing:.08em;color:var(--muted)}
-  .mm.on .mm-state{color:var(--green)}
+  .mm-row.on .mm-state{color:var(--green)}
   /* The consent wording sits left-aligned in a soft card: a short lead, then
      the details as a list. The words are recorded in
      docs/match-mode-consent.md; change both together. */
@@ -78,16 +78,15 @@
     text-transform:uppercase;color:var(--green)}
   #vis-summary a{font-weight:500;white-space:nowrap}
   #vis-summary:empty{display:none}
-  /* Narrower screens: Match Mode moves under the greeting, still in a row. */
+  /* Narrower screens: the Match Mode box moves under the greeting, still in a row. */
   @media(max-width:1080px){
     .dash-top{grid-template-columns:minmax(0,1fr)}
     .mm{grid-column:1;grid-row:2}
     .today-top,.tab-top{grid-row:3}
   }
-  /* Phones: the three parts stack. */
+  /* Phones: its two parts stack. */
   @media(max-width:720px){
     .mm,.mm-body{flex-direction:column}
-    .mm-row{padding:4px 4px 0}
   }
   @media(prefers-reduced-motion:reduce){.mm-switch,.mm-switch i{transition:none}}
   .tabs{display:flex;gap:4px;border-bottom:1px solid var(--hair);margin:0 0 22px;overflow-x:auto}
@@ -137,6 +136,15 @@
             <span class="badge" id="tierbadge"></span>
           </div>
           <h1 style="margin:.1em 0 0" id="greet">Your dashboard</h1>
+          <!-- The Theraglee Match Mode switch, under the greeting; what it does is in the box to the right. -->
+          <div class="mm-row" id="mm-row">
+            <span class="mm-label" id="mm-label">Theraglee Match Mode is</span>
+            <div class="mm-toggle">
+              <button class="mm-switch" id="vis" type="button" role="switch" aria-checked="false"
+                aria-labelledby="mm-label" aria-describedby="mm-desc"><i></i></button>
+              <b class="mm-state" id="mm-state" aria-hidden="true">OFF</b>
+            </div>
+          </div>
         </div>
 
         <!-- Today's picks sit under Match Mode, and only on the Today tab. -->
@@ -261,14 +269,6 @@
         </div>
       </div>
       <div class="mm" id="match-mode">
-        <div class="mm-row">
-          <span class="mm-label" id="mm-label">Theraglee Match Mode is</span>
-          <div class="mm-toggle">
-            <button class="mm-switch" id="vis" type="button" role="switch" aria-checked="false"
-              aria-labelledby="mm-label" aria-describedby="mm-desc"><i></i></button>
-            <b class="mm-state" id="mm-state" aria-hidden="true">OFF</b>
-          </div>
-        </div>
         <div class="mm-body">
           <!-- Filled from MATCH_BLURB in assets/match.js. -->
           <div class="mm-desc muted" id="mm-desc"></div>
@@ -416,6 +416,7 @@ if (location.hash.startsWith('#daily-')) scrollToHash();
 const vis = document.getElementById('vis'), mm = document.getElementById('match-mode');
 function setVis(on){
   mm.classList.toggle('on', on);
+  document.getElementById('mm-row').classList.toggle('on', on);
   vis.setAttribute('aria-checked', String(on));
   document.getElementById('mm-state').textContent = on ? 'ON' : 'OFF';
 }
