@@ -389,7 +389,7 @@ PLAYLISTS.hiphop = {
     ['Crew', 'GoldLink, Brent Faiyaz & Shy Glizzy'], ['Roll Some Mo', 'Lucky Daye'], ['Sativa', 'Jhené Aiko & Swae Lee'],
     ['B.E.D.', 'Jacquees'], ['Girls Need Love', 'Summer Walker'],
   ] },
-  lonely: { title: 'Hip-hop and R&B to keep you company', blurb: 'Songs about family, friends and keeping your head up.', spotify: '', songs: [
+  lonely: { title: 'Hip-hop and R&B to keep you company', blurb: 'Songs about family, friends and keeping your head up.', spotify: '1MyKaAGyVPCirnfFQJxEn0', songs: [
     ['Dear Mama', '2Pac'], ['Keep Ya Head Up', '2Pac'], ['Family Business', 'Kanye West'], ['Hey Mama', 'Kanye West'],
     ['1-800-273-8255', 'Logic'], ['Love Yourz', 'J. Cole'], ['Crooked Smile', 'J. Cole'], ['Apparently', 'J. Cole'],
     ['Me Myself and I', 'De La Soul'], ['Eye Know', 'De La Soul'], ['Get By', 'Talib Kweli'], ['Coming Home', 'Diddy - Dirty Money'],
@@ -402,7 +402,7 @@ PLAYLISTS.hiphop = {
     ['Just Fine', 'Mary J. Blige'], ['My Life', 'Mary J. Blige'], ['Where Is the Love?', 'The Black Eyed Peas'],
     ['Real', 'Kendrick Lamar'], ['Mockingbird', 'Eminem'], ['When I\'m Gone', 'Eminem'], ['Say Yes', 'Floetry'],
   ] },
-  winddown: { title: 'Slow hip-hop and R&B for winding down', blurb: 'Lo-fi beats and late-night R&B, soft and unhurried.', spotify: '', songs: [
+  winddown: { title: 'Slow hip-hop and R&B for winding down', blurb: 'Lo-fi beats and late-night R&B, soft and unhurried.', spotify: '5OxMfc6mdSMD35YSL99mZV', songs: [
     ['White Ferrari', 'Frank Ocean'], ['Coaster', 'Khalid'], ['Electric', 'Alina Baraz & Khalid'], ['Nights Like This', 'Kehlani & Ty Dolla $ign'],
     ['Honey', 'Kehlani'], ['Luv(sic.) Part 2', 'Nujabes & Shing02'], ['Feather', 'Nujabes'], ['Aruarian Dance', 'Nujabes'],
     ['Reflection Eternal', 'Nujabes'], ['Time: The Donut of the Heart', 'J Dilla'], ['So Far to Go', 'J Dilla'],
@@ -511,7 +511,7 @@ PLAYLISTS.country = {
     ['Circles Around This Town', 'Maren Morris'], ['80s Mercedes', 'Maren Morris'], ['Rich', 'Maren Morris'],
     ['Something in the Orange', 'Zach Bryan'], ['I Remember Everything', 'Zach Bryan & Kacey Musgraves'],
   ] },
-  lonely: { title: 'Country to keep you company', blurb: 'Songs about home, friends and the people who show up.', spotify: '', songs: [
+  lonely: { title: 'Country to keep you company', blurb: 'Songs about home, friends and the people who show up.', spotify: '26RJBTLLFonpefweMxzFHy', songs: [
     ['Who I Am', 'Jessica Andrews'], ['Remember When', 'Alan Jackson'], ['Livin\' on Love', 'Alan Jackson'],
     ['Amazed', 'Lonestar'], ['My Front Porch Looking In', 'Lonestar'], ['Home', 'Blake Shelton'], ['God Gave Me You', 'Blake Shelton'],
     ['Mama\'s Song', 'Carrie Underwood'], ['Landslide', 'The Chicks'], ['My Town', 'Montgomery Gentry'], ['Whatever It Is', 'Zac Brown Band'],
@@ -526,7 +526,7 @@ PLAYLISTS.country = {
     ['I Saw God Today', 'George Strait'], ['Somewhere with You', 'Kenny Chesney'], ['There Goes My Life', 'Kenny Chesney'],
     ['Don\'t Blink', 'Kenny Chesney'],
   ] },
-  winddown: { title: 'Slow country for winding down', blurb: 'Porch-light songs, soft voices and a slow fade to the end of the day.', spotify: '', songs: [
+  winddown: { title: 'Slow country for winding down', blurb: 'Porch-light songs, soft voices and a slow fade to the end of the day.', spotify: '5yfhHMHUdGaHfaT9JjGoO2', songs: [
     ['Sun to Me', 'Zach Bryan'], ['Burn, Burn, Burn', 'Zach Bryan'], ['Oh, What a World', 'Kacey Musgraves'],
     ['Ghost in This House', 'Alison Krauss'], ['Down to the River to Pray', 'Alison Krauss'], ['Angel from Montgomery', 'John Prine'],
     ['Hello in There', 'John Prine'], ['Summer\'s End', 'John Prine'], ['Crazy', 'Patsy Cline'], ['Sweet Dreams', 'Patsy Cline'],
@@ -629,7 +629,7 @@ PLAYLISTS.indie = {
     ['Love & Hate', 'Michael Kiwanuka'], ['Home Again', 'Michael Kiwanuka'], ['Tadow', 'Masego'], ['Baby', 'Donnie & Joe Emerson'],
     ['Dreams Tonite', 'Alvvays'], ['Archie, Marry Me', 'Alvvays'], ['Ceilings', 'Lizzy McAlpine'],
   ] },
-  lonely: { title: 'Indie to keep you company', blurb: 'Close, warm voices that feel like someone sitting beside you.', spotify: '', songs: [
+  lonely: { title: 'Indie to keep you company', blurb: 'Close, warm voices that feel like someone sitting beside you.', spotify: '0TL6i6ePmkke1mErPUjKP6', songs: [
     ['Chicago', 'Sufjan Stevens'], ['Fade Into You', 'Mazzy Star'], ['Garden Song', 'Phoebe Bridgers'], ['Every Time the Sun Comes Up', 'Sharon Van Etten'],
     ['Bloodbuzz Ohio', 'The National'], ['I Need My Girl', 'The National'], ['Fake Empire', 'The National'],
     ['Sea of Love', 'Cat Power'], ['The Greatest', 'Cat Power'], ['Anyone Else But You', 'The Moldy Peaches'],
@@ -643,7 +643,7 @@ PLAYLISTS.indie = {
     ['Calgary', 'Bon Iver'], ['Maps', 'Yeah Yeah Yeahs'], ['Stay Gold', 'First Aid Kit'], ['Emmylou', 'First Aid Kit'],
     ['My Silver Lining', 'First Aid Kit'],
   ] },
-  winddown: { title: 'Quiet indie for winding down', blurb: 'Hushed guitars and soft voices to slow the evening down.', spotify: '', songs: [
+  winddown: { title: 'Quiet indie for winding down', blurb: 'Hushed guitars and soft voices to slow the evening down.', spotify: '2f3jOht4EgPFrk2cultj03', songs: [
     ['Towers', 'Bon Iver'], ['To Build a Home', 'The Cinematic Orchestra'], ['Arrival of the Birds', 'The Cinematic Orchestra'],
     ['Tiger Mountain Peasant Song', 'Fleet Foxes'], ['To Be Alone with You', 'Sufjan Stevens'], ['Futile Devices', 'Sufjan Stevens'],
     ['Ends of the Earth', 'Lord Huron'], ['Your Hand in Mine', 'Explosions in the Sky'], ['Space Song', 'Beach House'],
@@ -868,7 +868,7 @@ PLAYLISTS.softrock = {
     ['Centerfold', 'The J. Geils Band'], ['Come On Eileen', 'Dexys Midnight Runners'], ['Tempted', 'Squeeze'],
     ['Magic', 'Olivia Newton-John'],
   ] },
-  okay: { title: 'Easy soft rock company', blurb: 'Mellow, familiar favorites that hum along while you get on with the day.', spotify: '', songs: [
+  okay: { title: 'Easy soft rock company', blurb: 'Mellow, familiar favorites that hum along while you get on with the day.', spotify: '0xyFN5zhPPBmGS3PZ4on3j', songs: [
     ['Lyin\' Eyes', 'Eagles'], ['New Kid in Town', 'Eagles'], ['Tequila Sunrise', 'Eagles'], ['You Can Do Magic', 'America'],
     ['Daydream Believer', 'The Monkees'], ['Margaritaville', 'Jimmy Buffett'], ['Come Monday', 'Jimmy Buffett'],
     ['Cheeseburger in Paradise', 'Jimmy Buffett'], ['Rhiannon', 'Fleetwood Mac'], ['Say You Love Me', 'Fleetwood Mac'],
@@ -883,7 +883,7 @@ PLAYLISTS.softrock = {
     ['Name', 'Goo Goo Dolls'], ['Only Wanna Be with You', 'Hootie & the Blowfish'], ['Mr. Jones', 'Counting Crows'],
     ['All I Wanna Do', 'Sheryl Crow'],
   ] },
-  winddown: { title: 'Soft rock for winding down', blurb: 'Quiet, slow and tender songs for the end of the day.', spotify: '', songs: [
+  winddown: { title: 'Soft rock for winding down', blurb: 'Quiet, slow and tender songs for the end of the day.', spotify: '2MPxI7bcSfnqtRlcUSGRqW', songs: [
     ['Into the Mystic', 'Van Morrison'], ['Crazy Love', 'Van Morrison'], ['Moondance', 'Van Morrison'], ['Heart of Gold', 'Neil Young'],
     ['You Are So Beautiful', 'Joe Cocker'], ['(They Long to Be) Close to You', 'Carpenters'], ['We\'ve Only Just Begun', 'Carpenters'],
     ['Yesterday Once More', 'Carpenters'], ['Make It with You', 'Bread'], ['If', 'Bread'], ['Diary', 'Bread'],
@@ -901,7 +901,7 @@ PLAYLISTS.softrock = {
 
 /* ----------------------------------------------------------- Soul & Motown */
 PLAYLISTS.soul = {
-  low: { title: 'Slow soul for a heavy day', blurb: 'Voices that have been there, singing slow and warm, for keeping you company.', spotify: '', songs: [
+  low: { title: 'Slow soul for a heavy day', blurb: 'Voices that have been there, singing slow and warm, for keeping you company.', spotify: '5v1awsgdFE61amT76xkOBt', songs: [
     ['A Change Is Gonna Come', 'Sam Cooke'], ['Ain\'t No Sunshine', 'Bill Withers'], ['(Sittin\' On) The Dock of the Bay', 'Otis Redding'],
     ['I\'ve Been Loving You Too Long', 'Otis Redding'], ['The Tracks of My Tears', 'Smokey Robinson & The Miracles'],
     ['Ooo Baby Baby', 'Smokey Robinson & The Miracles'], ['Midnight Train to Georgia', 'Gladys Knight & The Pips'],
@@ -918,7 +918,7 @@ PLAYLISTS.soul = {
     ['Fallin\'', 'Alicia Keys'], ['Cry to Me', 'Solomon Burke'], ['These Arms of Mine', 'Otis Redding'], ['Bring It On Home to Me', 'Sam Cooke'],
     ['Heaven Help Us All', 'Stevie Wonder'], ['Lately', 'Stevie Wonder'],
   ] },
-  anxious: { title: 'Steady soul to breathe with', blurb: 'Smooth grooves at an easy pace, nothing jarring, so the room can settle.', spotify: '', songs: [
+  anxious: { title: 'Steady soul to breathe with', blurb: 'Smooth grooves at an easy pace, nothing jarring, so the room can settle.', spotify: '7i9IBwhXp6J87Z3uhBx9I0', songs: [
     ['Lovely Day', 'Bill Withers'], ['Grandma\'s Hands', 'Bill Withers'], ['Let\'s Stay Together', 'Al Green'],
     ['Love and Happiness', 'Al Green'], ['My Girl', 'The Temptations'], ['Stand by Me', 'Ben E. King'], ['Spanish Harlem', 'Ben E. King'],
     ['Cupid', 'Sam Cooke'], ['(What a) Wonderful World', 'Sam Cooke'], ['O-o-h Child', 'The Five Stairsteps'],
@@ -933,7 +933,7 @@ PLAYLISTS.soul = {
     ['For the Love of You', 'The Isley Brothers'], ['Footsteps in the Dark', 'The Isley Brothers'], ['Always and Forever', 'Heatwave'],
     ['Sweet Thing', 'Rufus & Chaka Khan'], ['You Are the Best Thing', 'Ray LaMontagne'],
   ] },
-  lonely: { title: 'Soul to keep you company', blurb: 'Songs about friendship, love and showing up for each other.', spotify: '', songs: [
+  lonely: { title: 'Soul to keep you company', blurb: 'Songs about friendship, love and showing up for each other.', spotify: '7sfvheXMmEFhv2LbCdK5NH', songs: [
     ['Lean on Me', 'Bill Withers'], ['You\'ve Got a Friend', 'Roberta Flack & Donny Hathaway'], ['Tired of Being Alone', 'Al Green'],
     ['Ain\'t No Mountain High Enough', 'Marvin Gaye & Tammi Terrell'], ['Ain\'t Nothing Like the Real Thing', 'Marvin Gaye & Tammi Terrell'],
     ['You\'re All I Need to Get By', 'Marvin Gaye & Tammi Terrell'], ['Reach Out I\'ll Be There', 'Four Tops'],
@@ -950,7 +950,7 @@ PLAYLISTS.soul = {
     ['If I Ain\'t Got You', 'Alicia Keys'], ['All of Me', 'John Legend'], ['Save Room', 'John Legend'], ['Georgia on My Mind', 'Ray Charles'],
     ['I Can\'t Stop Loving You', 'Ray Charles'],
   ] },
-  flat: { title: 'Soul with a gentle lift', blurb: 'Motown hooks and sunny horns that get the day moving without pushing.', spotify: '', songs: [
+  flat: { title: 'Soul with a gentle lift', blurb: 'Motown hooks and sunny horns that get the day moving without pushing.', spotify: '2iD4iy2x3z2g45axAaTuU1', songs: [
     ['(Your Love Keeps Lifting Me) Higher and Higher', 'Jackie Wilson'], ['Happy Feelings', 'Frankie Beverly & Maze'],
     ['Signed, Sealed, Delivered (I\'m Yours)', 'Stevie Wonder'], ['Sir Duke', 'Stevie Wonder'], ['Isn\'t She Lovely', 'Stevie Wonder'],
     ['Uptight (Everything\'s Alright)', 'Stevie Wonder'], ['Rock Steady', 'Aretha Franklin'], ['Ain\'t Too Proud to Beg', 'The Temptations'],
@@ -966,7 +966,7 @@ PLAYLISTS.soul = {
     ['Sunny', 'Bobby Hebb'], ['You Send Me', 'Sam Cooke'], ['Sweet Soul Music', 'Arthur Conley'], ['In the Midnight Hour', 'Wilson Pickett'],
     ['Ain\'t That Peculiar', 'Marvin Gaye'], ['Everlasting Love', 'Robert Knight'],
   ] },
-  angry: { title: 'Soul to let it out', blurb: 'Funk, protest and fire, for turning the feeling into something with a beat.', spotify: '', songs: [
+  angry: { title: 'Soul to let it out', blurb: 'Funk, protest and fire, for turning the feeling into something with a beat.', spotify: '2KdNUYFEpbc0UBUhjBNDBh', songs: [
     ['Respect', 'Aretha Franklin'], ['Think', 'Aretha Franklin'], ['Chain of Fools', 'Aretha Franklin'], ['I Heard It Through the Grapevine', 'Marvin Gaye'],
     ['Inner City Blues (Make Me Wanna Holler)', 'Marvin Gaye'], ['Papa Was a Rollin\' Stone', 'The Temptations'],
     ['Ball of Confusion (That\'s What the World Is Today)', 'The Temptations'], ['War', 'Edwin Starr'], ['Living for the City', 'Stevie Wonder'],
@@ -982,7 +982,7 @@ PLAYLISTS.soul = {
     ['I Want to Take You Higher', 'Sly & The Family Stone'], ['The Revolution Will Not Be Televised', 'Gil Scott-Heron'],
     ['Bad Luck', 'Harold Melvin & The Blue Notes'],
   ] },
-  restless: { title: 'Soul to move to', blurb: 'Funk, disco and Motown made for dancing, walking fast or cleaning the kitchen.', spotify: '', songs: [
+  restless: { title: 'Soul to move to', blurb: 'Funk, disco and Motown made for dancing, walking fast or cleaning the kitchen.', spotify: '5GzSEaMXziqTBdtKDuGCr1', songs: [
     ['September', 'Earth, Wind & Fire'], ['Boogie Wonderland', 'Earth, Wind & Fire'], ['Let\'s Groove', 'Earth, Wind & Fire'],
     ['Don\'t Stop \'Til You Get Enough', 'Michael Jackson'], ['Wanna Be Startin\' Somethin\'', 'Michael Jackson'],
     ['Got to Give It Up', 'Marvin Gaye'], ['Mustang Sally', 'Wilson Pickett'], ['Soul Man', 'Sam & Dave'],
@@ -998,7 +998,7 @@ PLAYLISTS.soul = {
     ['Knock on Wood', 'Eddie Floyd'], ['Green Onions', 'Booker T. & the M.G.\'s'], ['Kiss', 'Prince'], ['Let\'s Go Crazy', 'Prince'],
     ['What\'d I Say', 'Ray Charles'],
   ] },
-  okay: { title: 'Easy soul company', blurb: 'Warm, laid-back grooves for a day that is going fine.', spotify: '', songs: [
+  okay: { title: 'Easy soul company', blurb: 'Warm, laid-back grooves for a day that is going fine.', spotify: '4bbvg6umTpvH0GRNd7k8pR', songs: [
     ['Let\'s Get It On', 'Marvin Gaye'], ['Pride and Joy', 'Marvin Gaye'], ['Use Me', 'Bill Withers'], ['Here I Am (Come and Take Me)', 'Al Green'],
     ['L-O-V-E (Love)', 'Al Green'], ['Take Me to the River', 'Al Green'], ['Easy', 'Commodores'], ['Nightshift', 'Commodores'],
     ['La-La (Means I Love You)', 'The Delfonics'], ['Break Up to Make Up', 'The Stylistics'], ['You Are Everything', 'The Stylistics'],
@@ -1012,7 +1012,7 @@ PLAYLISTS.soul = {
     ['Didn\'t Cha Know', 'Erykah Badu'], ['Lady', 'D\'Angelo'], ['Cruisin\'', 'Smokey Robinson'], ['Being with You', 'Smokey Robinson'],
     ['I Wish', 'Stevie Wonder'], ['Golden Lady', 'Stevie Wonder'], ['Boogie On Reggae Woman', 'Stevie Wonder'],
   ] },
-  winddown: { title: 'Soul for winding down', blurb: 'Slow, tender and low-lit, for the last hour of the day.', spotify: '', songs: [
+  winddown: { title: 'Soul for winding down', blurb: 'Slow, tender and low-lit, for the last hour of the day.', spotify: '0FzHKpoRXcV7q5BeyEX2Nb', songs: [
     ['At Last', 'Etta James'], ['Try a Little Tenderness', 'Otis Redding'], ['That\'s How Strong My Love Is', 'Otis Redding'],
     ['Nothing Can Change This Love', 'Sam Cooke'], ['Summertime', 'Sam Cooke'], ['Close the Door', 'Teddy Pendergrass'],
     ['Turn Off the Lights', 'Teddy Pendergrass'], ['Simply Beautiful', 'Al Green'], ['For the Good Times', 'Al Green'],
@@ -1031,7 +1031,7 @@ PLAYLISTS.soul = {
 
 /* ------------------------------------------------------------------- Latin */
 PLAYLISTS.latin = {
-  low: { title: 'Slow Latin for a heavy day', blurb: 'Boleros, ballads and bachata that let a hard feeling be what it is.', spotify: '', songs: [
+  low: { title: 'Slow Latin for a heavy day', blurb: 'Boleros, ballads and bachata that let a hard feeling be what it is.', spotify: '18r2NT1VvSbFVctMi5RcyC', songs: [
     ['Bésame Mucho', 'Trío Los Panchos'], ['Sabor a Mí', 'Eydie Gormé & Trío Los Panchos'], ['La Media Vuelta', 'Luis Miguel'],
     ['No Sé Tú', 'Luis Miguel'], ['Contigo en la Distancia', 'Luis Miguel'], ['Hasta Que Te Conocí', 'Juan Gabriel'],
     ['Querida', 'Juan Gabriel'], ['Amor Eterno', 'Rocío Dúrcal'], ['Si Nos Dejan', 'Luis Miguel'], ['Se Me Olvidó Otra Vez', 'Juan Gabriel'],
