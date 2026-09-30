@@ -310,6 +310,35 @@ function dashTabs(here) {
   return nav;
 }
 
+/* The feature showcase (assets/showcase.js) stands to the right of the page:
+   a column of cards in the right third, the page's content in the left two
+   thirds. Where it goes:
+     - A page with a `.showcase-slot` gets the column inside the first one. The
+       dashboard has one in every tab, under the tab's white intro card, and
+       moves the column into whichever tab is open; the article and therapist
+       pages have one under their search box.
+     - Any other page gets it beside everything in <main>: the page's content
+       is gathered into a `.beside` box, and that box and the column share a
+       `.beside-showcase` grid (styles.css). A page that is one `.section`
+       already has its padding on <main>; one built from several full-width
+       sections gets `of-sections`, which drops the column down to the first.
+   Under 900px the stylesheet stacks the two, with the strip running sideways
+   above the content. */
+function placeShowcase(a) {
+  const slot = document.querySelector('.showcase-slot');
+  if (slot) return mountShowcase(a, slot, { inside: true, aside: true });
+  const main = document.querySelector('main');
+  if (!main) return mountShowcase(a, $('.topbar'));
+  const grid = document.createElement('div');
+  grid.className = 'wrap beside-showcase' + (main.classList.contains('section') ? '' : ' of-sections');
+  const beside = document.createElement('div');
+  beside.className = 'beside';
+  beside.append(...main.childNodes);
+  grid.append(beside);
+  main.append(grid);
+  return mountShowcase(a, grid, { inside: true, aside: true });
+}
+
 export async function chrome({ active = '', showcase = true } = {}) {
   const a = await access();
   const here = location.pathname.split('/').pop() || 'index.html';
@@ -354,13 +383,13 @@ export async function chrome({ active = '', showcase = true } = {}) {
     </nav></div></header>`;
   document.body.prepend(...header.childNodes);
 
-  // The feature showcase sits under the header on every page a member or
+  // The feature showcase stands beside the content on every page a member or
   // visitor sees. The therapist pages (practice dashboard, sign-in, sign-up)
   // are the other front door, so they go without, and a page that places the
   // strip itself (the landing page puts it in the explore section) passes
   // `showcase: false`.
   const therapistPages = [DOORS.therapist.home, DOORS.therapist.signin, DOORS.therapist.signup];
-  if (showcase && !therapistPages.includes(here)) mountShowcase(a, $('.topbar'));
+  if (showcase && !therapistPages.includes(here)) placeShowcase(a);
 
   // A signed-in member keeps the dashboard's tabs on every page they lead to.
   const main = document.querySelector('main');

@@ -19,7 +19,7 @@ Moving the domain off HostGator is written up step by step in
 | Hosting | Serves the site. | Vercel project `theraglee-site` |
 | Sunday tool email | One free discovery tool a week to visitors with no account, from the box above the footer. See [`weekly-tool-email.md`](weekly-tool-email.md). | `site/index.html` `#inbox`, `supabase/functions/tool-signup`, `supabase/functions/weekly-tools` |
 | Search landing pages | Real HTML at `/articles/<slug>` for every article, `/tools/...` landing pages and catalogs, plus `sitemap.xml` and `robots.txt`, so the library is indexable. See [`seo.md`](seo.md). | `data/seo-pages.json`, `tools/build_seo_pages.py` |
-| Feature showcase | The strip of feature cards under the header on every page but the therapist dashboard, sign-in and sign-up; on the landing page it sits in the explore section instead. See [below](#the-feature-showcase-under-the-header). | `site/assets/showcase.js`, styles in `site/assets/styles.css` |
+| Feature showcase | The column of feature cards beside the content, in the right third of every page but the therapist dashboard, sign-in and sign-up; on the landing page it is a sideways strip in the explore section instead. See [below](#the-feature-showcase-beside-the-page). | `site/assets/showcase.js`, placed by `chrome()` in `site/assets/app.js`, styles in `site/assets/styles.css` |
 | Domain | `theraglee.com`. | Registered at Network Solutions, served by Vercel |
 
 ## Two front doors: members and therapists
@@ -392,19 +392,38 @@ gated by tier, so Basic and Premium have them too:
 | Checklists with progress tracked | 24 `checklists` at `min_level = 1`, two more added every day, `checklist_progress` + `item_progress` | `min_level`, RLS `own rows` |
 | Theraglee Match Mode (dashboard switch: let therapists reach out) | `profiles.visible_to_therapists`, toggled on `dashboard.html` and `account.html`; the details therapists see are asked for in `assets/match.js`; blocks in `member_blocks` | `member_opted_in()`, `member_blocked()` |
 
-## The feature showcase under the header
+## The feature showcase beside the page
 
-Every page a member or visitor sees carries a strip of cards under the header,
-one per feature, from Theraglee Match Mode (the big green card, always first)
-through the daily picks, the journal, the library and on to the Premium tools.
-The Match Mode card comes round again after every four other features, so it
-is on screen wherever someone has scrolled to.
-`chrome()` in `site/assets/app.js` mounts it from `site/assets/showcase.js`
-on every page except the therapist ones: `therapist-dashboard.html`,
-`therapist-login.html` and `therapist-signup.html`. The landing page is the one
-exception to the placement: it calls `chrome({ showcase: false })` and mounts
-the strip itself, inside "What would you like to explore today?" under the
-hero, where the explore tiles used to be.
+Every page a member or visitor sees carries a column of cards, one per
+feature, from Theraglee Match Mode (the big green card, always first) through
+the daily picks, the journal, the library and on to the Premium tools. The
+Match Mode card comes round again after every four other features, so it is
+on screen wherever someone has scrolled to.
+
+The column stands in the right third of the page and runs top to bottom, with
+the page's own content in the left two thirds; it stays in view as the page
+scrolls. `chrome()` in `site/assets/app.js` mounts it from
+`site/assets/showcase.js` on every page except the therapist ones
+(`therapist-dashboard.html`, `therapist-login.html` and
+`therapist-signup.html`) and places it one of two ways (`placeShowcase()`):
+
+- A page with a `.showcase-slot` gets the column inside it. The dashboard has
+  one in every tab, under the tab's white intro card (or Today's affirmation),
+  and `showTab()` moves the column into whichever tab is open. `articles.html`
+  and `therapists.html` have one under their search box. The slot and the
+  content beside it share a `.beside-showcase` grid.
+- Any other page gets it beside everything in `<main>`: `chrome()` gathers the
+  page's content into a `.beside` box and puts that box and the column in a
+  `.beside-showcase` grid. Nothing in the page's own markup changes, so a page
+  that redraws `#root` keeps its column.
+
+Below 900px the two stack, and the column turns back into a sideways strip
+above the content. The script reads which way the track runs from its CSS, so
+the same cards, arrows and self-advance work either way.
+
+The landing page is the one exception: it calls `chrome({ showcase: false })`
+and mounts the strip itself, sideways, inside "What would you like to explore
+today?" under the hero, where the explore tiles used to be.
 
 Each card is the feature's name in large bold type over a one-line
 description, and each is a link:
@@ -414,7 +433,7 @@ description, and each is a link:
 | Visitor | Straight to the feature | `signup.html?next=…`, so they land on the feature once the account exists |
 | Signed-in member | Straight to the feature | `pricing.html`, with the tier shown on the card |
 
-The strip scrolls sideways (swipe, trackpad, the arrow buttons, or the arrow
+The strip scrolls (swipe, trackpad, the arrow buttons, or the arrow
 keys once it has focus) and moves on to the next card by itself every few
 seconds when nobody is using it, and starts over from the first card once it
 reaches the end. Hovering, touching, scrolling, or tabbing into

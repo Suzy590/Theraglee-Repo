@@ -1,11 +1,15 @@
 /* ==========================================================================
-   Theraglee — the feature showcase strip under the header.
-   A row of cards, one per feature, that the visitor can scroll or swipe and
+   Theraglee — the feature showcase.
+   A run of cards, one per feature, that the visitor can scroll or swipe and
    that advances by itself when left alone. Every card is a link. A feature
    the viewer cannot open yet sends a visitor to sign-up (and on to the feature
    afterwards), and a signed-in member whose tier is too low to the plans.
-   Mounted by chrome() in app.js under the header on every page except the
-   therapist ones; the landing page mounts it itself, inside the explore section.
+   chrome() in app.js stands it beside the page on every page except the
+   therapist ones: a column in the right third that runs top to bottom, next to
+   the page's content in the left two thirds (see placeShowcase there). The
+   landing page mounts it itself, as a sideways strip inside the explore section.
+   The script reads which way the track runs from its CSS, so one strip can be a
+   column on a wide screen and a row on a phone.
    ========================================================================== */
 import { DOORS, tierName } from './app.js';
 
@@ -101,14 +105,18 @@ export function cardOrder(features = FEATURES) {
 /**
  * Draws the strip.
  *   a         the access object from chrome()
- *   target    where it goes: right after this element, or in its place with `replace`
+ *   target    where it goes: right after this element, in its place with
+ *             `replace`, or inside it (as its last child) with `inside`
  *   replace   true to swap `target` for the strip instead of following it
+ *   inside    true to put the strip inside `target`
  *   embedded  true when the strip sits inside a card that has its own heading:
  *             no band, no kicker, just the cards and the arrows
+ *   aside     true for the column beside a page's content (.showcase.aside in
+ *             styles.css): no band, the cards stacked top to bottom
  */
-export function mountShowcase(a, target, { replace = false, embedded = false } = {}) {
+export function mountShowcase(a, target, { replace = false, inside = false, embedded = false, aside = false } = {}) {
   const sec = document.createElement('section');
-  sec.className = 'showcase' + (embedded ? ' embedded' : '');
+  sec.className = 'showcase' + (embedded ? ' embedded' : '') + (aside ? ' aside' : '');
   sec.setAttribute('aria-roledescription', 'carousel');
   sec.setAttribute('aria-label', 'Everything Theraglee offers');
   sec.innerHTML = `<div class="wrap">
@@ -138,28 +146,39 @@ export function mountShowcase(a, target, { replace = false, embedded = false } =
       }).join('')}
     </div>
   </div>`;
-  if (replace) target.replaceWith(sec); else target.insertAdjacentElement('afterend', sec);
+  if (replace) target.replaceWith(sec);
+  else if (inside) target.append(sec);
+  else target.insertAdjacentElement('afterend', sec);
 
   const track = sec.querySelector('.showcase-track');
   const cards = [...track.querySelectorAll('.showcase-card')];
 
+  // Which way the cards run: down the page (the column beside the content) or
+  // across it (the strip). The stylesheet decides, and may change its mind
+  // when the window is resized, so this is read fresh for every move.
+  const down = () => getComputedStyle(track).flexDirection === 'column';
   // Where a card starts, measured from the start of the strip.
-  const startOf = (c) => c.offsetLeft - cards[0].offsetLeft;
-  // The card nearest the left edge of the strip, which is the one "on show".
+  const startOf = (c) => down() ? c.offsetTop - cards[0].offsetTop : c.offsetLeft - cards[0].offsetLeft;
+  // How far the strip has scrolled.
+  const scrolled = () => down() ? track.scrollTop : track.scrollLeft;
+  // The card nearest the start of the strip, which is the one "on show".
   const current = () => {
-    const x = track.scrollLeft;
+    const x = scrolled();
     let best = 0, gap = Infinity;
     cards.forEach((c, i) => { const d = Math.abs(startOf(c) - x); if (d < gap) { gap = d; best = i; } });
     return best;
   };
   // The strip cannot scroll past its last screenful, so the last few cards
-  // never reach the left edge. Once it is there, the next step is back to the start.
-  const atEnd = () => track.scrollLeft + track.clientWidth >= track.scrollWidth - 2;
+  // never reach the start. Once it is there, the next step is back to the beginning.
+  const atEnd = () => down()
+    ? track.scrollTop + track.clientHeight >= track.scrollHeight - 2
+    : track.scrollLeft + track.clientWidth >= track.scrollWidth - 2;
 
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const goTo = (i) => {
     const n = (i + cards.length) % cards.length;
-    track.scrollTo({ left: startOf(cards[n]), behavior: reduceMotion ? 'auto' : 'smooth' });
+    const to = startOf(cards[n]);
+    track.scrollTo({ ...(down() ? { top: to } : { left: to }), behavior: reduceMotion ? 'auto' : 'smooth' });
   };
   const forward = () => atEnd() ? goTo(0) : goTo(current() + 1);
 
@@ -191,9 +210,10 @@ export function mountShowcase(a, target, { replace = false, embedded = false } =
   sec.querySelectorAll('.showcase-arrow').forEach(b => b.addEventListener('click', () => {
     pause(); b.dataset.dir === '1' ? forward() : goTo(current() - 1);
   }));
+  // The arrow keys move it either way round, whichever way it runs.
   track.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowRight') { e.preventDefault(); forward(); }
-    if (e.key === 'ArrowLeft')  { e.preventDefault(); goTo(current() - 1); }
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); forward(); }
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   { e.preventDefault(); goTo(current() - 1); }
   });
 
   document.addEventListener('visibilitychange', () => document.hidden ? stop() : start());
