@@ -92,10 +92,11 @@ songs      [[title, artist], ...]              exactly forty
 
 There are ten genres: Pop, Rock, Soft rock & easy listening, Hip-hop & R&B,
 Soul & Motown, Country, Indie & folk, Latin, Jazz, and Electronic & chill.
-There are eight moods: Low and heavy, Anxious, Lonely, Flat or unmotivated,
-Angry, Restless, Okay, keeping it there, and Winding down. That is eighty
-lists and 3,200 songs. Soft rock, Soul, Latin, Jazz, Lonely and Winding down
-were added on 2026-09-29.
+There are ten moods: Low and heavy, Anxious, Lonely, Flat or unmotivated,
+Angry, Restless, Okay, keeping it there, Happy, In love, and Winding down.
+That is one hundred lists and 4,000 songs. Soft rock, Soul, Latin, Jazz,
+Lonely and Winding down were added on 2026-09-29; Happy and In love on
+2026-09-30.
 
 ## Writing rules
 
@@ -114,6 +115,9 @@ were added on 2026-09-29.
 - **"Lonely" is company.** Songs about friends, home and showing up for each
   other, not songs that dwell on being alone.
 - **"Winding down" is slow and soft**, for the last hour before sleep.
+- **"Happy" matches a good mood** rather than trying to create one.
+- **"In love" is sweet and warm**: songs about loving someone, not
+  heartbreak or breakups.
 - **US spelling** everywhere, as in the rest of the repo.
 
 ## Adding or changing a list
