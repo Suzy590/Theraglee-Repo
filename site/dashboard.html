@@ -201,7 +201,7 @@
           <section class="zone" aria-labelledby="playlists-zone-title">
             <div class="zone-head">
               <h2 id="playlists-zone-title">Playlists</h2>
-              <p class="muted">Pick a genre, then a mood, and get forty songs to play right here.</p>
+              <p class="muted">Pick a mood, then a genre, and get forty songs to play right here.</p>
             </div>
             <div id="playlists-host"><div class="card"><div class="skeleton" style="height:120px"></div></div></div>
           </section>
@@ -361,7 +361,7 @@ function showTab(next) {
     mounted.discover = true;
     mountDiscover(document.getElementById('discover-host'));
   }
-  // Playlists are Premium: a genre, then a mood, then forty songs.
+  // Playlists are Premium: a mood, then a genre, then forty songs.
   if (tab === 'playlists' && !mounted.playlists) {
     mounted.playlists = true;
     const host = document.getElementById('playlists-host');
@@ -627,7 +627,7 @@ const quick = [
   ['Worksheets', 'explore.html?type=worksheet', 2],
   ['Desktop pet', 'pet.html', 2, true],
   ['Mental health trivia', 'trivia.html', 2, true],
-  ['Music playlists', 'dashboard.html#playlists', 3, false, 'Pick a genre and a mood, get 40 songs'],
+  ['Music playlists', 'dashboard.html#playlists', 3, false, 'Pick a mood and a genre, get 40 songs'],
   ['Goals & tracking', 'goals.html', 3],
   ['Mandalas', 'mandalas.html', 3],
   ['Find a therapist', 'therapists.html', 0, false, 'Search the Theraglee directory for therapists in your area'],

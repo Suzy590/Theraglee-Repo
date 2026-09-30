@@ -73,7 +73,7 @@ export const FEATURES = [
    'Pick what you would like more of, and watch your own story grow as you show up.',
    'goals.html', 3],
   ['Music Playlists by Genre and Mood',
-   'Pick a genre and a mood, and get forty songs on Apple Music and Spotify.',
+   'Pick a mood and a genre, and get forty songs to play right on the page.',
    'dashboard.html#playlists', 3],
   ['Mental Health Local Resource Map',
    'Find support near you on a map, plus national lines that answer any time.',

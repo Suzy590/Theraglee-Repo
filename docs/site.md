@@ -44,7 +44,7 @@ above the date. Its other tabs are **Journal** (the day's prompt, the entry
 form and earlier entries with search; `journal.html` forwards there), **Mood** (the
 one-tap mood check-in, a 1 to 10 rating of what may be shaping it, the weather,
 and after seven days the patterns; see [`mood.md`](mood.md)), **Playlists**
-(Premium: pick a genre, then a mood, and get forty songs curated for the pair,
+(Premium: pick a mood, then a genre, and get forty songs curated for the pair,
 each linking to a search on Apple Music and Spotify; the lists are
 `site/assets/playlists.js`, the tab is `site/assets/playlists-ui.js`, and
 [`playlists.md`](playlists.md) is the guide), **Explore

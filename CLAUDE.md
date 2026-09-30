@@ -121,7 +121,7 @@ in animal or plant shapes arrive every day; follow `docs/mandalas.md` for the
 routine and for how to draw an outline. Merge before applying the migration,
 never the other way round.
 
-## Playlists are a genre, then a mood, then forty songs
+## Playlists are a mood, then a genre, then forty songs
 
 The Playlists tab on the dashboard (`site/assets/playlists-ui.js`) draws its
 lists from `site/assets/playlists.js`: ten genres by eight moods, forty songs
