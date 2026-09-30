@@ -41,7 +41,7 @@
   .today-top #daily-quote p{font-size:1rem!important}
   /* Beside the greeting, one soft outlined box holds what Match Mode does
      and the line therapists read. */
-  .mm{grid-column:2;grid-row:1;display:flex;align-items:stretch;gap:12px;padding:12px;
+  .mm{grid-column:2;grid-row:1;align-self:start;display:flex;align-items:stretch;gap:12px;padding:12px;
     background:var(--sand);border:1px solid #D9D3BF;border-radius:var(--r-lg)}
   /* The switch sits under the greeting: the words above it, and ON or OFF
      just to its right, all left-aligned. */
@@ -58,7 +58,8 @@
   .mm-row.on .mm-switch{background:var(--lime);border-color:var(--lime);
     box-shadow:0 0 0 6px rgba(141,198,29,.18),0 0 32px rgba(141,198,29,.5)}
   .mm-row.on .mm-switch i{transform:translateX(36px)}
-  .mm-label{font-family:var(--serif);font-style:italic;font-size:1rem;color:var(--ink-2);line-height:1.25}
+  /* Half the greeting's size, so it spans about the width of "Hello, name". */
+  .mm-label{font-family:var(--serif);font-style:italic;font-size:clamp(1.15rem,2.3vw,1.7rem);color:var(--green);line-height:1.2}
   .mm-state{font-family:var(--sans);font-weight:600;letter-spacing:.08em;color:var(--muted)}
   .mm-row.on .mm-state{color:var(--green)}
   /* The consent wording sits left-aligned in a soft card: a short lead, then
