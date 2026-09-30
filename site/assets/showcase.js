@@ -58,7 +58,7 @@ export const FEATURES = [
   ['Mental Health Checklists',
    'Work through a list step by step with your progress saved.',
    'explore.html?type=checklist', 1],
-  ['Challenges',
+  ['Mental Health Challenges',
    'Pick a theme, choose 7 days to a year, and check off one small to-do a day.',
    'challenges.html', 1],
   ['Articles',
