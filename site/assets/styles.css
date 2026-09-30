@@ -68,6 +68,10 @@ em.script{font-family:var(--serif);font-style:italic;font-weight:400;color:var(-
    Put it back for solid buttons in the header; ghost and lime keep their ink. */
 .nav .links a.btn:not(.ghost):not(.lime){color:#fff}
 .burger{display:none;background:none;border:0;cursor:pointer;padding:8px;color:var(--ink)}
+/* "Hello, name" on the landing page when signed in: last on the row, and beside
+   the burger (outside the folded menu) on a phone. */
+.nav .hello{order:1;font-size:.9rem;color:var(--muted);white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis;max-width:16ch}
 /* Eleven links is a full row: tighten on laptops, then fold into the burger. */
 @media(max-width:1240px){.nav .links{gap:14px}.nav .links a{font-size:.9rem}}
 @media(max-width:1040px){
@@ -77,7 +81,8 @@ em.script{font-family:var(--serif);font-style:italic;font-weight:400;color:var(-
   .nav .links:not(.open){display:none}
   .nav .links a{padding:12px 0;border-bottom:1px solid var(--hair)}
   .nav .links .btn{margin-top:12px;text-align:center}
-  .burger{display:block}
+  .burger{display:block;order:2}
+  .nav .hello{max-width:12ch}
 }
 
 /* ---------- feature showcase (assets/showcase.js) ----------
