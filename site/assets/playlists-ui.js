@@ -1,6 +1,6 @@
 /* ==========================================================================
    Theraglee — the Playlists tab on the member dashboard (dashboard.html#playlists).
-   Three steps on one panel: pick a genre, pick a mood, get the forty songs
+   Three steps on one panel: pick a mood, pick a genre, get the forty songs
    curated for that pair. A list that has been made into a public playlist in
    Theraglee's Spotify account (its `spotify` id in playlists.js) plays right
    here in Spotify's own embedded player, with the songs listed under it; a
@@ -81,37 +81,37 @@ export function mountPlaylists(host) {
       which is why a song can slow your breathing, lift your energy or give a hard feeling somewhere to go.
       It works best when it meets you where you are, so start with how you feel right now.</p>
       <div class="pl-steps" aria-label="Your picks">
-      <span>1. Genre${g ? `: <b>${esc(g.name)}</b> <button type="button" data-step="genre">change</button>` : ''}</span>
+      <span>1. Mood${m ? `: <b>${esc(m.name)}</b> <button type="button" data-step="mood">change</button>` : ''}</span>
       <span aria-hidden="true">·</span>
-      <span>2. Mood${m ? `: <b>${esc(m.name)}</b> <button type="button" data-step="mood">change</button>` : ''}</span>
+      <span>2. Genre${g ? `: <b>${esc(g.name)}</b> <button type="button" data-step="genre">change</button>` : ''}</span>
       <span aria-hidden="true">·</span>
       <span>3. Your 40 songs</span>
-      ${g ? '<button type="button" class="pl-reset" data-step="reset">Start over</button>' : ''}</div>`;
+      ${m ? '<button type="button" class="pl-reset" data-step="reset">Start over</button>' : ''}</div>`;
   }
 
   function render() {
-    if (!genre) {
+    if (!mood) {
       host.innerHTML = `${steps()}
-        <h2 style="margin-top:0">First, pick a genre</h2>
-        <p class="muted" style="max-width:56ch;margin-top:-6px">Then a mood, and you get forty songs curated for the
-          two together, ready to play right here.</p>
-        <div class="pl-pick" style="margin-top:20px">${GENRES.map(g => `
-          <button type="button" data-genre="${g.key}"><h3>${esc(g.name)}</h3><p>${esc(g.blurb)}</p></button>`).join('')}</div>`;
-    } else if (!mood) {
-      host.innerHTML = `${steps()}
-        <h2 style="margin-top:0">Now, how are you feeling?</h2>
+        <h2 style="margin-top:0">First, how are you feeling?</h2>
         <p class="muted" style="max-width:56ch;margin-top:-6px">Pick where you are right now, not where you think you
-          should be. The list is built for that.</p>
+          should be. Then a genre, and you get forty songs curated for the two together, ready to play right here.</p>
         <div class="pl-pick" style="margin-top:20px">${MOODS.map(m => `
           <button type="button" data-mood="${m.key}"><h3>${esc(m.name)}</h3><p>${esc(m.blurb)}</p>
             <span class="wants">${esc(m.wants)}</span></button>`).join('')}</div>`;
+    } else if (!genre) {
+      host.innerHTML = `${steps()}
+        <h2 style="margin-top:0">Now, pick a genre</h2>
+        <p class="muted" style="max-width:56ch;margin-top:-6px">Whatever you like to listen to. The list is built for
+          that sound and how you feel.</p>
+        <div class="pl-pick" style="margin-top:20px">${GENRES.map(g => `
+          <button type="button" data-genre="${g.key}"><h3>${esc(g.name)}</h3><p>${esc(g.blurb)}</p></button>`).join('')}</div>`;
     } else {
       const g = genreOf(), m = moodOf(), list = PLAYLISTS[genre][mood];
       const ready = Boolean(list.spotify);
       host.innerHTML = `${steps()}
         <div class="pl-head">
           <div>
-            <span class="badge">${esc(g.name)}</span> <span class="badge gray">${esc(m.name)}</span>
+            <span class="badge">${esc(m.name)}</span> <span class="badge gray">${esc(g.name)}</span>
             <h2>${esc(list.title)}</h2>
             <p class="muted">${esc(list.blurb)} ${list.songs.length} songs${ready ? '.' : ', all on Apple Music and Spotify.'}</p>
           </div>
@@ -119,7 +119,7 @@ export function mountPlaylists(host) {
             ${ready
               ? `<a class="btn sm" href="${open(list.spotify)}" target="_blank" rel="noopener">Open in Spotify</a>`
               : `<button class="btn sm" type="button" id="pl-copy">Copy the list</button>`}
-            <button class="btn sm ghost" type="button" data-step="mood">Another mood</button>
+            <button class="btn sm ghost" type="button" data-step="genre">Another genre</button>
           </div>
         </div>
         ${ready ? `<div class="pl-player"><iframe title="${esc(list.title)} on Spotify" src="${embed(list.spotify)}"
@@ -135,16 +135,16 @@ export function mountPlaylists(host) {
           : 'Each link opens a search in your own music app, so nothing about your listening comes back to Theraglee. To keep the whole list, copy it and paste it into a new playlist.'}</div>`;
 
       host.querySelector('#pl-copy')?.addEventListener('click', async (e) => {
-        const text = `${list.title} (${g.name}, ${m.name})\n` + list.songs.map(([t, a], i) => `${i + 1}. ${t} — ${a}`).join('\n');
+        const text = `${list.title} (${m.name}, ${g.name})\n` + list.songs.map(([t, a], i) => `${i + 1}. ${t} — ${a}`).join('\n');
         try { await navigator.clipboard.writeText(text); toast('Copied. Paste it into a new playlist.', 'ok'); }
         catch { toast('Could not copy on this device.', 'err'); }
       });
     }
 
-    host.querySelectorAll('[data-genre]').forEach(b => b.onclick = () => { genre = b.dataset.genre; mood = null; save(); render(); });
-    host.querySelectorAll('[data-mood]').forEach(b => b.onclick = () => { mood = b.dataset.mood; save(); render(); });
+    host.querySelectorAll('[data-mood]').forEach(b => b.onclick = () => { mood = b.dataset.mood; genre = null; save(); render(); });
+    host.querySelectorAll('[data-genre]').forEach(b => b.onclick = () => { genre = b.dataset.genre; save(); render(); });
     host.querySelectorAll('[data-step]').forEach(b => b.onclick = () => {
-      if (b.dataset.step === 'mood') mood = null; else { genre = null; mood = null; }
+      if (b.dataset.step === 'genre') genre = null; else { mood = null; genre = null; }
       save(); render();
     });
     if (drawn) host.scrollIntoView?.({ block: 'nearest' });

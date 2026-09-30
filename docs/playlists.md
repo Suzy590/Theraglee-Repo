@@ -1,7 +1,7 @@
 # Playlists
 
 The **Playlists** tab on the member dashboard (`dashboard.html#playlists`) is
-a Premium feature. A member picks a genre, then a mood, and gets forty songs
+a Premium feature. A member picks a mood, then a genre, and gets forty songs
 curated for that pair, played right on the page in Spotify's embedded player
 (a free Spotify account plays previews; a paid one plays it all), with an
 **Open in Spotify** button to save it. Nothing about the member's listening
