@@ -86,9 +86,10 @@ em.script{font-family:var(--serif);font-style:italic;font-weight:400;color:var(-
 }
 
 /* ---------- feature showcase (assets/showcase.js) ----------
-   The strip of feature cards under the header. Scrolls sideways with snap
-   points, moves by itself when left alone, and the scrollbar stays hidden so it
-   reads as a carousel rather than a scrolling box. */
+   The run of feature cards. On the landing page it is a strip that scrolls
+   sideways; on every other page it is a column beside the content (.aside,
+   below). Snap points, moves by itself when left alone, and the scrollbar stays
+   hidden so it reads as a carousel rather than a scrolling box. */
 .showcase{padding:14px 0 18px;background:var(--paper);border-bottom:1px solid var(--hair)}
 .showcase-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
 .showcase-kicker{margin:0;font-size:.74rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
@@ -134,9 +135,49 @@ em.script{font-family:var(--serif);font-style:italic;font-weight:400;color:var(-
 .showcase.embedded{padding:0;margin-top:18px;background:transparent;border:0}
 .showcase.embedded .wrap{max-width:none;padding:0}
 .showcase.embedded .showcase-head{justify-content:flex-end;margin-bottom:8px}
+/* Beside the page (every page but the landing page): the same cards stacked
+   top to bottom in the right third of the page, the content in the left two
+   thirds. The column stays in view as the page scrolls. A page that has one
+   white box across the top (a dashboard tab's intro card, the article search
+   box) puts a .showcase-slot under it, and chrome() in app.js fills the slot;
+   any other page gets the column beside everything in <main>, inside a
+   .beside-showcase grid that chrome() builds. showcase.js reads which way the
+   track runs from its flex-direction, so the narrow-screen rules below turn
+   the column back into a sideways strip above the content and the script
+   follows. */
+.beside-showcase{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);grid-template-areas:"main side";
+  gap:28px;align-items:start}
+/* The content box is a container, so a page's own columns can go by its width rather than the window's. */
+.beside-showcase>.beside{grid-area:main;min-width:0;container-type:inline-size}
+.beside-showcase>.showcase.aside,.beside-showcase>.showcase-slot{grid-area:side;min-width:0}
+/* The column sticks, so the slot it sits in must be as tall as the content beside it. */
+.showcase-slot{align-self:stretch}
+/* The page's own .wrap now sits in the left column: no more centering or side padding. */
+.beside .wrap{max-width:none;padding:0}
+.beside .wrap.narrow{max-width:760px}
+/* A page built from full-width sections keeps their vertical rhythm; the column starts level with the first. */
+.beside-showcase.of-sections>.showcase.aside{margin-top:64px}
+.showcase.aside{padding:0;background:transparent;border:0;position:sticky;top:96px;min-width:0}
+.showcase.aside .wrap{max-width:none;padding:0}
+.showcase.aside .showcase-track{flex-direction:column;overflow:hidden auto;overscroll-behavior:contain;
+  scroll-snap-type:y mandatory;padding:4px 4px 6px;height:clamp(320px,calc(100vh - 150px),760px)}
+.showcase.aside .showcase-card,.showcase.aside .showcase-card.star{flex:0 0 auto;width:100%}
+/* The arrows point up and down the column. */
+.showcase.aside .showcase-arrow svg{transform:rotate(90deg)}
+@media(max-width:900px){
+  /* One column: the strip goes back to running sideways, above the content. */
+  .beside-showcase{grid-template-columns:minmax(0,1fr);grid-template-areas:"side" "main";gap:22px}
+  .beside-showcase.of-sections>.showcase.aside{margin-top:28px}
+  .showcase.aside{position:static}
+  .showcase.aside .showcase-track{flex-direction:row;overflow:auto hidden;scroll-snap-type:x mandatory;
+    padding:4px 0 6px;height:auto}
+  .showcase.aside .showcase-card{width:auto;flex:0 0 250px}
+  .showcase.aside .showcase-card.star{flex-basis:340px}
+  .showcase.aside .showcase-arrow svg{transform:none}
+}
 @media(max-width:600px){
-  .showcase-card{flex-basis:min(78vw,250px)}
-  .showcase-card.star{flex-basis:min(86vw,340px)}
+  .showcase-card,.showcase.aside .showcase-card{flex-basis:min(78vw,250px)}
+  .showcase-card.star,.showcase.aside .showcase-card.star{flex-basis:min(86vw,340px)}
   .showcase-card.star .showcase-name{font-size:1.4rem}
 }
 @media(prefers-reduced-motion:reduce){

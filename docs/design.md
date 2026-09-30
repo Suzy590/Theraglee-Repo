@@ -27,7 +27,9 @@ use them.
    naming the tab and a short italic line (`.tab-intro` in
    `site/dashboard.html`). Today shows its affirmation and daily cards there
    instead.
-3. Below that, the tab's content sits in one or more zones:
+3. Below that, the tab's content sits in one or more zones in the left two
+   thirds (`.tab-body`), with the feature showcase running down the right
+   third (`.showcase-slot`, filled by `chrome()`; see `site.md`):
 
 ```html
 <section class="zone" aria-labelledby="journal-zone-title">
@@ -46,7 +48,9 @@ their own; add `class="zone-sub"` on the dashboard for the usual spacing.
 
 Challenges, Goals & tracking and Mandalas show the same pattern on a page of
 their own: the page's `h1` and a muted line of introduction, then each section
-in a `.zone` with its `.zone-head`, cards inside. Goals & tracking keeps its
+in a `.zone` with its `.zone-head`, cards inside. The feature showcase takes
+the right third of every such page on its own (`chrome()` puts it there), so
+a page's content has two thirds of the width to work with. Goals & tracking keeps its
 wellness note above the zone, and the zone's heading follows the tab that is
 open. A new member page starts the same way.
 
@@ -54,5 +58,6 @@ open. A new member page starts the same way.
 
 - Add its button to `#tabs` and its name to `PANELS` in `site/dashboard.html`.
 - Add a `.tab-intro` card for it beside the others.
-- Wrap its content in a `.zone` with a `.zone-head`, as above.
+- Wrap its content in a `.zone` with a `.zone-head`, as above, inside a
+  `.tab-body`, and put an empty `.showcase-slot` after it for the showcase.
 - Put forms, lists and grids inside white cards, not straight on the green.

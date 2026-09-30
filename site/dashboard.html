@@ -18,8 +18,8 @@
   .daily .card{display:flex;flex-direction:column;gap:10px}
   .daily p{margin:0;font-size:.98rem}
   .streak{font-size:2.2rem;font-weight:300;letter-spacing:-.03em;line-height:1}
-  /* The top of the dashboard sits right under the feature showcase. */
-  main.section{padding-top:26px}
+  /* The top of the dashboard sits close under the header. */
+  main.section{padding-top:40px}
   /* The greeting with Theraglee Match Mode in a row to its right, then the
      tab's cards across the full width underneath. */
   .dash-top{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px 28px;align-items:end;margin-bottom:28px}
@@ -27,12 +27,17 @@
   /* The date line starts level with the top of the Match Mode box. */
   .dash-hello{grid-column:1;grid-row:1;align-self:start}
   .today-top,.tab-top{grid-column:1 / -1;grid-row:2}
-  /* Today's affirmation and daily cards, under the greeting and Match Mode. */
-  .today-top[data-panel].on{display:flex;flex-direction:column;gap:14px}
-  /* Every other tab: its intro card, then the tab's own panel right under it. */
-  .tab-top[data-panel].on{display:flex;flex-direction:column;gap:14px;min-width:0}
+  /* Every tab: one white card across the top (Today's affirmation, or the
+     tab's intro card), then the tab's own panels in the left two thirds
+     (.tab-body) and the feature showcase in the right third (.showcase-slot,
+     filled by chrome() and moved by showTab() to whichever tab is open). */
+  .today-top[data-panel].on,.tab-top[data-panel].on{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);
+    grid-template-areas:"intro intro" "body side";gap:14px 24px;align-items:start;min-width:0}
+  #affirm-card,.tab-intro{grid-area:intro}
+  .tab-body{grid-area:body;min-width:0;display:flex;flex-direction:column;gap:14px;container-type:inline-size}
+  .showcase-slot{grid-area:side}
   .tab-top .zone{padding:22px}
-  .tab-top .zone + .zone{margin-top:0}
+  .tab-body .zone + .zone{margin-top:0}
   #affirm-card,.tab-intro{padding:18px 20px}
   #affirm-card .hero-line,.tab-intro .hero-line{font-size:clamp(1.2rem,2.3vw,1.55rem);margin-top:10px!important}
   .today-top .daily{gap:14px;grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
@@ -91,6 +96,11 @@
     .mm{grid-column:1;grid-row:2;margin-top:0}
     .today-top,.tab-top{grid-row:3}
   }
+  /* One column: the showcase runs sideways between the intro card and the panels. */
+  @media(max-width:900px){
+    .today-top[data-panel].on,.tab-top[data-panel].on{grid-template-columns:minmax(0,1fr);
+      grid-template-areas:"intro" "side" "body"}
+  }
   /* Phones: its two parts stack. */
   @media(max-width:720px){
     .mm,.mm-body{flex-direction:column}
@@ -102,7 +112,9 @@
   .tabs button.on{color:var(--green);border-bottom-color:var(--green);font-weight:500}
   /* The Journal tab (assets/journal-ui.js). */
   .journal-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:34px;align-items:start}
+  /* The tab is two thirds of the page, so the journal's two columns go by its width, not the window's. */
   @media(max-width:860px){.journal-grid{grid-template-columns:1fr}}
+  @container(max-width:640px){.journal-grid{grid-template-columns:1fr}}
   .entry{border-left:3px solid var(--mist);padding:4px 0 4px 16px;margin-bottom:20px}
   .entry h4{margin:0 0 2px;font-size:1rem;font-weight:500}
   .entry .when{font-size:.8rem;color:var(--faint)}
@@ -154,125 +166,159 @@
           </div>
         </div>
 
-        <!-- Today's picks sit under Match Mode, and only on the Today tab. -->
+        <!-- Today's picks sit under Match Mode, and only on the Today tab: the
+             affirmation across the top, then the daily cards and the mood
+             check-in beside the feature showcase. -->
         <div class="today-top" data-panel="today">
           <div class="card" id="affirm-card">
             <div class="skeleton" style="height:70px"></div>
           </div>
-          <div class="daily" id="daily">
-            <div class="card"><div class="skeleton"></div></div>
-            <div class="card"><div class="skeleton"></div></div>
-            <div class="card"><div class="skeleton"></div></div>
+          <div class="tab-body">
+            <div class="daily" id="daily">
+              <div class="card"><div class="skeleton"></div></div>
+              <div class="card"><div class="skeleton"></div></div>
+              <div class="card"><div class="skeleton"></div></div>
+            </div>
+            <section class="zone" aria-labelledby="mood-zone-title">
+              <div class="zone-head">
+                <h2 id="mood-zone-title">Mood</h2>
+                <p class="muted">Your daily check-in, and what may be shaping how you feel.</p>
+              </div>
+              <div id="mood-host"><div class="card"><div class="skeleton" style="height:120px"></div></div></div>
+            </section>
           </div>
+          <div class="showcase-slot"></div>
         </div>
 
-        <!-- Every other tab opens the same way: a card in the affirmation's place. -->
+        <!-- Every other tab opens the same way: a card in the affirmation's place,
+             then the tab's zones on the left and the feature showcase on the right. -->
         <div class="tab-top" data-panel="progress">
           <div class="card tab-intro">
             <span class="badge">Progress</span>
             <p class="hero-line">Every small step counts, and they all add up here.</p>
           </div>
-          <section class="zone" aria-labelledby="progress-zone-title">
-            <div class="zone-head">
-              <h2 id="progress-zone-title">Progress</h2>
-              <p class="muted">Your week at a glance, and everything you have started, saved or favorited.</p>
-            </div>
-            <div class="card" id="streak-card">
-              <h3>Your week</h3>
-              <div class="row" style="gap:30px;margin-top:10px">
-                <div><div class="streak" id="n-entries">—</div><div class="faint">journal entries</div></div>
-                <div><div class="streak" id="n-active">—</div><div class="faint">active challenges</div></div>
-                <div><div class="streak" id="n-done">—</div><div class="faint">activities completed</div></div>
-                <div><div class="streak" id="n-quiz">—</div><div class="faint">quizzes taken</div></div>
+          <div class="tab-body">
+            <section class="zone" aria-labelledby="progress-zone-title">
+              <div class="zone-head">
+                <h2 id="progress-zone-title">Progress</h2>
+                <p class="muted">Your week at a glance, and everything you have started, saved or favorited.</p>
               </div>
-            </div>
+              <div class="card" id="streak-card">
+                <h3>Your week</h3>
+                <div class="row" style="gap:30px;margin-top:10px">
+                  <div><div class="streak" id="n-entries">—</div><div class="faint">journal entries</div></div>
+                  <div><div class="streak" id="n-active">—</div><div class="faint">active challenges</div></div>
+                  <div><div class="streak" id="n-done">—</div><div class="faint">activities completed</div></div>
+                  <div><div class="streak" id="n-quiz">—</div><div class="faint">quizzes taken</div></div>
+                </div>
+              </div>
 
-            <div id="challenges-live"></div>
-            <div id="library-live"></div>
-            <div id="progress-empty" class="empty" style="margin-top:26px;display:none">
-              Nothing in progress yet. Start a challenge, save a favorite, or pick up a tool from the
-              <a href="#tools">Tools</a> tab and it will show up here.
-            </div>
-          </section>
+              <div id="challenges-live"></div>
+              <div id="library-live"></div>
+              <div id="progress-empty" class="empty" style="margin-top:26px;display:none">
+                Nothing in progress yet. Start a challenge, save a favorite, or pick up a tool from the
+                <a href="#tools">Tools</a> tab and it will show up here.
+              </div>
+            </section>
+          </div>
+          <div class="showcase-slot"></div>
         </div>
         <div class="tab-top" data-panel="journal">
           <div class="card tab-intro">
             <span class="badge">Journal</span>
             <p class="hero-line">Put what is on your mind somewhere safe.</p>
           </div>
-          <section class="zone" aria-labelledby="journal-zone-title">
-            <div class="zone-head">
-              <h2 id="journal-zone-title">Journal</h2>
-              <p class="muted">Private to your account. Nobody else can read it — not therapists, not us.</p>
-            </div>
-            <div id="journal-host"><div class="card"><div class="skeleton" style="height:120px"></div></div></div>
-          </section>
+          <div class="tab-body">
+            <section class="zone" aria-labelledby="journal-zone-title">
+              <div class="zone-head">
+                <h2 id="journal-zone-title">Journal</h2>
+                <p class="muted">Private to your account. Nobody else can read it — not therapists, not us.</p>
+              </div>
+              <div id="journal-host"><div class="card"><div class="skeleton" style="height:120px"></div></div></div>
+            </section>
+          </div>
+          <div class="showcase-slot"></div>
         </div>
         <div class="tab-top" data-panel="playlists">
           <div class="card tab-intro">
             <span class="badge">Playlists</span>
             <p class="hero-line">Let music meet you where you are.</p>
           </div>
-          <section class="zone" aria-labelledby="playlists-zone-title">
-            <div class="zone-head">
-              <h2 id="playlists-zone-title">Playlists</h2>
-              <p class="muted">Pick a mood, then a genre, and get forty songs to play right here.</p>
-            </div>
-            <div id="playlists-host"><div class="card"><div class="skeleton" style="height:120px"></div></div></div>
-          </section>
+          <div class="tab-body">
+            <section class="zone" aria-labelledby="playlists-zone-title">
+              <div class="zone-head">
+                <h2 id="playlists-zone-title">Playlists</h2>
+                <p class="muted">Pick a mood, then a genre, and get forty songs to play right here.</p>
+              </div>
+              <div id="playlists-host"><div class="card"><div class="skeleton" style="height:120px"></div></div></div>
+            </section>
+          </div>
+          <div class="showcase-slot"></div>
         </div>
         <div class="tab-top" data-panel="explore">
           <div class="card tab-intro">
             <span class="badge">Explore Library</span>
             <p class="hero-line">Everything on Theraglee, gathered in one place.</p>
           </div>
-          <section class="zone" aria-labelledby="explore-zone-title">
-            <div class="zone-head">
-              <h2 id="explore-zone-title">Explore Library</h2>
-              <p class="muted">Everything on Theraglee in one place.</p>
-            </div>
-            <div id="explore-host"></div>
-          </section>
+          <div class="tab-body">
+            <section class="zone" aria-labelledby="explore-zone-title">
+              <div class="zone-head">
+                <h2 id="explore-zone-title">Explore Library</h2>
+                <p class="muted">Everything on Theraglee in one place.</p>
+              </div>
+              <div id="explore-host"></div>
+            </section>
+          </div>
+          <div class="showcase-slot"></div>
         </div>
         <div class="tab-top" data-panel="discover">
           <div class="card tab-intro">
             <span class="badge">Self-Discovery</span>
             <p class="hero-line">A few quiet minutes to learn more about yourself.</p>
           </div>
-          <section class="zone" aria-labelledby="discover-zone-title">
-            <div class="zone-head">
-              <h2 id="discover-zone-title">Discover more about yourself</h2>
-              <p class="muted">Short, interactive tools for noticing your own patterns. Each one takes just a few minutes. None of them diagnoses or treats any mental health condition. Rather, they aim to help you learn about yourself.</p>
-            </div>
-            <div id="discover-host"></div>
-          </section>
+          <div class="tab-body">
+            <section class="zone" aria-labelledby="discover-zone-title">
+              <div class="zone-head">
+                <h2 id="discover-zone-title">Discover more about yourself</h2>
+                <p class="muted">Short, interactive tools for noticing your own patterns. Each one takes just a few minutes. None of them diagnoses or treats any mental health condition. Rather, they aim to help you learn about yourself.</p>
+              </div>
+              <div id="discover-host"></div>
+            </section>
+          </div>
+          <div class="showcase-slot"></div>
         </div>
         <div class="tab-top" data-panel="tools">
           <div class="card tab-intro">
             <span class="badge">Tools</span>
             <p class="hero-line">Pick up something small, and see where it leads.</p>
           </div>
-          <section class="zone" aria-labelledby="tools-zone-title">
-            <div class="zone-head">
-              <h2 id="tools-zone-title">Tools</h2>
-              <p class="muted">Pick up something small.</p>
-            </div>
-            <div class="grid g4" id="quick"></div>
-          </section>
-          <section class="zone" id="upsell" hidden></section>
+          <div class="tab-body">
+            <section class="zone" aria-labelledby="tools-zone-title">
+              <div class="zone-head">
+                <h2 id="tools-zone-title">Tools</h2>
+                <p class="muted">Pick up something small.</p>
+              </div>
+              <div class="grid g4" id="quick"></div>
+            </section>
+            <section class="zone" id="upsell" hidden></section>
+          </div>
+          <div class="showcase-slot"></div>
         </div>
         <div class="tab-top" data-panel="messages">
           <div class="card tab-intro">
             <span class="badge">Messages</span>
             <p class="hero-line">Hear from the therapists you chose to let in.</p>
           </div>
-          <section class="zone" aria-labelledby="messages-zone-title">
-            <div class="zone-head">
-              <h2 id="messages-zone-title">Messages</h2>
-              <p class="muted">Notes from therapists you have let reach out to you.</p>
-            </div>
-            <div id="inbox-host"><div class="skeleton" style="height:120px"></div></div>
-          </section>
+          <div class="tab-body">
+            <section class="zone" aria-labelledby="messages-zone-title">
+              <div class="zone-head">
+                <h2 id="messages-zone-title">Messages</h2>
+                <p class="muted">Notes from therapists you have let reach out to you.</p>
+              </div>
+              <div id="inbox-host"><div class="skeleton" style="height:120px"></div></div>
+            </section>
+          </div>
+          <div class="showcase-slot"></div>
         </div>
       </div>
       <div class="mm" id="match-mode">
@@ -283,16 +329,6 @@
         </div>
       </div>
     </div>
-
-    <section data-panel="today">
-      <section class="zone" aria-labelledby="mood-zone-title">
-        <div class="zone-head">
-          <h2 id="mood-zone-title">Mood</h2>
-          <p class="muted">Your daily check-in, and what may be shaping how you feel.</p>
-        </div>
-        <div id="mood-host"><div class="card"><div class="skeleton" style="height:120px"></div></div></div>
-      </section>
-    </section>
 
   </div>
 </main>
@@ -342,6 +378,10 @@ function showTab(next) {
   const moodLink = next === 'mood' || next.startsWith('mood-');
   tab = PANELS.includes(next) ? next : moodLink ? 'today' : panelOf(next) || 'today';
   document.querySelectorAll('[data-panel]').forEach(el => el.classList.toggle('on', el.dataset.panel === tab));
+  // The feature showcase is one column, so it follows the open tab into that tab's slot.
+  const strip = document.querySelector('.showcase');
+  const slot = document.querySelector(`[data-panel="${tab}"] .showcase-slot`);
+  if (strip && slot && strip.parentElement !== slot) slot.append(strip);
   document.querySelectorAll('#tabs button').forEach(b => {
     const on = b.dataset.tab === tab;
     b.classList.toggle('on', on);

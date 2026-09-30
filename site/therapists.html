@@ -15,6 +15,9 @@
   .layout{display:grid;grid-template-columns:290px minmax(0,1fr);gap:30px;align-items:start}
   @media(max-width:880px){.layout{grid-template-columns:1fr}
     .filters{position:static!important}}
+  /* The layout is two thirds of the page beside the feature showcase, so it also folds by its own width. */
+  @container(max-width:700px){.layout{grid-template-columns:1fr}
+    .filters{position:static!important}}
   .filters{position:sticky;top:96px}
   .tcard{display:flex;gap:16px;background:var(--paper);border:1px solid var(--hair);
     border-radius:var(--r);padding:20px;margin-bottom:14px;box-shadow:var(--shadow-1);cursor:pointer;
@@ -44,7 +47,10 @@
   <p class="muted" style="max-width:58ch">Every listing is a licensed professional whose license we
     verified with their state board. Free to browse — you don't need an account.</p>
 
-  <div class="layout" style="margin-top:30px">
+  <!-- Under the heading: the filters and results on the left, the feature showcase on the right. -->
+  <div class="beside-showcase" style="margin-top:30px">
+  <div class="beside">
+  <div class="layout">
     <aside class="filters">
       <div class="card">
         <div class="field"><label for="f-q">Name or keyword</label><input id="f-q" type="text" placeholder="Search"></div>
@@ -69,6 +75,9 @@
       <div id="results"><div class="skeleton" style="height:110px;margin-bottom:14px"></div>
         <div class="skeleton" style="height:110px"></div></div>
     </div>
+  </div>
+  </div>
+  <div class="showcase-slot"></div>
   </div>
 </div>
 </main>
