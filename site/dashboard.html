@@ -20,40 +20,32 @@
   .streak{font-size:2.2rem;font-weight:300;letter-spacing:-.03em;line-height:1}
   /* The top of the dashboard sits right under the feature showcase. */
   main.section{padding-top:26px}
-  /* Two rows shared by both columns (subgrid): the greeting beside the
-     Match Mode switch, then today's cards beside the Match Mode box, so the
-     box's top lines up with the affirmation card's and the switch rests
-     just above it. */
-  .dash-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,320px);
-    grid-template-rows:auto auto;gap:14px 28px;margin-bottom:28px}
-  .dash-left,.mm{grid-row:span 2;display:grid;grid-template-rows:subgrid;align-content:start}
-  .dash-hello{align-self:end}
-  /* Theraglee Match Mode: a smaller copy of the switch on the landing page,
-     in the upper right corner, with what it does written underneath. */
-  /* Today's affirmation and daily cards, a size down so they fit beside Match Mode. */
+  /* The greeting with Theraglee Match Mode in a row to its right, then the
+     tab's cards across the full width underneath. */
+  .dash-top{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px 28px;align-items:end;margin-bottom:28px}
+  .dash-left{display:contents}
+  /* The date line starts level with the top of the Match Mode box. */
+  .dash-hello{grid-column:1;grid-row:1;align-self:start}
+  .today-top,.tab-top{grid-column:1 / -1;grid-row:2}
+  /* Today's affirmation and daily cards, under the greeting and Match Mode. */
   .today-top[data-panel].on{display:flex;flex-direction:column;gap:14px}
-  /* Every other tab: its intro card, then the tab's own panel right under
-     it, both beside Match Mode. The Match Mode box keeps its own height
-     rather than stretching down the side of a long panel. */
+  /* Every other tab: its intro card, then the tab's own panel right under it. */
   .tab-top[data-panel].on{display:flex;flex-direction:column;gap:14px;min-width:0}
   .tab-top .zone{padding:22px}
   .tab-top .zone + .zone{margin-top:0}
-  .dash-top:has(.tab-top.on) .mm-body{align-self:start}
   #affirm-card,.tab-intro{padding:18px 20px}
   #affirm-card .hero-line,.tab-intro .hero-line{font-size:clamp(1.2rem,2.3vw,1.55rem);margin-top:10px!important}
   .today-top .daily{gap:14px;grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
   .today-top .daily .card{padding:16px 18px;gap:8px}
   .today-top .daily p{font-size:.9rem;line-height:1.5}
   .today-top #daily-quote p{font-size:1rem!important}
-  .mm{text-align:right}
-  /* A soft outline groups the switch, the consent card and the summary. Its
-     top half is drawn on the switch row and its bottom half on the body, so
-     the box starts just above the switch rather than at the greeting's top. */
-  .mm{row-gap:0}
-  .mm-row,.mm-body{background:var(--sand);border:1px solid #D9D3BF}
-  .mm-row{display:flex;align-items:center;justify-content:flex-end;gap:12px;align-self:end;
-    padding:10px 16px;border-bottom:0;border-radius:var(--r-lg) var(--r-lg) 0 0}
-  .mm-body{display:flex;flex-direction:column;padding:0 16px 16px;border-top:0;border-radius:0 0 var(--r-lg) var(--r-lg)}
+  /* Theraglee Match Mode reads left to right in one soft outlined box: the
+     switch, the consent card, then the line therapists read. */
+  .mm{grid-column:2;grid-row:1;display:flex;align-items:stretch;gap:12px;padding:12px;
+    background:var(--sand);border:1px solid #D9D3BF;border-radius:var(--r-lg)}
+  .mm-row{flex:0 0 auto;display:flex;align-items:center;gap:12px;padding:0 6px}
+  .mm-body{flex:1 1 auto;min-width:0;display:flex;gap:12px;align-items:stretch}
+  .mm-body>*{flex:1 1 0;min-width:0}
   .mm-switch{position:relative;flex:0 0 auto;width:72px;height:36px;border-radius:100px;cursor:pointer;padding:0;
     background:#DCD8C9;border:2px solid #CFCAB8;
     transition:background .5s ease,border-color .5s ease,box-shadow .5s ease}
@@ -72,21 +64,27 @@
   .mm-desc{margin:0;padding:12px 14px;text-align:left;font-size:.78rem;line-height:1.5;
     background:var(--paper);border:1px solid var(--hair);border-radius:var(--r);box-shadow:var(--shadow-1)}
   .mm-desc .mm-lead strong{font-size:.9rem}
-  #vis-summary{align-self:stretch;margin:8px 0 0;padding:10px 14px;text-align:left;font-size:.78rem;line-height:1.5;
+  /* "How it works" opens over the cards below rather than stretching the row. */
+  .mm .mm-info{position:relative}
+  .mm .mm-info ul{position:absolute;z-index:20;top:calc(100% + 6px);left:-14px;width:min(360px,80vw);
+    margin:0;padding:12px 14px 12px 30px;background:var(--paper);border:1px solid var(--hair);
+    border-radius:var(--r);box-shadow:var(--shadow-2)}
+  #vis-summary{margin:0;padding:10px 14px;text-align:left;font-size:.78rem;line-height:1.5;
     background:var(--soft);border-left:3px solid var(--lime);border-radius:var(--r-sm)}
   #vis-summary strong{display:block;margin-bottom:2px;font-size:.72rem;font-weight:600;letter-spacing:.08em;
     text-transform:uppercase;color:var(--green)}
   #vis-summary a{font-weight:500;white-space:nowrap}
   #vis-summary:empty{display:none}
+  /* Narrower screens: Match Mode moves under the greeting, still in a row. */
+  @media(max-width:1080px){
+    .dash-top{grid-template-columns:minmax(0,1fr)}
+    .mm{grid-column:1;grid-row:2}
+    .today-top,.tab-top{grid-row:3}
+  }
+  /* Phones: the three parts stack. */
   @media(max-width:720px){
-    .dash-top{grid-template-columns:1fr;grid-template-rows:none}
-    .dash-left,.mm{grid-row:auto;display:block}
-    /* On a phone the tab's panel drops below Match Mode, as before. */
-    .dash-left,.tab-top[data-panel].on{display:contents}
-    .dash-top .tab-top .zone{order:2}
-    .dash-hello{margin-bottom:14px}
-    .mm{text-align:left}
-    .mm-row{justify-content:flex-start}
+    .mm,.mm-body{flex-direction:column}
+    .mm-row{padding:4px 4px 0}
   }
   @media(prefers-reduced-motion:reduce){.mm-switch,.mm-switch i{transition:none}}
   .tabs{display:flex;gap:4px;border-bottom:1px solid var(--hair);margin:0 0 22px;overflow-x:auto}
@@ -138,7 +136,7 @@
           <h1 style="margin:.1em 0 0" id="greet">Your dashboard</h1>
         </div>
 
-        <!-- Today's picks sit beside Match Mode, and only on the Today tab. -->
+        <!-- Today's picks sit under Match Mode, and only on the Today tab. -->
         <div class="today-top" data-panel="today">
           <div class="card" id="affirm-card">
             <div class="skeleton" style="height:70px"></div>
@@ -407,7 +405,7 @@ document.getElementById('daily').innerHTML = cards.join('') ||
 if (location.hash.startsWith('#daily-')) scrollToHash();
 
 /* ---- Theraglee Match Mode: let therapists reach out ----
-   The switch in the upper right corner. The morning email is switched on and
+   The row to the right of the greeting. The morning email is switched on and
    off on the account page (account.html#profile). */
 const vis = document.getElementById('vis'), mm = document.getElementById('match-mode');
 function setVis(on){
