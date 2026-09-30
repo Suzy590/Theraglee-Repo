@@ -43,8 +43,10 @@
      switch, the consent card, then the line therapists read. */
   .mm{grid-column:2;grid-row:1;display:flex;align-items:stretch;gap:12px;padding:12px;
     background:var(--sand);border:1px solid #D9D3BF;border-radius:var(--r-lg)}
-  /* The words sit above the switch, both left-aligned. */
-  .mm-row{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:10px;padding:0 6px}
+  /* The words sit above the switch, level with the top of the consent card,
+     and ON or OFF sits just to the right of the switch. All left-aligned. */
+  .mm-row{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:12px;padding:0 6px}
+  .mm-toggle{display:flex;align-items:center;gap:12px}
   .mm-body{flex:1 1 auto;min-width:0;display:flex;gap:12px;align-items:stretch}
   .mm-body>*{flex:1 1 0;min-width:0}
   .mm-switch{position:relative;flex:0 0 auto;width:72px;height:36px;border-radius:100px;cursor:pointer;padding:0;
@@ -57,8 +59,8 @@
     box-shadow:0 0 0 6px rgba(141,198,29,.18),0 0 32px rgba(141,198,29,.5)}
   .mm.on .mm-switch i{transform:translateX(36px)}
   .mm-label{font-family:var(--serif);font-style:italic;font-size:1rem;color:var(--ink-2);line-height:1.25}
-  .mm-label b{font-family:var(--sans);font-style:normal;font-weight:600;letter-spacing:.08em;color:var(--muted)}
-  .mm.on .mm-label b{color:var(--green)}
+  .mm-state{font-family:var(--sans);font-weight:600;letter-spacing:.08em;color:var(--muted)}
+  .mm.on .mm-state{color:var(--green)}
   /* The consent wording sits left-aligned in a soft card: a short lead, then
      the details as a list. The words are recorded in
      docs/match-mode-consent.md; change both together. */
@@ -260,9 +262,12 @@
       </div>
       <div class="mm" id="match-mode">
         <div class="mm-row">
-          <span class="mm-label" id="mm-label">Theraglee Match Mode is <b>OFF</b></span>
-          <button class="mm-switch" id="vis" type="button" role="switch" aria-checked="false"
-            aria-labelledby="mm-label" aria-describedby="mm-desc"><i></i></button>
+          <span class="mm-label" id="mm-label">Theraglee Match Mode is</span>
+          <div class="mm-toggle">
+            <button class="mm-switch" id="vis" type="button" role="switch" aria-checked="false"
+              aria-labelledby="mm-label" aria-describedby="mm-desc"><i></i></button>
+            <b class="mm-state" id="mm-state" aria-hidden="true">OFF</b>
+          </div>
         </div>
         <div class="mm-body">
           <!-- Filled from MATCH_BLURB in assets/match.js. -->
@@ -412,7 +417,7 @@ const vis = document.getElementById('vis'), mm = document.getElementById('match-
 function setVis(on){
   mm.classList.toggle('on', on);
   vis.setAttribute('aria-checked', String(on));
-  document.getElementById('mm-label').innerHTML = `Theraglee Match Mode is <b>${on ? 'ON' : 'OFF'}</b>`;
+  document.getElementById('mm-state').textContent = on ? 'ON' : 'OFF';
 }
 setVis(Boolean(p.visible_to_therapists));
 
