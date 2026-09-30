@@ -59,7 +59,9 @@
     box-shadow:0 0 0 6px rgba(141,198,29,.18),0 0 32px rgba(141,198,29,.5)}
   .mm-row.on .mm-switch i{transform:translateX(36px)}
   /* Half the greeting's size, so it spans about the width of "Hello, name". */
-  .mm-label{font-family:var(--serif);font-style:italic;font-size:clamp(1.15rem,2.3vw,1.7rem);color:var(--green);line-height:1.2}
+  .mm-label{font-family:var(--serif);font-style:italic;font-size:clamp(1.15rem,2.3vw,1.7rem);color:var(--green);line-height:1.2;
+    /* Instrument Serif has no bold of its own, so the browser thickens it. */
+    font-weight:700;font-synthesis:weight style}
   .mm-state{font-family:var(--sans);font-weight:600;letter-spacing:.08em;color:var(--muted)}
   .mm-row.on .mm-state{color:var(--green)}
   /* The consent wording sits left-aligned in a soft card: a short lead, then
