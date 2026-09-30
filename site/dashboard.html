@@ -24,7 +24,8 @@
      tab's cards across the full width underneath. */
   .dash-top{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px 28px;align-items:end;margin-bottom:28px}
   .dash-left{display:contents}
-  .dash-hello{grid-column:1;grid-row:1}
+  /* The date line starts level with the top of the Match Mode box. */
+  .dash-hello{grid-column:1;grid-row:1;align-self:start}
   .today-top,.tab-top{grid-column:1 / -1;grid-row:2}
   /* Today's affirmation and daily cards, under the greeting and Match Mode. */
   .today-top[data-panel].on{display:flex;flex-direction:column;gap:14px}
