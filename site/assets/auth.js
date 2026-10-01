@@ -22,7 +22,14 @@ export async function authPage({ audience, mode, next: nextGiven }) {
   const up = mode === 'signup';
   // A page may choose the destination itself (the founding-member sign-up
   // does); otherwise it comes from ?next= on the address.
-  const next = safeNext(nextGiven ?? qs('next'));
+  // A member signing in always opens the dashboard on its Today tab: a return
+  // to the dashboard, or to wherever an inactivity sign-out left them, is
+  // dropped. A destination that finishes something they asked for (buying a
+  // plan, starting a challenge) is kept.
+  const memberSignin = audience === 'member' && !up;
+  const asked = safeNext(nextGiven ?? qs('next'));
+  const next = memberSignin && (qs('timeout') || /^dashboard\.html(?:[?#]|$)/.test(asked || ''))
+    ? null : asked;
   const host = $('#auth');
 
   const alertBox = (msg, kind = 'err') => $('#alert').innerHTML =
@@ -56,7 +63,7 @@ export async function authPage({ audience, mode, next: nextGiven }) {
   if (qs('timeout') && !up) {
     alertBox(`<strong>You were signed out after a spell of inactivity.</strong><br>
       That keeps ${audience === 'therapist' ? 'client' : 'your'} information off an
-      unattended screen. Sign in to pick up where you were.`, 'warn');
+      unattended screen. ${memberSignin ? 'Sign in to start again from Today.' : 'Sign in to pick up where you were.'}`, 'warn');
   }
 
   host.innerHTML = `

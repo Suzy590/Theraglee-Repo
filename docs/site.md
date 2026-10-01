@@ -39,7 +39,11 @@ the other.
 
 The member dashboard opens on a **Today** tab (the daily affirmation, quote,
 tip and fun fact, beside the Match Mode switch, plus the mood check-in), which
-is what a member sees first after signing in. The tab row sits at the very top,
+is what a member sees first after signing in. Signing in on `login.html` always
+lands on Today: a `?next=` that points back into the dashboard, or one left by
+an inactivity sign-out, is dropped (`site/assets/auth.js`); only a destination
+that finishes something the member asked for, such as buying a plan or starting
+a challenge, is kept. The tab row sits at the very top,
 above the date. Its other tabs are **Journal** (the day's prompt, the entry
 form and earlier entries with search; `journal.html` forwards there), **Mood** (the
 one-tap mood check-in, a 1 to 10 rating of what may be shaping it, the weather,
