@@ -1318,7 +1318,7 @@ PLAYLISTS.latin = {
     ['Se Fue', 'Laura Pausini'], ['Víveme', 'Laura Pausini'], ['Cómo Mirarte', 'Sebastián Yatra'], ['Tú de Qué Vas', 'Franco De Vita'],
     ['Solamente Tú', 'Pablo Alborán'], ['Te He Echado de Menos', 'Pablo Alborán'], ['Por Fin', 'Pablo Alborán'],
   ] },
-  flat: { title: 'Latin with a gentle lift', blurb: 'Salsa, cumbia and bright pop that brings the energy up slowly.', spotify: '', songs: [
+  flat: { title: 'Latin with a gentle lift', blurb: 'Salsa, cumbia and bright pop that brings the energy up slowly.', spotify: '7w4pq7Kue6jfx9E3JZ2i1Z', songs: [
     ['Vivir Mi Vida', 'Marc Anthony'], ['Valió la Pena', 'Marc Anthony'], ['La Camisa Negra', 'Juanes'], ['Me Enamora', 'Juanes'],
     ['Corazón Partío', 'Alejandro Sanz'], ['La Tortura', 'Shakira & Alejandro Sanz'], ['Suerte', 'Shakira'],
     ['La Vida Es un Carnaval', 'Celia Cruz'], ['Quimbara', 'Celia Cruz'], ['Soy Yo', 'Bomba Estéreo'], ['El Mismo Sol', 'Álvaro Soler'],
@@ -1332,7 +1332,7 @@ PLAYLISTS.latin = {
     ['Eres Mi Sueño', 'Fonseca'], ['Arroyito', 'Fonseca'], ['Dónde Está el Amor', 'Pablo Alborán'], ['Clavado en un Bar', 'Maná'],
     ['Bendita Tu Luz', 'Maná & Juan Luis Guerra'],
   ] },
-  angry: { title: 'Latin to let it out', blurb: 'Rock en español, reggaeton and sharp salsa for a feeling that needs volume.', spotify: '', songs: [
+  angry: { title: 'Latin to let it out', blurb: 'Rock en español, reggaeton and sharp salsa for a feeling that needs volume.', spotify: '0xboFoSQS68NzeK95itNfC', songs: [
     ['Matador', 'Los Fabulosos Cadillacs'], ['Mal Bicho', 'Los Fabulosos Cadillacs'], ['Vasos Vacíos', 'Los Fabulosos Cadillacs'],
     ['De Música Ligera', 'Soda Stereo'], ['Persiana Americana', 'Soda Stereo'], ['En la Ciudad de la Furia', 'Soda Stereo'],
     ['Lamento Boliviano', 'Enanitos Verdes'], ['La Muralla Verde', 'Enanitos Verdes'], ['Oye Mi Amor', 'Maná'],
@@ -1346,7 +1346,7 @@ PLAYLISTS.latin = {
     ['El Baile de los Que Sobran', 'Los Prisioneros'], ['El Duelo', 'La Ley'], ['Rebelión', 'Joe Arroyo'],
     ['Cuando Pase el Temblor', 'Soda Stereo'], ['Kumbala', 'Maldita Vecindad'],
   ] },
-  restless: { title: 'Latin to move to', blurb: 'Reggaeton, salsa and Latin pop made for dancing, walking or driving.', spotify: '', songs: [
+  restless: { title: 'Latin to move to', blurb: 'Reggaeton, salsa and Latin pop made for dancing, walking or driving.', spotify: '3cwvcpVS7DfoQCA9HsSXRd', songs: [
     ['Gasolina', 'Daddy Yankee'], ['Despacito', 'Luis Fonsi & Daddy Yankee'], ['Bailando', 'Enrique Iglesias'],
     ['Livin\' la Vida Loca', 'Ricky Martin'], ['La Copa de la Vida', 'Ricky Martin'], ['María', 'Ricky Martin'],
     ['Suavemente', 'Elvis Crespo'], ['Bidi Bidi Bom Bom', 'Selena'], ['Baila Esta Cumbia', 'Selena'], ['Fuego', 'Bomba Estéreo'],
@@ -1360,7 +1360,7 @@ PLAYLISTS.latin = {
     ['Bichota', 'Karol G'], ['Provenza', 'Karol G'], ['Felices los 4', 'Maluma'], ['Hawái', 'Maluma'], ['Échame la Culpa', 'Luis Fonsi & Demi Lovato'],
     ['La Mordidita', 'Ricky Martin'], ['Súbeme la Radio', 'Enrique Iglesias'], ['El Perdón', 'Nicky Jam & Enrique Iglesias'],
   ] },
-  okay: { title: 'Easy Latin company', blurb: 'Familiar, sunny favorites that keep the day rolling along.', spotify: '', songs: [
+  okay: { title: 'Easy Latin company', blurb: 'Familiar, sunny favorites that keep the day rolling along.', spotify: '0f9kC9JMAR4jINryG8GAka', songs: [
     ['Amor Prohibido', 'Selena'], ['Como la Flor', 'Selena'], ['No Me Queda Más', 'Selena'], ['Si Una Vez', 'Selena'],
     ['Dreaming of You', 'Selena'], ['Hoy', 'Gloria Estefan'], ['Mi Tierra', 'Gloria Estefan'], ['Con los Años Que Me Quedan', 'Gloria Estefan'],
     ['Soñé', 'Zoé'], ['Luna', 'Zoé'], ['Labios Rotos', 'Zoé'], ['Entra en Mi Vida', 'Sin Bandera'], ['Kilómetros', 'Sin Bandera'],
@@ -1374,7 +1374,7 @@ PLAYLISTS.latin = {
     ['Cómo Te Extraño Mi Amor', 'Café Tacvba'], ['El Rey', 'Vicente Fernández'], ['Volver, Volver', 'Vicente Fernández'],
     ['Hermoso Cariño', 'Vicente Fernández'],
   ] },
-  winddown: { title: 'Latin for winding down', blurb: 'Boleros, trova and soft guitar for the end of the day.', spotify: '', songs: [
+  winddown: { title: 'Latin for winding down', blurb: 'Boleros, trova and soft guitar for the end of the day.', spotify: '6Z50M4O6Fef9DDfgCiVkYj', songs: [
     ['Piel Canela', 'Eydie Gormé & Trío Los Panchos'], ['Nosotros', 'Trío Los Panchos'], ['Nuestro Juramento', 'Julio Jaramillo'],
     ['Hey', 'Julio Iglesias'], ['Me Olvidé de Vivir', 'Julio Iglesias'], ['Abrázame', 'Julio Iglesias'], ['Manhã de Carnaval', 'Luiz Bonfá'],
     ['La Llorona', 'Chavela Vargas'], ['Paloma Negra', 'Chavela Vargas'], ['Macorina', 'Chavela Vargas'], ['Luz de Luna', 'Chavela Vargas'],
@@ -1389,7 +1389,7 @@ PLAYLISTS.latin = {
     ['Así Fue', 'Juan Gabriel'], ['Amanecí en Tus Brazos', 'José Alfredo Jiménez'], ['Noche de Ronda', 'Agustín Lara'],
     ['Solamente una Vez', 'Agustín Lara'],
   ] },
-  happy: { title: 'Latin for a good day', blurb: 'Salsa, cumbia and reggaeton with a smile in every beat.', spotify: '', songs: [
+  happy: { title: 'Latin for a good day', blurb: 'Salsa, cumbia and reggaeton with a smile in every beat.', spotify: '38kGwkSfrYVPUO7pgwNtiQ', songs: [
     ['Colombia, Mi Encanto', 'Carlos Vives'], ['Fruta Fresca', 'Carlos Vives'], ['Bemba Colorá', 'Celia Cruz'],
     ['La Gozadera', 'Gente de Zona & Marc Anthony'], ['Chantaje', 'Shakira & Maluma'], ['Me Enamoré', 'Shakira'],
     ['Loca', 'Shakira'], ['Dákiti', 'Bad Bunny & Jhayco'], ['Ojitos Lindos', 'Bad Bunny & Bomba Estéreo'],
@@ -1403,7 +1403,7 @@ PLAYLISTS.latin = {
     ['Moscow Mule', 'Bad Bunny'], ['La Canción', 'J Balvin & Bad Bunny'], ['Azul', 'J Balvin'], ['Qué Calor', 'Major Lazer, J Balvin & El Alfa'],
     ['La Bilirrubina', 'Juan Luis Guerra'], ['El Niágara en Bicicleta', 'Juan Luis Guerra'], ['Carnaval', 'Celia Cruz'],
   ] },
-  love: { title: 'Latin for being in love', blurb: 'Boleros, bachata and ballads for the person who has your heart.', spotify: '', songs: [
+  love: { title: 'Latin for being in love', blurb: 'Boleros, bachata and ballads for the person who has your heart.', spotify: '1UQWqJGLCjVF3N8XEOf87B', songs: [
     ['Llévame Contigo', 'Romeo Santos'], ['Las Cosas Pequeñas', 'Prince Royce'], ['Stand by Me', 'Prince Royce'],
     ['Incondicional', 'Prince Royce'], ['Un Beso', 'Aventura'], ['Mi Corazoncito', 'Aventura'], ['I Could Fall in Love', 'Selena'],
     ['Contigo Quiero Estar', 'Selena'], ['Tres Palabras', 'Luis Miguel'], ['Quisiera Ser', 'Alejandro Sanz'],
@@ -1421,7 +1421,7 @@ PLAYLISTS.latin = {
 
 /* -------------------------------------------------------------------- Jazz */
 PLAYLISTS.jazz = {
-  low: { title: 'Slow jazz for a heavy day', blurb: 'Ballads and blue notes that sit with you in the quiet.', spotify: '', songs: [
+  low: { title: 'Slow jazz for a heavy day', blurb: 'Ballads and blue notes that sit with you in the quiet.', spotify: '5MlZwnlTNB8QNOsmXBVFWz', songs: [
     ['Blue in Green', 'Miles Davis'], ['\'Round Midnight', 'Thelonious Monk'], ['Lover Man (Oh, Where Can You Be?)', 'Billie Holiday'],
     ['Good Morning Heartache', 'Billie Holiday'], ['I\'m a Fool to Want You', 'Billie Holiday'], ['Naima', 'John Coltrane'],
     ['Alabama', 'John Coltrane'], ['In a Sentimental Mood', 'Duke Ellington & John Coltrane'], ['My Funny Valentine', 'Chet Baker'],
@@ -1437,7 +1437,7 @@ PLAYLISTS.jazz = {
     ['You Don\'t Know What Love Is', 'Sonny Rollins'], ['My One and Only Love', 'John Coltrane & Johnny Hartman'],
     ['Detour Ahead', 'Bill Evans'], ['The Nearness of You', 'Norah Jones'],
   ] },
-  anxious: { title: 'Steady jazz to breathe with', blurb: 'Cool, even grooves and bossa nova, one easy tempo from start to finish.', spotify: '', songs: [
+  anxious: { title: 'Steady jazz to breathe with', blurb: 'Cool, even grooves and bossa nova, one easy tempo from start to finish.', spotify: '1wdaXG9kkcVjX4meQT3IiI', songs: [
     ['So What', 'Miles Davis'], ['Freddie Freeloader', 'Miles Davis'], ['All Blues', 'Miles Davis'], ['Take Five', 'The Dave Brubeck Quartet'],
     ['Strange Meadow Lark', 'The Dave Brubeck Quartet'], ['Waltz for Debby', 'Bill Evans'], ['My Foolish Heart', 'Bill Evans'],
     ['Cantaloupe Island', 'Herbie Hancock'], ['Maiden Voyage', 'Herbie Hancock'], ['The Girl from Ipanema', 'Stan Getz & João Gilberto'],
@@ -1452,7 +1452,7 @@ PLAYLISTS.jazz = {
     ['The Very Thought of You', 'Nat King Cole'], ['Moonlight in Vermont', 'Ella Fitzgerald & Louis Armstrong'],
     ['Django', 'The Modern Jazz Quartet'], ['Recorda Me', 'Joe Henderson'], ['Nuages', 'Django Reinhardt'],
   ] },
-  lonely: { title: 'Jazz to keep you company', blurb: 'Warm voices singing the standards, like good company across the table.', spotify: '', songs: [
+  lonely: { title: 'Jazz to keep you company', blurb: 'Warm voices singing the standards, like good company across the table.', spotify: '3fM6KJuPqA9bPO2K1OsVgK', songs: [
     ['What a Wonderful World', 'Louis Armstrong'], ['La Vie en Rose', 'Louis Armstrong'], ['Dream a Little Dream of Me', 'Ella Fitzgerald & Louis Armstrong'],
     ['They Can\'t Take That Away from Me', 'Ella Fitzgerald & Louis Armstrong'], ['Cheek to Cheek', 'Ella Fitzgerald & Louis Armstrong'],
     ['Unforgettable', 'Nat King Cole'], ['L-O-V-E', 'Nat King Cole'], ['When I Fall in Love', 'Nat King Cole'],
@@ -1468,7 +1468,7 @@ PLAYLISTS.jazz = {
     ['Hello, Dolly!', 'Louis Armstrong'], ['What a Diff\'rence a Day Makes', 'Dinah Washington'], ['Mad About the Boy', 'Dinah Washington'],
     ['Sunrise', 'Norah Jones'],
   ] },
-  flat: { title: 'Jazz with a gentle lift', blurb: 'Swing, hard bop and bright horns that nudge the day forward.', spotify: '', songs: [
+  flat: { title: 'Jazz with a gentle lift', blurb: 'Swing, hard bop and bright horns that nudge the day forward.', spotify: '3cabdCA8GHWCbC1kV4awy6', songs: [
     ['On the Sunny Side of the Street', 'Louis Armstrong'], ['Watermelon Man', 'Herbie Hancock'], ['The Sidewinder', 'Lee Morgan'],
     ['Moanin\'', 'Art Blakey & The Jazz Messengers'], ['The Preacher', 'Horace Silver'], ['Señor Blues', 'Horace Silver'],
     ['Mercy, Mercy, Mercy', 'Cannonball Adderley'], ['Work Song', 'Cannonball Adderley'], ['Blue Monk', 'Thelonious Monk'],
@@ -1483,7 +1483,7 @@ PLAYLISTS.jazz = {
     ['Walkin\'', 'Miles Davis'], ['Milestones', 'Miles Davis'], ['Blue Train', 'John Coltrane'], ['Moment\'s Notice', 'John Coltrane'],
     ['Oleo', 'Sonny Rollins'], ['Tenor Madness', 'Sonny Rollins'], ['Cute', 'Count Basie'],
   ] },
-  angry: { title: 'Jazz with some fire', blurb: 'Fast, fierce and loud, from bebop to fusion, for putting the feeling somewhere.', spotify: '', songs: [
+  angry: { title: 'Jazz with some fire', blurb: 'Fast, fierce and loud, from bebop to fusion, for putting the feeling somewhere.', spotify: '4jjotUJHkwCJA8uhKbQiHu', songs: [
     ['Haitian Fight Song', 'Charles Mingus'], ['Better Git It in Your Soul', 'Charles Mingus'], ['Fables of Faubus', 'Charles Mingus'],
     ['Boogie Stop Shuffle', 'Charles Mingus'], ['Giant Steps', 'John Coltrane'], ['Impressions', 'John Coltrane'],
     ['A Love Supreme, Pt. I - Acknowledgement', 'John Coltrane'], ['Chasin\' the Trane', 'John Coltrane'],
@@ -1498,7 +1498,7 @@ PLAYLISTS.jazz = {
     ['Sinnerman', 'Nina Simone'], ['Pirate Jenny', 'Nina Simone'], ['Hat and Beard', 'Eric Dolphy'], ['Manteca', 'Dizzy Gillespie'],
     ['Afro Blue', 'John Coltrane'], ['Whiplash', 'Don Ellis'], ['Footprints', 'Wayne Shorter'],
   ] },
-  restless: { title: 'Jazz to move to', blurb: 'Big band, jump blues and soul jazz with a beat you can walk to.', spotify: '', songs: [
+  restless: { title: 'Jazz to move to', blurb: 'Big band, jump blues and soul jazz with a beat you can walk to.', spotify: '26XwcgcRf6WZWaioSjRFBR', songs: [
     ['Mack the Knife', 'Bobby Darin'], ['Come Fly with Me', 'Frank Sinatra'], ['Jump, Jive an\' Wail', 'Louis Prima'],
     ['Just a Gigolo', 'Louis Prima'], ['Zoot Suit Riot', 'Cherry Poppin\' Daddies'], ['Minnie the Moocher', 'Cab Calloway'],
     ['Tuxedo Junction', 'Glenn Miller'], ['Chattanooga Choo Choo', 'Glenn Miller'], ['Boogie Woogie Bugle Boy', 'The Andrews Sisters'],
@@ -1513,7 +1513,7 @@ PLAYLISTS.jazz = {
     ['Groovin\' High', 'Dizzy Gillespie'], ['Blues Walk', 'Clifford Brown'], ['Caldonia', 'Louis Jordan'],
     ['Choo Choo Ch\'Boogie', 'Louis Jordan'], ['Is You Is or Is You Ain\'t My Baby', 'Louis Jordan'],
   ] },
-  okay: { title: 'Easy jazz company', blurb: 'Standards and soft swing that play along in the background.', spotify: '', songs: [
+  okay: { title: 'Easy jazz company', blurb: 'Standards and soft swing that play along in the background.', spotify: '5feOugYrYpVWbERbwX2cTo', songs: [
     ['Summertime', 'Ella Fitzgerald & Louis Armstrong'], ['Água de Beber', 'Astrud Gilberto'], ['Honeysuckle Rose', 'Fats Waller'],
     ['Ain\'t Misbehavin\'', 'Fats Waller'], ['Walkin\' My Baby Back Home', 'Nat King Cole'], ['Straighten Up and Fly Right', 'Nat King Cole'],
     ['Sugar', 'Stanley Turrentine'], ['Jive Samba', 'Cannonball Adderley'], ['Sack o\' Woe', 'Cannonball Adderley'],
@@ -1529,7 +1529,7 @@ PLAYLISTS.jazz = {
     ['The Good Life', 'Tony Bennett'], ['Just in Time', 'Tony Bennett'], ['Quando, Quando, Quando', 'Michael Bublé & Nelly Furtado'],
     ['Moondance', 'Michael Bublé'],
   ] },
-  winddown: { title: 'Jazz for winding down', blurb: 'Late-night ballads, soft piano and bossa nova for the end of the day.', spotify: '', songs: [
+  winddown: { title: 'Jazz for winding down', blurb: 'Late-night ballads, soft piano and bossa nova for the end of the day.', spotify: '7nQF1hnQfHe4456IrIiPsK', songs: [
     ['Moon River', 'Henry Mancini'], ['Tenderly', 'Rosemary Clooney'], ['Moonlight Serenade', 'Glenn Miller'],
     ['Stella by Starlight', 'Miles Davis'], ['I Loves You, Porgy', 'Nina Simone'], ['In the Wee Small Hours of the Morning', 'Frank Sinatra'],
     ['Like Someone in Love', 'Chet Baker'], ['Turn Me On', 'Norah Jones'], ['Cold, Cold Heart', 'Norah Jones'],
@@ -1545,7 +1545,7 @@ PLAYLISTS.jazz = {
     ['Fever', 'Peggy Lee'], ['A Nightingale Sang in Berkeley Square', 'Nat King Cole'], ['The Shadow of Your Smile', 'Astrud Gilberto'],
     ['Some Other Time', 'Tony Bennett & Bill Evans'],
   ] },
-  happy: { title: 'Jazz for a good day', blurb: 'Swing, big band and sunny standards for a day that is going well.', spotify: '', songs: [
+  happy: { title: 'Jazz for a good day', blurb: 'Swing, big band and sunny standards for a day that is going well.', spotify: '4j1Pbf0HJqZiXnESf1LKeC', songs: [
     ['When the Saints Go Marching In', 'Louis Armstrong'], ['Sweet Georgia Brown', 'Brother Bones & His Shadows'],
     ['Your Feet\'s Too Big', 'Fats Waller'], ['The Joint Is Jumpin\'', 'Fats Waller'], ['Too Darn Hot', 'Ella Fitzgerald'],
     ['How High the Moon', 'Ella Fitzgerald'], ['Oh, Lady Be Good!', 'Ella Fitzgerald'], ['Put On a Happy Face', 'Tony Bennett'],
@@ -1561,7 +1561,7 @@ PLAYLISTS.jazz = {
     ['Five Guys Named Moe', 'Louis Jordan'], ['Gee Baby, Ain\'t I Good to You', 'Nat King Cole'], ['Route 66', 'Nat King Cole'],
     ['Jersey Bounce', 'Benny Goodman'], ['Lester Leaps In', 'Count Basie'], ['King Porter Stomp', 'Benny Goodman'],
   ] },
-  love: { title: 'Jazz for being in love', blurb: 'Standards and slow ballads for the person who has your heart.', spotify: '', songs: [
+  love: { title: 'Jazz for being in love', blurb: 'Standards and slow ballads for the person who has your heart.', spotify: '5ivnybJA7PdkBZkPlTcOx0', songs: [
     ['All of Me', 'Billie Holiday'], ['Too Marvelous for Words', 'Frank Sinatra'], ['You Make Me Feel So Young', 'Frank Sinatra'],
     ['Witchcraft', 'Frank Sinatra'], ['Young at Heart', 'Frank Sinatra'], ['I\'ve Got a Crush on You', 'Frank Sinatra'],
     ['I Get a Kick Out of You', 'Frank Sinatra'], ['Almost Like Being in Love', 'Frank Sinatra'], ['Nice \'n\' Easy', 'Frank Sinatra'],
