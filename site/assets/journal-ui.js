@@ -75,7 +75,9 @@ export async function mountJournal(host, a, promptId = null) {
     host.innerHTML = `
     <div class="journal-grid">
       <div class="card">
-        ${prompt ? `<div class="prompt-box" id="j-pbox">${esc(prompt.body)}</div>
+        ${prompt ? `<span class="kicker" style="margin-bottom:8px">Today’s journal prompt</span>
+          <div class="prompt-box" id="j-pbox">${esc(prompt.body)}</div>
+          <p class="faint" style="font-size:.88rem;margin:8px 0 0">This prompt will appear at the top of your saved journal entry unless you select “Write freely instead.”</p>
           <div class="row" style="margin:10px 0 18px">
             <button class="btn sm ghost" id="j-newprompt">Give me another prompt</button>
             <button class="btn sm ghost" id="j-freewrite">Write freely instead</button></div>`
