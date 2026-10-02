@@ -71,6 +71,13 @@ weather type, add it to both, in a new migration.
 - A weather type with 2 or more days is mentioned when its average mood is at
   least 0.5 (on the 1 to 5 scale) away from the member's usual.
 - Under 14 days the tab calls the findings early hints.
+- The summary is worked out again from the member's saved check-ins (up to
+  the last 365 days) every time the tab opens and after every tap or Submit,
+  so it stays current past day 7; the card says so.
+
+Under the zone heading, a short paragraph tells the member that after 7 days
+of check-ins (not necessarily in a row) Theraglee summarizes their possible
+patterns, and that this is information only, not a diagnosis.
 
 Every view of the patterns carries the note that this is for information only,
 does not diagnose or treat any mental health condition, and that a link is not a
