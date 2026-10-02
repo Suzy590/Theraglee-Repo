@@ -148,7 +148,8 @@ export async function mountMood(host, profile) {
     const waiting = res.factors.filter(f => f.r === null);
     $('#mood-patterns').innerHTML = `
       <h3>Your mood patterns</h3>
-      <p class="faint" style="margin-top:-4px">Based on ${res.days} days of check-ins.
+      <p class="faint" style="margin-top:-4px">Based on ${res.days} days of check-ins, and updated
+        every time you check in.
         ${res.days < 14 ? 'With this few days, treat these as early hints.' : ''}</p>
       <ul class="mood-findings">${res.statements.map(s => `<li>${esc(s)}</li>`).join('')}</ul>
       ${rated.length ? `
