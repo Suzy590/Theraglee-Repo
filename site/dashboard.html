@@ -79,7 +79,7 @@
   .mm-desc{margin:0;padding:12px 14px;text-align:left;font-size:.78rem;line-height:1.5;
     background:var(--paper);border:1px solid var(--hair);border-radius:var(--r);box-shadow:var(--shadow-1)}
   .mm-desc .mm-lead strong{font-size:.9rem}
-  /* "How Theraglee works" opens over the cards below rather than stretching the row. */
+  /* "How Theraglee Match Mode works" opens over the cards below rather than stretching the row. */
   .mm .mm-info{position:relative}
   .mm .mm-info ul{position:absolute;z-index:20;top:calc(100% + 6px);left:-14px;width:min(360px,80vw);
     margin:0;padding:12px 14px 12px 30px;background:var(--paper);border:1px solid var(--hair);
@@ -473,7 +473,7 @@ setVis(Boolean(p.visible_to_therapists));
 const visSummary = document.getElementById('vis-summary');
 function paintVis(){
   visSummary.innerHTML = p.visible_to_therapists
-    ? `<strong>Therapists read:</strong> ${esc(matchSummary(p))}
+    ? `<strong>What therapists see:</strong> ${esc(matchSummary(p))}
        · <a href="#" id="vis-edit">Change</a>`
     : '';
   visSummary.querySelector('#vis-edit')?.addEventListener('click', async (e) => {

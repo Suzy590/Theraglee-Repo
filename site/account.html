@@ -231,7 +231,7 @@ function privacy(){
         <div><label for="vis" id="vis-label"><strong>Theraglee Match Mode</strong></label>
           <div class="muted" id="vis-desc" style="margin-top:6px;font-size:.92rem;line-height:1.5">${MATCH_BLURB}</div></div></div>
       ${p.visible_to_therapists ? `<div class="notice" style="margin-bottom:12px">
-          <strong>Therapists read:</strong> ${esc(matchSummary(p))}
+          <strong>What therapists see:</strong> ${esc(matchSummary(p))}
           <div><button type="button" class="btn sm ghost" id="vis-edit" style="margin-top:10px">Change what they see</button></div></div>` : ''}
 
       <div class="notice" style="margin-top:20px">

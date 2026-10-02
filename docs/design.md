@@ -22,7 +22,7 @@ use them.
 1. The top of the dashboard stays the same on every tab: the date and
    membership pill, "Hello, name" with the Theraglee Match Mode switch under
    it, and to the right one box holding the "Let therapists reach out to you"
-   card and the "Therapists read" line side by side.
+   card and the "What therapists see" line side by side.
 2. Under that, across the full width, each tab shows one white card with a pill
    naming the tab and a short italic line (`.tab-intro` in
    `site/dashboard.html`). Today shows its affirmation and daily cards there
