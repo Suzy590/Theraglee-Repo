@@ -135,12 +135,16 @@ async function gallery() {
   root.innerHTML = `
     <div class="no-print">
       <h1>Mandalas</h1>
-      <p class="muted" style="max-width:56ch">Coloring is a quiet, low-effort way to settle a busy head.
-        Print one and reach for your pencils, or color it right here — tap a shape and it fills in.
-        Your coloring is saved as you go.</p>
+      <p class="muted" style="max-width:56ch">Coloring or drawing mandalas is calming because their
+        repetitive, circular patterns tends to quiet the nervous system and pull the mind into focused,
+        mindful attention. The rhythmic symmetry shifts the brain away from fight-or-flight mode and toward
+        emotional regulation, slowing racing thoughts and giving the mind a genuine break.</p>
       <section class="zone" style="margin-top:26px">
       <div class="zone-head"><h2>Pick a mandala</h2>
-        <p class="muted">Two new ones arrive every day, in animal and plant shapes.</p></div>
+        <p class="muted">Coloring is a quiet, low-effort way to settle a busy head.
+          Print one and reach for your pencils, or color it right here — tap a shape and it fills in.
+          Your coloring is saved as you go.</p>
+        <p class="muted">New mandalas are added every day.</p></div>
       <div class="spread" style="margin:0 0 22px;gap:12px;flex-wrap:wrap">
         <div class="chips" id="kinds" role="group" aria-label="Show">${KINDS
           .filter(([k]) => !k || rows.some(m => kindOf(m) === k))
