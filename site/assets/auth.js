@@ -61,7 +61,7 @@ export async function authPage({ audience, mode, next: nextGiven }) {
       No card, no cost, and you will be sent straight back to where you were.`, '');
   }
   if (qs('timeout') && !up) {
-    alertBox(`<strong>You were signed out after a spell of inactivity.</strong><br>
+    alertBox(`<strong>You were signed out after a period of inactivity.</strong><br>
       That keeps ${audience === 'therapist' ? 'client' : 'your'} information off an
       unattended screen. ${memberSignin ? 'Sign in to start again from Today.' : 'Sign in to pick up where you were.'}`, 'warn');
   }
