@@ -18,11 +18,18 @@ const REMEMBER = 'tg.playlists';
 
 const STYLE = `
   .pl-intro{margin:0 0 18px;max-width:68ch;font-size:.95rem;color:var(--muted);line-height:1.6}
-  .pl-steps{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 18px;font-size:.86rem;color:var(--faint)}
-  .pl-steps b{font-weight:500;color:var(--ink)}
-  .pl-steps button{border:0;background:none;font:inherit;padding:0;cursor:pointer;color:var(--green);text-decoration:underline}
+  .pl-steps{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 0 22px}
+  .pl-step{display:inline-flex;align-items:center;gap:10px;padding:8px 16px 8px 8px;border-radius:var(--r-pill);
+    background:var(--paper);border:1px solid var(--hair);font-size:1rem;color:var(--muted)}
+  .pl-step .n{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;flex:none;
+    background:var(--sand);color:var(--muted);font-weight:600;font-size:.95rem}
+  .pl-step b{font-weight:600;color:var(--ink)}
+  .pl-step.done .n{background:var(--green);color:#fff}
+  .pl-step.now{border-color:var(--green);color:var(--ink);font-weight:600;box-shadow:0 0 0 3px rgba(24,124,26,.12)}
+  .pl-step.now .n{background:var(--green);color:#fff}
+  .pl-steps button{border:0;background:none;font:inherit;font-size:.9rem;padding:0;cursor:pointer;color:var(--green);text-decoration:underline}
   .pl-steps .pl-reset{margin-left:auto;text-decoration:none;border:1px solid var(--hair);border-radius:var(--r-pill);
-    padding:4px 12px;color:var(--ink);background:var(--paper)}
+    padding:8px 16px;font-size:.95rem;color:var(--ink);background:var(--paper)}
   .pl-steps .pl-reset:hover,.pl-steps .pl-reset:focus-visible{border-color:var(--green);color:var(--green)}
   .pl-pick{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
   .pl-pick button{text-align:left;font:inherit;cursor:pointer;background:var(--paper);border:1px solid var(--hair);
@@ -81,11 +88,11 @@ export function mountPlaylists(host) {
       which is why a song can slow your breathing, lift your energy or give a hard feeling somewhere to go.
       It works best when it meets you where you are, so start with how you feel right now.</p>
       <div class="pl-steps" aria-label="Your picks">
-      <span>1. Mood${m ? `: <b>${esc(m.name)}</b> <button type="button" data-step="mood">change</button>` : ''}</span>
-      <span aria-hidden="true">·</span>
-      <span>2. Genre${g ? `: <b>${esc(g.name)}</b> <button type="button" data-step="genre">change</button>` : ''}</span>
-      <span aria-hidden="true">·</span>
-      <span>3. Your 40 songs</span>
+      <span class="pl-step ${m ? 'done' : 'now'}"${m ? '' : ' aria-current="step"'}><span class="n">1</span>
+        Mood${m ? `: <b>${esc(m.name)}</b> <button type="button" data-step="mood">change</button>` : ''}</span>
+      <span class="pl-step ${g ? 'done' : m ? 'now' : ''}"${m && !g ? ' aria-current="step"' : ''}><span class="n">2</span>
+        Genre${g ? `: <b>${esc(g.name)}</b> <button type="button" data-step="genre">change</button>` : ''}</span>
+      <span class="pl-step ${g ? 'now' : ''}"${g ? ' aria-current="step"' : ''}><span class="n">3</span> Your 40 songs</span>
       ${m ? '<button type="button" class="pl-reset" data-step="reset">Start over</button>' : ''}</div>`;
   }
 
