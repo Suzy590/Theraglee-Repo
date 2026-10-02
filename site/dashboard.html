@@ -490,14 +490,14 @@ vis.addEventListener('click', async () => {
     const saved = await matchDetailsModal(p, { editing: matchComplete(p) });
     if (!saved) return;
     setVis(true); paintVis();
-    return toast('Match Mode is on. Therapists can now reach out to you.', 'ok');
+    return toast('Theraglee Match Mode is on. Therapists can now reach out to you.', 'ok');
   }
   setVis(false);
   const { error } = await sb.from('profiles')
     .update({ visible_to_therapists: false }).eq('id', p.id);
   if (error) { setVis(true); return toast(error.message, 'err'); }
   p.visible_to_therapists = false; paintVis();
-  toast('Match Mode is off. You are hidden from therapists.', 'ok');
+  toast('Theraglee Match Mode is off. You are hidden from therapists.', 'ok');
 });
 
 /* ---- counts ---- */

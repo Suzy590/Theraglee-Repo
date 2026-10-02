@@ -386,13 +386,13 @@ async function render(){
         const saved = await matchDetailsModal(a.profile, { editing: matchComplete(a.profile) });
         if (!saved) return;
         clearAccess(); a = await access(true); render();
-        return toast('Match Mode is on. Therapists can now reach out.','ok');
+        return toast('Theraglee Match Mode is on. Therapists can now reach out.','ok');
       }
       const { error } = await sb.from('profiles')
         .update({ visible_to_therapists: false }).eq('id', a.profile.id);
       if (error) { e.target.checked = true; return toast(error.message,'err'); }
       clearAccess(); a = await access(true); render();
-      toast('Match Mode is off. You are hidden from therapists.','ok');
+      toast('Theraglee Match Mode is off. You are hidden from therapists.','ok');
     });
     document.getElementById('vis-edit')?.addEventListener('click', async () => {
       if (await matchDetailsModal(a.profile, { editing: true })) {

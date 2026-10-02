@@ -113,7 +113,7 @@ function listWords(words) {
 export const MATCH_BLURB = `
   <p class="mm-lead"><strong>Let therapists reach out to you.</strong> Verified therapists can see a
     private, pseudonymous profile and message you in your Theraglee inbox.
-    <a href="match-mode.html">What is Match Mode?</a></p>
+    <a href="match-mode.html">What is Theraglee Match Mode?</a></p>
   <div class="mm-info">
     <button type="button" class="mm-how" aria-expanded="false" aria-controls="mm-how-list">
       <svg class="mm-i" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
@@ -205,7 +205,7 @@ export function matchDetailsModal(p, { editing = false } = {}) {
 
       <div class="row" style="justify-content:flex-end">
         <button class="btn ghost" id="mm-no" type="button">${editing ? 'Cancel' : 'Not now'}</button>
-        <button class="btn" id="mm-yes" type="button">${editing ? 'Save' : 'Turn Match Mode on'}</button></div>`);
+        <button class="btn" id="mm-yes" type="button">${editing ? 'Save' : 'Turn Theraglee Match Mode on'}</button></div>`);
 
     const $ = (s) => back.querySelector(s);
     const one = (id) => $(`#${id} .chip.on`)?.dataset.v || null;

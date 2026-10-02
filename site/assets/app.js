@@ -480,7 +480,7 @@ function footer() {
         <a href="account.html">Your account</a></div>
       <div><h4>Therapists</h4>
         <a href="for-therapists.html">Therapist membership</a>
-        <a href="for-therapists/match-mode">Match Mode for therapists</a>
+        <a href="for-therapists/match-mode">Theraglee Match Mode for therapists</a>
         <a href="for-therapists/compare">Compare the directories</a>
         <a href="privacy-promise.html">Our privacy promise</a>
         <a href="${DOORS.therapist.signin}">Therapist sign in</a>
