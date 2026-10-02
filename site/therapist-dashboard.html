@@ -487,7 +487,7 @@ async function members(){
             <span class="faint">${fmtDate(t.items.at(-1).at)}</span></div>
           <p class="faint" style="margin:4px 0 0">${rows.some(r => r.id === mid)
             ? esc(line(rows.find(r => r.id === mid)))
-            : 'Has since switched Match Mode off or blocked you. If they only switched it off, you can still answer this conversation.'}</p>
+            : 'Has since switched Theraglee Match Mode off or blocked you. If they only switched it off, you can still answer this conversation.'}</p>
           <div class="stack" style="margin-top:12px">${t.items.map(i => `
             <div style="padding:12px 14px;border-radius:var(--r-sm);background:${i.from==='you'?'var(--sand)':'var(--soft)'}">
               <div class="spread"><span class="faint">${i.from==='you' ? 'You' : esc(i.name)}</span>
@@ -1173,7 +1173,7 @@ async function membership(){
         Switching to the yearly plan later gives up the locked-in rate.</p>` : ''}
       ${paid ? '' : `<p class="faint" style="margin:14px 0 0">One flat membership for licensed
         professionals, separate from the member plans. It publishes your listing once your license
-        is verified, and opens the clinician library and Match Mode. Cancel any time.
+        is verified, and opens the clinician library and Theraglee Match Mode. Cancel any time.
         <a href="for-therapists.html#membership">Everything it includes</a>.</p>`}
     </div>
     ${paysStripe ? discountCodeBox() : ''}
