@@ -16,12 +16,13 @@ import { DOORS, tierName } from './app.js';
 /* [name, description, where it opens, tier needed]. Tier 0 is open to everyone,
    1 needs a free account, 2 is Basic and 3 is Premium (see TIERS in app.js).
    The first entry is Theraglee Match Mode, drawn bigger and in brand green. It
+   opens match-mode.html, the explainer, for everyone (tier 0), and it
    opens the strip and comes round again after every four other features
    (see cardOrder), so it is never far away however far someone scrolls. */
 export const FEATURES = [
   ['Theraglee Match Mode',
    'Flip one switch and let licensed therapists near you reach out. Your name stays private until you reply.',
-   'dashboard.html#match-mode', 1],
+   'match-mode.html', 0],
   ['Find a Therapist',
    'Browse licensed clinicians by location, insurance and specialty. No account needed.',
    'therapists.html', 0],

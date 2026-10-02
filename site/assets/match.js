@@ -112,7 +112,8 @@ function listWords(words) {
    change both together. One per page. */
 export const MATCH_BLURB = `
   <p class="mm-lead"><strong>Let therapists reach out to you.</strong> Verified therapists can see a
-    private, pseudonymous profile and message you in your Theraglee inbox.</p>
+    private, pseudonymous profile and message you in your Theraglee inbox.
+    <a href="match-mode.html">What is Match Mode?</a></p>
   <div class="mm-info">
     <button type="button" class="mm-how" aria-expanded="false" aria-controls="mm-how-list">
       <svg class="mm-i" viewBox="0 0 20 20" aria-hidden="true" focusable="false">

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Theraglee's Privacy Promise to Therapists and Members</title>
+<meta name="description" content="Member information on Theraglee is never sold, never used for advertising, and never used to train AI. Here's the promise in plain English.">
+<link rel="canonical" href="https://theraglee.com/privacy-promise.html">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="assets/favicon.png" sizes="48x48">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  .lede{font-size:1.08rem;max-width:62ch}
+  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  /* The plain-English privacy promise: one big statement, then what it means
+     for each audience, in the Today look. */
+  .pp-promise{background:var(--green-deep,var(--green));color:#fff;border-radius:var(--r-lg);padding:38px 34px;margin:30px 0 28px}
+  .pp-promise p{margin:0;font-size:1.25rem;line-height:1.5}
+  .pp-promise strong{color:var(--lime)}
+  .pp-who{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+  .pp-who .card h3{margin:6px 0 4px;font-size:1.05rem}
+  .pp-who .card p{margin:0;font-size:.95rem}
+  .pp-pending{font-style:italic;font-size:.88rem}
+  .pp-cta{text-align:center;padding:40px 0 10px}
+  .pp-cta .row{justify-content:center}
+  @media(max-width:560px){.pp-promise{padding:26px 20px}.pp-promise p{font-size:1.1rem}}
+</style>
+</head>
+<body>
+<main class="section">
+  <div class="wrap narrow">
+    <span class="badge">Privacy</span>
+    <h1 style="margin-top:14px">Our privacy <em class="script">promise.</em></h1>
+    <p class="muted lede">Short, specific, and the opposite of fine print.</p>
+
+    <div class="pp-promise" role="note">
+      <p>Information members share on Theraglee is <strong>never sold. Never used for advertising.
+        Never used to train AI.</strong> That's not fine print — it's the whole point.</p>
+    </div>
+
+    <section class="zone" aria-labelledby="practice-title">
+      <div class="zone-head">
+        <h2 id="practice-title">What this means in practice</h2>
+        <p class="muted">The same promise, from each side of the table.</p>
+      </div>
+      <div class="pp-who">
+        <div class="card"><span class="kicker">For members</span>
+          <h3>What you share stays yours.</h3>
+          <p class="muted">What you share in quizzes, journals, and Match Mode stays yours. Therapists
+            see only the pseudonymous card you chose to share — never your name or full zip code
+            until you decide to reply.</p></div>
+        <div class="card"><span class="kicker">For therapists</span>
+          <h3>Protected by design.</h3>
+          <p class="muted">Your clients' information is protected by design, which protects your
+            practice too. We will never sell member data, show members ads based on it, or feed it
+            into AI training.</p></div>
+        <div class="card"><span class="kicker">For everyone</span>
+          <h3>You hear first.</h3>
+          <p class="muted">If our practices ever change, we'll tell you first and ask — not the other
+            way around.</p></div>
+      </div>
+    </section>
+
+    <section class="zone" aria-labelledby="fine-title">
+      <div class="zone-head">
+        <h2 id="fine-title">The fine print, in plain English</h2>
+        <p class="muted">Two documents, written to agree.</p>
+      </div>
+      <div class="card">
+        <p class="muted" style="margin:0">The full legal <a href="privacy.html">privacy policy</a> lives
+          on its own page. This page is the plain-English version. If the two ever disagree, the
+          legal policy controls — but we wrote them to agree.</p>
+      </div>
+    </section>
+
+    <p class="faint pp-pending" style="margin-top:22px">This promise is pending final legal review before launch.</p>
+
+    <div class="pp-cta">
+      <h2>Build your practice on it.</h2>
+      <p class="muted">One flat rate of $<span class="tg-rate-monthly">29</span>/month or
+        $<span class="tg-rate-yearly">290</span>/year<span class="tg-founding">, or
+        $<span class="tg-rate-founding">20</span>/month locked in as a founding therapist</span>.
+        No per-session fees, ever.</p>
+      <div class="row">
+        <a class="btn lg tg-founding-cta" href="therapist-signup.html?plan=founding">Join as a founding therapist</a>
+        <a class="btn lg ghost" href="match-mode.html">What members read about Match Mode →</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script type="module">
+import { chrome } from './assets/app.js';
+import { fillTherapistRates } from './assets/therapist-rates.js';
+await chrome();
+await fillTherapistRates();
+</script>
+</body>
+</html>

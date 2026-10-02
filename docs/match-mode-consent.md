@@ -24,7 +24,9 @@ request.
 > - Turning Theraglee Match Mode off makes you invisible to therapists again.
 
 This is `MATCH_BLURB` in `site/assets/match.js`, shown under the Match Mode
-switch on the dashboard and on the account page: the bold lead and one
+switch on the dashboard and on the account page (its lead ends with a link to
+`site/match-mode.html`, the plain-language explainer; see
+[`therapist-pages.md`](therapist-pages.md)): the bold lead and one
 sentence, then a circled "i" labeled "How Theraglee works". The list is folded under
 it and opens when the member hovers over it or clicks (or taps) it; the
 button reports whether it is open (`aria-expanded`) to screen readers. When the switch is turned on, a window asks for every

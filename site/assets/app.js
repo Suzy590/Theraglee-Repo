@@ -472,13 +472,17 @@ function footer() {
         <a href="explore.html">Explore Library</a><a href="discover.html">Self-discovery tools</a>
         <a href="challenges.html">Challenges</a>
         <a href="dashboard.html#journal">Journal</a><a href="articles.html">Articles</a>
-        <a href="therapists.html">Find a therapist</a></div>
+        <a href="therapists.html">Find a therapist</a>
+        <a href="match-mode.html">Theraglee Match Mode</a></div>
       <div><h4>Membership</h4>
         <a href="pricing.html">Membership plans</a><a href="${DOORS.member.signup}">Join free</a>
         <a href="${DOORS.member.signin}">Member sign in</a>
         <a href="account.html">Your account</a></div>
       <div><h4>Therapists</h4>
         <a href="for-therapists.html">Therapist membership</a>
+        <a href="for-therapists/match-mode">Match Mode for therapists</a>
+        <a href="for-therapists/compare">Compare the directories</a>
+        <a href="privacy-promise.html">Our privacy promise</a>
         <a href="${DOORS.therapist.signin}">Therapist sign in</a>
         <a href="therapist-dashboard.html">Practice dashboard</a></div>
     </div>
