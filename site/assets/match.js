@@ -106,7 +106,7 @@ function listWords(words) {
 
 /* The short explanation under every Match Mode switch (the dashboard and the
    account page): a bold lead and one sentence, then a circled "i" with
-   "How Theraglee works". The details list opens when the member hovers over it or
+   "How Theraglee Match Mode works". The details list opens when the member hovers over it or
    clicks (or taps) it, and a second click closes it. Styled by .mm-lead and
    .mm-info in styles.css. docs/match-mode-consent.md records these words;
    change both together. One per page. */
@@ -120,7 +120,7 @@ export const MATCH_BLURB = `
         <circle cx="10" cy="10" r="8.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
         <circle cx="10" cy="6.2" r="1.1" fill="currentColor"/>
         <path d="M10 9v5.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
-      </svg>How Theraglee works</button>
+      </svg>How Theraglee Match Mode works</button>
     <ul id="mm-how-list">
       <li>What therapists see: Your pseudonym, age range, gender, broad topics you’d like to work
         on with a therapist, whether you’d prefer in-person/telehealth (video)/either, your
@@ -133,7 +133,7 @@ export const MATCH_BLURB = `
     </ul>
   </div>`;
 
-// Clicking "How Theraglee works" pins the list open, or closes it again.
+// Clicking "How Theraglee Match Mode works" pins the list open, or closes it again.
 if (typeof document !== 'undefined') document.addEventListener('click', (e) => {
   const btn = e.target.closest?.('.mm-how');
   if (!btn) return;
