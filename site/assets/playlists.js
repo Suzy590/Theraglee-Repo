@@ -893,7 +893,7 @@ PLAYLISTS.electronic = {
     ['Dancing on My Own', 'Robyn'], ['Call Your Girlfriend', 'Robyn'], ['Hang with Me', 'Robyn'], ['Hideaway', 'Kiesza'],
     ['Only Girl (In the World)', 'Rihanna'], ['We Found Love', 'Rihanna & Calvin Harris'],
   ] },
-  lonely: { title: 'Electronic to keep you company', blurb: 'Warm voices over soft beats, songs about holding on to each other.', spotify: '', songs: [
+  lonely: { title: 'Electronic to keep you company', blurb: 'Warm voices over soft beats, songs about holding on to each other.', spotify: '5SWC8Vn8L4pc1Q6bEWqVRs', songs: [
     ['Paris', 'The Chainsmokers'], ['Happier', 'Marshmello & Bastille'], ['Silence', 'Marshmello & Khalid'],
     ['Divinity', 'Porter Robinson & Amy Millan'], ['Bloom', 'ODESZA'], ['You Were Right', 'RÜFÜS DU SOL'],
     ['Stargazing', 'Kygo & Justin Jesso'], ['Be Right There', 'Diplo & Sleepy Tom'], ['Where Are Ü Now', 'Jack Ü & Justin Bieber'],
@@ -908,7 +908,7 @@ PLAYLISTS.electronic = {
     ['Light', 'San Holo'], ['Walking on a Dream', 'Empire of the Sun'], ['We Are the People', 'Empire of the Sun'],
     ['Lights', 'Ellie Goulding'], ['Burn', 'Ellie Goulding'],
   ] },
-  winddown: { title: 'Ambient for winding down', blurb: 'Slow pads, soft piano and gentle drones for the end of the day.', spotify: '', songs: [
+  winddown: { title: 'Ambient for winding down', blurb: 'Slow pads, soft piano and gentle drones for the end of the day.', spotify: '7k5eDMIh1Om4G8dOK2fuiP', songs: [
     ['Weightless', 'Marconi Union'], ['An Ending (Ascent)', 'Brian Eno'], ['1/1', 'Brian Eno'], ['Xtal', 'Aphex Twin'],
     ['Ambre', 'Nils Frahm'], ['Kiara', 'Bonobo'], ['Only the Winds', 'Ólafur Arnalds'], ['Hoppípolla', 'Sigur Rós'],
     ['Svefn-g-englar', 'Sigur Rós'], ['Olsen Olsen', 'Sigur Rós'], ['Roygbiv', 'Boards of Canada'], ['Dayvan Cowboy', 'Boards of Canada'],
@@ -922,7 +922,7 @@ PLAYLISTS.electronic = {
     ['Wildlife Analysis', 'Boards of Canada'], ['Satellite Anthem Icarus', 'Boards of Canada'], ['Opening', 'Philip Glass'],
     ['Metamorphosis One', 'Philip Glass'],
   ] },
-  happy: { title: 'Electronic for a good day', blurb: 'Sunny drops and feel-good dance tracks for a day that is going well.', spotify: '', songs: [
+  happy: { title: 'Electronic for a good day', blurb: 'Sunny drops and feel-good dance tracks for a day that is going well.', spotify: '42uij4aGUk0omYICfE2MzQ', songs: [
     ['Feel Good', 'Gryffin & Illenium'], ['More Than You Know', 'Axwell /\\ Ingrosso'], ['Shooting Stars', 'Bag Raiders'],
     ['Finally', 'CeCe Peniston'], ['Music Sounds Better with You', 'Stardust'], ['Lady (Hear Me Tonight)', 'Modjo'],
     ['Freed from Desire', 'Gala'], ['Rhythm Is a Dancer', 'Snap!'], ['Pump Up the Jam', 'Technotronic'], ['This Is What You Came For', 'Calvin Harris & Rihanna'],
@@ -938,7 +938,7 @@ PLAYLISTS.electronic = {
     ['If I Lose Myself', 'Alesso & OneRepublic'], ['Cool', 'Alesso & Roy English'], ['Book of Love', 'Felix Jaehn'],
     ['Bonfire', 'Felix Jaehn'],
   ] },
-  love: { title: 'Electronic for being in love', blurb: 'Warm beats and glowing vocals for the person who has your heart.', spotify: '', songs: [
+  love: { title: 'Electronic for being in love', blurb: 'Warm beats and glowing vocals for the person who has your heart.', spotify: '5hefvLw8uv53fZs4E192nW', songs: [
     ['Lovers on the Sun', 'David Guetta & Sam Martin'], ['Rushing Back', 'Flume & Vera Blue'], ['Good Things Fall Apart', 'Illenium & Jon Bellion'],
     ['Takeaway', 'The Chainsmokers & Illenium'], ['Crawl Outta Love', 'Illenium & Annika Wells'], ['Fractures', 'Illenium & Nevve'],
     ['Beautiful Creatures', 'Illenium & MAX'], ['No Promises', 'Cheat Codes & Demi Lovato'], ['Only You', 'Cheat Codes & Little Mix'],
