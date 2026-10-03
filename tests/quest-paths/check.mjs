@@ -14,9 +14,10 @@ import {
   VALUES, CATEGORIES, MINUTES, SCENES, ACTIONS, PROMPT_IDEAS, action, suits, helper,
 } from "../../site/assets/quest-paths.js";
 import {
-  WORDS, THEME_TAGS, MILESTONES, MILESTONE_SETS, EXAMPLE_GOALS, STEPS_PER_MILESTONE,
-  detectTheme, suggestMilestones, suggestSteps, reasonFor, recognizedWords, milestoneProblems, tagsOf,
+  WORDS, THEME_TAGS, MILESTONES, MILESTONE_SETS, EXAMPLE_GOALS, GOAL_LIBRARY, STEPS_PER_MILESTONE,
+  detectTheme, suggestMilestones, suggestSteps, reasonFor, recognizedWords, milestoneProblems, tagsOf, setFor,
 } from "../../site/assets/quest-goals.js";
+import { LIBRARY_SETS, LIBRARY_WORDS, LIBRARY_THEME_TAGS } from "../../site/assets/quest-goal-library.js";
 import { trailMap, TRAIL, campAt, hikerFraction, dayFraction, along } from "../../site/assets/quest-scene.js";
 
 let n = 0;
@@ -25,6 +26,7 @@ const root = new URL("../../", import.meta.url);
 const read = (p) => readFileSync(new URL(p, root), "utf8");
 const sql = read("supabase/migrations/20260927190000_quest_maps.sql");
 const sql2 = read("supabase/migrations/20261003120000_quest_milestones.sql");
+const sql3 = read("supabase/migrations/20261004090000_calm_theme.sql");
 const page = read("site/goals.html");
 const ui = read("site/assets/goals-ui.js");
 const dash = read("site/dashboard.html");
@@ -40,11 +42,12 @@ const listAfter = (anchor) => {
 const same = (a, b) => assert.deepEqual([...a].sort(), [...b].sort());
 
 /* ---------------------------------------------------------- the library */
-test("values match both database checks", () => {
+test("values match both database checks (the newest migration that sets them)", () => {
   const keys = VALUES.map(v => v.key);
-  const lists = [...sql.matchAll(/value_key\s+text[^(]*check \(value_key in \(([^)]*)\)/g)];
+  const lists = [...sql3.matchAll(/check \(value_key in \(([^)]*)\)/g)];
   assert.equal(lists.length, 2, "goals.value_key and quests.value_key");
   for (const m of lists) same(keys, [...m[1].matchAll(/'([a-z_]+)'/g)].map(x => x[1]));
+  assert.match(sql3, /goals_value_key_check/); assert.match(sql3, /quests_value_key_check/);
 });
 
 test("categories, minutes and scenes match the database", () => {
@@ -100,6 +103,7 @@ test("every milestone names real actions, four each, five per theme, in plain wo
     for (const m of set.milestones) assert.equal(m.steps.length, 4, `${m.title} has four stones`);
   }
   assert.equal(EXAMPLE_GOALS.length, VALUES.length);
+  assert.ok(ui.includes("Browse ${GOAL_LIBRARY.length + EXAMPLE_GOALS.length} common goals"), "setup offers the library");
   assert.equal(STEPS_PER_MILESTONE, 7);
   for (const tag of Object.values(THEME_TAGS).flatMap(t => Object.keys(t))) assert.ok(WORDS[tag], `theme tag ${tag} has words`);
 });
@@ -169,6 +173,37 @@ test("the What helped nudges all ask what helped, and the helper stays rule-base
   for (let i = 0; i < 20; i++) assert.ok(PROMPT_IDEAS.gratitude.includes(helper.prompt(["gratitude"], i)));
 });
 
+test("the goal library: a hundred common goals to start, twenty more a week, every one matched", () => {
+  assert.ok(GOAL_LIBRARY.length >= 100, `${GOAL_LIBRARY.length} goals`);
+  const texts = new Set();
+  const byWeek = {};
+  for (const g of GOAL_LIBRARY) {
+    assert.ok(g.text.length >= 8 && g.text.length <= 70 && !/[.!]$/.test(g.text), `"${g.text}" reads like a goal, no closing period`);
+    assert.ok(!texts.has(g.text.toLowerCase()), `"${g.text}" is not a repeat`); texts.add(g.text.toLowerCase());
+    assert.ok(VALUES.some(v => v.key === g.theme), `"${g.text}" names a theme`);
+    assert.match(g.week, /^\d{4}-\d{2}-\d{2}$/, `"${g.text}" has the week it was added`);
+    assert.equal(new Date(g.week + "T12:00:00Z").getUTCDay(), 1, `"${g.text}": week is a Monday`);
+    (byWeek[g.week] ||= []).push(g);
+    const d = detectTheme(g.text);
+    assert.equal(d.theme, g.theme, `"${g.text}" → ${d.theme} (${d.because.join(", ")}), wanted ${g.theme}`);
+    assert.equal(setFor(g.theme, g.text), g.set || null, `"${g.text}" picks the ${g.set || "general"} set`);
+    if (g.set) assert.equal(MILESTONE_SETS[g.set].theme, g.theme, `"${g.text}": the ${g.set} set is for its theme`);
+    const stones = suggestSteps({ text: g.text, theme: g.theme, milestone: suggestMilestones(g.theme, g.text)[0], minutes: 10, limit: 4 });
+    assert.ok(stones.length === 4 && stones.filter(x => x.action.min <= 10).length >= 2, `"${g.text}" gets four stones, most of them short`);
+  }
+  const weeks = Object.keys(byWeek).sort();
+  assert.ok(byWeek[weeks[0]].length >= 100, "the first batch is a hundred");
+  for (const w of weeks.slice(1)) assert.ok(byWeek[w].length >= 20, `week ${w} added ${byWeek[w].length}, twenty is the floor`);
+  for (const v of VALUES) assert.ok(GOAL_LIBRARY.some(g => g.theme === v.key), `${v.key} has library goals`);
+  for (const [key, set] of Object.entries(LIBRARY_SETS)) {
+    assert.ok(WORDS[key], `${key} set has words`);
+    assert.ok(GOAL_LIBRARY.some(g => g.set === key), `${key} set is used by a goal`);
+    assert.equal(set.milestones.length, 5); for (const m of set.milestones) assert.equal(m.steps.length, 4, m.title);
+  }
+  for (const tag of Object.keys(LIBRARY_WORDS)) assert.ok(WORDS[tag].length, `${tag} merged`);
+  for (const theme of Object.keys(LIBRARY_THEME_TAGS)) assert.ok(THEME_TAGS[theme], `${theme} is a theme`);
+});
+
 /* ------------------------------------------------------------- the map */
 const ms = (theme, reached, count = 5) => suggestMilestones(theme).slice(0, count).map((m, i) => ({ title: m.title, reached: i < reached }));
 
@@ -230,6 +265,7 @@ const words = [
   ...VALUES.flatMap(v => [v.label, v.phrase, v.example, v.does]), ...CATEGORIES.map(c => c.label),
   ...SCENES.flatMap(s => [s.label, s.blurb]), ...ACTIONS.map(a => a.text),
   ...Object.values(MILESTONES).flat().map(m => m.title), ...Object.values(PROMPT_IDEAS).flat(),
+  ...Object.values(MILESTONE_SETS).flatMap(s => s.milestones.map(m => m.title)), ...GOAL_LIBRARY.map(g => g.text),
 ].join("\n");
 
 test("no clinical, screening or streak language in anything a member reads", () => {

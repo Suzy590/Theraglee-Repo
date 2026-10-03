@@ -212,6 +212,15 @@ const DESTINATIONS = {
     <circle cx="${r1(x + 6 * k)}" cy="${r1(y - 38 * k)}" r="${r1(4 * k)}" fill="#F6C453"/>
     <path d="M${r1(x + 40 * k)},${r1(y - 74 * k)} l${r1(12 * k)},${r1(10 * k)} l-${r1(12 * k)},${r1(14 * k)} l-${r1(12 * k)},-${r1(14 * k)}z" fill="#F29E8E"/>
     <path d="M${r1(x + 40 * k)},${r1(y - 50 * k)} q-${r1(10 * k)},${r1(14 * k)} -${r1(22 * k)},${r1(20 * k)}" fill="none" stroke="#16241C" stroke-width="1.2"/>`,
+  // A still lake with a little dock, and a boat tied up for the day.
+  calm: (x, y, k, pal) => `<ellipse cx="${r1(x + 6 * k)}" cy="${r1(y + 2 * k)}" rx="${r1(62 * k)}" ry="${r1(14 * k)}" fill="${pal.water}"/>
+    <ellipse cx="${r1(x + 6 * k)}" cy="${r1(y + 2 * k)}" rx="${r1(40 * k)}" ry="${r1(6 * k)}" fill="${pal.waterLight}" opacity=".5"/>
+    <path d="M${r1(x - 30 * k)},${r1(y - 4 * k)} h${r1(34 * k)}" stroke="#7A5A3A" stroke-width="${r1(4 * k)}" stroke-linecap="round"/>
+    <path d="M${r1(x - 22 * k)},${r1(y - 4 * k)} v${r1(8 * k)} M${r1(x - 6 * k)},${r1(y - 4 * k)} v${r1(8 * k)}" stroke="#5A3F28" stroke-width="${r1(2 * k)}"/>
+    <path d="M${r1(x + 10 * k)},${r1(y - 2 * k)} h${r1(26 * k)} l-${r1(4 * k)},${r1(7 * k)} h-${r1(18 * k)}z" fill="#F7F3EA" stroke="#D6C9A4" stroke-width="1"/>
+    <line x1="${r1(x + 22 * k)}" y1="${r1(y - 2 * k)}" x2="${r1(x + 22 * k)}" y2="${r1(y - 26 * k)}" stroke="#7A5A3A" stroke-width="${r1(1.6 * k)}"/>
+    <path d="M${r1(x + 22 * k)},${r1(y - 26 * k)} l${r1(14 * k)},${r1(18 * k)} h-${r1(14 * k)}z" fill="#8DC61D" opacity=".9"/>
+    ${tree(x - 44 * k, y - 6 * k, k * 0.8, pal, 1)}`,
   // A lookout tower with a telescope.
   focus: (x, y, k) => `<path d="M${r1(x - 16 * k)},${r1(y)} L${r1(x - 10 * k)},${r1(y - 44 * k)} M${r1(x + 16 * k)},${r1(y)} L${r1(x + 10 * k)},${r1(y - 44 * k)} M${r1(x - 13 * k)},${r1(y - 20 * k)} h${r1(26 * k)}" stroke="#7A5A3A" stroke-width="${r1(2.4 * k)}" stroke-linecap="round"/>
     <rect x="${r1(x - 16 * k)}" y="${r1(y - 56 * k)}" width="${r1(32 * k)}" height="${r1(14 * k)}" rx="2" fill="#F7F3EA" stroke="#D6C9A4"/>

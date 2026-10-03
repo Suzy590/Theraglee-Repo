@@ -145,3 +145,9 @@
   .ms-title{flex-basis:100%;order:9;padding-left:0}
   .card.pad-lg.setup{padding:22px 16px}
 }
+
+/* The common-goals browser. */
+.chip.browse{border-style:dashed;color:var(--green-deep)}
+.glist{max-height:52vh;overflow:auto;margin-top:12px;padding-right:4px}
+.ggroup{margin:0 0 16px}
+.ggroup .kicker{margin-bottom:8px}

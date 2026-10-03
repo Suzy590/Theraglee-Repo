@@ -33,10 +33,15 @@ links to find a therapist, help nearby and 988) sits above every screen.
 ## Setup: three screens
 
 1. **Your goal.** A text box ("Say it the way you would to a friend") with
-   eight example goals to tap (`EXAMPLE_GOALS`, one per theme). As the member
+   nine example goals to tap (`EXAMPLE_GOALS`, one per theme) and **Browse
+   common goals**, the library in `site/assets/quest-goal-library.js`
+   (`docs/goal-library.md`), grouped by theme with a search box. As the member
    types, `detectTheme()` reads the sentence **in the browser** for everyday
    words (`WORDS`, grouped under tags like `evening`, `screen`, `people`,
-   `kind`) and weighs them per theme (`THEME_TAGS`). The page says "Sounds
+   `kind`, merged with the goal library's) and weighs them per theme
+   (`THEME_TAGS`). A word inside a matched phrase counts once, for the
+   phrase. The ninth theme, `calm` ("Feeling calmer day to day",
+   `20261004090000_calm_theme.sql`), is where "feel less stressed" lands. The page says "Sounds
    like calmer evenings, because you wrote 'night', 'sleep', 'scrolling'",
    with the eight themes as chips to override it. When no word is known
    ("Be a better person") it asks "Which of these is closest?" instead. The

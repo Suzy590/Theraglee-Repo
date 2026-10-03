@@ -18,12 +18,14 @@
    read, test and extend. docs/quest-map.md is the guide.
    ========================================================================== */
 import { VALUES, ACTIONS, action, suits } from './quest-paths.js';
+import { LIBRARY_WORDS, LIBRARY_THEME_TAGS, LIBRARY_SETS, GOAL_LIBRARY } from './quest-goal-library.js';
+export { GOAL_LIBRARY };
 
 /* ------------------------------------------------------------- words */
 /* Everyday words a member might use, grouped under one tag each. A word in
    the goal (or in an action's text) that matches any of these counts as its
    tag. Word stems: 'evening' matches 'evenings', 'scroll' matches 'scrolling'. */
-export const WORDS = {
+const BASE_WORDS = {
   evening:  ['evening', 'tonight', 'night', 'nights', 'late', 'after work', 'after dinner', 'wind down', 'unwind', 'bedtime', 'pm'],
   sleep:    ['sleep', 'asleep', 'bed', 'rest', 'rested', 'tired at night', 'lie in', 'nap'],
   screen:   ['phone', 'screen', 'scroll', 'social media', 'instagram', 'tiktok', 'youtube', 'netflix', 'tv', 'laptop', 'notifications', 'doomscroll', 'online', 'offline'],
@@ -42,20 +44,39 @@ export const WORDS = {
   tidy:     ['tidy', 'clean', 'clutter', 'declutter', 'mess', 'messy', 'home', 'house', 'space', 'room', 'desk', 'organized', 'organised'],
   food:     ['eat', 'eating', 'meal', 'meals', 'food', 'dinner', 'breakfast', 'lunch', 'water', 'hydrate', 'hydrated', 'drink', 'snack', 'cook', 'cooking'],
   me:       ['mine', 'for me', 'myself', 'my own', 'me time', 'own time', 'time for me', 'time to myself', 'just for me'],
-  partner:  ['marriage', 'married', 'spouse', 'husband', 'wife', 'partner', 'boyfriend', 'girlfriend', 'fiance', 'fiancee', 'couple', 'romance', 'romantic', 'date night', 'date nights', 'intimacy', 'intimate', 'love', 'loving', 'loved', 'affection', 'affectionate', 'together', 'closer', 'argue', 'arguing', 'arguments', 'fight', 'fighting', 'bicker', 'bickering', 'communicate', 'communication', 'listen', 'listening', 'my relationship', 'our relationship'],
+  partner:  ['marriage', 'married', 'spouse', 'husband', 'wife', 'partner', 'boyfriend', 'girlfriend', 'fiance', 'fiancee', 'couple', 'romance', 'romantic', 'date night', 'date nights', 'intimacy', 'intimate', 'love', 'loving', 'loved', 'affection', 'affectionate', 'together', 'argue', 'arguing', 'arguments', 'fight', 'fighting', 'bicker', 'bickering', 'communicate', 'communication', 'listen', 'listening', 'my relationship', 'our relationship'],
 };
+// Cooking and gardens read as food and the outdoors, not making things.
+BASE_WORDS.create = BASE_WORDS.create.filter(w => !['cook', 'cooking', 'bake', 'baking', 'garden'].includes(w));
+BASE_WORDS.tidy = BASE_WORDS.tidy.filter(w => w !== 'desk');
+BASE_WORDS.focus = BASE_WORDS.focus.filter(w => w !== 'overthinking');
+// Family and partner words have tags of their own now; "awake" on its own is about sleep.
+BASE_WORDS.people = BASE_WORDS.people.filter(w => !['family', 'partner', 'husband', 'wife', 'kids', 'children', 'parents', 'mom', 'dad', 'sister', 'brother', 'social'].includes(w));
+BASE_WORDS.energy = [...BASE_WORDS.energy.filter(w => w !== 'awake'), 'feel awake', 'wide awake', 'more awake'];
+BASE_WORDS.create = BASE_WORDS.create.filter(w => w !== 'make');
+BASE_WORDS.kind = [...BASE_WORDS.kind, 'empty'];
+
+/** The matcher's words: the base list plus the goal library's. */
+export const WORDS = Object.fromEntries([...new Set([...Object.keys(BASE_WORDS), ...Object.keys(LIBRARY_WORDS)])]
+  .map(tag => [tag, [...new Set([...(BASE_WORDS[tag] || []), ...(LIBRARY_WORDS[tag] || [])])]]));
 
 /* What each theme is made of: a tag and how strongly it points there. */
-export const THEME_TAGS = {
-  calm_evenings:   { evening: 3, sleep: 2, screen: 2, calm: 2, me: 1 },
+const BASE_THEME_TAGS = {
+  calm_evenings:   { evening: 3, sleep: 2, screen: 1, calm: 1, me: 1 },
   steady_routines: { routine: 3, morning: 2, sleep: 1, tidy: 1, food: 1 },
   connection:      { people: 3, partner: 3 },
   energy:          { energy: 3, move: 2, morning: 1, food: 1, sleep: 1 },
   time_outdoors:   { outside: 3, move: 1 },
-  self_kindness:   { kind: 3, me: 2, calm: 1, grateful: 1 },
+  self_kindness:   { kind: 3, me: 2, grateful: 1 },
   creativity:      { create: 3, me: 1 },
   focus:           { focus: 3, screen: 1, tidy: 1, routine: 1 },
+  calm:            { calm: 3 },
 };
+export const THEME_TAGS = Object.fromEntries(Object.keys(BASE_THEME_TAGS).map(theme => {
+  const merged = { ...BASE_THEME_TAGS[theme] };
+  for (const [tag, w] of Object.entries(LIBRARY_THEME_TAGS[theme] || {})) merged[tag] = (merged[tag] || 0) + w;
+  return [theme, merged];
+}));
 
 /* A few actions whose wording does not carry the words a member would use
    for them. Every action also gets tags from its own text and its focuses. */
@@ -139,6 +160,13 @@ export const MILESTONES = {
     { title: 'I share what I make',                           steps: ['co_share_find', 'co_photo_of_made', 'cr_card_for_someone', 'cr_tiny_note'] },
     { title: 'A space and a time that are for making',        steps: ['cr_rearrange_corner', 'ref_idea_page', 'cr_friendly_playlist', 'hab_pen_by_chair'] },
   ],
+  calm: [
+    { title: 'A breathing pause I actually use, most days',      steps: ['sc_box_breath', 'sc_shoulders_drop', 'sc_slow_breaths', 'sc_hands_warm_water'] },
+    { title: 'One thing done slowly on purpose each day',        steps: ['sc_one_thing_slowly', 'mv_slow_walk', 'sc_warm_drink', 'sc_do_nothing'] },
+    { title: 'Worries written down instead of carried',          steps: ['ref_worry_window', 'ref_what_can_wait', 'hab_worry_list', 'hab_close_the_day'] },
+    { title: 'Five minutes of margin before things, most days',  steps: ['hab_buffer_time', 'mv_shake_out', 'na_sit_outside_two', 'gr_senses'] },
+    { title: 'A day that ends softer than it started',           steps: ['sc_dim_lights', 'co_kind_last_words', 'gr_calm_moment', 'cr_slow_coloring'] },
+  ],
   focus: [
     { title: 'One stretch of single-task time a day',       steps: ['hab_single_task', 'hab_one_tab', 'mv_between_tasks', 'cr_doodle_before_task'] },
     { title: "Tomorrow's three things are chosen tonight",  steps: ['hab_tomorrow_three', 'ref_one_thing_tomorrow', 'hab_close_the_day', 'hab_bag_by_door'] },
@@ -152,6 +180,7 @@ export const MILESTONES = {
    goal's words carry the tag. A goal about a marriage or a partner gets these
    instead of the general connection milestones. */
 export const MILESTONE_SETS = {
+  ...LIBRARY_SETS,
   partner: {
     theme: 'connection',
     milestones: [
@@ -188,9 +217,14 @@ export function tagsIn(text) {
   if (!t) return {};
   const found = {};
   const add = (tag, word) => { (found[tag] ||= new Set()).add(word); };
-  const words = t.split(' ').filter(w => w.length > 1);
-  for (const { tag, phrases, stems } of TAG_INDEX) {
-    for (const p of phrases) if (t.includes(p)) add(tag, p);
+  // Phrases first. A word inside a matched phrase ("friend" in "like a
+  // friend") belongs to that phrase and is not counted again on its own.
+  const used = new Set();
+  for (const { tag, phrases } of TAG_INDEX) {
+    for (const p of phrases) if (t.includes(p)) { add(tag, p); p.split(' ').forEach(w => used.add(w)); }
+  }
+  const words = t.split(' ').filter(w => w.length > 1 && !used.has(w));
+  for (const { tag, stems } of TAG_INDEX) {
     for (const w of words) if (stems.has(stem(w))) add(tag, w);
   }
   return Object.fromEntries(Object.entries(found).map(([k, v]) => [k, [...v]]));
@@ -209,7 +243,7 @@ export function detectTheme(text) {
       if (tags[tag]) { score += w * Math.min(2, tags[tag].length); tags[tag].forEach(x => because.add(x)); }
     }
     return { theme, score, because: [...because] };
-  }).sort((a, b) => b.score - a.score);
+  }).sort((a, b) => b.score - a.score || b.because.length - a.because.length);
   const best = ranked[0];
   if (!best || best.score === 0) return { theme: null, score: 0, because: [], ranked };
   return { theme: best.theme, score: best.score, because: best.because, ranked };
@@ -218,9 +252,19 @@ export function detectTheme(text) {
 /** The five milestones written for a theme (copies, safe to edit). With the
  *  goal's words, a set written for that kind of goal wins when one fits. */
 export function suggestMilestones(theme, text = '') {
+  const key = setFor(theme, text);
+  return ((key && MILESTONE_SETS[key].milestones) || MILESTONES[theme] || []).map(m => ({ title: m.title, steps: [...m.steps] }));
+}
+
+/** The set a goal's words pick for a theme, if any: the one whose tag matched the most words. */
+export function setFor(theme, text = '') {
   const tags = tagsIn(text);
-  const special = Object.values(MILESTONE_SETS).find(set => set.theme === theme && tags[Object.keys(MILESTONE_SETS).find(k => MILESTONE_SETS[k] === set)]);
-  return (special?.milestones || MILESTONES[theme] || []).map(m => ({ title: m.title, steps: [...m.steps] }));
+  let best = null, bestN = 0;
+  for (const [key, set] of Object.entries(MILESTONE_SETS)) {
+    const n = set.theme === theme ? (tags[key] || []).length : 0;
+    if (n > bestN) { best = key; bestN = n; }
+  }
+  return best;
 }
 
 /* Tags an action carries: from its own text, its focuses' words, and EXTRA_TAGS. */

@@ -152,3 +152,13 @@ the network**. Value, category, minute and scene keys must match the checks in
 Nothing on it screens, scores, diagnoses or mentions streaks; a milestone is
 reached when the member says so; and the wellness note stays on every screen.
 `node tests/quest-paths/check.mjs` guards this. `docs/quest-map.md` is the guide.
+
+## The goal library grows by twenty a week
+
+`site/assets/quest-goal-library.js` is the list of common goals the Goals &
+tracking page recognizes and offers under **Browse common goals**: a hundred
+to start, and twenty new ones every week, each with the words that make it
+match and, for a kind of goal with enough of them, a milestone set. Never add a
+theme there (that is a database change) and never change a shipped key.
+`node tests/quest-paths/check.mjs` checks every goal matches its theme and set
+and that each week added at least twenty. `docs/goal-library.md` is the guide.
