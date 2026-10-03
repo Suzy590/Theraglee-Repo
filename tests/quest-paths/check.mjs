@@ -1,9 +1,9 @@
-// Exercises site/assets/quest-paths.js and site/assets/quest-scene.js, the
-// quest map on the Premium Goals & tracking page, under plain Node. Checks the
-// lists match the database's checks, that every map fits the member's own
-// choices and speaks to their focus, that progress only counts up, that the
-// trail map draws cleanly, and that nothing a member reads drifts into
-// clinical language.
+// Exercises the Premium Goals & tracking page's data and drawings under plain
+// Node: site/assets/quest-paths.js (the action library), quest-goals.js (the
+// goal matcher and milestones) and quest-scene.js (the trail map). Checks the
+// lists match the database's checks, that a goal in a member's words finds the
+// right theme and relevant stepping stones, that the map draws cleanly for any
+// goal, and that nothing a member reads drifts into clinical language.
 //
 //   node tests/quest-paths/check.mjs
 //
@@ -11,17 +11,22 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import {
-  VALUES, CATEGORIES, MINUTES, SCENES, ACTIONS, CHAPTERS, PROMPT_IDEAS, MILESTONES,
-  buildQuest, progress, helper, pool, suits, samplesFor, MAIN_PER_CHAPTER,
+  VALUES, CATEGORIES, MINUTES, SCENES, ACTIONS, PROMPT_IDEAS, action, suits, helper,
 } from "../../site/assets/quest-paths.js";
-import { trailMap, hikerAt, dayAt, towardNext, TRAIL } from "../../site/assets/quest-scene.js";
+import {
+  WORDS, THEME_TAGS, MILESTONES, EXAMPLE_GOALS, STEPS_PER_MILESTONE,
+  detectTheme, suggestMilestones, suggestSteps, reasonFor, recognizedWords, milestoneProblems, tagsOf,
+} from "../../site/assets/quest-goals.js";
+import { trailMap, TRAIL, campAt, hikerFraction, dayFraction, along } from "../../site/assets/quest-scene.js";
 
 let n = 0;
 const test = (name, fn) => { fn(); n++; console.log("ok -", name); };
 const root = new URL("../../", import.meta.url);
 const read = (p) => readFileSync(new URL(p, root), "utf8");
 const sql = read("supabase/migrations/20260927190000_quest_maps.sql");
+const sql2 = read("supabase/migrations/20261003120000_quest_milestones.sql");
 const page = read("site/goals.html");
+const ui = read("site/assets/goals-ui.js");
 const dash = read("site/dashboard.html");
 const app = read("site/assets/app.js");
 
@@ -33,8 +38,8 @@ const listAfter = (anchor) => {
   return [...body.matchAll(/'([a-z_]+)'/g)].map(m => m[1]);
 };
 const same = (a, b) => assert.deepEqual([...a].sort(), [...b].sort());
-const days = (d) => Array.from({ length: d }, (_, i) => `d${i}`);
 
+/* ---------------------------------------------------------- the library */
 test("values match both database checks", () => {
   const keys = VALUES.map(v => v.key);
   const lists = [...sql.matchAll(/value_key\s+text[^(]*check \(value_key in \(([^)]*)\)/g)];
@@ -49,203 +54,174 @@ test("categories, minutes and scenes match the database", () => {
   same(MINUTES, mins);
 });
 
-test("every focus carries an example in a member's words and a line on its actions", () => {
-  for (const v of VALUES) {
-    assert.ok(v.example && v.example.length > 8 && !v.example.endsWith("."), `${v.key} has an example intention`);
-    assert.ok(v.does && v.does.endsWith("."), `${v.key} says what its actions look like`);
-    assert.match(v.phrase, /^[a-z]/, `${v.key} phrase finishes "a quest toward …"`);
-  }
+test("the milestones migration holds the table the page reads, and lets step keys carry digits", () => {
+  assert.match(sql2, /create table if not exists public\.quest_milestones/);
+  for (const col of ["title", "position", "actions", "own_steps", "reached_on", "checked_on"]) assert.match(sql2, new RegExp(`\\b${col}\\b`), col);
+  assert.match(sql2, /milestone_id uuid references public\.quest_milestones/);
+  assert.match(sql2, /action_key ~ '\^\[a-z0-9_\]\{3,60\}\$'/);
+  assert.match(sql2, /char_length\(intention\) <= 240/);
+  assert.match(sql2, /enable row level security/);
+  assert.match(sql2, /revoke all on public\.quest_milestones from anon/);
 });
 
-test("every action is well formed", () => {
-  const cats = new Set(CATEGORIES.map(c => c.key));
-  const vals = new Set(VALUES.map(v => v.key));
-  const keys = new Set();
+test("every action is well formed and every focus has short actions of its own in every category", () => {
+  const cats = new Set(CATEGORIES.map(c => c.key)), vals = new Set(VALUES.map(v => v.key)), keys = new Set();
   for (const a of ACTIONS) {
-    assert.match(a.key, /^[a-z_]{3,40}$/, `${a.key} fits quest_steps.action_key`);
+    assert.match(a.key, /^[a-z0-9_]{3,60}$/, `${a.key} fits quest_steps.action_key`);
     assert.ok(!keys.has(a.key), `${a.key} is unique`); keys.add(a.key);
-    assert.ok(cats.has(a.cat), `${a.key} has a known category`);
-    assert.ok(MINUTES.includes(a.min), `${a.key} takes one of the minute choices`);
+    assert.ok(cats.has(a.cat) && MINUTES.includes(a.min), `${a.key} has a known category and length`);
     for (const v of a.values || []) assert.ok(vals.has(v), `${a.key} names known value ${v}`);
     assert.ok(a.text.length > 10 && a.text.endsWith("."), `${a.key} reads as a sentence`);
+    if (a.write) assert.match(a.text, /^(Write|Note|Describe|List|Fill|Name)\b/, `${a.key} is done by writing`);
+    if (/^(Write|Describe|List|Fill)\b/.test(a.text)) assert.ok(a.write, `${a.key} should be flagged write`);
   }
-});
-
-test("writing actions are flagged, so the page opens a note box for them", () => {
-  const writers = ACTIONS.filter(a => a.write);
-  assert.ok(writers.length >= 10, "a good spread of writing actions");
-  for (const a of writers) assert.match(a.text, /^(Write|Note|Describe|List|Fill|Name)\b/, `${a.key} is done by writing`);
-  for (const a of ACTIONS.filter(a => /^(Write|Describe|List|Fill)\b/.test(a.text))) assert.ok(a.write, `${a.key} should be flagged write`);
-});
-
-test("every category has a two-minute action, so the shortest setting is never empty", () => {
-  for (const c of CATEGORIES) {
-    assert.ok(ACTIONS.some(a => a.cat === c.key && a.min === 2), `${c.key} has a 2 minute action`);
-    assert.ok((PROMPT_IDEAS[c.key] || []).length, `${c.key} has nudges`);
-  }
-});
-
-test("every focus has actions of its own in every kind of practice, within five minutes", () => {
   for (const v of VALUES) {
-    for (const c of CATEGORIES) {
-      assert.ok(ACTIONS.some(a => a.cat === c.key && suits(a, v.key) && a.min <= 5),
-        `${v.key} has a short ${c.key} action written for it`);
+    assert.ok(v.example && v.does, `${v.key} has an example goal and a line on its actions`);
+    for (const c of CATEGORIES) assert.ok(ACTIONS.some(a => a.cat === c.key && suits(a, v.key) && a.min <= 5), `${v.key} has a short ${c.key} action`);
+  }
+});
+
+/* ------------------------------------------------------------ the matcher */
+test("every milestone names real actions, four each, five per theme, in plain words", () => {
+  assert.deepEqual(milestoneProblems(), []);
+  for (const v of VALUES) {
+    const list = MILESTONES[v.key];
+    assert.equal(list.length, 5, `${v.key} has five milestones`);
+    for (const m of list) {
+      assert.equal(m.steps.length, 4, `${m.title} has four stepping stones`);
+      assert.ok(m.title.length <= 60 && !/\d/.test(m.title), `${m.title} is short and not a number to hit`);
+      assert.ok(m.steps.some(k => suits(action(k), v.key)), `${m.title} has a stone written for ${v.key}`);
     }
-    const own = ACTIONS.filter(a => suits(a, v.key));
-    assert.ok(own.length >= 18, `${v.key} has a good spread of its own actions (${own.length})`);
-    const samples = samplesFor(v.key);
-    assert.equal(samples.length, 3);
-    assert.ok(samples.every(a => suits(a, v.key)), "samples are written for the focus");
-    assert.equal(new Set(samples.map(a => a.cat)).size, 3, "samples span three kinds of practice");
+    assert.equal(suggestMilestones(v.key).length, 5);
+    assert.notEqual(suggestMilestones(v.key)[0].steps, list[0].steps, "suggestions are copies");
   }
+  assert.equal(EXAMPLE_GOALS.length, VALUES.length);
+  assert.equal(STEPS_PER_MILESTONE, 7);
+  for (const tag of Object.values(THEME_TAGS).flatMap(t => Object.keys(t))) assert.ok(WORDS[tag], `theme tag ${tag} has words`);
 });
 
-test("every choice draws a full map from the member's own picks", () => {
-  for (const v of VALUES) for (const c of CATEGORIES) for (const m of MINUTES) {
-    const q = buildQuest({ id: "t", value: v.key, categories: [c.key], minutes: m });
-    assert.equal(q.chapters.length, CHAPTERS.length);
-    for (const ch of q.chapters) {
-      assert.ok(ch.main.length >= 1, `${v.key}/${c.key}/${m} has an action in ${ch.place}`);
-      for (const a of ch.main) {
-        assert.equal(a.cat, c.key, "main actions come from chosen categories");
-        assert.ok(a.min <= m, "main actions fit the time");
-      }
-      assert.ok(ch.side, "every chapter has a side path");
-      assert.notEqual(ch.side.cat, c.key, "side paths come from other categories");
-      assert.ok(ch.side.min <= m, "side paths fit the time too");
+test("a goal in a member's words finds its theme, and says which words did it", () => {
+  const cases = [
+    ["Evenings that feel like mine again", "calm_evenings"],
+    ["I want to stop scrolling my phone at night and sleep better", "calm_evenings"],
+    ["Feel less lonely and talk to my friends more", "connection"],
+    ["Have more energy in the mornings, I am exhausted all the time", "energy"],
+    ["Get outside every day", "time_outdoors"],
+    ["Stop being so hard on myself", "self_kindness"],
+    ["Talking to myself like a friend", "self_kindness"],
+    ["Start drawing again", "creativity"],
+    ["Focus at work without getting distracted", "focus"],
+    ["A morning routine that actually sticks", "steady_routines"],
+    ["More real conversations", "connection"],
+    ["Fresh air every day, not just weekends", "time_outdoors"],
+  ];
+  for (const [text, theme] of cases) {
+    const d = detectTheme(text);
+    assert.equal(d.theme, theme, `"${text}" → ${d.theme}`);
+    assert.ok(d.because.length, `"${text}" says why`);
+    assert.ok(recognizedWords(text).length);
+  }
+  for (const g of EXAMPLE_GOALS) assert.equal(detectTheme(g.text).theme, g.theme, `example "${g.text}" matches its own theme`);
+  assert.equal(detectTheme("Be a better person").theme, null, "words we do not know ask the member to pick");
+  assert.equal(detectTheme("").theme, null);
+});
+
+test("suggested stepping stones are relevant: they fit the theme, the milestone and the member's words", () => {
+  const text = "I want to stop scrolling my phone at night and sleep better";
+  const ms = suggestMilestones("calm_evenings")[0];
+  const s = suggestSteps({ text, theme: "calm_evenings", milestone: ms, minutes: 5, limit: 8 });
+  assert.equal(s.length, 8);
+  assert.ok(s.slice(0, 4).every(x => ms.steps.includes(x.action.key)), "the milestone's own stones lead");
+  assert.ok(s.every(x => x.action.min <= 5), "nothing longer than the member has");
+  assert.ok(s.every(x => x.because.length), "every suggestion names a word from the goal");
+  assert.match(reasonFor(s[0]), /because you mentioned/);
+  assert.ok(s.slice(0, 6).every(x => tagsOf(x.action.key).some(t => ["evening", "sleep", "screen"].includes(t))), "the top stones are about evenings, sleep or screens");
+  for (const v of VALUES) {
+    const r = suggestSteps({ text: v.example, theme: v.key, milestone: suggestMilestones(v.key)[0], minutes: 20, limit: 6 });
+    assert.ok(r.length >= 4 && r.every(x => suits(x.action, v.key) || !x.action.values), `${v.key}: stones suit the theme`);
+  }
+  // A milestone the member wrote still gets stones from its words.
+  const own = suggestSteps({ text: "", theme: "focus", milestone: { title: "No phone at the dinner table", steps: [] }, minutes: 10, limit: 4 });
+  assert.ok(own.some(x => tagsOf(x.action.key).includes("screen") || tagsOf(x.action.key).includes("food")), own.map(x => x.action.key).join());
+  // Nothing in the matcher reaches outside the browser.
+  const src = read("site/assets/quest-goals.js");
+  assert.ok(!/fetch\(|XMLHttpRequest|navigator\.sendBeacon|import\(/.test(src), "the matcher makes no network calls");
+});
+
+test("the What helped nudges all ask what helped, and the helper stays rule-based", () => {
+  for (const c of CATEGORIES) assert.ok((PROMPT_IDEAS[c.key] || []).length, `${c.key} has nudges`);
+  for (const line of Object.values(PROMPT_IDEAS).flat()) assert.match(line, /\?$/);
+  for (let i = 0; i < 20; i++) assert.ok(PROMPT_IDEAS.gratitude.includes(helper.prompt(["gratitude"], i)));
+});
+
+/* ------------------------------------------------------------- the map */
+const ms = (theme, reached, count = 5) => suggestMilestones(theme).slice(0, count).map((m, i) => ({ title: m.title, reached: i < reached }));
+
+test("camps sit along the trail in order, the hiker only moves forward, and planted days never move", () => {
+  for (const count of [1, 3, 4, 5, 6]) {
+    let last = 0;
+    for (let i = 0; i < count; i++) { const f = campAt(i, count); assert.ok(f > last && f < 1); last = f; }
+  }
+  let lastF = 0;
+  const m = ms("focus", 0);
+  for (let c = 0; c < 5; c++) {
+    for (let k = 0; k <= 7; k++) {
+      const f = hikerFraction({ milestones: m.map((x, i) => ({ ...x, reached: i < c })), current: c, stepFrac: k / 7 });
+      assert.ok(f >= lastF && f <= 1, `camp ${c} step ${k} does not step back`); lastF = f;
     }
   }
+  assert.ok(hikerFraction({ milestones: m, current: 5, stepFrac: 0 }) >= 0.98, "all reached: at the goal");
+  for (let k = 1; k < 200; k++) { const f = dayFraction(k); assert.ok(f > 0 && f < 1); assert.equal(dayFraction(k), f); }
+  const p = along(0.5); assert.ok(p.x > 0 && p.x < TRAIL.W && p.y > 0 && p.y < TRAIL.H && Math.abs(Math.hypot(p.nx, p.ny) - 1) < 1e-6);
 });
 
-test("the map speaks to the focus: most of what a chapter shows was written for it", () => {
-  for (const v of VALUES) for (const m of MINUTES) {
-    const categories = CATEGORIES.map(c => c.key);
-    const q = buildQuest({ id: "focus", value: v.key, categories, minutes: m });
-    for (const ch of q.chapters) {
-      assert.equal(ch.main.length, MAIN_PER_CHAPTER);
-      assert.ok(ch.main.filter(a => suits(a, v.key)).length >= 2, `${v.key}/${m} ${ch.place}: ${ch.main.map(a => a.key)}`);
-    }
-  }
-  // The case from the first screenshots: steady routines, habits and self-care, two minutes.
-  const q = buildQuest({ id: "x", value: "steady_routines", categories: ["habits", "self_care"], minutes: 2 });
-  for (const ch of q.chapters) assert.ok(ch.main.filter(a => suits(a, "steady_routines")).length >= 2, ch.place);
-  const p = pool({ value: "calm_evenings", categories: ["self_care", "habits", "nature"], minutes: 10 });
-  assert.ok(p.every(a => !a.values || a.values.includes("calm_evenings")));
-  assert.ok(suits(p[0], "calm_evenings"), "the pool lists the focus's own actions first");
-});
-
-test("chapters never repeat an earlier chapter's exact set when there are enough actions", () => {
-  const cats = CATEGORIES.map(c => c.key);
-  for (const v of VALUES) for (const m of MINUTES) for (let i = 0; i < cats.length; i++) {
-    const categories = [cats[i], cats[(i + 3) % cats.length]];
-    if (pool({ value: v.key, categories, minutes: m }).length < 2 * MAIN_PER_CHAPTER) continue;
-    const q = buildQuest({ id: `${v.key}${m}${i}`, value: v.key, categories, minutes: m });
-    const sets = q.chapters.filter(c => c.main.length === MAIN_PER_CHAPTER)
-      .map(c => c.main.map(a => a.key).sort().join());
-    assert.equal(new Set(sets).size, sets.length, `${v.key}/${categories}/${m}: ${sets.join(" | ")}`);
-  }
-});
-
-test("the same quest always draws the same map", () => {
-  const args = { id: "abc", value: "connection", categories: ["gratitude", "connection"], minutes: 5 };
-  assert.deepEqual(JSON.stringify(buildQuest(args)), JSON.stringify(buildQuest({ ...args, categories: ["connection", "gratitude"] })));
-  assert.match(buildQuest(args).chapters[0].story, /closer connection/);
-});
-
-test("progress counts distinct days, in a row or not, and only ever goes up", () => {
-  assert.equal(progress([]).days, 0);
-  assert.equal(progress([]).open, 0);
-  assert.equal(progress(["2026-09-01", "2026-09-01", "2026-09-20"]).days, 2);
-  const three = progress(["2026-01-01", "2026-03-01", "2026-09-01"]);
-  assert.equal(three.open, 1, "three scattered days open chapter two");
-  assert.equal(progress(["a", "b"]).next.left, 1);
-  let last = -1;
-  for (let d = 0; d <= 60; d++) {
-    const p = progress(days(d));
-    assert.ok(p.open >= last); last = p.open;
-  }
-  assert.equal(progress(days(99)).next, null);
-  assert.deepEqual(CHAPTERS.map(c => c.at), [...CHAPTERS.map(c => c.at)].sort((a, b) => a - b));
-  assert.equal(CHAPTERS[0].at, 0, "the first chapter is open from the start");
-  for (const c of CHAPTERS.slice(1)) assert.ok(MILESTONES.includes(c.at), `${c.place} opens on a milestone`);
-});
-
-test("the helper only offers shorter things and nudges from chosen categories", () => {
-  for (const a of ACTIONS) {
-    const s = helper.shorter(a.key, { categories: [a.cat] });
-    if (s) assert.ok(s.min < a.min, `${a.key} -> ${s.key} is shorter`);
-    if (a.min === 2) assert.equal(helper.shorter(a.key, { categories: CATEGORIES.map(c => c.key) }), null);
-  }
-  for (let i = 0; i < 50; i++) assert.ok(PROMPT_IDEAS.gratitude.includes(helper.prompt(["gratitude"], i)));
-  assert.ok(PROMPT_IDEAS.reflection.includes(helper.prompt([], 1)));
-  for (const line of Object.values(PROMPT_IDEAS).flat()) assert.match(line, /\?$/, "a nudge asks a question");
-});
-
-test("the hiker walks the trail one chapter at a time and never steps back", () => {
-  assert.equal(TRAIL.points.length, CHAPTERS.length, "one place on the map per chapter");
-  let lastSeg = 0, lastU = 0;
-  for (let d = 0; d <= CHAPTERS.at(-1).at; d++) {
-    const h = hikerAt(d, CHAPTERS);
-    assert.equal(h.open, progress(days(d)).open, `day ${d} stands at the open chapter`);
-    assert.ok(h.seg > lastSeg || (h.seg === lastSeg && h.u >= lastU), `day ${d} does not step back`);
-    lastSeg = h.seg; lastU = h.u;
-    assert.ok(h.u >= 0 && h.u <= 1);
-  }
-  assert.deepEqual(hikerAt(3, CHAPTERS), { seg: 1, u: 0, open: 1 }, "day three stands on The First Clearing");
-  assert.equal(hikerAt(500, CHAPTERS).u, 1, "past the last place the hiker stays there");
-  for (let k = 1; k <= 400; k++) {
-    const d = dayAt(k, CHAPTERS);
-    assert.ok(d.seg >= 0 && d.seg < CHAPTERS.length - 1 && d.u >= 0 && d.u <= 1, `day ${k} is planted on the trail`);
-  }
-  assert.equal(towardNext(progress(days(5)), CHAPTERS), 0.5, "five days is halfway from three to seven");
-  assert.equal(towardNext(progress(days(40)), CHAPTERS), 1);
-});
-
-test("the trail map draws for any number of days, any scene, without broken numbers", () => {
-  const q = buildQuest({ id: "s", value: "focus", categories: ["habits"], minutes: 20 });
-  for (const d of [0, 1, 2, 3, 5, 7, 9, 12, 19, 25, 35, 36, 47, 48, 60, 61, 120, 121, 300]) {
-    const p = progress(days(d));
-    for (const scene of [...SCENES.map(s => s.key), "nope"]) {
-      const svg = trailMap(q.chapters, p, { scene });
+test("the trail map draws for every theme, any number of milestones, any scene and any day count", () => {
+  for (const v of VALUES) for (const scene of [...SCENES.map(s => s.key), "nope"]) for (const count of [1, 3, 5]) {
+    for (const reached of [0, 1, count]) for (const days of [0, 1, 12, 160]) {
+      const list = ms(v.key, reached, count);
+      const svg = trailMap({ goal: { text: v.example, theme: v.key }, milestones: list, current: reached, stepFrac: 0.4, days, scene });
       assert.ok(svg.startsWith("<svg") && svg.trim().endsWith("</svg>"));
-      assert.ok(!/NaN|undefined|Infinity/.test(svg), `day ${d} ${scene} draws cleanly`);
-      assert.equal((svg.match(/data-ch=/g) || []).length, CHAPTERS.length, "every place can be tapped");
+      assert.ok(!/NaN|undefined|Infinity/.test(svg), `${v.key}/${scene}/${count}/${reached}/${days} draws cleanly`);
+      assert.equal((svg.match(/data-ms=/g) || []).length, count, "every camp can be tapped");
+      assert.match(svg, /data-goal/);
       assert.match(svg, /You are here/);
-      assert.equal((svg.match(/>opens after \d+ days</g) || []).length, CHAPTERS.length - 1 - p.open, "places ahead say when they open");
+      assert.match(svg, reached >= count ? /GOAL REACHED/ : /WORKING ON NOW/);
+      assert.equal((svg.match(/WORKING ON NOW/g) || []).length <= 1, true, "only the current camp is labeled");
     }
   }
-  for (let o = 0; o < CHAPTERS.length; o++) assert.match(trailMap(q.chapters, progress(days(CHAPTERS[o].at)), { current: o }), /showing now/);
+  assert.match(trailMap({ goal: { text: "<b>", theme: "focus" }, milestones: [{ title: "a & b", reached: false }] }), /&lt;b&gt;/, "escapes the member's words");
 });
 
-test("the trail only ever gains things as days are added", () => {
-  const q = buildQuest({ id: "g", value: "energy", categories: ["movement"], minutes: 5 });
+test("the trail only ever gains flowers, lanterns and reached camps", () => {
   const count = (svg, re) => (svg.match(re) || []).length;
-  let flowers = 0, lanterns = 0, open = 0;
-  for (let d = 0; d < 130; d++) {
-    const p = progress(days(d));
-    const f = count(trailMap(q.chapters, p, { scene: "garden" }), /#F6C453"\/><\/g>/g);
-    const l = count(trailMap(q.chapters, p, { scene: "lights" }), /#FFF4D0/g);
-    const o = count(trailMap(q.chapters, p, { scene: "scenery" }), /stroke="#fff" stroke-width="3"/g);
-    assert.ok(f >= flowers, `day ${d}: flowers never disappear`);
-    assert.ok(l >= lanterns, `day ${d}: lanterns never go out`);
-    assert.ok(o >= open, `day ${d}: an open place stays open`);
-    flowers = f; lanterns = l; open = o;
+  let flowers = 0, lanterns = 0;
+  const list = ms("energy", 1);
+  for (let d = 0; d < 170; d++) {
+    const f = count(trailMap({ goal: { theme: "energy" }, milestones: list, current: 1, days: d, scene: "garden" }), /class="trail-bloom"/g);
+    const l = count(trailMap({ goal: { theme: "energy" }, milestones: list, current: 1, days: d, scene: "lights" }), /#FFF4D0/g);
+    assert.ok(f >= flowers && l >= lanterns, `day ${d}: nothing disappears`); flowers = f; lanterns = l;
   }
-  assert.ok(flowers > 100 && lanterns > 100, "a flower or lantern for every day shown up");
+  assert.ok(flowers > 140 && lanterns > 140);
+  let flags = 0;
+  for (let r = 0; r <= 5; r++) {
+    const c = count(trailMap({ goal: { theme: "energy" }, milestones: ms("energy", r), current: r, scene: "scenery" }), /fill="#187C1A"\/>\s*<text[^>]*>✓/g);
+    assert.ok(c >= flags); flags = c;
+  }
+  assert.equal(flags, 5, "a green check flag per reached camp");
 });
 
-// Everything a member reads from these files.
+/* --------------------------------------------------------------- words */
 const words = [
   ...VALUES.flatMap(v => [v.label, v.phrase, v.example, v.does]), ...CATEGORIES.map(c => c.label),
   ...SCENES.flatMap(s => [s.label, s.blurb]), ...ACTIONS.map(a => a.text),
-  ...CHAPTERS.flatMap(c => [c.place, c.story("calmer evenings")]),
-  ...Object.values(PROMPT_IDEAS).flat(),
+  ...Object.values(MILESTONES).flat().map(m => m.title), ...Object.values(PROMPT_IDEAS).flat(),
 ].join("\n");
 
 test("no clinical, screening or streak language in anything a member reads", () => {
   const banned = /symptom|diagnos|disorder|patient|treat|therap|clinical|screen(ing)? (for|test)|depress|anxiety|panic|trauma|cure|heal|recover|relapse|severity|score|streak|fail|missed|behind/i;
   const hit = words.split("\n").find(l => banned.test(l));
   assert.equal(hit, undefined, `found: ${hit}`);
+  assert.ok(!/streak/i.test(ui) && !/streak/i.test(page), "no streaks on the page");
 });
 
 test("US spelling", () => {
@@ -254,32 +230,26 @@ test("US spelling", () => {
   assert.equal(hit, undefined, `found: ${hit}`);
 });
 
-test("the page carries the wellness note, crisis line and professional help on every tab", () => {
+/* ---------------------------------------------------------------- pages */
+test("the page carries the wellness note and crisis line, and the three levels in order", () => {
   assert.match(page, /General wellness and self-help only/);
   assert.match(page, /not psychotherapy or clinical\s+care/);
   assert.match(page, /not a substitute for help from a licensed professional/);
   assert.match(page, /tel:988/);
   assert.match(page, /therapists\.html/);
-  assert.match(page, /\$\{WELLNESS\}/, "the note is in the shell every tab draws");
-  assert.ok(!/streak/i.test(page), "no streaks on the page");
+  assert.match(page, /dashboard\.html#nearby/);
+  assert.match(page, /location\.hash === '#map'\) location\.replace\('dashboard\.html#nearby'\)/);
+  const order = ["Your goal", "Working on now", "Today's stepping stones", "Tonight"].map(s => ui.indexOf(s));
+  assert.ok(order.every((i, k) => i >= 0 && (k === 0 || i > order[k - 1])), `goal, milestone, stones, tonight: ${order}`);
+  assert.match(ui, /Is it happening for you now\?/, "the member decides when a milestone is reached");
+  assert.match(ui, /Your words never leave your device and no AI reads them/);
+  assert.match(ui, /Small on purpose/);
 });
 
-test("the page says plainly how a day counts, and keeps goals under the trail", () => {
-  assert.match(page, /Today is counted/);
-  assert.match(page, /Today is not counted yet/);
-  assert.match(page, /Do one small action/);
-  assert.match(page, /id="goals-zone"/, "goals of your own sit in a zone under the trail");
-  assert.match(page, /Logging one counts as a day shown up on your trail/);
-  assert.ok(!/\['map',\s*'Nearby help'\]/.test(page), "Nearby help is no longer a tab here");
-  assert.match(page, /location\.hash === '#map'\) location\.replace\('dashboard\.html#nearby'\)/, "old links to it forward");
-});
-
-test("Nearby help is a tab on the member dashboard, and the repeated tab row has it", () => {
+test("Nearby help stays on the member dashboard's menu bar", () => {
   assert.match(dash, /<button data-tab="nearby" role="tab">Nearby help<\/button>/);
   assert.match(dash, /data-panel="nearby"/);
-  assert.match(dash, /'nearby'\]/, "PANELS lists it");
-  assert.match(dash, /mountNearby\(document\.getElementById\('nearby-host'\)/);
-  assert.match(app, /\['Nearby help',\s*'nearby'\]/, "DASH_TABS lists it");
+  assert.match(app, /\['Nearby help',\s*'nearby'\]/);
 });
 
 console.log(`\n${n} checks passed`);

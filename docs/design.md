@@ -51,9 +51,9 @@ their own: the page's `h1` and a muted line of introduction, then each section
 in a `.zone` with its `.zone-head`, cards inside. The feature showcase takes
 the right third of every such page on its own (`chrome()` puts it there), so
 a page's content has two thirds of the width to work with. Goals & tracking keeps its
-wellness note above the zone, and the zone's heading follows the tab that is
-open; its first tab adds a second zone under the trail for the member's own
-goals. A new member page starts the same way.
+wellness note above its one zone, which holds the three-level card (goal,
+milestone, stepping stones) and the trail map. A new member page starts the
+same way.
 
 ## Adding a new dashboard tab
 
