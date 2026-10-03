@@ -82,7 +82,7 @@ export const FEATURES = [
    'dashboard.html#playlists', 3],
   ['Mental Health Local Resource Map',
    'Find support near you on a map, plus national lines that answer any time.',
-   'goals.html#map', 3],
+   'dashboard.html#nearby', 1],
 ];
 
 const BETWEEN = 4;         // other features between one Match Mode card and the next

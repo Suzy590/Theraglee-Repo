@@ -1,13 +1,17 @@
 # Nearby help
 
-The **Nearby help** tab on the Premium Goals & tracking page (`goals.html#map`)
-shows a map of mental health services around a zip code or town, a tile for
-each one, and the national resources underneath.
+The **Nearby help** tab on the member dashboard (`dashboard.html#nearby`, last
+on the dashboard's menu bar and on the tab row repeated on the pages it leads
+to) shows a map of mental health services around a zip code or town, a tile
+for each one, and the national resources underneath. It is open to every
+signed-in member, since it is a pathway to help rather than a feature to
+unlock. It used to sit on the Premium Goals & tracking page; `goals.html#map`
+forwards here, and the wellness note on that page links here.
 
 | Piece | File |
 | --- | --- |
 | Finding, sorting and labeling places (no DOM, no network) | `site/assets/nearby-help.js` |
-| The tab itself: search box, map, tiles | `site/assets/nearby-ui.js` |
+| The tab itself: search box, map, tiles (`mapView`, mounted by `site/dashboard.html` the first time the tab opens) | `site/assets/nearby-ui.js` |
 | `GET /api/nearby?lat=&lon=`, the Vercel Function that relays SAMHSA | `site/api/nearby.js` |
 | Test (no network) | `node tests/nearby-help/check.mjs` |
 
