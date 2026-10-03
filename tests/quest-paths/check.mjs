@@ -14,7 +14,7 @@ import {
   VALUES, CATEGORIES, MINUTES, SCENES, ACTIONS, PROMPT_IDEAS, action, suits, helper,
 } from "../../site/assets/quest-paths.js";
 import {
-  WORDS, THEME_TAGS, MILESTONES, EXAMPLE_GOALS, STEPS_PER_MILESTONE,
+  WORDS, THEME_TAGS, MILESTONES, MILESTONE_SETS, EXAMPLE_GOALS, STEPS_PER_MILESTONE,
   detectTheme, suggestMilestones, suggestSteps, reasonFor, recognizedWords, milestoneProblems, tagsOf,
 } from "../../site/assets/quest-goals.js";
 import { trailMap, TRAIL, campAt, hikerFraction, dayFraction, along } from "../../site/assets/quest-scene.js";
@@ -95,6 +95,10 @@ test("every milestone names real actions, four each, five per theme, in plain wo
     assert.equal(suggestMilestones(v.key).length, 5);
     assert.notEqual(suggestMilestones(v.key)[0].steps, list[0].steps, "suggestions are copies");
   }
+  for (const [k, set] of Object.entries(MILESTONE_SETS)) {
+    assert.equal(set.milestones.length, 5, `${k} set has five milestones`);
+    for (const m of set.milestones) assert.equal(m.steps.length, 4, `${m.title} has four stones`);
+  }
   assert.equal(EXAMPLE_GOALS.length, VALUES.length);
   assert.equal(STEPS_PER_MILESTONE, 7);
   for (const tag of Object.values(THEME_TAGS).flatMap(t => Object.keys(t))) assert.ok(WORDS[tag], `theme tag ${tag} has words`);
@@ -114,6 +118,10 @@ test("a goal in a member's words finds its theme, and says which words did it", 
     ["A morning routine that actually sticks", "steady_routines"],
     ["More real conversations", "connection"],
     ["Fresh air every day, not just weekends", "time_outdoors"],
+    ["A more loving marriage", "connection"],
+    ["Date nights again", "connection"],
+    ["Fight less with my partner and really listen", "connection"],
+    ["Learn to love myself", "self_kindness"],
   ];
   for (const [text, theme] of cases) {
     const d = detectTheme(text);
@@ -140,6 +148,13 @@ test("suggested stepping stones are relevant: they fit the theme, the milestone 
     const r = suggestSteps({ text: v.example, theme: v.key, milestone: suggestMilestones(v.key)[0], minutes: 20, limit: 6 });
     assert.ok(r.length >= 4 && r.every(x => suits(x.action, v.key) || !x.action.values), `${v.key}: stones suit the theme`);
   }
+  // A goal about a partner gets milestones and stones written for one.
+  const marriage = suggestMilestones("connection", "A more loving marriage");
+  assert.equal(marriage[0].title, "One meal a day together with no screens");
+  assert.equal(suggestMilestones("connection", "Feel less lonely")[0].title, "I reach out to one person most days");
+  const ms2 = suggestSteps({ text: "A more loving marriage", theme: "connection", milestone: marriage[1], minutes: 10, limit: 6 });
+  assert.ok(ms2.every(x => tagsOf(x.action.key).includes("partner")), ms2.map(x => x.action.key).join());
+  assert.match(reasonFor(ms2[0]), /marriage|loving/);
   // A milestone the member wrote still gets stones from its words.
   const own = suggestSteps({ text: "", theme: "focus", milestone: { title: "No phone at the dinner table", steps: [] }, minutes: 10, limit: 4 });
   assert.ok(own.some(x => tagsOf(x.action.key).includes("screen") || tagsOf(x.action.key).includes("food")), own.map(x => x.action.key).join());
