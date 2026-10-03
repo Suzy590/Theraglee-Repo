@@ -15,7 +15,7 @@
    ========================================================================== */
 import { VALUES, CATEGORIES, MINUTES, SCENES, action, valueOf, helper } from './quest-paths.js';
 import { detectTheme, suggestMilestones, suggestSteps, reasonFor, recognizedWords,
-  EXAMPLE_GOALS, STEPS_PER_MILESTONE } from './quest-goals.js';
+  EXAMPLE_GOALS, GOAL_LIBRARY, STEPS_PER_MILESTONE } from './quest-goals.js';
 import { trailMap } from './quest-scene.js';
 
 const ymd = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
@@ -330,7 +330,8 @@ export async function mountGoals(host, ctx) {
         <h2>What would you like your life to have more of?</h2>
         <p class="muted">Say it the way you would to a friend. This is the destination; everything else on the page serves it.</p>
         <textarea id="goal" rows="2" maxlength="240" placeholder="e.g. Evenings that feel like mine again">${esc(st.text)}</textarea>
-        <div class="chips" style="margin-top:8px">${EXAMPLE_GOALS.map(g => `<button class="chip" data-ex="${esc(g.text)}">${esc(g.text)}</button>`).join('')}</div>
+        <div class="chips" style="margin-top:8px">${EXAMPLE_GOALS.map(g => `<button class="chip" data-ex="${esc(g.text)}">${esc(g.text)}</button>`).join('')}
+          <button class="chip browse" id="browse">Browse ${GOAL_LIBRARY.length + EXAMPLE_GOALS.length} common goals…</button></div>
         <div class="sounds" id="sounds">${soundsLike(det)}</div>
         <p class="help" style="margin-top:14px">Matching happens in your browser by looking for everyday words. Your words never leave your device and no AI reads them.</p>`;
       if (st.step === 1) inner = `
@@ -375,7 +376,9 @@ export async function mountGoals(host, ctx) {
       const goalBox = $('#goal');
       if (goalBox) {
         goalBox.oninput = () => { st.text = goalBox.value; st.picked = false; const dd = detectTheme(st.text); st.theme = dd.theme; $('#sounds').innerHTML = soundsLike(dd); wireTheme(); };
-        host.querySelectorAll('[data-ex]').forEach(c => c.onclick = () => { goalBox.value = c.dataset.ex; goalBox.dispatchEvent(new Event('input')); });
+        const useGoal = (text) => { goalBox.value = text; goalBox.dispatchEvent(new Event('input')); goalBox.focus(); };
+        host.querySelectorAll('[data-ex]').forEach(c => c.onclick = () => useGoal(c.dataset.ex));
+        $('#browse').onclick = () => browseGoals(useGoal);
         wireTheme();
       }
       function wireTheme() {
@@ -477,6 +480,30 @@ export async function mountGoals(host, ctx) {
       main();
     }
     draw();
+  }
+
+  /* The library of common goals, grouped by theme, with a search box. */
+  function browseGoals(useGoal) {
+    const all = [...EXAMPLE_GOALS.map(g => ({ text: g.text, theme: g.theme })), ...GOAL_LIBRARY];
+    const back = modal(`<span class="kicker">Common goals</span><h2 style="margin:4px 0 6px">Does one of these sound like you?</h2>
+      <p class="muted">Tap one to use it as it is, or as a starting point in your own words.</p>
+      <input id="gsearch" placeholder="Search, e.g. sleep, kids, work…" autocomplete="off">
+      <div id="glist" class="glist"></div>
+      <div class="row" style="justify-content:flex-end;margin-top:14px"><button class="btn ghost" id="no">Close</button></div>`);
+    const list = back.querySelector('#glist'), search = back.querySelector('#gsearch');
+    const draw = () => {
+      const q = search.value.trim().toLowerCase();
+      const shown = all.filter(g => !q || g.text.toLowerCase().includes(q) || (valueOf(g.theme)?.label || '').toLowerCase().includes(q));
+      list.innerHTML = VALUES.map(v => {
+        const mine = shown.filter(g => g.theme === v.key);
+        return mine.length ? `<div class="ggroup"><span class="kicker">${v.icon} ${esc(v.label)}</span>
+          <div class="chips">${mine.map(g => `<button class="chip" data-goal-text="${esc(g.text)}">${esc(g.text)}</button>`).join('')}</div></div>` : '';
+      }).join('') || '<p class="faint">Nothing matches that word. Type your goal in your own words instead; the page will still find the closest kind.</p>';
+      list.querySelectorAll('[data-goal-text]').forEach(b => b.onclick = () => { useGoal(b.dataset.goalText); back.remove(); });
+    };
+    search.oninput = draw; draw();
+    back.querySelector('#no').onclick = () => back.remove();
+    setTimeout(() => search.focus(), 50);
   }
 
   /* --------------------------------------------------------- editors */
