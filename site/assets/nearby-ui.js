@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Theraglee — the "Nearby help" tab on Goals & tracking (goals.html#map).
+   Theraglee — the "Nearby help" tab on the member dashboard (dashboard.html#nearby).
    Type a zip code or town (or share a location) and it draws a Leaflet map of
    the mental health places around it, with a tile for each one below, then
    the national resources. The finding and sorting live in nearby-help.js.
@@ -147,10 +147,10 @@ const moreLinks = (q) => q ? `
     <a class="btn sm ghost" target="_blank" rel="noopener" href="https://www.211.org">211 local services</a>
   </div>`;
 
-export function mapView(body, zip = '') {
+export function mapView(body, zip = '', { heading = true } = {}) {
   body.innerHTML = `
     <style>${STYLE}</style>
-    <h2>Mental health help near you</h2>
+    ${heading ? '<h2>Mental health help near you</h2>' : ''}
     <p class="muted">Clinics, treatment centers and crisis services within ${RADIUS_MI} miles.
       Individual therapists and counseling offices aren't listed here; the <a href="therapists.html">Theraglee directory</a>
       has those.</p>

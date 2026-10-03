@@ -290,6 +290,7 @@ const DASH_TABS = [
   ['Progress',        'progress'],
   ['Tools',           'tools'],
   ['Messages',        'messages'],
+  ['Nearby help',     'nearby'],
 ];
 // The member pages that show that row, and the tab each one sits under.
 const DASH_PAGES = {

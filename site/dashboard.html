@@ -145,6 +145,7 @@
       <button data-tab="discover" role="tab">Self-Discovery</button>
       <button data-tab="tools" role="tab">Tools</button>
       <button data-tab="messages" role="tab">Messages</button>
+      <button data-tab="nearby" role="tab">Nearby help</button>
     </div>
 
     <div class="dash-top">
@@ -321,6 +322,22 @@
           </div>
           <div class="showcase-slot"></div>
         </div>
+        <div class="tab-top" data-panel="nearby">
+          <div class="card tab-intro">
+            <span class="badge">Nearby help</span>
+            <p class="hero-line">Support near you, for when you would like more than a page.</p>
+          </div>
+          <div class="tab-body">
+            <section class="zone" aria-labelledby="nearby-zone-title">
+              <div class="zone-head">
+                <h2 id="nearby-zone-title">Mental health help near you</h2>
+                <p class="muted">A map of clinics, treatment centers and crisis services around a zip code or town, with the national lines that answer any time.</p>
+              </div>
+              <div id="nearby-host"><div class="card"><div class="skeleton" style="height:120px"></div></div></div>
+            </section>
+          </div>
+          <div class="showcase-slot"></div>
+        </div>
       </div>
       <div class="mm" id="match-mode">
         <div class="mm-body">
@@ -347,6 +364,7 @@ import { mountDiscover } from './assets/discover-ui.js';
 import { mountMood } from './assets/mood-ui.js';
 import { mountJournal } from './assets/journal-ui.js';
 import { mountPlaylists } from './assets/playlists-ui.js';
+import { mapView as mountNearby } from './assets/nearby-ui.js';
 import { loadPrices, tierCards, PLANS_INTRO, PLANS_NOTE } from './assets/plans.js';
 document.getElementById('mm-desc').innerHTML = MATCH_BLURB;
 await chrome({ active:'dashboard.html' });
@@ -367,7 +385,7 @@ document.getElementById('tierbadge').textContent = tierName(a.level) + ' members
    The dashboard opens on Today. The other tabs are reached by their buttons or
    by address (dashboard.html#progress), and the address follows the tab so a
    refresh or a shared link comes back to the same one. */
-const PANELS = ['today', 'journal', 'playlists', 'explore', 'discover', 'progress', 'tools', 'messages'];
+const PANELS = ['today', 'journal', 'playlists', 'explore', 'discover', 'progress', 'tools', 'messages', 'nearby'];
 let tab = 'today';
 // A hash that names something inside a tab (dashboard.html#match-mode, #daily-quote)
 // opens that tab and scrolls to it. The feature showcase under the header links this way.
@@ -417,6 +435,12 @@ function showTab(next) {
   }
   // Messages are read fresh each time the tab opens, so a new one shows up.
   if (tab === 'messages') mountInbox(document.getElementById('inbox-host'), a, { heading: false });
+  // Nearby help (assets/nearby-ui.js) draws its map the first time its tab opens,
+  // starting from the zip code on the member's profile.
+  if (tab === 'nearby' && !mounted.nearby) {
+    mounted.nearby = true;
+    mountNearby(document.getElementById('nearby-host'), p.zip || '', { heading: false });
+  }
   if (!PANELS.includes(next)) scrollToHash();
 }
 // Scrolls to the element the hash names, if there is one, once its tab is open.
@@ -680,6 +704,7 @@ const quick = [
   ['Goals & tracking', 'goals.html', 3],
   ['Mandalas', 'mandalas.html', 3],
   ['Find a therapist', 'therapists.html', 0, false, 'Search the Theraglee directory for therapists in your area'],
+  ['Help near you', 'dashboard.html#nearby', 0, false, 'Clinics and crisis services on a map, plus national lines'],
 ];
 /* A tile flagged `ownGate` opens its page even when locked, because that page makes its
    own upgrade ask. Every other locked tile goes straight to the plans.

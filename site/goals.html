@@ -23,22 +23,64 @@
   .wellness{display:flex;gap:12px;align-items:flex-start;padding:12px 16px;border-radius:var(--r-sm);
     background:var(--sand);border:1px solid var(--hair);font-size:.88rem;color:var(--muted);margin-bottom:22px}
   .wellness strong{color:var(--ink);font-weight:500}
-  .quest{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:22px;align-items:start}
-  @media(max-width:860px){.quest{grid-template-columns:minmax(0,1fr)}}
+
+  /* The focus card: what the quest is toward, today's standing, and how the trail works. */
+  .focus{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px 28px;align-items:start}
+  @media(max-width:640px){.focus{grid-template-columns:minmax(0,1fr)}.focus>div:last-child{text-align:left}}
+  .focus h2{margin:4px 0 2px;font-size:clamp(1.4rem,2.6vw,1.9rem)}
+  .words{font-family:var(--serif);font-style:italic;font-size:1.2rem;color:var(--green-deep)}
+  .stat{font-size:2.6rem;font-weight:500;letter-spacing:-.03em;line-height:1}
+  .today-pill{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:var(--r-pill);
+    font-size:.9rem;font-weight:500;background:var(--sand);color:var(--muted);border:1px solid var(--hair)}
+  .today-pill.yes{background:var(--soft);color:var(--green-deep);border-color:var(--mist)}
+  .steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px;padding-top:18px;
+    border-top:1px solid var(--hair)}
+  @media(max-width:640px){.steps{grid-template-columns:minmax(0,1fr)}}
+  .steps div{display:flex;gap:10px;align-items:flex-start;font-size:.9rem;color:var(--muted)}
+  .steps b{flex:none;width:26px;height:26px;border-radius:50%;background:var(--green);color:#fff;display:grid;
+    place-items:center;font-size:.85rem;font-weight:600}
+  .steps strong{color:var(--ink);font-weight:500}
+  .bar{height:10px;border-radius:10px;background:var(--sand);overflow:hidden;margin:10px 0 6px}
+  .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--lime-2),var(--lime));border-radius:10px;
+    transition:width .5s ease}
+
+  /* The map card and the row of places under it. */
+  .mapcard{padding:14px}
+  .mapcard svg{display:block;border-radius:14px}
   .mapcard svg g[data-ch]:focus{outline:none}
-  .mapcard svg g[data-ch]:focus circle:nth-of-type(1){stroke:var(--lime-2)}
-  .act{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--hair)}
+  .mapcard svg g[data-ch]:focus>circle:last-of-type{stroke:var(--ink)}
+  @media(max-width:600px){.trail-label,.trail-you{display:none}}
+  .stops{display:flex;flex-wrap:wrap;gap:8px;margin:14px 4px 4px}
+  .stops button{font:inherit;font-size:.84rem;padding:6px 12px 6px 6px;border-radius:var(--r-pill);border:1px solid var(--hair);
+    background:var(--paper);color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+  .stops button b{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:.76rem;font-weight:600;
+    background:var(--sand);color:var(--faint)}
+  .stops button.open{color:var(--ink)}
+  .stops button.open b{background:var(--green);color:#fff}
+  .stops button.here{border-color:var(--lime-2);background:var(--soft);color:var(--green-deep)}
+  .stops button.on{box-shadow:0 0 0 2px var(--lime) inset}
+
+  /* Today's actions. */
+  .act{display:flex;gap:12px;align-items:flex-start;padding:14px 0;border-top:1px solid var(--hair)}
   .act:first-of-type{border-top:0}
   .act .txt{flex:1;min-width:0}
-  .act .meta{font-size:.8rem;color:var(--faint)}
-  .tick{flex:none;width:30px;height:30px;border-radius:50%;border:2px solid var(--hair);background:var(--paper);
-    cursor:pointer;display:grid;place-items:center;font-size:.95rem;color:#fff;padding:0}
+  .act .what{font-size:1.02rem}
+  .act .meta{font-size:.8rem;color:var(--faint);margin-top:3px}
+  .act .fit{display:inline-flex;align-items:center;gap:4px;padding:1px 8px;border-radius:var(--r-pill);
+    background:var(--soft);color:var(--green-deep);border:1px solid var(--mist);font-size:.74rem;font-weight:500}
+  .act .fit.any{background:var(--sand);color:var(--muted);border-color:var(--hair)}
+  .tick{flex:none;width:34px;height:34px;border-radius:50%;border:2px solid var(--hair);background:var(--paper);
+    cursor:pointer;display:grid;place-items:center;font-size:1rem;color:#fff;padding:0;transition:border-color .18s}
+  .tick:hover{border-color:var(--lime-2)}
   .tick.on{background:var(--green);border-color:var(--green)}
   .tick:disabled{cursor:default;opacity:.6}
-  .tick:not(.on):not(:empty){color:var(--muted);font-size:.85rem}
+  .tick:not(.on):not(:empty){color:var(--muted);font-size:.9rem}
   .note{margin-top:8px;padding:10px 12px;border-radius:var(--r-sm);background:var(--sand);font-size:.92rem}
   .note a{display:inline-block;margin-top:4px;font-size:.85rem}
   .side{margin-top:16px;padding:14px 16px;border:1px dashed var(--mist);border-radius:var(--r-sm);background:var(--soft)}
+  .peek{opacity:.7}
+
+  /* Setup. */
   .steps-nav{display:flex;gap:8px;margin-bottom:18px}
   .steps-nav span{flex:1;height:5px;border-radius:5px;background:var(--hair)}
   .steps-nav span.on{background:var(--lime-2)}
@@ -47,10 +89,18 @@
     background:var(--paper);cursor:pointer;color:var(--ink)}
   .pick button:hover{border-color:var(--lime-2)}
   .pick button.on{border-color:var(--green);background:var(--soft);box-shadow:0 0 0 1px var(--green) inset}
-  .pick button small{display:block;color:var(--muted);font-size:.8rem;margin-top:2px}
-  .stat{font-size:2rem;font-weight:500;letter-spacing:-.03em;line-height:1}
+  .pick button small{display:block;color:var(--muted);font-size:.8rem;margin-top:2px;line-height:1.4}
+  .sample{margin-top:16px;padding:14px 16px;border-radius:var(--r-sm);background:var(--soft);border:1px solid var(--mist);font-size:.92rem}
+  .sample ul{margin:6px 0 0;padding-left:18px;color:var(--ink-2)}
+
+  /* What helped. */
   .refl{padding:14px 0;border-top:1px solid var(--hair)}
   .refl:first-child{border-top:0}
+  .chips.today{margin:10px 0 14px}
+  .chips.today .chip{cursor:default;background:var(--soft);border-color:var(--mist);color:var(--green-deep)}
+  .nudge{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:12px 14px;border-radius:var(--r-sm);
+    background:var(--sand);margin-bottom:12px;font-size:.92rem}
+  .nudge em{font-family:var(--serif);font-style:italic;font-size:1.05rem;color:var(--ink)}
   textarea{width:100%}
 </style>
 </head>
@@ -61,21 +111,23 @@
 
 <script type="module">
 import { chrome, sb, requireAuth, esc, toast, busy, fmtDate, lockNotice, modal } from './assets/app.js';
-import { mapView as nearbyView } from './assets/nearby-ui.js';
 import { VALUES, CATEGORIES, MINUTES, SCENES, buildQuest, progress, milestoneFor,
-  helper, action, valueOf } from './assets/quest-paths.js';
-import { questMap, scene } from './assets/quest-scene.js';
-// The Playlists tab moved to the dashboard; an old link to it still lands there.
+  helper, action, valueOf, suits, samplesFor } from './assets/quest-paths.js';
+import { trailMap, towardNext } from './assets/quest-scene.js';
+// Tabs that moved: Playlists live on the dashboard, and so does Nearby help now.
 if (location.hash === '#music') location.replace('dashboard.html#playlists');
+if (location.hash === '#map') location.replace('dashboard.html#nearby');
 await chrome({ active:'dashboard.html' });
 const a = await requireAuth();
 if (a) {
 const root = document.getElementById('root');
 
 if (a.level < 3) {
-  lockNotice(root, 3, 'Goals and the resource map');
+  lockNotice(root, 3, 'Goals and your quest map');
 } else {
+// #goals is the goals zone, under the trail on the first tab.
 let tab = location.hash.replace('#','') || 'quest';
+if (tab === 'goals') tab = 'quest';
 const uid = a.profile.id;
 
 // The member's own calendar day, so "today" turns over at their midnight.
@@ -86,25 +138,22 @@ const today = () => ymd(new Date());
 const WELLNESS = `<div class="wellness" role="note"><span aria-hidden="true">🌱</span><div>
   <strong>General wellness and self-help only.</strong> Theraglee is not psychotherapy or clinical
   care, and it is not a substitute for help from a licensed professional.
-  <a href="therapists.html">Find a therapist</a> · <a href="#map" data-go="map">Help near you</a> ·
+  <a href="therapists.html">Find a therapist</a> · <a href="dashboard.html#nearby">Help near you</a> ·
   In crisis, call or text <a href="tel:988">988</a>, or call 911.</div></div>`;
 
 /* Each tab's heading and line, over its content in the page's green zone. */
 const HEADS = {
-  quest:   ['Your quest', 'Small actions you pick, on a map that only ever grows.'],
-  goals:   ['Goals', 'Everyday actions you choose, sized so they fit.'],
-  reflect: ['What helped', 'A line or two about what felt good today, only if you want to.'],
-  data:    ['Your data', 'Your quest, goals and notes are yours to download or delete.'],
-  map:     ['Nearby help', 'Support near you, for when you would like more than this page.'],
+  quest:   ['Your trail', 'A few small actions a day, on a map that only ever grows.'],
+  reflect: ['What helped', 'At the end of the day, a line or two about what felt good. Only if you want to.'],
+  data:    ['Your data', 'Your trail, goals and notes are yours to download or delete.'],
 };
 const shell = (body) => `
   <h1>Goals &amp; tracking</h1>
-  <p class="muted" style="max-width:60ch">A map for the everyday things you would like more of.
-    Pick small actions, show up when you can, and watch your own story unfold. Your daily mood
-    check-in is on the <a href="dashboard.html#mood-card">Today tab of your dashboard</a>, and music is on
-    its <a href="dashboard.html#playlists">Playlists tab</a>.</p>
-  <div class="tabs">${[['quest','Your quest'],['goals','Goals'],['reflect','What helped'],
-      ['data','Your data'],['map','Nearby help']]
+  <p class="muted" style="max-width:62ch">Pick what you would like more of, and Theraglee lays out a trail of small
+    daily actions toward it. Every day you do one, you take a step, and the picture grows. Your daily mood
+    check-in is on the <a href="dashboard.html#mood-card">Today tab of your dashboard</a>, and help near you is on
+    its <a href="dashboard.html#nearby">Nearby help tab</a>.</p>
+  <div class="tabs">${[['quest','Your trail'],['reflect','What helped'],['data','Your data']]
     .map(([k,l])=>`<button data-tab="${k}" class="${tab===k?'on':''}">${l}</button>`).join('')}</div>
   ${WELLNESS}
   <section class="zone" aria-labelledby="goals-zone-title">
@@ -113,7 +162,15 @@ const shell = (body) => `
       <p class="muted">${(HEADS[tab] || HEADS.quest)[1]}</p>
     </div>
     <div id="body">${body}</div>
-  </section>`;
+  </section>
+  ${tab === 'quest' ? `<section class="zone" id="goals-zone" aria-labelledby="own-goals-title">
+    <div class="zone-head">
+      <h2 id="own-goals-title">Goals of your own</h2>
+      <p class="muted">The trail hands you small actions. A goal is something you choose and track yourself,
+        like “walk ten minutes after lunch, three times a week”. Logging one counts as a day shown up on your trail too.</p>
+    </div>
+    <div id="goals-body"><div class="skeleton" style="height:90px"></div></div>
+  </section>` : ''}`;
 
 const body = () => document.getElementById('body');
 
@@ -143,18 +200,20 @@ function celebrate(before, after, map) {
   if (after.open > before.open) {
     const c = map.chapters[after.open];
     modal(`<div class="center"><div style="font-size:2.4rem">✨</div>
-      <h2>A new chapter opens</h2><p><strong>${esc(c.place)}</strong></p>
+      <h2>You reached ${esc(c.place)}</h2>
       <p class="muted">${esc(c.story)}</p>
+      <p class="muted">A new set of actions is waiting there.</p>
       <button class="btn" onclick="this.closest('.backdrop').remove()">Keep going</button></div>`);
   } else if (milestoneFor(after.days)) {
-    toast(after.days === 1 ? 'Your first day on the map. Welcome.' :
+    toast(after.days === 1 ? 'Your first step on the trail. Welcome.' :
       `${after.days} days you have shown up. That is yours to keep.`, 'ok');
-  } else toast('Marked. Nice.', 'ok');
+  } else toast(after.days > before.days ? 'Marked. Today is counted.' : 'Marked. Nice.', 'ok');
 }
 
 /* ------------------------------------------------------------ quest */
 let chapter = null;           // chapter on screen; null means the newest open one
 const swaps = {};             // helper: action key -> shorter action key, this visit only
+const catOf = (k) => CATEGORIES.find(x => x.key === k) || { icon: '', label: k };
 
 async function questView() {
   const d = await load();
@@ -166,21 +225,27 @@ async function questView() {
   const c = map.chapters[ci];
   const open = ci <= prog.open;
   const t = today();
+  const counted = d.days.includes(t);
   // action key -> today's step row, so a writing action can show its note.
   const doneToday = new Map(d.steps.filter(x => x.done_on === t).map(x => [x.action_key, x]));
+  const sceneName = SCENES.find(x => x.key === q.scene) || SCENES[0];
+  const grows = { garden: 'a flower is planted', lights: 'a lantern is lit', scenery: 'the landscape fills in' }[q.scene] || 'the picture grows';
 
   const row = (act, optional) => {
     const shown = swaps[act.key] ? action(swaps[act.key]) : act;
     const done = open && doneToday.has(shown.key);
     const shorter = open && q.helper && !done ? helper.shorter(shown.key, q) : null;
     const note = done ? doneToday.get(shown.key)?.note : null;
+    const fit = suits(shown, q.value_key)
+      ? `<span class="fit">${esc(map.value.icon)} for ${esc(map.value.phrase)}</span>`
+      : `<span class="fit any">good for anyone</span>`;
     return `<div class="act">
       ${open ? `<button class="tick ${done?'on':''}" data-step="${shown.key}" aria-pressed="${done}"
         aria-label="${done ? 'Done today. Tap to undo' : shown.write ? 'Open a note box, then mark done' : 'Mark done today'}">${done?'✓':(shown.write?'✎':'')}</button>`
         : '<span class="tick" aria-hidden="true" style="cursor:default">·</span>'}
-      <div class="txt"><div>${esc(shown.text)}</div>
-        <div class="meta">${CATEGORIES.find(x=>x.key===shown.cat)?.icon||''} ${esc(CATEGORIES.find(x=>x.key===shown.cat)?.label||'')}
-          · about ${shown.min} min${optional?' · optional':''}${shown.write && open && !done ? ' · tap to write it here' : ''}
+      <div class="txt"><div class="what">${esc(shown.text)}</div>
+        <div class="meta">${fit} · ${catOf(shown.cat).icon} ${esc(catOf(shown.cat).label)}
+          · about ${shown.min} min${optional?' · optional':''}${shown.write && open && !done ? ' · tap the pencil to write it here' : ''}
           ${shorter ? ` · <a href="#" data-shorter="${act.key}" data-to="${shorter.key}">Shorter idea (${shorter.min} min)</a>` : ''}
           ${swaps[act.key] ? ` · <a href="#" data-unswap="${act.key}">Back to the original</a>` : ''}</div>
         ${done && shown.write ? `<div class="note">${note ? `<div style="white-space:pre-wrap">${esc(note)}</div>` : '<span class="faint">Marked done without a note.</span>'}
@@ -188,55 +253,87 @@ async function questView() {
     </div>`;
   };
 
+  const frac = towardNext(prog, map.chapters);
+  const here = map.chapters[prog.open];
   body().innerHTML = `
-    <div class="quest">
-      <div class="stack">
-        <div class="card">
-          <div class="spread" style="align-items:flex-end">
-            <div><div class="faint">${esc(map.value.icon)} A quest toward ${esc(map.value.phrase)}</div>
-              ${q.intention ? `<div style="font-family:var(--serif);font-style:italic;font-size:1.25rem">“${esc(q.intention)}”</div>` : ''}</div>
-            <div style="text-align:right"><div class="stat">${prog.days}</div>
-              <div class="faint">day${prog.days===1?'':'s'} you've shown up</div></div>
+    <div class="stack">
+      <div class="card pad-lg">
+        <div class="focus">
+          <div>
+            <span class="kicker">Your quest</span>
+            <h2>${esc(map.value.icon)} A quest toward ${esc(map.value.phrase)}</h2>
+            ${q.intention ? `<div class="words">“${esc(q.intention)}”</div>` : ''}
+            <p class="faint" style="margin:8px 0 0">Every action on this trail was chosen for ${esc(map.value.phrase)}.
+              Not what you meant? <a href="#" id="edit">Change your focus</a>.</p>
           </div>
-          <div style="margin-top:14px">${scene(q.scene, prog)}</div>
-          <p class="muted" style="margin:12px 0 0;font-size:.9rem">${prog.next
-            ? `${prog.next.left} more day${prog.next.left===1?'':'s'}, whenever they come, opens <strong>${esc(prog.next.place)}</strong>. Missed days never count against you.`
-            : 'Every chapter is open. The path keeps going as long as you like.'}</p>
+          <div style="text-align:right">
+            <span class="today-pill ${counted ? 'yes' : ''}">${counted ? '✓ Today is counted' : 'Today is not counted yet'}</span>
+            <div class="stat" style="margin-top:12px">${prog.days}</div>
+            <div class="faint">day${prog.days===1?'':'s'} shown up</div>
+          </div>
         </div>
-        <div class="card mapcard">${questMap(map.chapters, prog.open, ci)}</div>
+        <div style="margin-top:18px">
+          <div class="spread" style="font-size:.92rem"><span><strong>${esc(here.place)}</strong>${prog.next
+            ? ` → ${esc(prog.next.place)}` : ' · the last place on the trail'}</span>
+            <span class="faint">${prog.next ? `${prog.days - here.at} of ${prog.next.at - here.at} days` : 'every place is open'}</span></div>
+          <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(frac*100)}"><i style="width:${Math.round(frac*100)}%"></i></div>
+          <p class="muted" style="margin:0;font-size:.9rem">${prog.next
+            ? `${prog.next.left} more day${prog.next.left===1?'':'s'} shown up, whenever they come, opens <strong>${esc(prog.next.place)}</strong>. Days do not have to be in a row, and a missed day never counts against you.`
+            : 'Every place is open. The trail keeps going as long as you like, and every day still counts.'}</p>
+        </div>
+        <div class="steps">
+          <div><b>1</b><span><strong>Do one small action</strong> from <a href="#today" data-scroll="today">today's list</a>, then tap its circle.</span></div>
+          <div><b>2</b><span><strong>That counts the day.</strong> You take one step along the trail, and ${grows}.</span></div>
+          <div><b>3</b><span><strong>Reach the next place</strong> and it opens, with a fresh set of actions to pick from.</span></div>
+        </div>
       </div>
 
-      <div class="stack">
-        <div class="card pad-lg">
-          <div class="spread"><span class="badge ${open?'live':'gray'}">Chapter ${ci+1} of ${map.chapters.length}</span>
-            ${open ? '' : `<span class="faint">Opens after ${c.at} days</span>`}</div>
-          <h2 style="margin:12px 0 6px">${esc(c.place)}</h2>
-          <p class="muted">${esc(c.story)}</p>
-          <h3 style="margin-top:18px">${open ? 'Micro-actions for today' : 'A peek at what is here'}</h3>
-          <p class="faint" style="margin:-4px 0 6px">${open ? 'Do one, all, or none, then tap its circle. Any one of them counts the day. A pencil means you can write it right here.'
-            : `This chapter opens after ${c.at} days shown up, in a row or not. Until then, the open chapters are where to mark things done.`}</p>
-          ${c.main.map(x => row(x, false)).join('')}
-          ${c.side ? `<div class="side"><strong>Optional side path</strong>
-            <p class="faint" style="margin:2px 0 0">Something from outside your usual picks, if you feel like it.</p>
-            ${row(c.side, true)}</div>` : ''}
+      <div class="card mapcard">
+        ${trailMap(map.chapters, prog, { scene: q.scene, current: ci })}
+        <div class="stops" role="list" aria-label="Places on your trail">${map.chapters.map((ch, i) => {
+          const isOpen = i <= prog.open, isHere = i === prog.open;
+          return `<button role="listitem" data-stop="${i}" class="${isOpen?'open':''} ${isHere?'here':''} ${i===ci?'on':''}"
+            aria-label="${esc(ch.place)}${isHere ? ', you are here' : isOpen ? ', open' : `, opens after ${ch.at} days`}">
+            <b>${isOpen ? i + 1 : '🔒'}</b>${esc(ch.place)}${isHere ? ' · you are here' : isOpen ? '' : ` · after ${ch.at} days`}</button>`;
+        }).join('')}</div>
+      </div>
+
+      <div class="card pad-lg" id="today">
+        <div class="spread">
+          <span class="badge ${open ? (ci === prog.open ? 'live' : '') : 'gray'}">${open ? (ci === prog.open ? 'You are here' : 'Open') : `Opens after ${c.at} days`} · Chapter ${ci+1} of ${map.chapters.length}</span>
+          ${ci !== prog.open ? `<a href="#" data-stop="${prog.open}" style="font-size:.88rem">Back to where you are</a>` : ''}
         </div>
-        <div class="card">
-          <div class="spread"><h3 style="margin:0">Your quest settings</h3>
-            <button class="btn sm ghost" id="edit">Adjust</button></div>
-          <p class="faint" style="margin:8px 0 0">${q.categories.map(k=>esc(CATEGORIES.find(x=>x.key===k)?.label||k)).join(', ')}
-            · up to ${q.minutes} min · ${esc(SCENES.find(x=>x.key===q.scene)?.label||'')}
-            · suggestion helper ${q.helper?'on':'off'}</p>
-          <p class="faint" style="margin:6px 0 0"><a href="#" id="restart">Start a new quest</a>
-            (your days shown up carry over)</p>
-        </div>
+        <h2 style="margin:12px 0 6px">${esc(c.place)}</h2>
+        <p class="muted">${esc(c.story)}</p>
+        <h3 style="margin-top:20px">${open ? "Today's actions" : 'What is waiting here'}</h3>
+        <p class="faint" style="margin:-4px 0 6px">${open
+          ? 'Pick one, do it, and tap its circle. One is enough to count the day; more is a bonus. A pencil means you write it right here.'
+          : `These open after ${c.at} days shown up, in a row or not. Until then, the places already open are where to mark things done.`}</p>
+        <div class="${open ? '' : 'peek'}">${c.main.map(x => row(x, false)).join('')}</div>
+        ${c.side ? `<div class="side"><strong>Optional side path</strong>
+          <p class="faint" style="margin:2px 0 0">Something from a kind of practice you did not pick, if you feel like it. It counts the same.</p>
+          ${row(c.side, true)}</div>` : ''}
+      </div>
+
+      <div class="card">
+        <div class="spread"><h3 style="margin:0">Your quest settings</h3>
+          <button class="btn sm ghost" id="edit2">Adjust</button></div>
+        <p class="faint" style="margin:8px 0 0">Focus: ${esc(map.value.label)} · kinds of practice: ${q.categories.map(k=>esc(catOf(k).label)).join(', ')}
+          · up to ${q.minutes} min · along the trail: ${esc(sceneName.label.toLowerCase())}
+          · suggestion helper ${q.helper?'on':'off'}</p>
+        <p class="faint" style="margin:6px 0 0"><a href="#" id="restart">Start a new quest</a>
+          (your days shown up carry over)</p>
       </div>
     </div>`;
 
+  const showChapter = (i) => { chapter = i; questView(); };
   body().querySelectorAll('g[data-ch]').forEach(g => {
-    const go = () => { chapter = Number(g.dataset.ch); questView(); };
+    const go = () => showChapter(Number(g.dataset.ch));
     g.addEventListener('click', go);
     g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
   });
+  body().querySelectorAll('[data-stop]').forEach(b => b.onclick = (e) => { e.preventDefault(); showChapter(Number(b.dataset.stop)); });
+  body().querySelector('[data-scroll]').onclick = (e) => { e.preventDefault(); document.getElementById('today').scrollIntoView({ behavior:'smooth', block:'start' }); };
   body().querySelectorAll('[data-shorter]').forEach(l => l.onclick = (e) => {
     e.preventDefault(); swaps[l.dataset.shorter] = l.dataset.to; questView();
   });
@@ -256,7 +353,7 @@ async function questView() {
   // mark it done without writing anything down here.
   const noteBox = (key, existing = null) => {
     const act = action(key);
-    const back = modal(`<p class="faint" style="margin:0 0 4px">${esc(CATEGORIES.find(x=>x.key===act.cat)?.label||'')} · about ${act.min} min</p>
+    const back = modal(`<p class="faint" style="margin:0 0 4px">${esc(catOf(act.cat).label)} · about ${act.min} min</p>
       <h2 style="margin-bottom:6px">${esc(act.text)}</h2>
       <p class="muted">Only you can read this. Keep it as short as you like.</p>
       <textarea id="stepnote" rows="5" maxlength="1000" placeholder="Write it here…">${esc(existing?.note||'')}</textarea>
@@ -298,11 +395,12 @@ async function questView() {
   body().querySelectorAll('[data-note]').forEach(l => l.onclick = (e) => {
     e.preventDefault(); noteBox(l.dataset.note, doneToday.get(l.dataset.note));
   });
-  document.getElementById('edit').onclick = () => setup(q);
+  document.getElementById('edit').onclick = (e) => { e.preventDefault(); setup(q); };
+  document.getElementById('edit2').onclick = () => setup(q);
   document.getElementById('restart').onclick = (e) => { e.preventDefault(); setup(null, true); };
 }
 
-/* The setup: values first, never symptoms. Also used to adjust a quest. */
+/* The setup: a focus first, never a symptom. Also used to adjust a quest. */
 function setup(existing = null, fresh = false) {
   const st = {
     step: 0,
@@ -313,36 +411,47 @@ function setup(existing = null, fresh = false) {
   const STEPS = 4;
   const draw = () => {
     const nav = `<div class="steps-nav">${Array.from({length:STEPS},(_,i)=>`<span class="${i<=st.step?'on':''}"></span>`).join('')}</div>`;
+    const v = valueOf(st.value);
     let inner = '';
     if (st.step === 0) inner = `
+      <span class="kicker">Step 1 of 4 · your focus</span>
       <h2>What would you like more of in your everyday life?</h2>
-      <p class="muted">Pick the one that feels closest. There are no wrong answers, and you can change it later.</p>
-      <div class="pick">${VALUES.map(v=>`<button data-v="${v.key}" class="${st.value===v.key?'on':''}">${v.icon} ${esc(v.label)}</button>`).join('')}</div>
-      <div class="field" style="margin-top:18px"><label for="int">In your own words (optional)</label>
-        <input id="int" maxlength="140" value="${esc(st.intention)}" placeholder="e.g. Evenings that feel like mine again"></div>`;
+      <p class="muted">Pick the one that feels closest. Every action on your trail is chosen to fit it, so pick for
+        the actions you want, not the words. You can change it later.</p>
+      <div class="pick">${VALUES.map(x=>`<button data-v="${x.key}" class="${st.value===x.key?'on':''}">${x.icon} ${esc(x.label)}<small>${esc(x.does)}</small></button>`).join('')}</div>
+      ${v ? `<div class="sample"><strong>${v.icon} ${esc(v.label)}</strong> gives you actions like:
+        <ul>${samplesFor(v.key).map(x => `<li>${esc(x.text)} <span class="faint">(${x.min} min)</span></li>`).join('')}</ul></div>` : ''}
+      <div class="field" style="margin-top:18px"><label for="int">${v ? `Say it in your own words (optional)` : 'In your own words (optional)'}</label>
+        <input id="int" maxlength="140" value="${esc(st.intention)}" placeholder="${esc(v ? `e.g. ${v.example}` : 'Pick a focus first, then put it your way')}">
+        <p class="help">This line shows at the top of your trail as a reminder. The actions follow the focus you picked above.</p></div>`;
     if (st.step === 1) inner = `
+      <span class="kicker">Step 2 of 4 · kinds of practice</span>
       <h2>Which kinds of practice appeal to you?</h2>
-      <p class="muted">Pick as many as you like. Your map draws its main actions from these, and offers the others as optional side paths.</p>
+      <p class="muted">Pick as many as you like. Your trail draws its actions ${v ? `for ${esc(v.phrase)} ` : ''}from these,
+        and offers the others as optional side paths.</p>
       <div class="pick">${CATEGORIES.map(c=>`<button data-c="${c.key}" class="${st.categories.has(c.key)?'on':''}">${c.icon} ${esc(c.label)}</button>`).join('')}</div>`;
     if (st.step === 2) inner = `
+      <span class="kicker">Step 3 of 4 · time</span>
       <h2>How much time do you usually have?</h2>
-      <p class="muted">Actions on your map will fit inside this. Short is fine; short is how most habits start.</p>
+      <p class="muted">Actions on your trail will fit inside this. Short is fine; short is how most habits start.</p>
       <div class="pick">${MINUTES.map(m=>`<button data-m="${m}" class="${st.minutes===m?'on':''}">Up to ${m} minutes</button>`).join('')}</div>`;
     if (st.step === 3) inner = `
-      <h2>How should your progress look?</h2>
-      <p class="muted">It only ever grows. A missed day never takes anything away.</p>
+      <span class="kicker">Step 4 of 4 · your trail</span>
+      <h2>What should grow along your trail?</h2>
+      <p class="muted">Your trail is one map with seven places on it. Each day you show up moves you a step toward the
+        next place, and this is what appears beside the path as you go. It only ever grows: a missed day never takes anything away.</p>
       <div class="pick">${SCENES.map(s=>`<button data-s="${s.key}" class="${st.scene===s.key?'on':''}">${esc(s.label)}<small>${esc(s.blurb)}</small></button>`).join('')}</div>
       <label class="row" style="margin-top:20px;align-items:flex-start;gap:10px;cursor:pointer">
         <input type="checkbox" id="hlp" ${st.helper?'checked':''} style="margin-top:5px">
         <span><strong>Turn on the suggestion helper</strong> (optional)<br>
-          <span class="faint">Offers a shorter version of an action, and reflection prompt ideas, using only
-          the time and categories you picked above. It never reads what you write, does not use AI,
+          <span class="faint">Offers a shorter version of an action, and a nudge for your What helped note, using only
+          the time and kinds of practice you picked above. It never reads what you write, does not use AI,
           and makes no judgments about you.</span></span></label>`;
     body().innerHTML = `<div class="card pad-lg narrow" style="margin:0 auto">${nav}${inner}
       <div class="row" style="justify-content:space-between;margin-top:24px">
         <span class="row">${st.step>0 ? '<button class="btn ghost" id="back">Back</button>' : ''}
           ${existing || fresh ? '<button class="btn ghost" id="cancel">Cancel</button>' : ''}</span>
-        <button class="btn" id="next">${st.step===STEPS-1 ? (existing?'Save changes':'Draw my map') : 'Next'}</button>
+        <button class="btn" id="next">${st.step===STEPS-1 ? (existing?'Save changes':'Draw my trail') : 'Next'}</button>
       </div></div>`;
     const $ = (s) => body().querySelector(s);
     body().querySelectorAll('[data-v]').forEach(b => b.onclick = () => { st.value = b.dataset.v; st.intention = $('#int').value; draw(); });
@@ -373,7 +482,7 @@ function setup(existing = null, fresh = false) {
       busy(e.target, false);
       if (error) return toast(error.message, 'err');
       chapter = null;
-      toast(existing ? 'Saved.' : 'Your map is ready.', 'ok');
+      toast(existing ? 'Saved.' : 'Your trail is ready.', 'ok');
       questView();
     };
   };
@@ -382,9 +491,12 @@ function setup(existing = null, fresh = false) {
 
 /* ------------------------------------------------------------ goals */
 // SMART, in plain words: what exactly (Specific), how often (Measurable), how
-// long (Achievable), which value it serves (Relevant), and a day to look back
-// on it (Time-bound).
+// long (Achievable), which focus it serves (Relevant), and a day to look back
+// on it (Time-bound). Drawn in its own zone under the trail.
+const goalsBody = () => document.getElementById('goals-body');
 async function goalsView(){
+  const host = goalsBody();
+  if (!host) return;
   const { goals, logs } = await load();
   const now = new Date();
   const monday = new Date(now); monday.setDate(now.getDate() - ((now.getDay()+6)%7));
@@ -392,9 +504,10 @@ async function goalsView(){
   const t = today();
   const active = goals.filter(g=>g.active);
 
-  body().innerHTML = `
-    <div class="spread"><p class="muted" style="max-width:62ch;margin:0">Every day you log a goal also
-      counts as a day shown up on your quest map.</p>
+  host.innerHTML = `
+    <div class="spread"><p class="muted" style="max-width:62ch;margin:0">${active.length
+      ? 'Tap <strong>Log today</strong> when you have done one. Each goal shows its week, Monday to Sunday.'
+      : 'Nothing here yet. Add one if there is something of your own you would like to keep track of.'}</p>
       <button class="btn" id="add">Add a goal</button></div>
     ${active.length ? `<div class="grid g2" style="margin-top:20px">
       ${active.map(g=>{
@@ -420,7 +533,7 @@ async function goalsView(){
             <span class="faint">${mine.length} day${mine.length===1?'':'s'} in all</span>
           </div></div>`;
       }).join('')}</div>`
-      : `<div class="empty" style="margin-top:20px">No goals yet. Try something small and specific:
+      : `<div class="empty" style="margin-top:20px">Try something small and specific:
          “walk 10 minutes after lunch”, “message one friend on Sundays”.</div>`}`;
 
   const form = (g = {}) => {
@@ -459,18 +572,19 @@ async function goalsView(){
       back.remove(); goalsView();
     };
   };
-  document.getElementById('add').onclick = () => form();
-  body().querySelectorAll('[data-edit]').forEach(b => b.onclick = () => form(goals.find(g=>g.id===b.dataset.edit)));
-  body().querySelectorAll('[data-log]').forEach(b => b.onclick = async () => {
+  host.querySelector('#add').onclick = () => form();
+  host.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => form(goals.find(g=>g.id===b.dataset.edit)));
+  host.querySelectorAll('[data-log]').forEach(b => b.onclick = async () => {
     b.disabled = true;
     const { error } = b.dataset.on
       ? await sb.from('goal_logs').delete().eq('goal_id', b.dataset.log).eq('logged_on', t)
       : await sb.from('goal_logs').insert({ goal_id: b.dataset.log, logged_on: t });
     if (error) { b.disabled = false; return toast(error.message,'err'); }
-    if (!b.dataset.on) toast('Logged. Nice.','ok');
-    goalsView();
+    if (!b.dataset.on) toast('Logged. Today is counted on your trail.','ok');
+    // The trail counts goal days too, so it is redrawn with this one.
+    goalsView(); questView();
   });
-  body().querySelectorAll('[data-archive]').forEach(b => b.onclick = async () => {
+  host.querySelectorAll('[data-archive]').forEach(b => b.onclick = async () => {
     await sb.from('goals').update({ active:false }).eq('id', b.dataset.archive);
     goalsView();
   });
@@ -478,25 +592,33 @@ async function goalsView(){
 
 /* ------------------------------------------------------ what helped */
 async function reflectView(){
-  const { quest, reflections, steps } = await load();
+  const { quest, reflections, steps, goals, logs } = await load();
   const t = today();
   const mine = reflections.find(r => r.noted_on === t);
-  // Notes written on the quest map's writing actions show here too, newest first.
+  // What the member marked today, so the note has something to look back on.
+  const didToday = [
+    ...steps.filter(x => x.done_on === t).map(x => action(x.action_key)?.text || x.action_key),
+    ...logs.filter(l => l.logged_on === t).map(l => goals.find(g => g.id === l.goal_id)?.title).filter(Boolean),
+  ];
+  // Notes written on the trail's writing actions show here too, newest first.
   const stepNotes = steps.filter(x => x.note).sort((a, b) => b.done_on.localeCompare(a.done_on));
   body().innerHTML = `
     <div class="grid g2">
       <div class="card pad-lg">
-        <h2 style="margin-top:0">What felt helpful today?</h2>
-        <p class="muted">A line or two, only if you want to. These notes are yours: nobody else can read
-          them and nobody reviews them. Writing one also counts as a day shown up.</p>
-        ${quest?.helper ? `<p class="faint" id="idea"></p>
-          <button class="btn sm ghost" id="another" style="margin-bottom:12px">Give me a prompt idea</button>` : ''}
+        <span class="kicker">Tonight's note</span>
+        <h2 style="margin-top:6px">What helped today?</h2>
+        <p class="muted">Before the day ends, jot a line or two about what felt good or made things a little easier.
+          Nobody else can read these, and nobody reviews them. Writing one also counts as a day shown up on your trail.</p>
+        <p class="faint" style="margin-bottom:0">${didToday.length ? 'Today on your trail you marked:' : 'Nothing marked on your trail yet today, and that is fine. A note on its own still counts.'}</p>
+        ${didToday.length ? `<div class="chips today">${didToday.map(x => `<span class="chip">✓ ${esc(x)}</span>`).join('')}</div>` : '<div style="height:10px"></div>'}
+        ${quest?.helper ? `<div class="nudge"><span class="faint">Need a nudge?</span> <em id="idea"></em>
+          <button class="btn sm ghost" id="another">Another nudge</button></div>` : ''}
         <textarea id="helped" rows="5" maxlength="1000" placeholder="e.g. The walk after lunch. Tea without my phone.">${esc(mine?.helped||'')}</textarea>
         <div class="row" style="justify-content:flex-end;margin-top:12px">
-          <button class="btn" id="save">${mine?'Update today\'s note':'Save'}</button></div>
+          <button class="btn" id="save">${mine?'Update today\'s note':'Save today\'s note'}</button></div>
         <p class="faint" style="margin-top:14px">If today was hard in a way that a note can't hold, you don't have
           to handle it alone: <a href="therapists.html">find a therapist</a>, see
-          <a href="#map" data-go="map">help near you</a>, or call or text <a href="tel:988">988</a> any time.</p>
+          <a href="dashboard.html#nearby">help near you</a>, or call or text <a href="tel:988">988</a> any time.</p>
       </div>
       <div class="card">
         <h3 style="margin-top:0">Earlier notes</h3>
@@ -504,15 +626,16 @@ async function reflectView(){
           <div class="spread"><span class="faint">${fmtDate(r.noted_on+'T12:00')}</span>
             <button class="btn sm ghost" data-del="${r.id}">Delete</button></div>
           <div style="white-space:pre-wrap">${esc(r.helped)}</div></div>`).join('')
-          : '<p class="faint">Nothing yet.</p>'}
-        ${stepNotes.length ? `<h3 style="margin-top:22px">From your quest map</h3>
+          : '<p class="faint">Nothing yet. Your first note will show here.</p>'}
+        ${stepNotes.length ? `<h3 style="margin-top:22px">Written on your trail</h3>
+          <p class="faint">Notes you wrote when you did a writing action.</p>
           ${stepNotes.map(x=>`<div class="refl">
             <div class="faint">${fmtDate(x.done_on+'T12:00')} · ${esc(action(x.action_key)?.text||x.action_key)}</div>
             <div style="white-space:pre-wrap">${esc(x.note)}</div></div>`).join('')}` : ''}
       </div>
     </div>`;
   const idea = () => { const el = document.getElementById('idea');
-    if (el) el.textContent = '💡 ' + helper.prompt(quest.categories, Date.now()); };
+    if (el) el.textContent = helper.prompt(quest.categories, Date.now()); };
   idea();
   document.getElementById('another')?.addEventListener('click', idea);
   document.getElementById('save').onclick = async (e) => {
@@ -523,7 +646,7 @@ async function reflectView(){
       .upsert({ user_id: uid, noted_on: t, helped }, { onConflict: 'user_id,noted_on' });
     busy(e.target, false);
     if (error) return toast(error.message, 'err');
-    toast('Saved.', 'ok'); reflectView();
+    toast('Saved. Today is counted on your trail.', 'ok'); reflectView();
   };
   body().querySelectorAll('[data-del]').forEach(b => b.onclick = async () => {
     const { error } = await sb.from('quest_reflections').delete().eq('id', b.dataset.del);
@@ -539,7 +662,7 @@ function dataView(){
       <div class="card pad-lg">
         <h2 style="margin-top:0">Your data, your call</h2>
         <ul class="muted" style="padding-left:18px">
-          <li>Your quest, goals and notes can only be read by you. Therapists on Theraglee, other members and
+          <li>Your trail, goals and notes can only be read by you. Therapists on Theraglee, other members and
             the admin screen have no access to them.</li>
           <li>We never sell or share this data, and it is not used for advertising.</li>
           <li>The suggestion helper runs in your browser from the choices you made. Nothing you write is
@@ -551,7 +674,7 @@ function dataView(){
       <div class="card pad-lg stack">
         <div><h3>Download</h3><p class="faint">Everything on this page, as a file you keep.</p>
           <button class="btn ghost" id="dl">Download my goals and quest data</button></div>
-        <div><h3>Delete notes</h3><p class="faint">Removes every "What helped" note. Your map and goals stay.</p>
+        <div><h3>Delete notes</h3><p class="faint">Removes every "What helped" note. Your trail and goals stay.</p>
           <button class="btn danger" id="del-notes">Delete all my notes</button></div>
         <div><h3>Start over</h3><p class="faint">Removes your quests, the actions you marked, your notes, and
           your goals and their logs. This cannot be undone.</p>
@@ -600,21 +723,16 @@ function dataView(){
     ]));
 }
 
-/* ------------------------------------------------------------- map */
-const mapView = () => nearbyView(body(), a.profile.zip || '');
-
 function render(){
   root.innerHTML = shell('<div class="skeleton" style="height:120px"></div>');
   root.querySelectorAll('.tabs button').forEach(b => b.onclick = () => go(b.dataset.tab));
-  ({ quest: questView, goals: goalsView, reflect: reflectView, data: dataView, map: mapView }[tab] || questView)();
+  ({ quest: questView, reflect: reflectView, data: dataView }[tab] || questView)();
+  if (tab === 'quest') goalsView();
 }
 function go(t){ tab = t; history.replaceState({},'', '#'+tab); render(); window.scrollTo({ top: 0 }); }
-// "Help near you" links in the wellness note and the reflection box open the Nearby help tab.
-root.addEventListener('click', (e) => {
-  const l = e.target.closest('[data-go]');
-  if (l) { e.preventDefault(); go(l.dataset.go); }
-});
 render();
+// A link to #goals (the dashboard's Goals tile used to point there) lands on the goals zone.
+if (location.hash === '#goals') setTimeout(() => document.getElementById('goals-zone')?.scrollIntoView({ behavior:'smooth', block:'start' }), 600);
 }
 }
 </script>

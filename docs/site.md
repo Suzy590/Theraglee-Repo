@@ -57,10 +57,13 @@ Library** (the whole library with search and filters, the same browser as
 free discovery tools with search and topic chips, the same browser as
 `discover.html`, drawn from `site/assets/discover-ui.js`), **Progress**
 (the week's counts, challenges in progress, favorites, saved for later and
-unfinished items), **Tools** (quick links into the library) and **Messages**
+unfinished items), **Tools** (quick links into the library), **Messages**
 (messages from therapists who reached out through Match Mode, with the
 member's replies and blocks, drawn from `site/assets/inbox.js`, the same inbox
-as the account page's Inbox tab). Each tab has an address, for
+as the account page's Inbox tab) and **Nearby help** (a map of clinics,
+treatment centers and crisis services near a zip code or town, plus the
+national lines, drawn from `site/assets/nearby-ui.js`; see
+[`nearby-help.md`](nearby-help.md)). Each tab has an address, for
 example `dashboard.html#progress`. The **Theraglee Match Mode** switch (a
 smaller copy of the one on the landing page) sits under the greeting, and to
 the right of the greeting one box holds what it does and the line therapists
