@@ -42,8 +42,10 @@ links to find a therapist, help nearby and 988) sits above every screen.
    ("Be a better person") it asks "Which of these is closest?" instead. The
    screen says plainly that the words never leave the device and no AI reads
    them; that is also what the privacy policy promises, so keep it true.
-2. **Milestones.** Five written for the theme (`MILESTONES`), the first three
-   ticked, each editable in place, with move-up and remove, and a box to
+2. **Milestones.** Five written for the theme (`MILESTONES`), or, when the
+   goal's words carry a tag that has its own set (`MILESTONE_SETS`: a goal
+   about a marriage or a partner), five written for that kind of goal. The
+   first three come ticked, each editable in place, with move-up and remove, and a box to
    write one of their own. One to six.
 3. **Stepping stones** for the first milestone: `suggestSteps()` ranks the
    library by words shared with the goal, words shared with the milestone,

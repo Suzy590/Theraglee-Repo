@@ -42,13 +42,14 @@ export const WORDS = {
   tidy:     ['tidy', 'clean', 'clutter', 'declutter', 'mess', 'messy', 'home', 'house', 'space', 'room', 'desk', 'organized', 'organised'],
   food:     ['eat', 'eating', 'meal', 'meals', 'food', 'dinner', 'breakfast', 'lunch', 'water', 'hydrate', 'hydrated', 'drink', 'snack', 'cook', 'cooking'],
   me:       ['mine', 'for me', 'myself', 'my own', 'me time', 'own time', 'time for me', 'time to myself', 'just for me'],
+  partner:  ['marriage', 'married', 'spouse', 'husband', 'wife', 'partner', 'boyfriend', 'girlfriend', 'fiance', 'fiancee', 'couple', 'romance', 'romantic', 'date night', 'date nights', 'intimacy', 'intimate', 'love', 'loving', 'loved', 'affection', 'affectionate', 'together', 'closer', 'argue', 'arguing', 'arguments', 'fight', 'fighting', 'bicker', 'bickering', 'communicate', 'communication', 'listen', 'listening', 'my relationship', 'our relationship'],
 };
 
 /* What each theme is made of: a tag and how strongly it points there. */
 export const THEME_TAGS = {
   calm_evenings:   { evening: 3, sleep: 2, screen: 2, calm: 2, me: 1 },
   steady_routines: { routine: 3, morning: 2, sleep: 1, tidy: 1, food: 1 },
-  connection:      { people: 3 },
+  connection:      { people: 3, partner: 3 },
   energy:          { energy: 3, move: 2, morning: 1, food: 1, sleep: 1 },
   time_outdoors:   { outside: 3, move: 1 },
   self_kindness:   { kind: 3, me: 2, calm: 1, grateful: 1 },
@@ -65,7 +66,7 @@ const EXTRA_TAGS = {
   hab_tomorrow_three: ['focus', 'routine', 'evening'], hab_close_the_day: ['evening', 'focus'], hab_evening_reset: ['tidy', 'evening', 'routine'],
   hab_tidy_surface: ['tidy', 'focus'], hab_dinner_time: ['food', 'routine'], hab_bag_by_door: ['routine', 'morning'],
   sc_dim_lights: ['evening', 'sleep', 'calm'], sc_same_wind_down: ['evening', 'sleep', 'routine'], sc_wind_down_music: ['evening', 'calm'],
-  sc_warm_drink: ['evening', 'calm', 'screen'], sc_long_shower: ['calm', 'kind', 'evening'], sc_screen_free_meal: ['screen', 'food', 'people'],
+  sc_warm_drink: ['evening', 'calm', 'screen'], sc_long_shower: ['calm', 'kind', 'evening'], sc_screen_free_meal: ['screen', 'food', 'people', 'partner'],
   sc_slow_breaths: ['calm'], sc_do_nothing: ['calm', 'focus'], sc_snack_sit: ['food', 'energy'], sc_sit_in_sun: ['outside', 'energy'],
   sc_kind_note: ['kind'], sc_hand_lotion: ['kind', 'calm'], sc_face_same_time: ['routine', 'evening'],
   ref_ideal_evening: ['evening', 'me'], ref_keep_from_tonight: ['evening'], ref_what_matters: ['focus'], ref_small_win: ['kind', 'focus'],
@@ -75,9 +76,14 @@ const EXTRA_TAGS = {
   mv_between_tasks: ['focus', 'screen', 'move'], mv_kind_pace: ['kind', 'move'], mv_shake_out: ['evening', 'energy'],
   na_evening_air: ['evening', 'outside'], na_sunset: ['evening', 'outside'], na_park_phone_away: ['screen', 'outside', 'focus'],
   na_sit_by_tree: ['calm', 'outside', 'kind'], na_same_spot: ['routine', 'outside'], na_morning_birds: ['morning', 'outside'],
-  co_evening_chat: ['evening', 'screen', 'people'], co_goodnight: ['evening', 'people'], co_morning_message: ['morning', 'people', 'routine'],
+  co_evening_chat: ['evening', 'screen', 'people', 'partner'], co_goodnight: ['evening', 'people', 'partner'], co_morning_message: ['morning', 'people', 'routine'],
   co_small_favor: ['kind', 'people'], cr_evening_page: ['evening', 'create'], cr_doodle_before_task: ['focus', 'create'],
   cr_rearrange_corner: ['tidy', 'create'], cr_mandala: ['create', 'calm'],
+  co_ask_question: ['partner', 'people'], co_shared_meal: ['partner', 'people', 'food'], co_compliment: ['partner', 'people'],
+  co_walk_and_talk: ['partner', 'people', 'outside'], mv_walk_with: ['partner', 'people'], co_plan_to_meet: ['partner', 'people'],
+  gr_thank_someone: ['partner', 'people', 'grateful'], gr_letter: ['partner', 'people', 'grateful'], sc_two_warm_drinks: ['partner', 'people', 'kind'],
+  cr_tiny_note: ['partner', 'people', 'create'], cr_card_for_someone: ['partner', 'people', 'create'], co_share_find: ['partner', 'people'],
+  hab_dinner_time: ['partner', 'food', 'routine'],
 };
 
 /* Milestones written for each theme, in a sensible order, each with the
@@ -142,6 +148,22 @@ export const MILESTONES = {
   ],
 };
 
+/* Milestone sets for a particular kind of goal within a theme, picked when the
+   goal's words carry the tag. A goal about a marriage or a partner gets these
+   instead of the general connection milestones. */
+export const MILESTONE_SETS = {
+  partner: {
+    theme: 'connection',
+    milestones: [
+      { title: 'One meal a day together with no screens',            steps: ['sc_screen_free_meal', 'hab_dinner_time', 'co_ask_question', 'gr_thank_someone'] },
+      { title: 'A real conversation most evenings, even ten minutes', steps: ['co_evening_chat', 'co_ask_question', 'co_goodnight', 'sc_two_warm_drinks'] },
+      { title: 'I say one specific thank-you to them each day',       steps: ['gr_thank_someone', 'co_compliment', 'cr_tiny_note', 'gr_letter'] },
+      { title: 'One walk or outing together each week',               steps: ['co_walk_and_talk', 'mv_walk_with', 'co_shared_meal', 'co_plan_to_meet'] },
+      { title: 'A small kindness they did not ask for, most days',    steps: ['cr_tiny_note', 'sc_two_warm_drinks', 'co_share_find', 'cr_card_for_someone'] },
+    ],
+  },
+};
+
 /** Goals in a member's words, one per theme, offered as examples to tap. */
 export const EXAMPLE_GOALS = VALUES.map(v => ({ theme: v.key, text: v.example }));
 
@@ -193,9 +215,12 @@ export function detectTheme(text) {
   return { theme: best.theme, score: best.score, because: best.because, ranked };
 }
 
-/** The five milestones written for a theme (copies, safe to edit). */
-export function suggestMilestones(theme) {
-  return (MILESTONES[theme] || []).map(m => ({ title: m.title, steps: [...m.steps] }));
+/** The five milestones written for a theme (copies, safe to edit). With the
+ *  goal's words, a set written for that kind of goal wins when one fits. */
+export function suggestMilestones(theme, text = '') {
+  const tags = tagsIn(text);
+  const special = Object.values(MILESTONE_SETS).find(set => set.theme === theme && tags[Object.keys(MILESTONE_SETS).find(k => MILESTONE_SETS[k] === set)]);
+  return (special?.milestones || MILESTONES[theme] || []).map(m => ({ title: m.title, steps: [...m.steps] }));
 }
 
 /* Tags an action carries: from its own text, its focuses' words, and EXTRA_TAGS. */
@@ -222,7 +247,7 @@ export function suggestSteps({ text = '', theme = null, milestone = null, minute
   const scored = ACTIONS.filter(a => !a.retired).map(a => {
     const tags = actionTags.get(a.key);
     let score = 0; const because = new Set();
-    for (const [tag, words] of Object.entries(goalTags)) if (tags.has(tag)) { score += 2; because.add(words[0]); }
+    for (const [tag, words] of Object.entries(goalTags)) if (tags.has(tag)) { score += 2; words.slice(0, 2).forEach(w => because.add(w)); }
     for (const tag of Object.keys(milestoneTags)) if (tags.has(tag)) score += 1;
     if (recommended.has(a.key)) score += 6;
     if (theme && suits(a, theme)) score += 3;
@@ -249,9 +274,11 @@ export function reasonFor(s, milestone = null) {
 /** Checks every milestone's steps name real actions (the test runs this). */
 export function milestoneProblems() {
   const out = [];
-  for (const [theme, list] of Object.entries(MILESTONES)) {
-    if (!VALUES.some(v => v.key === theme)) out.push(`${theme}: not a theme`);
+  const sets = [...Object.entries(MILESTONES), ...Object.entries(MILESTONE_SETS).map(([k, s]) => [`${s.theme}/${k}`, s.milestones])];
+  for (const [theme, list] of sets) {
+    if (!VALUES.some(v => v.key === theme.split('/')[0])) out.push(`${theme}: not a theme`);
     for (const m of list) for (const k of m.steps) if (!action(k)) out.push(`${theme} / ${m.title}: unknown action ${k}`);
   }
+  for (const k of Object.keys(MILESTONE_SETS)) if (!WORDS[k]) out.push(`${k}: no words for this set`);
   return out;
 }

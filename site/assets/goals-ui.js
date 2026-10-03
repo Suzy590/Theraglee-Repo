@@ -408,7 +408,7 @@ export async function mountGoals(host, ctx) {
           if (st.text.length < 3) return toast('Write your goal first, even a few words.', 'err');
           if (!st.theme) return toast('Pick the kind of goal this is, so the steps can fit it.', 'err');
           if (onlyGoal) return save(e.target);
-          if (!st.ms.length) st.ms = suggestMilestones(st.theme).map((m, i) => ({ ...m, own: [], on: i < 3 }));
+          if (!st.ms.length) st.ms = suggestMilestones(st.theme, st.text).map((m, i) => ({ ...m, own: [], on: i < 3 }));
         }
         if (st.step === 1) {
           st.ms.forEach((m, i) => { const inp = host.querySelector(`[data-ms-title="${i}"]`); if (inp) m.title = inp.value.trim(); });
