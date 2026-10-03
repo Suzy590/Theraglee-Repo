@@ -1,0 +1,140 @@
+/* ==========================================================================
+   Theraglee — Goals & tracking (goals.html, drawn by assets/goals-ui.js).
+   The Today look from assets/styles.css, plus the three-level card, the
+   stepping stones, the setup screens and the trail map's motion.
+   ========================================================================== */
+
+/* Wellness note, one line above everything. */
+.wellness{display:flex;gap:12px;align-items:flex-start;padding:12px 16px;border-radius:var(--r-sm);
+  background:var(--sand);border:1px solid var(--hair);font-size:.88rem;color:var(--muted);margin:0 0 22px}
+.wellness strong{color:var(--ink);font-weight:500}
+
+/* ---- the three levels ---- */
+.levels{position:relative;padding:0 !important;overflow:hidden}
+.level{padding:24px 30px;position:relative}
+.level + .level{border-top:1px solid var(--hair)}
+/* A thin trail runs down the left edge, through the three levels. */
+.levels::before{content:"";position:absolute;left:22px;top:30px;bottom:30px;width:2px;
+  background:repeating-linear-gradient(180deg,var(--mist) 0 6px,transparent 6px 12px)}
+.level .kicker{display:inline-flex;align-items:center;gap:8px;margin-bottom:6px}
+.level .kicker .ico{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;
+  background:var(--soft);border:1px solid var(--mist);font-style:normal;font-size:.8rem;color:var(--green-deep)}
+.level.goal{background:linear-gradient(180deg,#F7FBEE,#fff)}
+.level.goal .kicker .ico{background:var(--green);color:#fff;border-color:var(--green)}
+.goal-text{font-family:var(--serif);font-style:italic;font-weight:400;font-size:clamp(1.6rem,3vw,2.3rem);
+  letter-spacing:-.01em;line-height:1.15;color:var(--ink);margin:4px 0 10px}
+.level.milestone h3{font-size:1.25rem;margin:0 0 10px}
+.level.milestone .kicker .ico{background:var(--lime);border-color:var(--lime-2);color:var(--ink)}
+.level.stones .kicker .ico{font-size:1.1rem;line-height:1}
+.level.reached-all{background:linear-gradient(180deg,#fff,#F7FBEE)}
+@media(max-width:560px){.level{padding:18px 16px}.levels::before{display:none}}
+
+/* The Change menu. */
+.menu{position:relative}
+.menu-list{position:absolute;right:0;top:calc(100% + 6px);z-index:5;min-width:240px;background:var(--paper);
+  border:1px solid var(--hair);border-radius:var(--r-sm);box-shadow:var(--shadow-2);padding:6px;display:flex;flex-direction:column}
+.menu-list[hidden]{display:none}
+.menu-list button{text-align:left;font:inherit;font-size:.92rem;padding:9px 12px;border:0;background:none;border-radius:8px;cursor:pointer;color:var(--ink)}
+.menu-list button:hover{background:var(--soft)}
+.menu-list button:last-child{color:var(--muted);border-top:1px solid var(--hair);border-radius:0;margin-top:4px;padding-top:11px}
+
+/* Pebbles: the steps taken toward the milestone being worked on. */
+.pebbles{display:inline-flex;gap:5px}
+.pebbles i{width:16px;height:12px;border-radius:50% 50% 45% 45%/60% 60% 40% 40%;background:var(--sand);border:1px solid var(--hair);
+  transition:background .3s,transform .3s}
+.pebbles i.on{background:var(--lime);border-color:var(--lime-2);box-shadow:inset 0 -2px 0 rgba(22,36,28,.12)}
+.checkin{margin-top:14px;padding:14px 16px;border-radius:var(--r-sm);background:var(--soft);border:1px solid var(--mist)}
+.checkin strong{color:var(--green-deep);font-weight:500}
+
+/* Stepping stones. */
+.stone{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--hair)}
+.stone:first-of-type{border-top:0}
+.stone .txt{flex:1;min-width:0}
+.stone .what{font-size:1rem}
+.stone.done .what{color:var(--muted)}
+.stone .meta{font-size:.78rem;color:var(--faint);margin-top:2px}
+.pebble{flex:none;width:34px;height:30px;border-radius:50% 50% 45% 45%/60% 60% 40% 40%;border:2px solid var(--hair);
+  background:var(--paper);cursor:pointer;display:grid;place-items:center;font-size:.95rem;color:#fff;padding:0;
+  box-shadow:inset 0 -3px 0 var(--sand);transition:border-color .18s,transform .18s}
+.pebble:hover{border-color:var(--lime-2);transform:translateY(-1px)}
+.pebble.on{background:var(--green);border-color:var(--green);box-shadow:inset 0 -3px 0 var(--green-deep)}
+.pebble:disabled{cursor:default;opacity:.6}
+.pebble:not(.on):not(:empty){color:var(--muted);font-size:.85rem}
+.note{margin-top:8px;padding:10px 12px;border-radius:var(--r-sm);background:var(--sand);font-size:.92rem}
+.note a{display:inline-block;margin-top:4px;font-size:.85rem}
+.today-pill{display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border-radius:var(--r-pill);
+  font-size:.82rem;font-weight:500;background:var(--sand);color:var(--muted);border:1px solid var(--hair)}
+.today-pill.yes{background:var(--soft);color:var(--green-deep);border-color:var(--mist)}
+.own-steps .kicker{display:block}
+
+/* Tonight's note. */
+.level.tonight{padding-top:16px;padding-bottom:16px;background:var(--cream)}
+.tonight-toggle{display:flex;gap:14px;align-items:center;flex-wrap:wrap;width:100%;border:0;background:none;font:inherit;
+  padding:0;cursor:pointer;text-align:left;color:var(--ink)}
+.tonight-toggle .kicker{margin:0}
+.tonight-toggle .what{font-size:1rem}
+.nudge{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 14px;border-radius:var(--r-sm);
+  background:var(--sand);margin-bottom:10px;font-size:.92rem}
+.nudge em{font-family:var(--serif);font-style:italic;font-size:1.05rem;color:var(--ink)}
+#tonight-box textarea{width:100%;min-height:90px}
+
+/* ---- the map ---- */
+.mapcard{padding:14px}
+.mapcard svg{display:block;border-radius:14px}
+.mapcard svg g[data-ms]:focus,.mapcard svg g[data-goal]:focus{outline:none}
+@media(max-width:600px){.trail-label,.trail-you{display:none}}
+.stops{display:flex;flex-wrap:wrap;gap:8px;margin:14px 4px 4px}
+.stops button{font:inherit;font-size:.84rem;padding:6px 12px 6px 6px;border-radius:var(--r-pill);border:1px solid var(--hair);
+  background:var(--paper);color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;gap:8px;max-width:100%}
+.stops button b{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:.76rem;font-weight:600;
+  background:var(--sand);color:var(--faint)}
+.stops button.open{color:var(--ink)}
+.stops button.open b{background:var(--green);color:#fff}
+.stops button.here{border-color:var(--lime-2);background:var(--soft);color:var(--green-deep)}
+.stops button.here b{background:var(--lime);color:var(--ink)}
+.stops button.goal-pill{background:var(--ink);color:#fff;border-color:var(--ink);font-family:var(--serif);font-style:italic;font-size:.95rem}
+.stops button.goal-pill b{background:#2C3A32;color:var(--lime)}
+/* Motion: the hiker bobs, the flags flutter, and the hiker hops after a step. */
+@keyframes trail-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes trail-flutter{0%,100%{transform:skewY(0)}50%{transform:skewY(-5deg) scaleX(.96)}}
+@keyframes trail-hop{0%{transform:translateY(0) scale(1)}35%{transform:translateY(-14px) scale(1.08)}70%{transform:translateY(0) scale(.97)}100%{transform:translateY(0) scale(1)}}
+@keyframes trail-pop{0%{transform:scale(0);opacity:0}70%{transform:scale(1.15);opacity:1}100%{transform:scale(1)}}
+.trail-hiker{animation:trail-bob 2.6s ease-in-out infinite}
+.trail-flag{animation:trail-flutter 3s ease-in-out infinite}
+.stepped .trail-hiker{animation:trail-hop .9s cubic-bezier(.34,1.56,.64,1) 1,trail-bob 2.6s ease-in-out 1s infinite}
+.stepped .trail-bloom{transform-box:fill-box;transform-origin:50% 100%;animation:trail-pop .6s ease-out both}
+.stepped .pebbles i.on:last-of-type{animation:trail-pop .5s ease-out both}
+@media(prefers-reduced-motion:reduce){.trail-hiker,.trail-flag,.stepped .trail-hiker,.stepped .trail-bloom,.stepped .pebbles i{animation:none}}
+
+/* ---- setup ---- */
+.steps-nav{display:flex;gap:8px;margin-bottom:18px}
+.steps-nav span{flex:1;height:5px;border-radius:5px;background:var(--hair)}
+.steps-nav span.on{background:var(--lime-2)}
+.setup textarea{width:100%;min-height:72px;font-family:var(--serif);font-style:italic;font-size:1.3rem;line-height:1.35}
+.sounds strong{font-weight:500}
+.ms-list{display:flex;flex-direction:column;gap:8px}
+.ms-pick{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--hair);border-radius:var(--r-sm);background:var(--paper);cursor:pointer;margin:0;font-weight:400}
+.ms-pick.on{border-color:var(--green);background:var(--soft)}
+.ms-pick.reached{opacity:.7}
+.ms-pick input[type=checkbox]{width:18px;height:18px;margin:0;flex:none}
+.ms-n{flex:none;width:24px;height:24px;border-radius:50%;background:var(--sand);color:var(--muted);display:grid;place-items:center;font-size:.78rem;font-weight:600}
+.ms-pick.on .ms-n{background:var(--green);color:#fff}
+.ms-title{flex:1;min-width:0;border:0;background:transparent;font:inherit;font-size:.98rem;color:var(--ink);padding:4px 6px;border-radius:6px}
+.ms-title:focus{outline:none;background:#fff;box-shadow:0 0 0 2px var(--mist)}
+.ms-tools{display:flex;gap:4px}
+.ms-tools button{border:0;background:var(--sand);width:26px;height:26px;border-radius:50%;cursor:pointer;color:var(--muted);font:inherit}
+.ms-tools button:hover{background:var(--mist);color:var(--ink)}
+.st-list{display:flex;flex-direction:column;gap:8px}
+.st-pick{display:flex;align-items:flex-start;gap:12px;padding:10px 12px;border:1px solid var(--hair);border-radius:var(--r-sm);background:var(--paper);cursor:pointer;margin:0;font-weight:400}
+.st-pick.on{border-color:var(--green);background:var(--soft)}
+.st-pick input{width:18px;height:18px;margin:3px 0 0;flex:none}
+.st-pick .what{display:block;font-size:.98rem;color:var(--ink)}
+.st-pick .meta{display:block;font-size:.78rem;color:var(--faint);margin-top:2px}
+.pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.pick button{text-align:left;font:inherit;padding:14px 16px;border-radius:var(--r-sm);border:1px solid var(--hair);
+  background:var(--paper);cursor:pointer;color:var(--ink)}
+.pick button:hover{border-color:var(--lime-2)}
+.pick button.on{border-color:var(--green);background:var(--soft);box-shadow:0 0 0 1px var(--green) inset}
+.pick button small{display:block;color:var(--muted);font-size:.8rem;margin-top:2px;line-height:1.4}
+.refl{padding:14px 0;border-top:1px solid var(--hair)}
+.refl:first-of-type{border-top:0}
