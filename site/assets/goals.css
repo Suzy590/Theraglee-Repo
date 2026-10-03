@@ -110,16 +110,16 @@
 .steps-nav{display:flex;gap:8px;margin-bottom:18px}
 .steps-nav span{flex:1;height:5px;border-radius:5px;background:var(--hair)}
 .steps-nav span.on{background:var(--lime-2)}
-.setup textarea{width:100%;min-height:72px;font-family:var(--serif);font-style:italic;font-size:1.3rem;line-height:1.35}
+.setup #goal{width:100%;min-height:72px;font-family:var(--serif);font-style:italic;font-size:1.3rem;line-height:1.35}
 .sounds strong{font-weight:500}
 .ms-list{display:flex;flex-direction:column;gap:8px}
-.ms-pick{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--hair);border-radius:var(--r-sm);background:var(--paper);cursor:pointer;margin:0;font-weight:400}
+.ms-pick{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border:1px solid var(--hair);border-radius:var(--r-sm);background:var(--paper);cursor:pointer;margin:0;font-weight:400}
 .ms-pick.on{border-color:var(--green);background:var(--soft)}
 .ms-pick.reached{opacity:.7}
-.ms-pick input[type=checkbox]{width:18px;height:18px;margin:0;flex:none}
-.ms-n{flex:none;width:24px;height:24px;border-radius:50%;background:var(--sand);color:var(--muted);display:grid;place-items:center;font-size:.78rem;font-weight:600}
+.ms-pick input[type=checkbox]{width:18px;height:18px;margin:5px 0 0;flex:none}
+.ms-n{flex:none;margin-top:2px;width:24px;height:24px;border-radius:50%;background:var(--sand);color:var(--muted);display:grid;place-items:center;font-size:.78rem;font-weight:600}
 .ms-pick.on .ms-n{background:var(--green);color:#fff}
-.ms-title{flex:1;min-width:0;border:0;background:transparent;font:inherit;font-size:.98rem;color:var(--ink);padding:4px 6px;border-radius:6px}
+.ms-title{flex:1;min-width:0;width:auto;border:0;background:transparent;font:inherit;font-size:.98rem;box-shadow:none;line-height:1.35;color:var(--ink);padding:4px 6px;border-radius:6px;resize:none;overflow:hidden;min-height:0}
 .ms-title:focus{outline:none;background:#fff;box-shadow:0 0 0 2px var(--mist)}
 .ms-tools{display:flex;gap:4px}
 .ms-tools button{border:0;background:var(--sand);width:26px;height:26px;border-radius:50%;cursor:pointer;color:var(--muted);font:inherit}
@@ -138,3 +138,10 @@
 .pick button small{display:block;color:var(--muted);font-size:.8rem;margin-top:2px;line-height:1.4}
 .refl{padding:14px 0;border-top:1px solid var(--hair)}
 .refl:first-of-type{border-top:0}
+/* On a phone the milestone title takes a full line of its own under its number. */
+@media(max-width:480px){
+  .ms-pick{flex-wrap:wrap;align-items:center}
+  .ms-tools{margin-left:auto}
+  .ms-title{flex-basis:100%;order:9;padding-left:0}
+  .card.pad-lg.setup{padding:22px 16px}
+}

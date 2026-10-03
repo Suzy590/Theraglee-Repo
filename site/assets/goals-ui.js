@@ -308,6 +308,16 @@ export async function mountGoals(host, ctx) {
       ownDraft: '',
     };
     const onlyGoal = !!quest && step === 0 && milestones.length > 0;   // rewording: save after screen 1
+    // Keeps a milestone's pre-ticked stones within the member's time, topping up from the matcher.
+    const fitTime = (m) => {
+      m.steps = m.steps.filter(k => (action(k)?.min || 0) <= st.minutes);
+      if (m.steps.length < 3) {
+        for (const s of suggestSteps({ text: st.text, theme: st.theme, milestone: m, minutes: st.minutes, limit: 8 })) {
+          if (m.steps.length >= 3) break;
+          if (s.action.min <= st.minutes && !m.steps.includes(s.action.key)) m.steps.push(s.action.key);
+        }
+      }
+    };
     const STEPS = 3;
 
     const draw = () => {
@@ -331,7 +341,7 @@ export async function mountGoals(host, ctx) {
         <div class="ms-list">${st.ms.map((m, i) => `<label class="ms-pick ${m.on ? 'on' : ''} ${m.reached ? 'reached' : ''}">
             <input type="checkbox" data-ms-on="${i}" ${m.on ? 'checked' : ''} ${m.reached ? 'disabled' : ''}>
             <span class="ms-n">${m.reached ? '✓' : i + 1}</span>
-            <input class="ms-title" data-ms-title="${i}" value="${esc(m.title)}" maxlength="140" ${m.reached ? 'readonly' : ''} aria-label="Milestone ${i + 1}">
+            <textarea class="ms-title" data-ms-title="${i}" rows="1" maxlength="140" ${m.reached ? 'readonly' : ''} aria-label="Milestone ${i + 1}">${esc(m.title)}</textarea>
             <span class="ms-tools">${i > 0 && !m.reached ? `<button type="button" data-up="${i}" aria-label="Move up">↑</button>` : ''}${!m.id && !m.reached ? `<button type="button" data-rm="${i}" aria-label="Remove">×</button>` : ''}</span>
           </label>`).join('')}</div>
         <div class="row" style="margin-top:10px"><input id="ms-new" maxlength="140" placeholder="Write a milestone of your own…" style="flex:1;min-width:200px">
@@ -382,7 +392,14 @@ export async function mountGoals(host, ctx) {
       }
       // Screen 2
       host.querySelectorAll('[data-ms-on]').forEach(c => c.onchange = () => { st.ms[+c.dataset.msOn].on = c.checked; draw(); });
-      host.querySelectorAll('[data-ms-title]').forEach(inp => inp.onchange = () => { st.ms[+inp.dataset.msTitle].title = inp.value.trim(); });
+      // The title wraps onto as many lines as it needs, on a phone too.
+      const fit = (el) => { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; };
+      host.querySelectorAll('[data-ms-title]').forEach(inp => {
+        fit(inp);
+        inp.oninput = () => fit(inp);
+        inp.onchange = () => { st.ms[+inp.dataset.msTitle].title = inp.value.replace(/\s+/g, ' ').trim(); };
+        inp.onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); inp.blur(); } };
+      });
       host.querySelectorAll('[data-up]').forEach(b => b.onclick = () => { const i = +b.dataset.up; [st.ms[i - 1], st.ms[i]] = [st.ms[i], st.ms[i - 1]]; draw(); });
       host.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => { st.ms.splice(+b.dataset.rm, 1); draw(); });
       $('#ms-add')?.addEventListener('click', () => {
@@ -392,7 +409,7 @@ export async function mountGoals(host, ctx) {
       });
       // Screen 3
       const first = st.ms.find(m => m.on && !m.reached);
-      host.querySelectorAll('[data-min]').forEach(c => c.onclick = () => { st.minutes = +c.dataset.min; draw(); });
+      host.querySelectorAll('[data-min]').forEach(c => c.onclick = () => { st.minutes = +c.dataset.min; if (first) fitTime(first); draw(); });
       host.querySelectorAll('[data-st]').forEach(c => c.onchange = () => {
         const set = new Set(first.steps); c.checked ? set.add(c.dataset.st) : set.delete(c.dataset.st);
         first.steps = [...set].slice(0, 8); c.closest('label').classList.toggle('on', c.checked);
@@ -416,7 +433,7 @@ export async function mountGoals(host, ctx) {
           if (!on.length) return toast('Pick at least one milestone.', 'err');
           if (on.length > 6) return toast('Six milestones is plenty for one goal.', 'err');
           const first = on.find(m => !m.reached);
-          if (first && !first.steps.length) first.steps = suggestSteps({ text: st.text, theme: st.theme, milestone: first, minutes: st.minutes, limit: 4 }).map(s => s.action.key);
+          if (first) fitTime(first);
         }
         if (st.step === 2) {
           const first = st.ms.find(m => m.on && !m.reached);
