@@ -49,7 +49,9 @@ const DUSK = {
   tree: ['#2C6B3A', '#1E5229', '#153E1E'], trunk: '#4A3524', water: '#6FAAC8', waterLight: '#9CCBE0',
   stone: '#B8B3A6', sun: null, label: '#16241C', pill: '#FFFFFF', fog: '#DDE6DD', tent: '#EFE8D6', tentShade: '#CFC5AD',
 };
-const PETALS = ['#F29E8E', '#F6C453', '#B9A3E3', '#F7F3EA', '#E98FB5', '#8DC61D'];
+/* Petal colors: none of them green, so a flower never melts into the grass. */
+const PETALS = ['#F29E8E', '#F6C453', '#B9A3E3', '#F7F3EA', '#E98FB5', '#F28C3B'];
+const TODAY_PETAL = '#F2705E';
 
 /* ------------------------------------------------------------ the path */
 const SAMPLES = 32;
@@ -122,9 +124,9 @@ const bush = (x, y, k, pal) => `<g>
   <ellipse cx="${r1(x)}" cy="${r1(y - 4 * k)}" rx="${r1(9 * k)}" ry="${r1(6 * k)}" fill="${pal.tree[1]}"/>
   <ellipse cx="${r1(x + 7 * k)}" cy="${r1(y - 3 * k)}" rx="${r1(7 * k)}" ry="${r1(5 * k)}" fill="${pal.tree[0]}"/></g>`;
 
-const flower = (x, y, k, color, i) => {
+const flower = (x, y, k, color, i, bold = false) => {
   const petals = [0, 72, 144, 216, 288].map(a =>
-    `<ellipse cx="${r1(x)}" cy="${r1(y - 15.2 * k)}" rx="${r1(2.3 * k)}" ry="${r1(4 * k)}" fill="${color}" transform="rotate(${a + i * 7} ${r1(x)} ${r1(y - 12 * k)})"/>`).join('');
+    `<ellipse cx="${r1(x)}" cy="${r1(y - 15.2 * k)}" rx="${r1(2.3 * k)}" ry="${r1(4 * k)}" fill="${color}"${bold ? ' stroke="#fff" stroke-width="1"' : ''} transform="rotate(${a + i * 7} ${r1(x)} ${r1(y - 12 * k)})"/>`).join('');
   return `<g class="trail-bloom"><path d="M${r1(x)},${r1(y)} q${i % 2 ? 2 : -2},-${r1(6 * k)} 0,-${r1(12 * k)}" stroke="#6AB21E" stroke-width="${r1(1.6 * k)}" fill="none"/>
     <ellipse cx="${r1(x - 3 * k)}" cy="${r1(y - 6 * k)}" rx="${r1(3 * k)}" ry="${r1(1.5 * k)}" fill="#8DC61D" transform="rotate(-30 ${r1(x - 3 * k)} ${r1(y - 6 * k)})"/>
     ${petals}<circle cx="${r1(x)}" cy="${r1(y - 12 * k)}" r="${r1(1.8 * k)}" fill="#F6C453"/></g>`;
@@ -325,7 +327,8 @@ export function trailMap({ goal = {}, milestones = [], current = 0, stepFrac = 0
       const x = p.x + (isToday ? -off : p.nx * side * off), y = p.y + (isToday ? 9 : p.ny * side * off);
       const k2 = persp(y) * (isToday ? 1.5 : 0.75);
       const glow = isToday ? `<circle class="trail-today-glow" cx="${r1(x)}" cy="${r1(y - 10 * k2)}" r="${r1(22 * k2)}" fill="url(#tm-glow)"/>` : '';
-      const g = scene === 'lights' ? lantern(x, y, persp(y) * (isToday ? 1.3 : 0.8)) : flower(x, y, k2, PETALS[k % PETALS.length], k);
+      const g = scene === 'lights' ? lantern(x, y, persp(y) * (isToday ? 1.3 : 0.8))
+        : flower(x, y, k2, isToday ? TODAY_PETAL : PETALS[k % PETALS.length], k, isToday);
       planted.push({ y: y + (isToday ? 1 : 0), g: `${glow}<g class="${isToday ? 'trail-today' : ''}">${g}</g>` });
     }
   }
