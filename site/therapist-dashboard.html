@@ -107,8 +107,45 @@ try {
   localStorage.removeItem('theraglee_plan');
 } catch {}
 if (wantFounding) { tab = 'membership'; history.replaceState({}, '', 'therapist-dashboard.html#membership'); }
+// Unread counts for the pills on the Messages and Member requests tabs:
+// messages from the contact form (therapist_messages.read_at empty) and
+// replies from members (outreach_replies.read_at empty). Counted as soon as
+// the page opens, whichever tab it opens on, and again by the tabs that load
+// the rows themselves; "Mark as read" on a message or a thread takes them down.
 let unread = 0;
 let unreadReplies = 0;
+async function countUnread(){
+  if (!T) return;
+  const [{ count: nMsgs }, { count: nReplies }] = await Promise.all([
+    sb.from('therapist_messages').select('id', { count:'exact', head:true })
+      .eq('therapist_id', T.id).is('read_at', null),
+    sb.from('outreach_replies').select('id', { count:'exact', head:true })
+      .eq('therapist_id', T.id).is('read_at', null),
+  ]);
+  unread = nMsgs || 0;
+  unreadReplies = nReplies || 0;
+  paintDots();
+}
+// The pill on a tab: the count, with the label a screen reader hears.
+function tabButton(k, l, n, on){
+  return `<button data-tab="${k}" class="${on?'on':''}"${n ? ` aria-label="${l}, ${n} unread"` : ''}>${l}${
+    n ? `<span class="dot" aria-hidden="true">${n}</span>` : ''}</button>`;
+}
+function tabCount(k){ return k==='messages' ? unread : k==='members' ? unreadReplies : 0; }
+// Redraws the pills on the tab bar already on the page, without redrawing the tab.
+function paintDots(){
+  root.querySelectorAll('.tabs button').forEach(b => {
+    const [, l] = TABS.find(([k]) => k === b.dataset.tab) || [];
+    if (!l) return;
+    b.outerHTML = tabButton(b.dataset.tab, l, tabCount(b.dataset.tab), b.classList.contains('on'));
+  });
+  bindTabs();
+}
+function bindTabs(){
+  root.querySelectorAll('.tabs button').forEach(b => b.onclick = () => {
+    tab = b.dataset.tab; history.replaceState({},'','#'+tab); route();
+  });
+}
 
 // 'comped' is a complimentary membership an admin granted: it counts as paid,
 // but there is no Stripe subscription to manage or discount.
@@ -179,18 +216,13 @@ function shell(body){
         <span class="badge ${T?.published?'':'gray'}">${status}</span>
       </div>
     </div>
-    ${payFirst ? '' : `<div class="tabs">${TABS.map(([k,l])=>
-      `<button data-tab="${k}" class="${tab===k?'on':''}">${l}${
-        k==='messages' && unread ? `<span class="dot">${unread}</span>`
-        : k==='members' && unreadReplies ? `<span class="dot">${unreadReplies}</span>` : ''}</button>`).join('')}</div>`}
+    ${payFirst ? '' : `<div class="tabs">${TABS.map(([k,l]) => tabButton(k, l, tabCount(k), tab===k)).join('')}</div>`}
     <div id="body">${body}</div>`;
 }
 
 function render(body){
   root.innerHTML = shell(body);
-  root.querySelectorAll('.tabs button').forEach(b => b.onclick = () => {
-    tab = b.dataset.tab; history.replaceState({},'','#'+tab); route();
-  });
+  bindTabs();
 }
 
 function needsListing(){
@@ -421,7 +453,8 @@ async function messages(){
     ${rows.length ? rows.map(m=>`
       <div class="msg ${m.read_at?'':'unread'}" data-id="${m.id}">
         <div class="spread">
-          <span class="who">${esc(m.sender_name)}</span>
+          <span class="who">${esc(m.sender_name)}${
+            m.read_at ? '' : ' <span class="badge" style="margin-left:6px">New</span>'}</span>
           <span class="faint">${fmtDate(m.created_at)}</span>
         </div>
         <p class="faint" style="margin:4px 0 0">
@@ -1304,6 +1337,8 @@ addEventListener('hashchange', () => {
   if (h && h !== tab) { tab = h; route(); }
 });
 route();
+// The pills on the Messages and Member requests tabs, whichever tab opened first.
+countUnread();
 }
 }
 </script>

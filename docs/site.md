@@ -137,7 +137,12 @@ facts (license verified, membership active, and the identity check when
 (`supabase/migrations/20261004120000_listing_live_on_verification.sql`). The
 practice dashboard opens on a **Home** tab: where the listing stands and the one thing to do next, the
 last thirty days of referrals, unread messages and waiting member requests, and
-every benefit below with its current state. It includes:
+every benefit below with its current state. Whichever tab the page opens on, the
+**Messages** tab carries a green pill with the number of contact-form messages
+not yet marked read (`therapist_messages.read_at` empty) and **Member requests**
+one with the number of unread member replies (`outreach_replies.read_at` empty),
+the same pill the member dashboard puts on its Messages tab; each unread message
+is labeled **New**, and **Mark as read** takes the count down. It includes:
 
 - a verified, searchable listing
 - a Theraglee tracking phone number, so the therapist's own line stays private
@@ -405,8 +410,8 @@ gated by tier, so Basic and Premium have them too:
 | Keep favorites in your dashboard | `favorites` table via `assets/library.js`; "Your favorites" on the dashboard | RLS `own rows` |
 | Tons of journal prompts | 374 `daily_content` rows of kind `journal_prompt`, the Journal tab on the dashboard (`dashboard.html#journal`, drawn by `site/assets/journal-ui.js`; `journal.html` forwards there) | `min_level = 1` |
 | Articles sent to your inbox | the `daily-digest` Edge Function, below | `profiles.daily_email` |
-| Themed challenges, 7 days at a time | 38 `challenge_templates` at `min_level = 1`, two more added every day; one to-do a day from `challenge_days`, runs in `user_challenges`, ticks in `user_challenge_progress`; `guard_challenge_length()` keeps a Free member's run to 7 days — see [`challenges.md`](challenges.md) | `min_level`, RLS `own rows` |
-| Checklists with progress tracked | 30 `checklists` at `min_level = 1`, two more added every day, `checklist_progress` + `item_progress` | `min_level`, RLS `own rows` |
+| Themed challenges, 7 days at a time | 40 `challenge_templates` at `min_level = 1`, two more added every day; one to-do a day from `challenge_days`, runs in `user_challenges`, ticks in `user_challenge_progress`; `guard_challenge_length()` keeps a Free member's run to 7 days — see [`challenges.md`](challenges.md) | `min_level`, RLS `own rows` |
+| Checklists with progress tracked | 32 `checklists` at `min_level = 1`, two more added every day, `checklist_progress` + `item_progress` | `min_level`, RLS `own rows` |
 | Theraglee Match Mode (dashboard switch: let therapists reach out) | `profiles.visible_to_therapists`, toggled on `dashboard.html` and `account.html`; the details therapists see are asked for in `assets/match.js`; blocks in `member_blocks` | `member_opted_in()`, `member_blocked()` |
 
 ## The feature showcase beside the page
@@ -592,9 +597,9 @@ Most of it was imported from the Word documents in the parent folder:
 - 312 self-assessment quizzes (1,503 questions, 1,247 result bands; 62 imported, 250 written for the site — see below)
 - 374 journal prompts
 - 186 interactive worksheets (16 imported, 170 written for the site — see below)
-- 30 checklists, with two more added every day — see [`checklists.md`](checklists.md)
-- 38 themed challenges (365 daily to-dos each), with two more themes added every day — see [`challenges.md`](challenges.md)
-- 132 articles, free to everyone, with five more published every day — see [`articles.md`](articles.md)
+- 32 checklists, with two more added every day — see [`checklists.md`](checklists.md)
+- 40 themed challenges (365 daily to-dos each), with two more themes added every day — see [`challenges.md`](challenges.md)
+- 137 articles, free to everyone, with five more published every day — see [`articles.md`](articles.md)
 - 282 mandalas to print or color online (drawn in the browser from a seed): 200 round, 82 shaped like animals, plants and symbols
 - 150 mental health trivia quizzes (1,500 questions), written for the site rather than imported
 - 140 daily items — affirmations, tips, fun facts, quotes
