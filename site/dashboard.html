@@ -160,7 +160,7 @@
   /* Every tab is a .zone (assets/styles.css), the tinted panel the mood
      check-in on Today started with; .dash-top already leaves the gap above. */
   .zone h2.zone-sub{margin:30px 0 14px}
-  #affirm-card,.daily .card,#mood-card,#mood-factors,#mood-patterns,#match-mode{scroll-margin-top:104px}
+  #affirm-card,.daily .card,#mood-card,#mood-factors,#mood-patterns,#progress,#match-mode{scroll-margin-top:104px}
   .tile .tile-remove{align-self:flex-start;margin-top:10px;padding:4px 10px;font-size:.78rem;color:var(--faint)}
   .tile .tile-remove:hover{color:var(--danger)}
 </style>
@@ -170,7 +170,6 @@
   <div class="wrap">
     <div class="tabs" id="tabs" role="tablist">
       <button data-tab="today" role="tab">Today</button>
-      <button data-tab="progress" role="tab">Progress</button>
       <button data-tab="journal" role="tab">Journal</button>
       <button data-tab="playlists" role="tab">Playlists</button>
       <button data-tab="explore" role="tab">Explore Library</button>
@@ -201,8 +200,8 @@
         </div>
 
         <!-- Today's picks sit under Match Mode, and only on the Today tab: the
-             affirmation across the top, then the daily cards and the mood
-             check-in beside the feature showcase. -->
+             affirmation across the top, then the daily cards, the mood
+             check-in and the member's progress beside the feature showcase. -->
         <div class="today-top" data-panel="today">
           <div class="card" id="affirm-card">
             <div class="skeleton" style="height:70px"></div>
@@ -221,22 +220,12 @@
               </div>
               <div id="mood-host"><div class="card"><div class="skeleton" style="height:120px"></div></div></div>
             </section>
-          </div>
-          <div class="showcase-slot"></div>
-        </div>
-
-        <!-- Every other tab opens the same way: a card in the affirmation's place,
-             then the tab's zones on the left and the feature showcase on the right. -->
-        <div class="tab-top" data-panel="progress">
-          <div class="card tab-intro">
-            <span class="badge">Progress</span>
-            <p class="hero-line">Every small step counts, and they all add up here.</p>
-          </div>
-          <div class="tab-body">
-            <section class="zone" aria-labelledby="progress-zone-title">
+            <!-- Progress, under the mood check-in: the week's counts, challenges
+                 in progress, favorites, saved for later and unfinished items. -->
+            <section class="zone" id="progress" aria-labelledby="progress-zone-title">
               <div class="zone-head">
                 <h2 id="progress-zone-title">Progress</h2>
-                <p class="muted">Your week at a glance, and everything you have started, saved or favorited.</p>
+                <p class="muted">Every small step counts, and they all add up here: your week at a glance, and everything you have started, saved or favorited.</p>
               </div>
               <div class="card" id="streak-card">
                 <h3>Your week</h3>
@@ -258,6 +247,9 @@
           </div>
           <div class="showcase-slot"></div>
         </div>
+
+        <!-- Every other tab opens the same way: a card in the affirmation's place,
+             then the tab's zones on the left and the feature showcase on the right. -->
         <div class="tab-top" data-panel="journal">
           <div class="card tab-intro">
             <span class="badge">Journal</span>
@@ -434,9 +426,9 @@ document.getElementById('tierbadge').textContent = tierName(a.level) + ' members
 
 /* ---- tabs ----
    The dashboard opens on Today. The other tabs are reached by their buttons or
-   by address (dashboard.html#progress), and the address follows the tab so a
+   by address (dashboard.html#journal), and the address follows the tab so a
    refresh or a shared link comes back to the same one. */
-const PANELS = ['today', 'journal', 'playlists', 'explore', 'discover', 'progress', 'tools', 'fun', 'messages', 'nearby'];
+const PANELS = ['today', 'journal', 'playlists', 'explore', 'discover', 'tools', 'fun', 'messages', 'nearby'];
 let tab = 'today';
 // A hash that names something inside a tab (dashboard.html#match-mode, #daily-quote)
 // opens that tab and scrolls to it. The feature showcase under the header links this way.
@@ -444,7 +436,8 @@ const panelOf = (id) => document.getElementById(id)?.closest('[data-panel]')?.da
 function showTab(next) {
   // The mood check-in is drawn when Today first opens, so its cards (#mood-card
   // and the rest) are not on the page yet when a link to one of them arrives.
-  // It used to have a Mood tab of its own, so #mood still leads to it.
+  // It used to have a Mood tab of its own, so #mood still leads to it, and
+  // Progress, once a tab too, is the #progress zone under the check-in.
   const moodLink = next === 'mood' || next.startsWith('mood-');
   tab = PANELS.includes(next) ? next : moodLink ? 'today' : panelOf(next) || 'today';
   document.querySelectorAll('[data-panel]').forEach(el => el.classList.toggle('on', el.dataset.panel === tab));
