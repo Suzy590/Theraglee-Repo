@@ -102,8 +102,10 @@ export function hikerFraction({ milestones = [], current = 0, stepFrac = 0 }) {
   return Math.max(0.03, from + (campAt(current, n) - from) * Math.max(0, Math.min(1, stepFrac)));
 }
 
-/** Where day number `k` is planted: spread evenly over the whole trail, never moving once placed. */
+/** A stable spread for day number `k`, 0 to 1 (golden-ratio scatter). */
 export const dayFraction = (k) => 0.03 + ((k * 0.6180339887) % 1) * 0.94;
+/** Where day `k` of `total` is planted: on the walked part of the trail, behind the hiker at `hf`. */
+export const plantFraction = (k, hf) => 0.015 + (dayFraction(k) - 0.03) / 0.94 * Math.max(0.03, hf - 0.04);
 
 /* Things near the bottom of the picture are nearer, so they draw a little larger. */
 const persp = (y) => 0.68 + 0.32 * Math.max(0, Math.min(1, (y - 120) / 340));
@@ -264,7 +266,7 @@ function scenery(pal, s) {
  *   scene       'garden' | 'lights' | 'scenery'
  * Each camp is a <g data-ms="i"> and the destination a <g data-goal>, so the page can click them.
  */
-export function trailMap({ goal = {}, milestones = [], current = 0, stepFrac = 0, days = 0, scene = 'garden' } = {}) {
+export function trailMap({ goal = {}, milestones = [], current = 0, stepFrac = 0, days = 0, scene = 'garden', today = false } = {}) {
   const { W, H } = TRAIL;
   const pal = scene === 'lights' ? DUSK : DAY;
   const n = milestones.length;
@@ -310,14 +312,21 @@ export function trailMap({ goal = {}, milestones = [], current = 0, stepFrac = 0
     <path d="M${r1(t0.x + 4 * kt)},${r1(t0.y - 44 * kt)} h${r1(34 * kt)} l${r1(8 * kt)},${r1(7 * kt)} l-${r1(8 * kt)},${r1(7 * kt)} h-${r1(34 * kt)}z" fill="#F7F3EA" stroke="${pal.trunk}" stroke-width="${r1(1.6 * kt)}"/>
     <text x="${r1(t0.x + 21 * kt)}" y="${r1(t0.y - 32 * kt)}" text-anchor="middle" font-family="Outfit, sans-serif" font-size="${r1(8 * kt)}" font-weight="600" fill="#7A5A3A">START</text></g>`;
 
-  // A flower or a lantern beside the path for every day shown up.
+  // A flower or a lantern beside the path for every day shown up, on the
+  // stretch already walked. Today's, when today is counted, blooms right
+  // beside the hiker, larger and with a glow, so it is easy to find.
   const planted = [];
   if (scene !== 'scenery') {
-    for (let k = 1; k <= Math.min(days, 150); k++) {
-      const p = along(dayFraction(k));
-      const side = k % 2 ? 1 : -1, off = 14 + ((k * 7) % 9);
-      const x = p.x + p.nx * side * off, y = p.y + p.ny * side * off;
-      planted.push({ y, g: scene === 'lights' ? lantern(x, y, persp(y) * 0.8) : flower(x, y, persp(y) * 0.75, PETALS[k % PETALS.length], k) });
+    const n = Math.min(days, 150);
+    for (let k = 1; k <= n; k++) {
+      const isToday = today && k === n;
+      const p = isToday ? hp : along(plantFraction(k, hf));
+      const side = isToday ? -1 : (k % 2 ? 1 : -1), off = isToday ? 24 : 14 + ((k * 7) % 9);
+      const x = p.x + (isToday ? -off : p.nx * side * off), y = p.y + (isToday ? 9 : p.ny * side * off);
+      const k2 = persp(y) * (isToday ? 1.5 : 0.75);
+      const glow = isToday ? `<circle class="trail-today-glow" cx="${r1(x)}" cy="${r1(y - 10 * k2)}" r="${r1(22 * k2)}" fill="url(#tm-glow)"/>` : '';
+      const g = scene === 'lights' ? lantern(x, y, persp(y) * (isToday ? 1.3 : 0.8)) : flower(x, y, k2, PETALS[k % PETALS.length], k);
+      planted.push({ y: y + (isToday ? 1 : 0), g: `${glow}<g class="${isToday ? 'trail-today' : ''}">${g}</g>` });
     }
   }
 
