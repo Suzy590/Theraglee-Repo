@@ -38,7 +38,9 @@ the other.
 | Header links | Dashboard (signed in only), For Therapists; visitors also get Sign in and Join free | Dashboard, Referrals, Messages, Member requests, Library, My profile, Directory |
 
 The member dashboard opens on a **Today** tab (the daily affirmation, quote,
-tip and fun fact, beside the Match Mode switch, plus the mood check-in), which
+tip and fun fact, beside the Match Mode switch, the mood check-in, and under it
+the member's progress: the week's counts, challenges in progress, favorites,
+saved for later and unfinished items, at `dashboard.html#progress`), which
 is what a member sees first after signing in. Signing in on `login.html` always
 lands on Today: a `?next=` that points back into the dashboard, or one left by
 an inactivity sign-out, is dropped (`site/assets/auth.js`); only a destination
@@ -55,9 +57,7 @@ each linking to a search on Apple Music and Spotify; the lists are
 Library** (the whole library with search and filters, the same browser as
 `explore.html`, drawn from `site/assets/explore-ui.js`), **Discover** (the 360
 free discovery tools with search and topic chips, the same browser as
-`discover.html`, drawn from `site/assets/discover-ui.js`), **Progress**
-(the week's counts, challenges in progress, favorites, saved for later and
-unfinished items), **Tools** (quick links into the library), **Fun** (the
+`discover.html`, drawn from `site/assets/discover-ui.js`), **Tools** (quick links into the library), **Fun** (the
 desktop pet, mental health trivia and mandalas), **Messages**
 (messages from therapists who reached out through Match Mode, with the
 member's replies and blocks, drawn from `site/assets/inbox.js`, the same inbox
@@ -65,7 +65,7 @@ as the account page's Inbox tab) and **Nearby help** (a map of clinics,
 treatment centers and crisis services near a zip code or town, plus the
 national lines, drawn from `site/assets/nearby-ui.js`; see
 [`nearby-help.md`](nearby-help.md)). Each tab has an address, for
-example `dashboard.html#progress`. The **Theraglee Match Mode** switch (a
+example `dashboard.html#journal`. The **Theraglee Match Mode** switch (a
 smaller copy of the one on the landing page) sits under the greeting, and to
 the right of the greeting one box holds what it does and the line therapists
 read. On narrower screens that box moves under the greeting, and on a phone
