@@ -31,7 +31,10 @@ function snippet(body, ws){
 function entryHtml(e, ws){
   return `
           <div class="entry">
-            <h4>${hl(e.title || 'Untitled', ws)}</h4>
+            <div class="spread" style="gap:10px;align-items:flex-start">
+              <h4>${hl(e.title || 'Untitled', ws)}</h4>
+              <button class="btn sm ghost" data-del="${esc(e.id)}" aria-label="Delete this entry">Delete</button>
+            </div>
             <div class="when">${fmtDate(e.created_at)}</div>
             ${e.prompt_text ? `<div class="faint" style="font-style:italic;margin-top:4px">${hl(e.prompt_text, ws)}</div>` : ''}
             <p>${snippet(e.body, ws)}</p>
@@ -121,6 +124,21 @@ export async function mountJournal(host, a, promptId = null) {
         : `<div class="empty">No entries match “${esc(q.value.trim())}”. Try a different word, or clear the search to see your recent entries.</div>`;
     }
     q.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(paintList, 250); });
+
+    // Deleting is permanent, so the member confirms first. The database only
+    // lets a member delete their own rows.
+    listEl.addEventListener('click', async (e) => {
+      const b = e.target.closest('[data-del]');
+      if (!b) return;
+      if (!confirm('Delete this journal entry? This can’t be undone.')) return;
+      busy(b, true, 'Deleting…');
+      const { error } = await sb.from('journal_entries').delete()
+        .eq('id', b.dataset.del).eq('user_id', a.profile.id);
+      if (error) { busy(b, false); return toast(error.message,'err'); }
+      list = list.filter(x => String(x.id) !== b.dataset.del);
+      toast('Entry deleted.','ok');
+      paintList();
+    });
     paintList();
 
     $('j-save').addEventListener('click', async (e) => {
