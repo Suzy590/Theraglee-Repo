@@ -87,6 +87,7 @@ export async function mountGoals(host, ctx) {
     const sinceCheck = cur?.checked_on ? daysBetween(cur.checked_on, t) : 99;
     const checkDue = cur && sinceCheck >= 7 && (stepDays.size >= STEPS_PER_MILESTONE || sinceStart >= 7);
     const next = ms[ci + 1] || null;
+    const left = Math.max(0, STEPS_PER_MILESTONE - stepDays.size);
     const scene = SCENES.find(x => x.key === q.scene) || SCENES[0];
     const loggedToday = new Set(d.logs.filter(l => l.logged_on === t).map(l => l.goal_id));
 
@@ -120,7 +121,7 @@ export async function mountGoals(host, ctx) {
           <span class="kicker"><i class="ico">🚩</i> Working on now <span class="faint" style="text-transform:none;letter-spacing:0;font-weight:400">· milestone ${ci + 1} of ${ms.length}</span></span>
           <h3>${esc(cur.title)}</h3>
           <div class="row" style="gap:14px">${pebbles(stepsN)}
-            <span class="faint">${stepDays.size} step${stepDays.size === 1 ? '' : 's'} so far · each day you do a stepping stone adds one</span></div>
+            <span class="faint">${stepDays.size} step${stepDays.size === 1 ? '' : 's'} so far · ${steppedToday ? "today's step is done" : 'no step yet today'} · each day with a stepping stone adds one</span></div>
           ${checkDue ? `<div class="checkin">
             <strong>${stepDays.size >= STEPS_PER_MILESTONE ? `You have taken ${stepDays.size} steps toward this.` : 'A week in.'} Is it happening for you now?</strong>
             <p class="faint" style="margin:4px 0 10px">You decide, not a counter. Any answer is a fine answer.</p>
@@ -133,9 +134,14 @@ export async function mountGoals(host, ctx) {
         ${cur ? `<section class="level stones" id="today">
           <div class="spread">
             <span class="kicker"><i class="ico">◦</i> Today's stepping stones</span>
-            <span class="today-pill ${steppedToday ? 'yes' : ''}">${steppedToday ? '✓ A step today' : 'No step yet today'}</span>
           </div>
-          <p class="faint" style="margin:2px 0 6px">Small on purpose. Any one of them, done today, is today's step toward the milestone above.</p>
+          <div class="today-status ${steppedToday ? 'done' : 'open'}" role="status">
+            <b aria-hidden="true">${steppedToday ? '✓' : '1'}</b>
+            <div><strong>${steppedToday ? 'Today is done.' : 'Today still needs one step.'}</strong>
+              <span>${steppedToday
+                ? `One stepping stone was all today needed, and you took it. Anything more below is a bonus. Tomorrow brings a fresh step.${left > 0 ? ` ${left} more day${left === 1 ? '' : 's'} like this and this milestone will ask whether it is happening for you.` : ''}`
+                : 'Do any one of the stones below and tap its pebble. That counts the whole day; the rest are optional.'}</span></div>
+          </div>
           ${stones.length ? stones.map(st => stoneRow(st, { done: doneToday.has(st.key), note: doneToday.get(st.key)?.note })).join('')
             : '<p class="muted">No stepping stones picked yet. Choose a few below.</p>'}
           ${d.goals.length ? `<div class="own-steps"><span class="kicker" style="margin:14px 0 4px">Your own steps, from before</span>
@@ -199,8 +205,8 @@ export async function mountGoals(host, ctx) {
       const { error } = await sb.from('quest_steps').insert({ quest_id: q.id, user_id: uid, milestone_id: cur.id, action_key: key, done_on: t, note });
       if (error) { toast(error.message, 'err'); return false; }
       const n = stepDays.size + (stepDays.has(t) ? 0 : 1);
-      if (!stepDays.has(t)) toast(n === 1 ? 'Your first step toward this milestone.' : `Step ${n} toward “${cur.title}”.`, 'ok');
-      else toast('Marked. Today is already a step; this one is a bonus.', 'ok');
+      if (!stepDays.has(t)) toast(n === 1 ? 'Your first step toward this milestone. Today is done.' : `Step ${n} toward “${cur.title}”. Today is done.`, 'ok');
+      else toast('Marked. Today was already done; this one is a bonus.', 'ok');
       flash = !stepDays.has(t);
       main();
       return true;

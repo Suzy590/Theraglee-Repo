@@ -67,6 +67,17 @@
 .today-pill.yes{background:var(--soft);color:var(--green-deep);border-color:var(--mist)}
 .own-steps .kicker{display:block}
 
+/* Today's standing: still needs a step, or done. */
+.today-status{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:var(--r-sm);margin:4px 0 10px;
+  background:#FDF4E7;border:1px solid #F0DCC0;font-size:.92rem;color:var(--ink-2)}
+.today-status b{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:.95rem;font-weight:700;
+  background:#fff;border:2px solid #E3B77E;color:var(--warn)}
+.today-status strong{display:block;font-weight:600;color:var(--ink);margin-bottom:2px}
+.today-status span{color:var(--muted)}
+.today-status.done{background:var(--soft);border-color:var(--mist)}
+.today-status.done b{background:var(--green);border-color:var(--green);color:#fff}
+.stepped .today-status.done b{animation:trail-pop .5s ease-out both}
+
 /* Tonight's note. */
 .level.tonight{padding-top:16px;padding-bottom:16px;background:var(--cream)}
 .tonight-toggle{display:flex;gap:14px;align-items:center;flex-wrap:wrap;width:100%;border:0;background:none;font:inherit;
