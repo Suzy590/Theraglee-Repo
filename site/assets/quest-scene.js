@@ -136,18 +136,22 @@ const lantern = (x, y, k) => `<g class="trail-bloom">
 
 const bird = (x, y) => `<path d="M${x},${y} q5,-5 10,0 q5,-5 10,0" fill="none" stroke="#3B4F45" stroke-width="1.6" stroke-linecap="round"/>`;
 
-/* The hiker: a small figure with a lime backpack. The page bobs `.trail-hiker`. */
+/* The hiker: a small figure with a lime backpack, and a "You are here" sign
+   with an arrow pointing down at them. The page bobs `.trail-hiker`, and on a
+   phone scales `.trail-hiker-body` up so the sign stays readable. */
 const hiker = (x, y, k) => `<g class="trail-hiker" aria-hidden="true" style="transform-box:fill-box;transform-origin:50% 100%">
+  <g class="trail-hiker-body" style="transform-box:fill-box;transform-origin:50% 100%">
   <ellipse cx="${r1(x)}" cy="${r1(y + 2)}" rx="${r1(9 * k)}" ry="${r1(3 * k)}" fill="#16241C" opacity=".18"/>
   <rect x="${r1(x - 7.5 * k)}" y="${r1(y - 22 * k)}" width="${r1(6 * k)}" height="${r1(11 * k)}" rx="${r1(2 * k)}" fill="#8DC61D"/>
   <path d="M${r1(x - 4 * k)},${r1(y - 24 * k)} h${r1(8 * k)} q${r1(4 * k)},0 ${r1(4 * k)},${r1(4 * k)} v${r1(12 * k)} h-${r1(16 * k)} v-${r1(12 * k)} q0,-${r1(4 * k)} ${r1(4 * k)},-${r1(4 * k)}z" fill="#16241C"/>
   <circle cx="${r1(x)}" cy="${r1(y - 29 * k)}" r="${r1(5.2 * k)}" fill="#16241C"/>
   <path d="M${r1(x - 3 * k)},${r1(y - 8 * k)} l-${r1(2 * k)},${r1(8 * k)} M${r1(x + 3 * k)},${r1(y - 8 * k)} l${r1(3 * k)},${r1(8 * k)}" stroke="#16241C" stroke-width="${r1(2.6 * k)}" stroke-linecap="round"/>
   <g class="trail-you" filter="url(#tm-shadow)">
-    <rect x="${r1(x - 40)}" y="${r1(y - 58 * k)}" width="80" height="22" rx="11" fill="#16241C"/>
-    <path d="M${r1(x - 5)},${r1(y - 36 * k)} l5,6 l5,-6z" fill="#16241C"/>
-    <text x="${r1(x)}" y="${r1(y - 58 * k + 15)}" text-anchor="middle" font-family="Outfit, sans-serif" font-size="12.5" font-weight="600" fill="#fff">You are here</text>
-  </g></g>`;
+    <rect x="${r1(x - 44)}" y="${r1(y - 76 * k)}" width="88" height="24" rx="12" fill="#16241C"/>
+    <text x="${r1(x)}" y="${r1(y - 76 * k + 16.5)}" text-anchor="middle" font-family="Outfit, sans-serif" font-size="13" font-weight="600" fill="#fff">You are here</text>
+    <line x1="${r1(x)}" y1="${r1(y - 52 * k)}" x2="${r1(x)}" y2="${r1(y - 42 * k)}" stroke="#16241C" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M${r1(x - 6)},${r1(y - 44 * k)} L${r1(x)},${r1(y - 36 * k)} L${r1(x + 6)},${r1(y - 44 * k)}z" fill="#16241C"/>
+  </g></g></g>`;
 
 /* A camp: a tent, and a flag on a pole. Reached camps fly a green flag with a
    check; the current one a lime flag; the ones ahead a pale one. */

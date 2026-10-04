@@ -82,7 +82,8 @@
 .mapcard{padding:14px}
 .mapcard svg{display:block;border-radius:14px}
 .mapcard svg g[data-ms]:focus,.mapcard svg g[data-goal]:focus{outline:none}
-@media(max-width:600px){.trail-label,.trail-you{display:none}}
+/* On a phone the small labels hide, but "You are here" stays: the hiker and the sign draw larger. */
+@media(max-width:600px){.trail-label{display:none}.trail-hiker-body{transform:scale(1.7)}}
 .stops{display:flex;flex-wrap:wrap;gap:8px;margin:14px 4px 4px}
 .stops button{font:inherit;font-size:.84rem;padding:6px 12px 6px 6px;border-radius:var(--r-pill);border:1px solid var(--hair);
   background:var(--paper);color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;gap:8px;max-width:100%}
