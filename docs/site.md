@@ -126,8 +126,16 @@ TRIGGER and MAINTAIN, is revoked from them on existing tables and by default on
 new ones (`supabase/migrations/20260908130000_member_table_privileges.sql`).
 
 Therapist membership is separate and not tiered — one flat level, gated on
-license verification *and* an active subscription. The practice dashboard opens
-on a **Home** tab: where the listing stands and the one thing to do next, the
+license verification *and* an active subscription. A new therapist goes through
+it in order: create the account, start the membership (the dashboard shows only
+that step until it is active), fill in the profile, and the listing goes live
+on its own the moment the license is verified. Nobody presses Publish:
+`therapist_profiles.published` is derived by the database from those three
+facts (license verified, membership active, and the identity check when
+`identity_required` is on) and kept in step by triggers on `therapist_profiles`,
+`profiles.subscription_status` and `app_config`
+(`supabase/migrations/20261004120000_listing_live_on_verification.sql`). The
+practice dashboard opens on a **Home** tab: where the listing stands and the one thing to do next, the
 last thirty days of referrals, unread messages and waiting member requests, and
 every benefit below with its current state. Whichever tab the page opens on, the
 **Messages** tab carries a green pill with the number of contact-form messages
@@ -175,10 +183,11 @@ Cloudflare bot check, for instance). So verification runs like this:
 3. **The result is recorded** with `record_license_check`, which writes the
    audit row to `license_verifications`, moves the profile's `verification`
    (*verified* activates the account; *rejected* and *expired* deny it), sets
-   the expiry and the re-check date, and unpublishes anything not verified.
+   the expiry and the re-check date, and sets `published`: live at once when
+   verified and the membership is active, down otherwise.
 4. **Everyone is emailed.** A trigger on `license_verifications` calls the
    function again, which emails the therapist the outcome: verified (the
-   account is active; publish when the membership is active), on hold with
+   listing is live now, or goes live the moment the membership is active), on hold with
    the reason and what to do next (check the board record, renew, correct the
    profile to match, or reply), or "we are checking". When a person has to
    look, the administrator (`app_config.admin_email`) gets the board lookup

@@ -453,8 +453,9 @@ async function verify(){
   render(`
     <h2>License verification queue</h2>
     <p class="muted" style="max-width:64ch">Confirm each license against the state board before
-      approving. A listing cannot appear in the directory until it is verified <em>and</em> the
-      membership is active — so approving here does not publish anything on its own.</p>
+      approving. Recording a license as verified puts the listing live in the directory on its
+      own, as soon as the membership is active; the therapist has nothing to press. Where a board
+      publishes its records the check runs automatically and never reaches this queue.</p>
 
     ${(rows||[]).length ? (rows||[]).map(t=>{
       const st = (t.license_states||[])[0] || '—';
@@ -661,7 +662,7 @@ async function billing(){
         'Turn on once the keys are set in Supabase and the price IDs are filled in. Admins can test checkout before this is on.')}
       ${toggle('stripe_tax_enabled','Collect sales tax with Stripe Tax',
         'Turn on after Stripe Tax is set up in the Dashboard (origin address, registrations, and a tax code on each product). Checkout fails if this is on before that.')}
-      ${toggle('identity_required','Require the Stripe Identity check before a listing publishes',
+      ${toggle('identity_required','Require the Stripe Identity check before a listing goes live',
         'Turn on after Stripe Identity is activated on the account. Therapists see the check on their Membership tab either way.')}
       ${toggle('connect_enabled','Let therapists take session payments (Stripe Connect)',
         'Turn on after the Connect platform profile is complete and the Connect webhook is pointed at stripe-webhook.')}

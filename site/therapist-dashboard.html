@@ -147,13 +147,15 @@ function bindTabs(){
   });
 }
 
+// 'comped' is a complimentary membership an admin granted: it counts as paid,
+// but there is no Stripe subscription to manage or discount.
+const isPaid = (p) => ['active','trialing','comped'].includes(p?.subscription_status);
+
 // Back from Stripe (membership checkout, the ID check, or payouts setup):
 // bring what we know up to date before drawing anything.
+const justPaid = qs('checkout') === 'success';
 if (qs('checkout') || qs('identity') || qs('connect')) {
-  if (qs('checkout') === 'success') {
-    toast('Payment received — welcome aboard. It can take a moment to appear.', 'ok');
-    await new Promise(r => setTimeout(r, 2500));
-  }
+  if (justPaid) toast('Payment received — welcome aboard.', 'ok');
   if (qs('identity')) await callStripeFn('stripe-identity', { action: 'status' });
   if (qs('connect') === 'return') await callStripeFn('stripe-connect', { action: 'status' });
   if (qs('connect') === 'refresh') {
@@ -162,16 +164,31 @@ if (qs('checkout') || qs('identity') || qs('connect')) {
     if (out.url) location.href = out.url;
   }
   clearAccess(); a = await access(true); T = a.therapist || T;
-  tab = 'membership';
-  history.replaceState({}, '', 'therapist-dashboard.html#membership');
+  // Stripe's webhook writes the new membership a moment after checkout. Give
+  // it up to twelve seconds, so the next step is drawn against it.
+  for (let i = 0; justPaid && !isPaid(a.profile) && i < 6; i++) {
+    await new Promise(r => setTimeout(r, 2000));
+    clearAccess(); a = await access(true); T = a.therapist || T;
+  }
+  // After paying, the next step is the profile; after the ID check or the
+  // payouts setup, back to Membership.
+  tab = justPaid && !T ? 'profile' : 'membership';
+  history.replaceState({}, '', 'therapist-dashboard.html#' + tab);
 }
 
-// 'comped' is a complimentary membership an admin granted: it counts as paid,
-// but there is no Stripe subscription to manage or discount.
 const comped = a.profile.subscription_status === 'comped';
 const paysStripe = ['active','trialing'].includes(a.profile.subscription_status);
 const paid = paysStripe || comped;
 const liveListing = T?.verification === 'verified' && T?.published;
+
+// A new therapist's order of business: membership first, then the profile.
+// Until the membership is active there is nothing else to do here, so an
+// account with no listing yet sees only that step. The listing itself goes
+// live on its own once the license is verified; nobody publishes anything.
+// (Administrators see the whole dashboard, so the flow can be checked without
+// paying.)
+const payFirst = !T && !paid && !justPaid && a.profile.role !== 'admin';
+if (payFirst) tab = 'membership';
 
 /* ------------------------------------------------------------ shell */
 const TABS = [
@@ -181,8 +198,9 @@ const TABS = [
 ];
 
 function shell(body){
-  const status = !T ? 'No listing yet'
-    : T.verification === 'verified' ? (T.published ? 'Live in the directory' : 'Verified — not published')
+  const status = !T ? (paid || justPaid ? 'Step 2 of 2 · Complete your profile' : 'Step 1 of 2 · Start your membership')
+    : T.published ? 'Live in the directory'
+    : T.verification === 'verified' ? (paid ? 'Verified' : 'Verified · membership needed')
     : T.verification === 'rejected' ? 'License not verified' : 'Verification pending';
   const first = (T?.first_name || (a.profile.full_name || '').split(' ')[0] || '').trim();
   return `
@@ -195,10 +213,10 @@ function shell(body){
           a.profile.role === 'admin' ? ' · administrator, viewing the practice dashboard' : ''}</p></div>
       <div class="row">
         <span class="badge ${paid?'':'gray'}">Therapist membership · ${paid ? 'Active' : 'Not started'}</span>
-        <span class="badge ${T?.verification==='verified'?'':'gray'}">${status}</span>
+        <span class="badge ${T?.published?'':'gray'}">${status}</span>
       </div>
     </div>
-    <div class="tabs">${TABS.map(([k,l]) => tabButton(k, l, tabCount(k), tab===k)).join('')}</div>
+    ${payFirst ? '' : `<div class="tabs">${TABS.map(([k,l]) => tabButton(k, l, tabCount(k), tab===k)).join('')}</div>`}
     <div id="body">${body}</div>`;
 }
 
@@ -209,10 +227,11 @@ function render(body){
 
 function needsListing(){
   render(`<div class="card pad-lg center">
-    <h2>Build your profile first</h2>
-    <p class="muted">Once your listing exists we can verify your license and start
-      counting the referrals it brings in.</p>
-    <button class="btn lg" id="go">Start my profile</button></div>`);
+    <h2>Complete your profile</h2>
+    <p class="muted" style="max-width:52ch;margin-inline:auto">Fill in your profile and save it.
+      We verify your license with your state board, and your listing goes live on its own the
+      moment it clears.</p>
+    <button class="btn lg" id="go">Complete my profile</button></div>`);
   document.getElementById('go').onclick = () => { tab='profile'; route(); };
 }
 
@@ -242,7 +261,8 @@ async function home(){
   const idOk = T.identity_status === 'verified';
   const needsId = cfg.identity_required === 'true' && !idOk;
 
-  // The one thing to do next, in order: license, membership, identity, publish.
+  // The one thing to do next, in order: license, membership, identity. The
+  // listing goes live on its own once all of them are in place.
   const nextStep = liveListing
     ? { text: 'Your profile is live in the directory.', cta: T.slug
         ? `<a class="btn sm ghost" href="therapist.html?slug=${esc(T.slug)}">View my public profile</a>` : '' }
@@ -250,16 +270,16 @@ async function home(){
     ? { text: 'We could not confirm that license as current and in good standing. Check the details and resubmit.',
         cta: '<a class="btn sm" href="#profile">Fix my license details</a>' }
     : !verified
-    ? { text: 'We are checking your license with the state board. You will get an email either way.',
+    ? { text: 'We are checking your license with the state board. Your listing goes live on its own the moment it clears, and you will get an email either way.',
         cta: '<a class="btn sm ghost" href="#membership">See the check</a>' }
     : !paid
-    ? { text: 'Your license is verified. Start your membership to publish the listing and open the library.',
+    ? { text: 'Your license is verified. Start your membership and your listing goes live right away.',
         cta: '<a class="btn sm" href="#membership">Start membership</a>' }
     : needsId
-    ? { text: 'One more step before publishing: a quick identity check through Stripe.',
+    ? { text: 'One more step before your listing goes live: a quick identity check through Stripe.',
         cta: '<a class="btn sm" href="#membership">Verify my identity</a>' }
-    : { text: 'Everything is in place. Publish whenever you are ready.',
-        cta: '<a class="btn sm" href="#profile">Publish from My profile</a>' };
+    : { text: 'Everything is in place. Your listing is going live now; give it a moment and refresh.',
+        cta: '' };
 
   const tile = (n, label) => `<div class="stat"><div class="n">${n ?? 0}</div><div class="l">${label}</div></div>`;
   const state = (ok, yes, no) => ok ? `<span class="badge">${yes}</span>` : `<span class="badge gray">${no}</span>`;
@@ -404,8 +424,8 @@ async function referrals(){
 
     ${!liveListing ? `<div class="notice warn" style="margin-top:22px">
       Your profile is not live yet, so there is nothing to count.
-      ${T.verification!=='verified' ? 'We are verifying your license.'
-        : !paid ? 'Start your membership to publish it.' : 'Publish it from My profile.'}
+      ${T.verification!=='verified' ? 'We are verifying your license; it goes live on its own the moment that clears.'
+        : !paid ? 'Start your membership and it goes live.' : 'It is going live now; check back in a moment.'}
     </div>` : `<div class="notice" style="margin-top:22px">
       <strong>Phone calls</strong> counts people who tapped your Theraglee number.
       ${c.verified_calls ? `${c.verified_calls} connected calls were confirmed by the phone network.`
@@ -792,8 +812,9 @@ function profile(){
       ${t.verification === 'rejected' ? `<div class="notice err" style="margin-bottom:20px">
         We could not confirm that license as current and in good standing. Check the number,
         state and license type, then save to resubmit.</div>` : ''}
-      ${!t.id ? `<div class="notice" style="margin-bottom:20px">Nothing is public until your
-        license is verified and you publish.</div>` : ''}
+      ${!t.id ? `<div class="notice" style="margin-bottom:20px">${paid || justPaid
+        ? '<strong>Step 2 of 2 · Complete your profile.</strong> Save it and we check your license with your state board. '
+        : ''}Nothing is public until your license is verified. The moment it is, your listing goes live on its own.</div>` : ''}
 
       <h2>Who you are</h2>
       <div class="grid g2">
@@ -826,8 +847,8 @@ function profile(){
 
       <hr class="hr">
       <h2>License</h2>
-      <p class="muted" style="font-size:.92rem">We verify this against your state board before
-        your profile can go live, and re-check it before it expires.</p>
+      <p class="muted" style="font-size:.92rem">We verify this against your state board. Your
+        listing goes live the moment it clears, and we re-check it before it expires.</p>
       <div class="grid g2">
         <div class="field"><label for="lic">License number *</label>
           <input id="lic" value="${esc(t.license_number||'')}" required>
@@ -934,11 +955,9 @@ function profile(){
         <input id="web" type="url" value="${esc(t.website||'')}" placeholder="https://…"></div>
 
       <div class="row" style="margin-top:24px">
-        <button class="btn lg" id="save" type="submit">${t.id ? 'Save changes' : 'Create my profile'}</button>
+        <button class="btn lg" id="save" type="submit">${t.id ? 'Save changes' : 'Save my profile'}</button>
         ${t.id && t.verification !== 'verified'
           ? `<button type="button" class="btn ghost" id="verify">Check my license now</button>` : ''}
-        ${t.id && t.verification === 'verified'
-          ? `<button type="button" class="btn ghost" id="pub">${t.published?'Unpublish':'Publish to directory'}</button>` : ''}
         ${t.published ? `<a class="btn ghost" href="therapist.html?slug=${esc(t.slug)}">View public profile</a>` : ''}
       </div>
     </form>`);
@@ -986,7 +1005,6 @@ function profile(){
     paintOffice();
   });
   document.getElementById('verify')?.addEventListener('click', runVerification);
-  document.getElementById('pub')?.addEventListener('click', togglePublish);
 }
 
 // Draws the office thumbnails (saved ones first, then the new picks), each with
@@ -1101,8 +1119,10 @@ async function save(e){
   const isNew = !T?.id;
   T = data; clearAccess();
   // Creating a profile, or changing its license details, queues the license
-  // check in the database; the result arrives by email.
-  toast(isNew ? 'Saved. We are checking your license with the state board and will email you either way.' : 'Saved.', 'ok');
+  // check in the database; the result arrives by email, and a verified
+  // listing goes live on its own.
+  toast(isNew ? 'Saved. We are checking your license with the state board. Your listing goes live the moment it clears, and we will email you either way.' : 'Saved.', 'ok');
+  if (isNew) { tab = 'home'; history.replaceState({}, '', '#home'); }
   route();
 }
 
@@ -1125,23 +1145,6 @@ async function runVerification(e){
   } catch { busy(btn, false); toast('Could not reach the verification service.','err'); }
 }
 
-async function togglePublish(e){
-  busy(e.target, true, '…');
-  const { data, error } = await sb.from('therapist_profiles')
-    .update({ published: !T.published }).eq('id', T.id).select().single();
-  busy(e.target, false);
-  if (error) return toast(error.message,'err');
-  const wanted = !T.published;
-  T = data;
-  if (wanted && !T.published) {
-    toast(!paid ? 'Publishing needs an active membership.'
-        : T.verification !== 'verified' ? 'Publishing needs a verified license.'
-        : 'Publishing needs a passed identity check — see the Membership tab.', 'err');
-  } else {
-    toast(T.published ? 'You are live in the directory.' : 'Unpublished.','ok');
-  }
-  route();
-}
 
 /* ------------------------------------------------------- membership */
 async function membership(){
@@ -1177,15 +1180,20 @@ async function membership(){
     ? (founding
         ? `<div class="notice" style="margin-top:16px"><strong>Welcome. You chose the founding member
              rate.</strong> Click <strong>Founding member · $${esc(offer.rate)}/month</strong> below to start it${
-             offer.spots || offer.deadlineText ? ' while it lasts' : ''}. Your listing publishes once your
-             license is verified.</div>`
+             offer.spots || offer.deadlineText ? ' while it lasts' : ''}. Your listing goes live on its own
+             once your license is verified.</div>`
         : `<div class="notice warn" style="margin-top:16px"><strong>The founding member offer is no longer
              available.</strong> The regular membership is below.</div>`)
     : '';
   wantFounding = false;
 
   render(`
-    <h2>Therapist membership</h2>
+    <h2>${payFirst ? 'Start your membership' : 'Therapist membership'}</h2>
+    ${payFirst ? `<div class="notice" style="margin-top:16px">
+      <strong>Step 1 of 2.</strong> Pick a plan below; checkout takes about a minute. You come straight
+      back here to fill in your profile, we verify your license with your state board, and your
+      listing goes live on its own the moment it clears. Nothing is public before then, and you can
+      cancel any time.</div>` : ''}
     ${foundingHello}
     <div class="card" style="margin-top:16px">
       <div class="spread">
@@ -1209,8 +1217,8 @@ async function membership(){
         offer.deadlineText ? ` who join by ${esc(offer.deadlineText)}` : ''}.
         Switching to the yearly plan later gives up the locked-in rate.</p>` : ''}
       ${paid ? '' : `<p class="faint" style="margin:14px 0 0">One flat membership for licensed
-        professionals, separate from the member plans. It publishes your listing once your license
-        is verified, and opens the clinician library and Theraglee Match Mode. Cancel any time.
+        professionals, separate from the member plans. Your listing goes live once your license
+        is verified, and it opens the clinician library and Theraglee Match Mode. Cancel any time.
         <a href="for-therapists.html#membership">Everything it includes</a>.</p>`}
     </div>
     ${paysStripe ? discountCodeBox() : ''}
@@ -1233,7 +1241,7 @@ async function membership(){
       </div>
     </div>
     ${cfg.identity_required==='true'
-      ? `<p class="faint" style="margin-top:10px">Listings publish only after this check passes.</p>` : ''}
+      ? `<p class="faint" style="margin-top:10px">A listing goes live only after this check passes.</p>` : ''}
 
     ${connectOn ? `
     <h3 style="margin-top:32px">Get paid through Theraglee</h3>
@@ -1269,6 +1277,7 @@ async function membership(){
     </div>` : ''}
     ` : ''}
 
+    ${T ? `
     <h3 style="margin-top:32px">License verification</h3>
     ${(checks||[]).length ? `<div class="scroll-x"><table class="data">
       <thead><tr><th>Checked</th><th>Result</th><th>How</th><th>Board</th><th>Expires</th></tr></thead>
@@ -1283,11 +1292,11 @@ async function membership(){
       License on file expires ${fmtDate(T.license_expires_on)}. We re-check before then.</p>` : ''}
 
     <div class="notice" style="margin-top:24px">
-      A listing appears in the directory only while the license is verified and current
-      <em>and</em> the membership is active${cfg.identity_required==='true'
+      A listing goes live on its own, and stays in the directory, while the license is verified
+      and current <em>and</em> the membership is active${cfg.identity_required==='true'
         ? ' <em>and</em> the identity check has passed' : ''}. If any of those lapses, the
-      profile comes down automatically.
-    </div>`);
+      profile comes down automatically, and it comes back when they are in place again.
+    </div>` : ''}`);
 
   document.getElementById('portal')?.addEventListener('click', e => openPortal(e.target));
   wireDiscountCode();
@@ -1319,6 +1328,7 @@ async function membership(){
 function route(){
   // The Mood tab was removed on 2026-09-29; an old #mood link opens Home.
   if (tab === 'mood') tab = 'home';
+  if (payFirst) tab = 'membership';
   ({ home, referrals, messages, members, library, profile, membership }[tab] || home)();
 }
 // The header links and the buttons on the Home tab point at #tabs of this page.

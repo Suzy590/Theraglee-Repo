@@ -63,7 +63,7 @@
       "name": "When does my listing go live?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Two things have to be true: your license is verified and your membership is active. You can do them in either order. We check your license against your state board. Where the board publishes its records, that is automatic. Where it does not, a person on our team looks it up by hand, which can take a little longer. You get an email at each step, and if anything needs attention the email says what to do next. Once both are in place, your listing publishes and everything on your dashboard opens."
+        "text": "The moment your license is verified. You create your account, start your membership and fill in your profile; then we check your license against your state board. Where the board publishes its records, that is automatic. Where it does not, a person on our team looks it up by hand, which can take a little longer. You get an email at each step, and if anything needs attention the email says what to do next. As soon as the license clears, your listing goes live on its own and everything on your dashboard opens. There is nothing to publish."
       }
     },
     {
@@ -534,12 +534,13 @@
           off. They simply stop appearing in the list of members waiting to hear from a therapist,
           so no one new can reach out to them.</p></div>
       <div class="card"><h3>When does my listing go live?</h3>
-        <p class="muted" style="margin:0">Two things have to be true: your license is verified and
-          your membership is active. You can do them in either order. We check your license against
-          your state board. Where the board publishes its records, that is automatic. Where it does
-          not, a person on our team looks it up by hand, which can take a little longer. You get an
-          email at each step, and if anything needs attention the email says what to do next. Once
-          both are in place, your listing publishes and everything on your dashboard opens.</p></div>
+        <p class="muted" style="margin:0">The moment your license is verified. You create your
+          account, start your membership and fill in your profile; then we check your license
+          against your state board. Where the board publishes its records, that is automatic.
+          Where it does not, a person on our team looks it up by hand, which can take a little
+          longer. You get an email at each step, and if anything needs attention the email says
+          what to do next. As soon as the license clears, your listing goes live on its own and
+          everything on your dashboard opens. There is nothing to publish.</p></div>
       <div class="card"><h3>How does the Theraglee phone number work?</h3>
         <p class="muted" style="margin:0">Your listing shows a Theraglee number that forwards to the
           phone number you give us, so your own number is never published. Calls are counted on
@@ -659,7 +660,7 @@ if (!a.authenticated) {
 } else if (!a.therapist) {
   box.innerHTML = `<h2>Let's build your profile</h2>
     <p class="muted">Everything can be edited later, and nothing is public until your license
-      is verified and you choose to publish.</p>
+      is verified. The moment it is, your listing goes live on its own.</p>
     <a class="btn lg" href="therapist-dashboard.html#profile">Start my profile</a>`;
 } else {
   const st = a.therapist.verification;
@@ -669,7 +670,7 @@ if (!a.authenticated) {
     <h2 style="margin-top:12px">Your listing</h2>
     <p class="muted">${st==='verified'
       ? (a.therapist.published ? 'Your profile is live in the directory.'
-                               : 'Verified — publish it whenever you are ready.')
+                               : 'Verified. Your listing goes live as soon as your membership is active.')
       : st==='rejected' ? 'We could not confirm that license as current and in good standing.'
       : 'We are checking your license with the state board.'}</p>
     <a class="btn lg" href="therapist-dashboard.html">Open my dashboard</a>`;

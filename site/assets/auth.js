@@ -89,8 +89,9 @@ export async function authPage({ audience, mode, next: nextGiven }) {
         ${up ? '<div class="help">At least 8 characters.</div>' : ''}
       </div>
       ${up && audience === 'therapist' ? `<div class="help" style="margin:-6px 0 4px">
-        Therapist accounts list a practice in the directory. Your license is verified
-        against your state licensing board before anything is public.</div>` : ''}
+        Therapist accounts list a practice in the directory. Next you start your membership
+        and fill in your profile; your license is verified against your state licensing board,
+        and your listing goes live the moment it clears.</div>` : ''}
       <button class="btn lg block" id="submit" type="submit">${
         !up ? 'Sign in' : audience === 'therapist' ? 'Create therapist account' : 'Create account'}</button>
       <p class="faint center" style="margin:0">By continuing, you agree to the
