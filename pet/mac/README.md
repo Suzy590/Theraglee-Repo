@@ -75,12 +75,27 @@ that was the point.
 ## Self-care mode
 
 Right-click → **Self-care mode**. Every 25 minutes or so, when Pip isn't in the
-middle of something, it will nudge you — alternating between:
+middle of something, it will nudge you. The nudges take turns, always in this
+order:
 
 - **Water** — walks over to wherever your cursor is, holds up a miniature glass
   and a sign reading **"Drink water"**
 - **Stretch** — does the stretch itself, then holds up a sign reading
   **"Stretch"**
+- **Eyes** — sits turned a little away from the screen, sign reading
+  **"Rest your eyes"**
+- **Breathe** — breathes slowly in and out, sign reading **"Take a breath"**
+- **Shoulders** — rocks gently side to side, sign reading **"Roll your
+  shoulders"**
+- **Posture** — sits up very straight, sign reading **"Sit up tall"**
+- **Jaw** — lets its own mouth hang loose, sign reading **"Unclench your jaw"**
+- **Outside** — stands with a paw raised toward the door, sign reading
+  **"Step outside"**
+- **Snack** — sits with a sign reading **"Have a snack"**
+
+The messages live in `CareKind` (`pet.swift` and `windows/Pip/Model.cs`). To add
+one, add a case there with its sign text; if it should have a pose of its own,
+add it to the `careSign` look in both builds too.
 
 The setting is remembered. *Nudge me now* triggers one immediately if you'd
 rather not wait.

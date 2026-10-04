@@ -19,6 +19,27 @@ public struct Particle
 [System.Flags]
 public enum Props { None = 0, Desk = 1, Book = 2, Glass = 4 }
 
+/// What a self-care nudge asks for. Water and stretch each have a routine of
+/// their own; the rest are a sign held up, with a small pose to match. Nudges
+/// go round this list in order, so water comes back every ninth time.
+public enum CareKind { Water, Stretch, Eyes, Breathe, Shoulders, Posture, Jaw, Outside, Snack }
+
+public static class CareKindExt
+{
+    public static string Sign(this CareKind k) => k switch
+    {
+        CareKind.Water => "Drink water",
+        CareKind.Stretch => "Stretch",
+        CareKind.Eyes => "Rest your eyes",
+        CareKind.Breathe => "Take a breath",
+        CareKind.Shoulders => "Roll your shoulders",
+        CareKind.Posture => "Sit up tall",
+        CareKind.Jaw => "Unclench your jaw",
+        CareKind.Outside => "Step outside",
+        _ => "Have a snack",
+    };
+}
+
 /// Each of these is performed with total conviction.
 public enum SillyAct { Dance, Moonwalk, Faint, DownwardDog, Loaf, Bow }
 
