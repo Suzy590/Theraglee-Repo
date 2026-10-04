@@ -94,7 +94,12 @@
 .mapcard svg{display:block;border-radius:14px}
 .mapcard svg g[data-ms]:focus,.mapcard svg g[data-goal]:focus{outline:none}
 /* On a phone the small labels hide, but "You are here" stays: the hiker and the sign draw larger. */
-@media(max-width:600px){.trail-label{display:none}.trail-hiker-body{transform:scale(1.7)}}
+@media(max-width:600px){.trail-label{display:none}.trail-hiker-body{transform:scale(1.7)}
+  .trail-bloom{transform-box:fill-box;transform-origin:50% 100%;transform:scale(1.6)}}
+/* Today's flower or lantern breathes gently, so the eye finds it. */
+@keyframes trail-breathe{0%,100%{opacity:.55}50%{opacity:1}}
+.trail-today-glow{animation:trail-breathe 2.4s ease-in-out infinite}
+@media(prefers-reduced-motion:reduce){.trail-today-glow{animation:none}}
 .stops{display:flex;flex-wrap:wrap;gap:8px;margin:14px 4px 4px}
 .stops button{font:inherit;font-size:.84rem;padding:6px 12px 6px 6px;border-radius:var(--r-pill);border:1px solid var(--hair);
   background:var(--paper);color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;gap:8px;max-width:100%}
@@ -114,7 +119,7 @@
 .trail-hiker{animation:trail-bob 2.6s ease-in-out infinite}
 .trail-flag{animation:trail-flutter 3s ease-in-out infinite}
 .stepped .trail-hiker{animation:trail-hop .9s cubic-bezier(.34,1.56,.64,1) 1,trail-bob 2.6s ease-in-out 1s infinite}
-.stepped .trail-bloom{transform-box:fill-box;transform-origin:50% 100%;animation:trail-pop .6s ease-out both}
+.stepped .trail-today .trail-bloom{transform-box:fill-box;transform-origin:50% 100%;animation:trail-pop .6s ease-out both}
 .stepped .pebbles i.on:last-of-type{animation:trail-pop .5s ease-out both}
 @media(prefers-reduced-motion:reduce){.trail-hiker,.trail-flag,.stepped .trail-hiker,.stepped .trail-bloom,.stepped .pebbles i{animation:none}}
 

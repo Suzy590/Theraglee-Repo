@@ -170,12 +170,14 @@ export async function mountGoals(host, ctx) {
 
       <div class="card mapcard ${flash ? 'stepped' : ''}">
         ${trailMap({ goal: { text: q.intention || theme.label, theme: theme.key }, milestones: ms.map(x => ({ title: x.title, reached: !!x.reached_on })),
-          current: ci, stepFrac: stepDays.size / STEPS_PER_MILESTONE, days: d.days.size, scene: q.scene })}
+          current: ci, stepFrac: stepDays.size / STEPS_PER_MILESTONE, days: d.days.size, scene: q.scene, today: d.days.has(t) })}
         <div class="stops" role="list" aria-label="Your milestones">${ms.map((x, i) => `<button role="listitem" data-ms="${i}"
             class="${x.reached_on ? 'open' : ''} ${i === ci ? 'here' : ''}">
             <b>${x.reached_on ? '✓' : i + 1}</b>${esc(x.title)}</button>`).join('')}
           <button role="listitem" data-goal-pill class="goal-pill"><b>⛰</b>${esc(q.intention || theme.label)}</button></div>
-        <p class="faint" style="margin:10px 6px 2px">${scene.blurb} Tap a camp to see its stepping stones.</p>
+        <p class="faint" style="margin:10px 6px 2px">${scene.key === 'scenery' ? scene.blurb
+          : d.days.has(t) ? `${scene.blurb} Today's is the bright one right beside you; the rest line the path you have walked.`
+          : `${scene.blurb} Take a step today and a new one appears beside you.`} Tap a camp to see its stepping stones.</p>
       </div>`;
     flash = false;
 
