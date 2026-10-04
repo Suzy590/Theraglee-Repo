@@ -15,6 +15,10 @@
   .tabs button{border:0;background:none;font:inherit;font-size:.95rem;padding:12px 18px;cursor:pointer;
     color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap}
   .tabs button.on{color:var(--green);border-bottom-color:var(--green);font-weight:500}
+  /* The unread count on the Inbox tab, the same pill the dashboards use. */
+  .tabs .dot{display:inline-block;min-width:18px;padding:0 5px;height:18px;line-height:18px;
+    border-radius:9px;background:var(--green);color:#fff;font-size:.7rem;margin-left:6px;
+    text-align:center;font-weight:600}
   .switch{display:flex;gap:14px;align-items:flex-start;padding:18px;border:1px solid var(--hair);
     border-radius:var(--r-sm);background:var(--paper);margin-bottom:12px}
   .switch input{width:20px;height:20px;accent-color:var(--green);margin-top:2px;flex:0 0 auto}
@@ -33,7 +37,7 @@ import { MEMBER_ISSUES } from './assets/lists.js';
 import { SETS as TRIVIA } from './assets/trivia-sets.js';
 import { matchDetailsModal, matchSummary, matchComplete, MATCH_BLURB } from './assets/match.js';
 import { loadPrices, tierCards, PLANS_INTRO, PLANS_NOTE } from './assets/plans.js';
-import { mountInbox } from './assets/inbox.js';
+import { mountInbox, unreadCount } from './assets/inbox.js';
 await chrome({ active:'account.html' });
 let a = await requireAuth();
 const c = await contentCounts();
@@ -48,6 +52,11 @@ const TABS = isTherapist
      ['inbox','Inbox'],['history','Your history']];
 let tab = location.hash.replace('#','') || 'membership';
 if (!TABS.some(([k]) => k === tab)) tab = 'membership';
+// Unread messages from therapists, counted on the Inbox tab until it is opened.
+let inboxUnread = isTherapist ? 0 : await unreadCount(a);
+document.addEventListener('theraglee:inbox-read', () => {
+  inboxUnread = 0; root.querySelector('.tabs .dot')?.remove();
+});
 
 if (qs('checkout') === 'success') {
   toast('Payment received — welcome aboard. It can take a moment to appear.', 'ok');
@@ -64,7 +73,9 @@ function shell(body){
       <span class="badge">${isTherapist ? 'Therapist' : tierName(a.level)} membership</span>
     </div>
     <div class="tabs">
-      ${TABS.map(([k,l])=>`<button data-tab="${k}" class="${tab===k?'on':''}">${l}</button>`).join('')}
+      ${TABS.map(([k,l])=>`<button data-tab="${k}" class="${tab===k?'on':''}"${
+        k==='inbox' && inboxUnread ? ` aria-label="Inbox, ${inboxUnread} unread"` : ''}>${l}${
+        k==='inbox' && inboxUnread ? `<span class="dot" aria-hidden="true">${inboxUnread}</span>` : ''}</button>`).join('')}
     </div>
     <div id="body">${body}</div>`;
 }
