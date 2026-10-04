@@ -744,7 +744,17 @@ async function shrinkPhoto(file, max = 800){
 function profile(){
   const t = T || {};
   const locs = (t.locations && t.locations.length) ? t.locations : [{}];
-  const initials = ((t.first_name?.[0]||'') + (t.last_name?.[0]||'')).toUpperCase();
+  // Until the profile is saved, start from what the account already knows: the
+  // name typed at signup (first word, then the rest) and the sign-in email.
+  const [acctFirst = '', ...acctRest] = (a.profile.full_name || '').trim().split(/\s+/).filter(Boolean);
+  const firstName = t.first_name || acctFirst;
+  const lastName  = t.last_name  || acctRest.join(' ');
+  const contactEmail = t.contact_email || a.profile.email || '';
+  // One license type, saved as both the license type we verify and the
+  // credential shown after the name on the listing.
+  const licenseType = t.license_type || t.credentials || '';
+  const exampleName = [firstName, lastName].filter(Boolean).join(' ');
+  const initials = ((firstName?.[0]||'') + (lastName?.[0]||'')).toUpperCase();
   photoFile = null; photoRemoved = false;
   officeKeep = [...(t.practice_photos || [])]; officeAdd = []; officeDrop = [];
   render(`
@@ -757,17 +767,12 @@ function profile(){
 
       <h2>Who you are</h2>
       <div class="grid g2">
-        <div class="field"><label for="fn">First name *</label><input id="fn" value="${esc(t.first_name||'')}" required></div>
-        <div class="field"><label for="ln">Last name *</label><input id="ln" value="${esc(t.last_name||'')}" required></div>
+        <div class="field"><label for="fn">First name *</label><input id="fn" value="${esc(firstName)}" required></div>
+        <div class="field"><label for="ln">Last name *</label><input id="ln" value="${esc(lastName)}" required></div>
       </div>
-      <div class="grid g2">
-        <div class="field"><label for="cred">Credentials</label><select id="cred">
-          <option value="">Select…</option>
-          ${CREDENTIALS.map(c=>`<option ${t.credentials===c?'selected':''}>${esc(c)}</option>`).join('')}</select></div>
-        <div class="field"><label for="gender">Gender</label><select id="gender">
-          <option value="">Prefer not to say</option>
-          ${['Female','Male','Non-binary'].map(g=>`<option ${t.gender===g?'selected':''}>${g}</option>`).join('')}</select></div>
-      </div>
+      <div class="field"><label for="gender">Gender</label><select id="gender">
+        <option value="">Prefer not to say</option>
+        ${['Female','Male','Non-binary'].map(g=>`<option ${t.gender===g?'selected':''}>${g}</option>`).join('')}</select></div>
       <div class="field"><label for="bio">Short bio</label>
         <textarea id="bio" maxlength="${BIO_MAX}" placeholder="How you work, who you work with, what a first session is like.">${esc(t.bio||'')}</textarea>
         <div class="help" id="bio-count"></div></div>
@@ -799,7 +804,9 @@ function profile(){
           <div class="help">Never shown publicly.</div></div>
         <div class="field"><label for="ltype">License type</label>
           <select id="ltype"><option value="">Select…</option>
-          ${CREDENTIALS.map(c=>`<option ${t.license_type===c?'selected':''}>${esc(c)}</option>`).join('')}</select></div>
+          ${CREDENTIALS.map(c=>`<option ${licenseType===c?'selected':''}>${esc(c)}</option>`).join('')}</select>
+          <div class="help">Shown after your name on your listing${exampleName
+            ? `, like ${esc(exampleName)}, LMFT` : ''}.</div></div>
       </div>
       <div class="field"><label>Licensed in *</label>${chipGroup('states', STATES.map(s=>s[0]), t.license_states)}</div>
 
@@ -887,7 +894,7 @@ function profile(){
       </div>
       <div class="grid g2">
         <div class="field"><label for="cemail">Where should messages go? *</label>
-          <input id="cemail" type="email" value="${esc(t.contact_email||'')}" placeholder="you@practice.com">
+          <input id="cemail" type="email" value="${esc(contactEmail)}" placeholder="you@practice.com">
           <div class="help">Never shown to visitors.</div></div>
         <div class="field"><label for="cphone">Your real phone</label>
           <input id="cphone" type="tel" value="${esc(t.contact_phone||'')}">
@@ -1003,7 +1010,7 @@ async function save(e){
   const payload = {
     user_id: a.profile.id,
     first_name: V('fn'), last_name: V('ln'),
-    credentials: V('cred') || null, gender: V('gender') || null,
+    credentials: V('ltype') || null, gender: V('gender') || null,
     bio: V('bio') || null, photo_url: T?.photo_url || null,
     license_number: V('lic'), license_type: V('ltype') || null,
     license_states: chipVals('states'),
