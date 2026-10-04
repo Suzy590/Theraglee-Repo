@@ -289,6 +289,7 @@ const DASH_TABS = [
   ['Self-Discovery',  'discover'],
   ['Progress',        'progress'],
   ['Tools',           'tools'],
+  ['Fun',             'fun'],
   ['Messages',        'messages'],
   ['Nearby help',     'nearby'],
 ];
@@ -297,8 +298,8 @@ const DASH_PAGES = {
   'discover.html': 'discover',
   'explore.html': 'tools', 'challenges.html': 'tools',
   'checklist.html': 'tools', 'quiz.html': 'tools', 'worksheet.html': 'tools',
-  'pet.html': 'tools', 'trivia.html': 'tools', 'goals.html': 'tools',
-  'mandalas.html': 'tools', 'therapists.html': 'tools', 'therapist.html': 'tools',
+  'goals.html': 'tools', 'therapists.html': 'tools', 'therapist.html': 'tools',
+  'pet.html': 'fun', 'trivia.html': 'fun', 'mandalas.html': 'fun',
   'articles.html': 'explore', 'article.html': 'explore',
 };
 
