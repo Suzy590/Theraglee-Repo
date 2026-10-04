@@ -89,7 +89,7 @@ async function viewIndex(){
       Basic and Premium choose any length up to a full year.</p>
 
     ${mine.length ? `<section class="zone" id="mine-zone" style="margin-top:30px">
-      <div class="zone-head"><h2>Yours</h2>
+      <div class="zone-head"><h2>Your current challenges</h2>
         <p class="muted">The challenges you have started. Open one to check off today's to-do.</p></div>
       <div class="grid g2" id="mine">${mine.map(c=>{
         const n = doneMap[c.id]?.size || 0, pct = Math.round(n/c.total_days*100);
