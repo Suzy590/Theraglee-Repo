@@ -13,7 +13,7 @@ public enum PetState
     ChasingCursor, ChasingToy,                         // play
     AtDesk, Reading,                                   // two separate pastimes
     Silly,                                             // see SillyAct
-    CareWater, CareStretch,                            // self-care mode
+    CareWater, CareStretch, CareSign,                  // self-care mode
 }
 
 public enum WalkGoal { None, Desk, Ledge, Care }
@@ -72,7 +72,8 @@ public sealed class Brain
     float toyScreenX, toyY, toyTimer;
     float careTimer = 1500;
     const float CareInterval = 1500;          // ~25 minutes
-    bool careIsWater;
+    int careIndex;                            // which CareKind comes next
+    CareKind careKind = CareKind.Eyes;        // the one on the sign right now
     SKPoint lastMouse;
     float mouseActive;
 
@@ -205,6 +206,7 @@ public sealed class Brain
             case PetState.Curious:
             case PetState.CareStretch:
             case PetState.CareWater:
+            case PetState.CareSign:
             case PetState.AtDesk:
             case PetState.Reading:
                 if (stateTime > stateLen) ChooseNext();
@@ -354,7 +356,7 @@ public sealed class Brain
             PetState.ChasingCursor or PetState.ChasingToy => 1,
             PetState.HoppingUp or PetState.Peeking => 1,
             PetState.Silly or PetState.Stretching or PetState.Yawning
-                or PetState.Grooming or PetState.CareStretch => 2,
+                or PetState.Grooming or PetState.CareStretch or PetState.CareSign => 2,
             PetState.WalkingTo => 2,
             PetState.Curious or PetState.Perching or PetState.AtDesk
                 or PetState.Reading or PetState.CareWater => 3,
@@ -406,18 +408,28 @@ public sealed class Brain
         SetState(PetState.Silly, sillyAct.Duration());
     }
 
-    /// A self-care nudge: bring water over, or model a stretch.
+    /// A self-care nudge: bring water over, model a stretch, or hold up one of
+    /// the other reminders. They take turns, in CareKind order.
     public void StartCare()
     {
-        careIsWater = !careIsWater;
-        if (careIsWater)
+        var kinds = Enum.GetValues<CareKind>();
+        careKind = kinds[careIndex % kinds.Length];
+        careIndex = (careIndex + 1) % kinds.Length;
+        switch (careKind)
         {
-            pendingCare = PetState.CareWater;
-            walkGoal = WalkGoal.Care;
-            walkTargetX = stage.Mouse.X;
-            SetState(PetState.WalkingTo, 999);
+            case CareKind.Water:
+                pendingCare = PetState.CareWater;
+                walkGoal = WalkGoal.Care;
+                walkTargetX = stage.Mouse.X;
+                SetState(PetState.WalkingTo, 999);
+                break;
+            case CareKind.Stretch:
+                SetState(PetState.CareStretch, 8.0f);
+                break;
+            default:
+                SetState(PetState.CareSign, 8.0f);
+                break;
         }
-        else SetState(PetState.CareStretch, 8.0f);
     }
 
     /// Head for the top edge of one of your windows and sit on it.
@@ -807,6 +819,43 @@ public sealed class Brain
                     l.Sign = "Stretch";
                     l.SignBob = MathF.Sin(t * 3);
                     l.Eyes = EyeMode.Happy; l.Mouth = MouthMode.Smile;
+                }
+                break;
+            }
+
+            case PetState.CareSign:
+            {
+                // The sign carries the message; the pose hints at it.
+                l.Sign = careKind.Sign();
+                l.SignBob = MathF.Sin(t * 3);
+                l.Eyes = EyeMode.Happy; l.Mouth = MouthMode.Smile;
+                l.IsSitting = careKind != CareKind.Outside;
+                switch (careKind)
+                {
+                    case CareKind.Eyes:                // turned a little away from the screen
+                        l.Lean = -0.08f * facing;
+                        break;
+                    case CareKind.Breathe:             // one slow breath in, one slow breath out
+                    {
+                        float b = MathF.Sin(t * 1.4f);
+                        l.SquashX = 1 - b * 0.04f;
+                        l.SquashY = 1 + b * 0.06f;
+                        break;
+                    }
+                    case CareKind.Shoulders:           // rolls them, one way then the other
+                        l.Lean = 0.10f * MathF.Sin(t * 2.4f);
+                        break;
+                    case CareKind.Posture:             // sits up straight to show how
+                        l.SquashX = 0.95f;
+                        l.SquashY = 1.07f;
+                        break;
+                    case CareKind.Jaw:                 // lets its own hang loose
+                        l.Mouth = MathF.Sin(t * 2.2f) > 0 ? MouthMode.Open : MouthMode.Neutral;
+                        break;
+                    case CareKind.Outside:             // standing, paw raised toward the door
+                        l.PawUp = 0.6f;
+                        break;
+                    default: break;                    // snack, water, stretch: just the sign
                 }
                 break;
             }

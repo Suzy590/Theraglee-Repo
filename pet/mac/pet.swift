@@ -684,10 +684,31 @@ enum PetState {
     case chasingCursor, chasingToy                        // play
     case atDesk, reading                                  // two separate pastimes
     case silly                                            // see SillyAct
-    case careWater, careStretch                           // self-care mode
+    case careWater, careStretch, careSign                 // self-care mode
 }
 
 enum WalkGoal { case none, desk, ledge, care }
+
+/// What a self-care nudge asks for. Water and stretch each have a routine of
+/// their own; the rest are a sign held up, with a small pose to match. Nudges
+/// go round this list in order, so water comes back every ninth time.
+enum CareKind: CaseIterable {
+    case water, stretch, eyes, breathe, shoulders, posture, jaw, outside, snack
+
+    var sign: String {
+        switch self {
+        case .water:     return "Drink water"
+        case .stretch:   return "Stretch"
+        case .eyes:      return "Rest your eyes"
+        case .breathe:   return "Take a breath"
+        case .shoulders: return "Roll your shoulders"
+        case .posture:   return "Sit up tall"
+        case .jaw:       return "Unclench your jaw"
+        case .outside:   return "Step outside"
+        case .snack:     return "Have a snack"
+        }
+    }
+}
 
 /// The top edge of somebody else's window — somewhere to sit.
 struct Ledge { var minX: CGFloat; var maxX: CGFloat; var y: CGFloat }
@@ -758,7 +779,8 @@ final class PetView: NSView {
     var selfCareOn = false { didSet { careTimer = careInterval; persist() } }
     private var careTimer: CGFloat = 1500
     private let careInterval: CGFloat = 1500      // ~25 minutes
-    private var careIsWater = false
+    private var careIndex = 0                     // which CareKind comes next
+    private var careKind: CareKind = .eyes        // the one on the sign right now
     private var lastMouse = NSPoint.zero
     private var mouseActive: CGFloat = 0
 
@@ -886,7 +908,7 @@ final class PetView: NSView {
                 squashY = 0.66; squashVel = 0
                 setState(.idle, len: .random(in: 0.9...1.8))
             }
-        case .stretching, .yawning, .grooming, .curious, .careStretch, .careWater, .atDesk, .reading:
+        case .stretching, .yawning, .grooming, .curious, .careStretch, .careWater, .careSign, .atDesk, .reading:
             if stateTime > stateLen { chooseNext() }
 
         case .silly:
@@ -1009,7 +1031,7 @@ final class PetView: NSView {
         case .chasingCursor, .chasingToy:       every = 1
         case .hoppingUp, .peeking:              every = 1
         case .silly, .stretching, .yawning,
-             .grooming, .careStretch:           every = 2
+             .grooming, .careStretch, .careSign: every = 2
         case .walkingTo:                        every = 2
         case .curious, .perching, .atDesk,
              .reading, .careWater:              every = 3
@@ -1068,16 +1090,22 @@ final class PetView: NSView {
         setState(.silly, len: sillyAct.duration)
     }
 
-    /// A self-care nudge: bring water over, or model a stretch.
+    /// A self-care nudge: bring water over, model a stretch, or hold up one of
+    /// the other reminders. They take turns, in CareKind order.
     func startCare() {
-        careIsWater.toggle()
-        if careIsWater {
+        let kinds = CareKind.allCases
+        careKind = kinds[careIndex % kinds.count]
+        careIndex = (careIndex + 1) % kinds.count
+        switch careKind {
+        case .water:
             pendingCare = .careWater
             walkGoal = .care
             walkTargetX = NSEvent.mouseLocation.x
             setState(.walkingTo, len: 999)
-        } else {
+        case .stretch:
             setState(.careStretch, len: 8.0)
+        default:
+            setState(.careSign, len: 8.0)
         }
     }
 
@@ -1583,6 +1611,31 @@ final class PetView: NSView {
                 l.signBob = sin(t * 3)
                 l.eyes = .happy; l.mouth = .smile
             }
+
+        case .careSign:
+            // The sign carries the message; the pose hints at it.
+            l.sign = careKind.sign
+            l.signBob = sin(t * 3)
+            l.eyes = .happy; l.mouth = .smile
+            l.isSitting = careKind != .outside
+            switch careKind {
+            case .eyes:                        // turned a little away from the screen
+                l.lean = -0.08 * facing
+            case .breathe:                     // one slow breath in, one slow breath out
+                let b = sin(t * 1.4)
+                l.squashX = 1 - b * 0.04
+                l.squashY = 1 + b * 0.06
+            case .shoulders:                   // rolls them, one way then the other
+                l.lean = 0.10 * sin(t * 2.4)
+            case .posture:                     // sits up straight to show how
+                l.squashX = 0.95
+                l.squashY = 1.07
+            case .jaw:                         // lets its own hang loose
+                l.mouth = sin(t * 2.2) > 0 ? .open : .neutral
+            case .outside:                     // standing, paw raised toward the door
+                l.pawUp = 0.6
+            default: break                     // snack, water, stretch: just the sign
+            }
         }
 
         if blinkFor > 0, l.eyes == .open { l.eyes = .blink }
@@ -1790,7 +1843,7 @@ func writeGIF(_ frames: [NSImage], to url: URL, delay: Double) -> Bool {
 /// A contact sheet of everything the pet learned to do.
 func renderActSheet(to path: String, species: Species = .cat, palette: Int = defaultPaletteIndex) {
     let cell = NSSize(width: canvas, height: canvas)
-    let cols = 4, rows = 4
+    let cols = 4, rows = 5
     let sheet = NSImage(size: NSSize(width: cell.width * CGFloat(cols),
                                      height: cell.height * CGFloat(rows)))
     func base() -> PetLook {
@@ -1835,6 +1888,10 @@ func renderActSheet(to path: String, species: Species = .cat, palette: Int = def
     looks.append(("self-care: water", q))
     var r = base(); r.sign = "Stretch"; r.eyes = .happy
     looks.append(("self-care: stretch", r))
+    var s = base(); s.sign = "Take a breath"; s.eyes = .happy; s.isSitting = true; s.squashX = 0.96; s.squashY = 1.06
+    looks.append(("self-care: breathe", s))
+    var u = base(); u.sign = "Roll your shoulders"; u.eyes = .happy; u.isSitting = true; u.lean = 0.10
+    looks.append(("self-care: shoulders", u))
 
     sheet.lockFocus()
     NSColor(white: 0.93, alpha: 1).setFill()

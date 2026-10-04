@@ -53,6 +53,10 @@ static class RenderCheck
         Add("water",     l => { l.Props = Props.Glass; l.PawUp = 0.85f; l.Sign = "Drink water";
                                 l.Eyes = EyeMode.Happy; l.IsSitting = true; });
         Add("stretchsign", l => { l.Sign = "Stretch"; l.Eyes = EyeMode.Happy; });
+        Add("breathe",   l => { l.Sign = "Take a breath"; l.Eyes = EyeMode.Happy; l.IsSitting = true;
+                                l.SquashX = 0.96f; l.SquashY = 1.06f; });
+        Add("shoulders", l => { l.Sign = "Roll your shoulders"; l.Eyes = EyeMode.Happy; l.IsSitting = true;
+                                l.Lean = 0.10f; });
         Add("shout",     l => { l.IsWalking = true; l.Eyes = EyeMode.Wide; l.Mouth = MouthMode.Open;
                                 l.Spin = -0.20f; l.ShoutText = "Theragleeeeee!!!"; l.ShoutAge = 0.5f; });
         return o;
