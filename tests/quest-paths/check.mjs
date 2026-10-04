@@ -294,7 +294,7 @@ test("the page carries the wellness note and crisis line, and the three levels i
   assert.ok(order.every((i, k) => i >= 0 && (k === 0 || i > order[k - 1])), `goal, milestone, stones, tonight: ${order}`);
   assert.match(ui, /Is it happening for you now\?/, "the member decides when a milestone is reached");
   assert.match(ui, /Your words never leave your device and no AI reads them/);
-  assert.match(ui, /Small on purpose/);
+  assert.match(ui, /Today is done\./); assert.match(ui, /Today still needs one step\./);
 });
 
 test("Nearby help stays on the member dashboard's menu bar", () => {
