@@ -126,6 +126,34 @@
   .entry mark{background:rgba(141,198,29,.28);color:inherit;border-radius:3px;padding:0 1px}
   .prompt-box{background:var(--soft);border:1px solid var(--mist);border-radius:var(--r-sm);
     padding:14px 16px;font-family:var(--serif);font-style:italic;font-size:1.08rem;color:var(--green-deep)}
+  /* The Fun tab: the same zone and tiles as everywhere else, with a faint
+     dotted ground, and each tile topped by a little picture on its own tint
+     that lifts and tips on hover. The dots and the motion go away for anyone
+     who asked for less of it. */
+  .fun-zone{background-image:radial-gradient(rgba(141,198,29,.2) 1.3px,transparent 1.6px);background-size:20px 20px}
+  .fun-grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+  .fun-tile{padding:0;gap:0;overflow:hidden}
+  .fun-tile.locked{background:var(--paper)}
+  .fun-art{display:grid;place-items:center;height:138px;background:var(--fun-tint,var(--soft));border-bottom:1px solid var(--hair);
+    background-image:radial-gradient(circle at 16% 26%,rgba(255,255,255,.95) 0 3px,transparent 4px),
+      radial-gradient(circle at 86% 30%,rgba(255,255,255,.9) 0 2px,transparent 3px),
+      radial-gradient(circle at 80% 78%,rgba(255,255,255,.95) 0 3.5px,transparent 4.5px),
+      radial-gradient(circle at 22% 80%,rgba(255,255,255,.9) 0 2px,transparent 3px)}
+  .fun-art>*{display:block;transition:transform .5s cubic-bezier(.22,1,.36,1);filter:drop-shadow(0 6px 10px rgba(22,36,28,.14))}
+  .fun-tile[data-art=pet]{--fun-tint:#E9F4D7}
+  .fun-tile[data-art=trivia]{--fun-tint:#FBF3D9}
+  .fun-tile[data-art=mandala]{--fun-tint:#EEF0FA}
+  .fun-body{display:flex;flex-direction:column;gap:6px;padding:16px 18px 18px;flex:1}
+  .fun-body .badge{align-self:flex-start;margin-top:6px}
+  .fun-go{margin-top:auto;padding-top:10px;font-size:.84rem;font-weight:500;color:var(--green)}
+  .fun-go span{display:inline-block;transition:transform .35s cubic-bezier(.22,1,.36,1)}
+  a.fun-tile:hover .fun-art>*{transform:translateY(-6px) rotate(-4deg) scale(1.04)}
+  a.fun-tile[data-art=mandala]:hover .fun-art>*{transform:rotate(30deg) scale(1.06)}
+  a.fun-tile:hover .fun-go span{transform:translateX(4px)}
+  @media(prefers-reduced-motion:reduce){
+    .fun-art>*,.fun-go span{transition:none}
+    a.fun-tile:hover .fun-art>*,a.fun-tile:hover .fun-go span{transform:none}
+  }
   [data-panel]{display:none}
   [data-panel].on{display:block}
   /* Room for the sticky header when a link lands on one of these (dashboard.html#match-mode). */
@@ -319,12 +347,12 @@
             <p class="hero-line">A little play goes a long way.</p>
           </div>
           <div class="tab-body">
-            <section class="zone" aria-labelledby="fun-zone-title">
+            <section class="zone fun-zone" aria-labelledby="fun-zone-title">
               <div class="zone-head">
                 <h2 id="fun-zone-title">Fun</h2>
                 <p class="muted">A companion for your screen, quizzes on how minds work, and mandalas to color.</p>
               </div>
-              <div class="grid g4" id="fun-quick"></div>
+              <div class="grid g4 fun-grid" id="fun-quick"></div>
             </section>
           </div>
           <div class="showcase-slot"></div>
@@ -738,11 +766,33 @@ const quick = [
   ['Help near you', 'dashboard.html#nearby', 0, false, 'Clinics and crisis services on a map, plus national lines'],
 ];
 /* The Fun tab: the same kind of tiles, for the lighter things. These used to sit
-   under Tools; they live only here now. */
+   under Tools; they live only here now. Each carries a little picture and a tint
+   (the last two slots), drawn by funTiles() below. */
+const FUN_ART = {
+  pet: `<img src="assets/pip.png" width="96" height="82" alt="" loading="lazy">`,
+  trivia: `<svg viewBox="0 0 96 82" width="96" height="82" aria-hidden="true">
+    <path d="M18 10h60a10 10 0 0 1 10 10v30a10 10 0 0 1-10 10H44L28 72V60H18A10 10 0 0 1 8 50V20a10 10 0 0 1 10-10z"
+      fill="#fff" stroke="#8DC61D" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M38 27c0-7 5-11 11-11s11 4 11 10c0 8-9 8-9 16" fill="none" stroke="#187C1A" stroke-width="4.5" stroke-linecap="round"/>
+    <circle cx="51" cy="50" r="3" fill="#187C1A"/>
+    <path d="M78 6l2 5 5 2-5 2-2 5-2-5-5-2 5-2zM14 66l1.5 3.5L19 71l-3.5 1.5L14 76l-1.5-3.5L9 71l3.5-1.5z" fill="#8DC61D"/>
+  </svg>`,
+  mandala: `<svg viewBox="0 0 96 82" width="96" height="82" aria-hidden="true">
+    <g transform="translate(48 41)" fill="none" stroke="#187C1A" stroke-width="2">
+      <circle r="39" stroke="#8DC61D"/>
+      <g id="fun-petal"><ellipse rx="7.5" ry="33" fill="rgba(141,198,29,.18)"/></g>
+      <use href="#fun-petal" transform="rotate(45)"/><use href="#fun-petal" transform="rotate(90)"/>
+      <use href="#fun-petal" transform="rotate(135)"/>
+      <g transform="rotate(22.5)" stroke="#8DC61D"><ellipse rx="4" ry="20" fill="#fff"/><ellipse rx="4" ry="20" transform="rotate(45)" fill="#fff"/>
+        <ellipse rx="4" ry="20" transform="rotate(90)" fill="#fff"/><ellipse rx="4" ry="20" transform="rotate(135)" fill="#fff"/></g>
+      <circle r="9" fill="#fff"/><circle r="4" fill="#8DC61D" stroke="none"/>
+    </g>
+  </svg>`,
+};
 const fun = [
-  ['Desktop pet', 'pet.html', 2, true, 'Meet Pip, a small companion for the corner of your screen'],
-  ['Mental health trivia', 'trivia.html', 2, true, 'Quick quizzes on how minds work'],
-  ['Mandalas', 'mandalas.html', 3, false, 'Print one for your pencils, or color it on the screen'],
+  ['Desktop pet', 'pet.html', 2, true, 'Meet Pip, a small companion for the corner of your screen', 'pet'],
+  ['Mental health trivia', 'trivia.html', 2, true, 'Quick quizzes on how minds work', 'trivia'],
+  ['Mandalas', 'mandalas.html', 3, false, 'Print one for your pencils, or color it on the screen', 'mandala'],
 ];
 /* A tile flagged `ownGate` opens its page even when locked, because that page makes its
    own upgrade ask. Every other locked tile goes straight to the plans.
@@ -753,8 +803,20 @@ const tiles = (list) => list.map(([label, href, need, ownGate, note]) => {
     <h3 style="font-size:.98rem">${esc(label)}</h3>
     ${locked ? `<span class="badge lock">${tierName(need)}</span>` : `<span class="meta">${esc(note || 'Open')}</span>`}</a>`;
 }).join('');
+/* Fun tiles: the same gate as tiles(), with the picture on top and a tint
+   named by the art key. The note stays, with an "Open" line under it. */
+const funTiles = (list) => list.map(([label, href, need, ownGate, note, art]) => {
+  const locked = a.level < need;
+  return `<a class="tile fun-tile ${locked?'locked':''}" data-art="${art}" href="${locked && !ownGate ? 'pricing.html' : href}">
+    <span class="fun-art">${FUN_ART[art]}</span>
+    <span class="fun-body">
+      <h3 style="font-size:1.02rem">${esc(label)}</h3>
+      <span class="meta">${esc(note)}</span>
+      ${locked ? `<span class="badge lock">${tierName(need)}</span>` : `<span class="fun-go">Open <span aria-hidden="true">&rarr;</span></span>`}
+    </span></a>`;
+}).join('');
 document.getElementById('quick').innerHTML = tiles(quick);
-document.getElementById('fun-quick').innerHTML = tiles(fun);
+document.getElementById('fun-quick').innerHTML = funTiles(fun);
 
 /* ---- upsell: the same three tiers as the landing page (assets/plans.js) ---- */
 if (a.level < 3) {

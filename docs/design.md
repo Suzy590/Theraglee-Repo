@@ -44,6 +44,17 @@ use them.
 Headings further down a zone use `h2` too and come out a size smaller on
 their own; add `class="zone-sub"` on the dashboard for the usual spacing.
 
+## The Fun tab
+
+The Fun tab keeps the same zone and tiles, with a little more play: the zone
+sits on a faint dotted ground, and each tile carries a small picture (Pip,
+a question bubble, a mini mandala) on a pale tint above its title, with an
+"Open" arrow under the note. On hover the picture lifts and tips (the mandala
+turns) and the arrow slides. All of it is in `site/dashboard.html` (`.fun-zone`,
+`.fun-tile`, `FUN_ART`, `funTiles()`), and the motion is off for anyone whose
+system asks for reduced motion. Keep new Fun tiles in that shape rather than
+adding a plain tile beside them.
+
 ## Pages outside the dashboard
 
 Challenges, Goals & tracking and Mandalas show the same pattern on a page of
