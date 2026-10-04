@@ -267,7 +267,7 @@ function play(s, lib, saveScore, scores, bestBadge) {
 
   root.innerHTML = `
     <div class="wrap narrow" style="padding:0">
-      <a class="faint" href="trivia.html?topic=${encodeURIComponent(s.topic)}">← ${esc(s.topic)} trivia</a>
+      <p class="faint" style="margin:0"><a class="faint" href="trivia.html">← All trivia</a> · <a class="faint" href="trivia.html?topic=${encodeURIComponent(s.topic)}">${esc(s.topic)} trivia</a></p>
       <h1 style="margin-top:12px">${esc(s.title)}</h1>
       <p class="muted">${esc(s.description)}</p>
       <span class="meta faint">${meta(s)}</span>
