@@ -123,7 +123,7 @@ export async function mountGoals(host, ctx) {
           <div class="row" style="gap:14px">${pebbles(stepsN)}
             <span class="faint">${stepDays.size} step${stepDays.size === 1 ? '' : 's'} so far · ${steppedToday ? "today's step is done" : 'no step yet today'} · each day with a stepping stone adds one</span></div>
           ${checkDue ? `<div class="checkin">
-            <strong>${stepDays.size >= STEPS_PER_MILESTONE ? `You have taken ${stepDays.size} steps toward this.` : 'A week in.'} Is it happening for you now?</strong>
+            <strong>${stepDays.size >= STEPS_PER_MILESTONE ? `You have taken ${stepDays.size} steps toward this.` : 'A week has passed.'} Is it happening for you now?</strong>
             <p class="faint" style="margin:4px 0 10px">You decide, not a counter. Any answer is a fine answer.</p>
             <div class="row"><button class="btn sm" data-check="yes">Yes, mostly</button>
               <button class="btn sm ghost" data-check="getting">Getting there</button>
