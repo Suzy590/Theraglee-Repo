@@ -129,7 +129,12 @@ Therapist membership is separate and not tiered — one flat level, gated on
 license verification *and* an active subscription. The practice dashboard opens
 on a **Home** tab: where the listing stands and the one thing to do next, the
 last thirty days of referrals, unread messages and waiting member requests, and
-every benefit below with its current state. It includes:
+every benefit below with its current state. Whichever tab the page opens on, the
+**Messages** tab carries a green pill with the number of contact-form messages
+not yet marked read (`therapist_messages.read_at` empty) and **Member requests**
+one with the number of unread member replies (`outreach_replies.read_at` empty),
+the same pill the member dashboard puts on its Messages tab; each unread message
+is labeled **New**, and **Mark as read** takes the count down. It includes:
 
 - a verified, searchable listing
 - a Theraglee tracking phone number, so the therapist's own line stays private
