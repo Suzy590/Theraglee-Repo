@@ -37,7 +37,12 @@ const { data: cl } = await sb.from('checklists').select('*').eq('slug', slug).ma
 
 if (!cl) {
   const { data: cat } = await sb.from('content_catalog').select('*').eq('slug', slug).eq('kind','checklist').maybeSingle();
-  if (cat) { document.title = cat.title + ' — Theraglee'; lockNotice(root, cat.min_level, cat.title); }
+  if (cat) {
+    document.title = cat.title + ' — Theraglee';
+    root.innerHTML = `<a class="faint no-print" href="explore.html?type=checklist">← All checklists</a>
+      <div id="lock" style="margin-top:12px"></div>`;
+    lockNotice(document.getElementById('lock'), cat.min_level, cat.title);
+  }
   else root.innerHTML = '<div class="empty">That checklist could not be found. <a href="explore.html">Back to the library</a></div>';
 } else {
   document.title = cl.title + ' — Theraglee';
