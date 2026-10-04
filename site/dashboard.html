@@ -110,6 +110,10 @@
   .tabs button{border:0;background:none;font:inherit;font-size:.95rem;padding:12px 18px;cursor:pointer;
     color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap}
   .tabs button.on{color:var(--green);border-bottom-color:var(--green);font-weight:500}
+  /* The unread count on the Messages tab, the same pill the therapist dashboard uses. */
+  .tabs .dot{display:inline-block;min-width:18px;padding:0 5px;height:18px;line-height:18px;
+    border-radius:9px;background:var(--green);color:#fff;font-size:.7rem;margin-left:6px;
+    text-align:center;font-weight:600}
   /* The Journal tab (assets/journal-ui.js). */
   .journal-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:34px;align-items:start}
   /* The tab is two thirds of the page, so the journal's two columns go by its width, not the window's. */
@@ -358,7 +362,7 @@ import { library, isFavorite, favButton, statusBadge, bindLibrary } from './asse
 import { TOOLS } from './assets/discover-tools.js';
 import { SETS as TRIVIA } from './assets/trivia-sets.js';
 import { matchDetailsModal, matchSummary, matchComplete, MATCH_BLURB } from './assets/match.js';
-import { mountInbox } from './assets/inbox.js';
+import { mountInbox, unreadCount } from './assets/inbox.js';
 import { mountLibrary } from './assets/explore-ui.js';
 import { mountDiscover } from './assets/discover-ui.js';
 import { mountMood } from './assets/mood-ui.js';
@@ -457,6 +461,17 @@ document.querySelectorAll('#tabs button').forEach(b => b.addEventListener('click
 }));
 addEventListener('hashchange', () => showTab(location.hash.replace('#', '')));
 showTab(location.hash.replace('#', ''));
+
+// A count of unread messages from therapists sits on the Messages tab until
+// the member opens it (assets/inbox.js marks them read and fires the event).
+const msgTab = document.querySelector('#tabs button[data-tab="messages"]');
+function showUnread(n) {
+  msgTab.querySelector('.dot')?.remove();
+  msgTab.setAttribute('aria-label', n ? `Messages, ${n} unread` : 'Messages');
+  if (n) msgTab.insertAdjacentHTML('beforeend', `<span class="dot" aria-hidden="true">${n}</span>`);
+}
+document.addEventListener('theraglee:inbox-read', () => showUnread(0));
+unreadCount(a).then(n => { if (tab !== 'messages') showUnread(n); });
 
 /* ---- daily content ---- */
 const kinds = ['affirmation','quote','tip','fun_fact'];

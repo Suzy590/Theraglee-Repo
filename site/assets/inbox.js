@@ -4,9 +4,23 @@
    tab of the account page.
 
    A reply carries the member's real name to that one therapist
-   (outreach_replies.member_name). One tap blocks a therapist (member_blocks). */
+   (outreach_replies.member_name). One tap blocks a therapist (member_blocks).
+
+   A therapist's message is unread until the member opens the inbox, which
+   stamps therapist_outreach.read_at. Until then the Messages tab on the
+   dashboard and the Inbox tab on the account page carry a count, drawn from
+   unreadCount(); once the inbox has marked them read it fires
+   `theraglee:inbox-read` on `document` so the page can take the count down. */
 
 import { sb, esc, busy, toast, fmtDate } from './app.js';
+
+// How many messages from therapists the member has not opened yet.
+export async function unreadCount(a){
+  const { count } = await sb.from('therapist_outreach')
+    .select('id', { count: 'exact', head: true })
+    .eq('member_id', a.profile.id).is('read_at', null);
+  return count || 0;
+}
 
 // Draws the inbox into `host`. `where` finishes the sentence saying where the
 // member turns Match Mode on, so each page can point at its own switch.
@@ -23,12 +37,14 @@ export async function mountInbox(host, a, { where = 'on your dashboard', heading
     sb.from('member_blocks').select('therapist_id').eq('member_id', a.profile.id),
   ]);
   const blocked = new Set((blocks || []).map(b => b.therapist_id));
+  // The messages that are new this visit: shown as such, then marked read.
+  const fresh = new Set((sent || []).filter(m => !m.read_at).map(m => m.id));
 
   // One thread per therapist: their messages and your replies, oldest first.
   const threads = new Map();
   for (const m of sent || []) {
     const t = threads.get(m.therapist_id) || { therapist: m.therapist_profiles || {}, items: [], last: m };
-    t.items.push({ from: 'therapist', at: m.created_at, text: m.message, id: m.id });
+    t.items.push({ from: 'therapist', at: m.created_at, text: m.message, id: m.id, fresh: fresh.has(m.id) });
     t.last = m; threads.set(m.therapist_id, t);
   }
   for (const r of replies || []) {
@@ -59,7 +75,8 @@ export async function mountInbox(host, a, { where = 'on your dashboard', heading
             : replied ? '<span class="badge">You replied</span>' : '<span class="badge gray">Waiting for you</span>'}</div>
         <div class="stack" style="margin-top:12px">${t.items.map(i => `
           <div style="padding:12px 14px;border-radius:var(--r-sm);background:${i.from==='you'?'var(--soft)':'var(--sand)'}">
-            <div class="spread"><span class="faint">${i.from==='you' ? 'You, as ' + esc(i.name) : 'Therapist'}</span>
+            <div class="spread"><span class="faint">${i.from==='you' ? 'You, as ' + esc(i.name) : 'Therapist'}${
+                i.fresh ? ' <span class="badge" style="margin-left:6px">New</span>' : ''}</span>
               <span class="faint">${fmtDate(i.at)}</span></div>
             <p class="muted" style="margin:6px 0 0;white-space:pre-wrap">${esc(i.text)}</p></div>`).join('')}</div>
         <div class="row" style="margin-top:12px">
@@ -87,6 +104,15 @@ export async function mountInbox(host, a, { where = 'on your dashboard', heading
         </form>
       </div>`;
     }).join('') : '<div class="empty" style="margin-top:18px">No messages.</div>'}`;
+
+  // Opening the inbox is reading it: the new messages are stamped read, and
+  // the page hears about it so the count on its tab goes away.
+  if (fresh.size) {
+    const { error } = await sb.from('therapist_outreach')
+      .update({ read_at: new Date().toISOString() })
+      .eq('member_id', a.profile.id).is('read_at', null);
+    if (!error) document.dispatchEvent(new CustomEvent('theraglee:inbox-read'));
+  }
 
   host.querySelectorAll('[data-reply]').forEach(b => b.onclick = () => {
     const f = host.querySelector(`[data-form="${b.dataset.reply}"]`);
