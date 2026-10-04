@@ -315,8 +315,14 @@ def page_html(page: dict, site: str) -> str:
         "author": {"@type": "Organization", "name": "Theraglee", "url": site},
         "publisher": publisher(site),
     })
+    # The same back link the member pages carry: the tool pages return to the
+    # free tool hub, the hand-written article page to the articles list.
+    back = ('      <a class="faint" href="/discover.html">← All tools</a>'
+            if page["path"].startswith("tools/") else
+            '      <a class="faint" href="/articles.html">← All articles</a>')
     body = "\n".join(filter(None, [
-        f"      <h1>{esc(page['h1'])}</h1>",
+        back,
+        f"      <h1 style=\"margin-top:12px\">{esc(page['h1'])}</h1>",
         f'      <p class="seo-lede">{esc(page["intro"])}</p>',
         blocks_section(page.get("blocks", [])),
         tiles_section(rel.get("h2", ""), rel.get("items", [])),
@@ -541,7 +547,8 @@ def quizzes_page(quizzes: list[dict], site: str) -> str:
     })
     listing = catalog_list(quizzes, "/quiz.html?slug=", lambda r: r.get("description") or "")
     body = "\n".join([
-        f"      <h1>Every mental health quiz on Theraglee, by topic</h1>",
+        '      <a class="faint" href="/discover.html">← All tools</a>',
+        f'      <h1 style="margin-top:12px">Every mental health quiz on Theraglee, by topic</h1>',
         f'      <p class="seo-lede">{esc(f"{n} short, plain-language check-ins on the things people actually search for: anxiety, sleep, relationships, work, self-esteem, habits, boundaries and more. Each one ends with a short written read-back of what your answers point to and a few specific things to try. None of them diagnoses anything.")}</p>',
         '      <section class="seo-block">',
         '        <h2>Start with the ones people open most</h2>',
@@ -608,7 +615,8 @@ def worksheets_page(worksheets: list[dict], site: str) -> str:
 
     listing = catalog_list(worksheets, "/worksheet.html?slug=", note)
     body = "\n".join([
-        f"      <h1>Every mental health worksheet on Theraglee, by topic</h1>",
+        '      <a class="faint" href="/discover.html">← All tools</a>',
+        f'      <h1 style="margin-top:12px">Every mental health worksheet on Theraglee, by topic</h1>',
         f'      <p class="seo-lede">{esc(f"{n} fillable worksheets you complete online, from a classic CBT thought record to a plan for a hard morning. Each one is a set of prompts, sometimes with a log table, that saves to your dashboard so you can come back to it. They are for thinking on paper, not for diagnosing anything.")}</p>',
         '      <section class="seo-block">',
         '        <h2>Start with the ones people open most</h2>',
