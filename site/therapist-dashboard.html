@@ -309,9 +309,6 @@ async function home(){
       ${benefit('#library', 'Clinician library',
         `${libTotal || 'Dozens of'} worksheets and CBT, ACT, DBT, couples, kids and game exercises, printable with guidance.`,
         state(paid && verified, 'Open', 'Opens with membership'))}
-      ${benefit('#membership', 'Identity check',
-        'A government ID and a selfie through Stripe Identity, so the person on the profile holds the license.',
-        state(idOk, 'Verified', cfg.identity_required === 'true' ? 'Required to publish' : 'Optional'))}
       ${cfg.connect_enabled === 'true' ? benefit('#membership', 'Get paid through Theraglee',
         'Clients can pay for a session from your profile. Stripe pays out to your own bank account.',
         state(T.stripe_account_status === 'enabled', 'Ready for payouts', 'Set up in Membership')) : ''}
