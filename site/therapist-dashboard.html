@@ -283,11 +283,11 @@ async function home(){
 
   const tile = (n, label) => `<div class="stat"><div class="n">${n ?? 0}</div><div class="l">${label}</div></div>`;
   const state = (ok, yes, no) => ok ? `<span class="badge">${yes}</span>` : `<span class="badge gray">${no}</span>`;
-  const benefit = (href, title, blurb, badge) => `
-    <a class="tile" href="${href}">
+  const benefit = (href, title, blurb, badge, cls = '') => `
+    <a class="tile${cls ? ' ' + cls : ''}" href="${href}">
       <div class="row" style="justify-content:space-between;align-items:flex-start">
         <h3>${title}</h3>${badge}</div>
-      <p class="meta" style="color:var(--muted)">${blurb}</p></a>`;
+      <p class="meta"${cls ? '' : ' style="color:var(--muted)"'}>${blurb}</p></a>`;
 
   render(`
     <div class="card pad-lg" style="margin-bottom:22px">
@@ -343,7 +343,10 @@ async function home(){
     <p class="muted">One flat therapist membership. Nothing here is tiered, and nothing from the
       member plans is mixed in.</p>
     <div class="grid g3">
-      ${benefit('#profile', 'A verified, searchable listing',
+      ${benefit('#members', 'Theraglee Match Mode',
+        'Reach out to members who asked to be contacted, instead of waiting to be found. They stay pseudonymous until they reply.',
+        state(liveListing, 'Ready', 'Needs a live listing'), 'star')}
+      ${benefit('#profile', 'A verified, searchable directory listing',
         'Specialties, insurances, languages, locations, fees and telehealth, found by zip and more.',
         state(verified, 'License verified', T.verification === 'rejected' ? 'Not verified' : 'Verification pending'))}
       ${benefit('#profile', 'A Theraglee phone number',
@@ -355,9 +358,6 @@ async function home(){
       ${benefit('#referrals', 'Referral stats',
         'Calls, messages, website clicks, shares and profile views, with the previous period alongside.',
         state(true, 'Included', ''))}
-      ${benefit('#members', 'Theraglee Match Mode',
-        'Reach out to members who asked to be contacted, instead of waiting to be found. They stay pseudonymous until they reply.',
-        state(liveListing, 'Ready', 'Needs a live listing'))}
       ${benefit('#library', 'Clinician library',
         `${libTotal || 'Dozens of'} worksheets and CBT, ACT, DBT, couples, kids and game exercises, printable with guidance.`,
         state(paid && verified, 'Open', 'Opens with membership'))}

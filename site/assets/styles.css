@@ -216,6 +216,18 @@ a.tile:hover{transform:translateY(-5px);box-shadow:var(--shadow-2);color:inherit
 .tile h3{margin:0;font-size:1.05rem}
 .tile .meta{font-size:.82rem;color:var(--faint)}
 .tile.locked{background:linear-gradient(180deg,var(--paper),var(--sand))}
+/* Theraglee Match Mode's tile on the therapist dashboard: the deep green of the
+   showcase's star card (.showcase-card.star), so it reads the same everywhere. */
+.tile.star{overflow:hidden;border-color:var(--green-deep);background:var(--green-deep);color:#fff;
+  box-shadow:0 0 0 3px rgba(141,198,29,.22),var(--shadow-2)}
+.tile.star::before{content:"";position:absolute;width:320px;height:320px;right:-120px;top:-160px;
+  border-radius:50%;pointer-events:none;
+  background:radial-gradient(closest-side,rgba(141,198,29,.55),rgba(141,198,29,0))}
+a.tile.star:hover{color:#fff;border-color:var(--lime);box-shadow:0 0 0 4px rgba(141,198,29,.35),var(--shadow-2)}
+.tile.star>*{position:relative}
+.tile.star h3{color:#fff;font-weight:600}
+.tile.star .meta{color:rgba(255,255,255,.82)}
+.tile.star .badge,.tile.star .badge.gray{background:rgba(255,255,255,.14);color:#E5F3C6;border-color:rgba(255,255,255,.3)}
 
 /* ---------- zones: the look of the dashboard's Today tab ----------
    A member page is built from zones: a soft green panel with a large
