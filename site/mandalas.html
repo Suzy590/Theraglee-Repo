@@ -411,7 +411,8 @@ async function shared(token) {
   }
   document.title = `${m.title} — a colored mandala on Theraglee`;
   root.innerHTML = `
-    <div class="no-print center">
+    <div class="no-print"><a class="faint" href="mandalas.html">← All mandalas</a></div>
+    <div class="no-print center" style="margin-top:12px">
       <span class="badge">Shared coloring</span>
       <h1 style="margin-top:14px">${esc(m.title)}</h1>
       <p class="muted" style="max-width:52ch;margin-left:auto;margin-right:auto">A member colored this on
