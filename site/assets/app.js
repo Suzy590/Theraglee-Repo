@@ -243,7 +243,7 @@ export async function openPortal(btn) {
   await goStripe('stripe-portal', {}, btn, 'Opening…', 'Billing portal unavailable.');
 }
 
-/** Therapist: Stripe Identity (government ID + selfie) before publishing. */
+/** Therapist: Stripe Identity (government ID + selfie) before a listing goes live. */
 export async function startIdentity(btn) {
   return goStripe('stripe-identity', { action: 'start' }, btn, 'Opening ID check…', 'Could not start the ID check.');
 }

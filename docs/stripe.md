@@ -12,7 +12,7 @@ anyone until the last step.
 |---|---|---|
 | **Billing + Payments** | The Basic, Premium and Therapist memberships. Stripe's hosted Checkout page takes the card, Stripe bills it every month or year, and the member manages or cancels from Stripe's hosted billing portal. | `stripe-checkout`, `stripe-portal`, `stripe-webhook` |
 | **Tax** | Works out and collects US sales tax on memberships, state by state, once you tell Stripe where you are registered. | `stripe-checkout` (`stripe_tax_enabled` switch) |
-| **Identity** | A therapist photographs their government ID and takes a selfie before their listing can publish, so the person holding the license is the person on the profile. Theraglee never sees the document. | `stripe-identity`, `stripe-webhook`, publish guard in Postgres |
+| **Identity** | A therapist photographs their government ID and takes a selfie before their listing can go live, so the person holding the license is the person on the profile. Theraglee never sees the document. | `stripe-identity`, `stripe-webhook`, the live-listing rule in Postgres |
 | **Radar** | Stripe's fraud screening on every card. Runs on its own; rules live in the Dashboard. Early warnings and disputes are written to `billing_alerts`. | `stripe-webhook` |
 | **Connect** | A client pays a verified therapist for a session from the therapist's profile. Theraglee keeps a percentage and Stripe pays the rest into the therapist's own bank account. | `stripe-connect`, `stripe-session-checkout`, `stripe-webhook` |
 
@@ -297,9 +297,9 @@ dispute.
 2. Once approved, therapists see **Verify my identity** on their Membership
    tab. The result is stored on their profile and shows in the admin queue.
 3. When you want the check to be mandatory: `/admin.html` → tick **Require the
-   Stripe Identity check before a listing publishes** → Save. From then on a
-   listing cannot go live without a passed check, and the therapist dashboard
-   says so.
+   Stripe Identity check before a listing goes live** → Save. From then on a
+   listing cannot go live without a passed check (listings already live without
+   one come down until it passes), and the therapist dashboard says so.
 
 ### 10. Stripe Connect (session payments)
 
@@ -372,7 +372,7 @@ All in `app_config`, all editable from `/admin.html`:
 |---|---|---|
 | `stripe_enabled` | Nobody but an admin can start a checkout. | Memberships and session payments can be bought. |
 | `stripe_tax_enabled` | No tax collected. | Checkout collects a billing address and adds tax. |
-| `identity_required` | ID check is optional. | A listing cannot publish without a passed ID check. |
+| `identity_required` | ID check is optional. | A listing cannot go live without a passed ID check. |
 | `connect_enabled` | No payouts setup, no "Pay for a session". | Therapists can onboard and take payments. |
 | `platform_fee_percent`, `platform_fee_min_cents` | | Theraglee's share of a session payment. |
 | `founding_enabled` | The founding-member rate is neither shown nor sold. | The offer shows on the therapist pages and checkout sells it, until `founding_deadline` passes or `founding_spots` are taken. |

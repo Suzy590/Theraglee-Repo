@@ -271,6 +271,8 @@ export interface EmailContext {
   licenseStatus: string | null;
   expiresOn: string | null;
   automatic: boolean;
+  /** true when the listing is in the directory now (verified and the membership is active). */
+  live: boolean;
 }
 
 export interface Email { subject: string; html: string; text: string }
@@ -310,13 +312,18 @@ export function composeEmail(kind: Outcome | "admin_review", c: EmailContext): E
       `<p>${esc(hi)}</p>` +
       `<p>Good news: your ${esc(licenseLine(c))} checks out as current and in good standing` +
       (c.expiresOn ? `, through ${esc(c.expiresOn)}` : "") + `. Your Theraglee therapist account is active.</p>` +
-      `<p>Your listing appears in the directory as soon as your membership is active and you press <strong>Publish</strong> on your dashboard. Nothing is public until you do.</p>` +
-      btn(dash, "Open my dashboard") +
+      (c.live
+        ? `<p><strong>Your listing is live in the directory now.</strong> There is nothing to press: people can find you, call your Theraglee number and message you from today.</p>`
+        : `<p>Your listing goes live on its own the moment your membership is active. There is nothing to publish.</p>`) +
+      btn(dash, c.live ? "Open my dashboard" : "Start my membership") +
       `<p style="color:#5A6760;font-size:14px;margin-top:22px">We re-check your license with the board before it expires, so there is nothing to send us.</p>`,
     );
     const text = `${hi}\n\nGood news: your ${licenseLine(c)} checks out as current and in good standing` +
       (c.expiresOn ? `, through ${c.expiresOn}` : "") + `. Your Theraglee therapist account is active.\n\n` +
-      `Your listing appears in the directory as soon as your membership is active and you press Publish on your dashboard: ${dash}\n\n` +
+      (c.live
+        ? `Your listing is live in the directory now. There is nothing to press: people can find you, call your Theraglee number and message you from today.`
+        : `Your listing goes live on its own the moment your membership is active. There is nothing to publish.`) +
+      `\n\nYour dashboard: ${dash}\n\n` +
       `We re-check your license with the board before it expires, so there is nothing to send us.`;
     return { subject, html, text };
   }
@@ -326,12 +333,12 @@ export function composeEmail(kind: Outcome | "admin_review", c: EmailContext): E
     const html = wrap(
       `<p>${esc(hi)}</p>` +
       `<p>Thanks for creating a Theraglee therapist profile. We are confirming your ${esc(licenseLine(c))} against the board's own record. This usually takes one to two business days, and we email you either way.</p>` +
-      `<p>Meanwhile you can finish your profile, and nothing is public until your license is confirmed and you choose to publish.</p>` +
+      `<p>Meanwhile you can finish your profile. Nothing is public until your license is confirmed, and the moment it is, your listing goes live on its own.</p>` +
       btn(dash, "Finish my profile"),
     );
     const text = `${hi}\n\nThanks for creating a Theraglee therapist profile. We are confirming your ${licenseLine(c)} against the board's own record. ` +
       `This usually takes one to two business days, and we email you either way.\n\nMeanwhile you can finish your profile: ${dash}\n` +
-      `Nothing is public until your license is confirmed and you choose to publish.`;
+      `Nothing is public until your license is confirmed, and the moment it is, your listing goes live on its own.`;
     return { subject, html, text };
   }
 
@@ -344,12 +351,12 @@ export function composeEmail(kind: Outcome | "admin_review", c: EmailContext): E
       (c.notes ? `<br><span style="color:#5A6760">${esc(c.notes)}</span>` : "") + `</p>` +
       (lookup ? btn(lookup, "Open the board lookup") : "") +
       `<p style="margin-top:14px">Then record the result in the <a href="${esc(adminUrl)}" style="color:#187C1A">admin license queue</a>. ` +
-      `The therapist is emailed automatically when you do.</p>`,
+      `The therapist is emailed automatically when you do, and a verified listing goes live on its own.</p>`,
     );
     const text = `A therapist profile needs a license check that could not be completed automatically.\n\n` +
       `${c.fullName}\n${licenseLine(c)}\n` + (c.notes ? `${c.notes}\n` : "") +
       (lookup ? `\nBoard lookup: ${lookup}\n` : "") +
-      `\nRecord the result in the admin license queue: ${adminUrl}\nThe therapist is emailed automatically when you do.`;
+      `\nRecord the result in the admin license queue: ${adminUrl}\nThe therapist is emailed automatically when you do, and a verified listing goes live on its own.`;
     return { subject, html, text };
   }
 

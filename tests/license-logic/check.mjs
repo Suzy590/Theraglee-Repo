@@ -185,6 +185,7 @@ const ctx = {
   firstName: "Ana", fullName: "Ana Rivera", state: "WA", licenseNumber: "MHC.LH.60001234", licenseType: "LMHC",
   boardName: "Washington State Department of Health", lookupUrl: "https://fortress.wa.gov/doh/providercredentialsearch/",
   site: "https://theraglee.com", notes: null, licenseStatus: "Active", expiresOn: "2027-03-15", automatic: true,
+  live: true,
 };
 
 test("emails: each outcome has a subject, HTML and plain text, with the dashboard link", () => {
@@ -196,10 +197,25 @@ test("emails: each outcome has a subject, HTML and plain text, with the dashboar
   }
 });
 
-test("emails: the verified email says the account is active", () => {
+test("emails: the verified email says the account is active and the listing is live", () => {
   const m = composeEmail("verified", ctx);
   assert.match(m.text, /account is active/);
   assert.match(m.text, /through 2027-03-15/);
+  assert.match(m.text, /listing is live in the directory now/);
+  assert.ok(!/press Publish/i.test(m.text));
+});
+
+test("emails: a verified license without a membership says the listing goes live on its own", () => {
+  const m = composeEmail("verified", { ...ctx, live: false });
+  assert.match(m.text, /goes live on its own the moment your membership is active/);
+  assert.match(m.html, /Start my membership/);
+});
+
+test("emails: nobody is told to publish anything", () => {
+  for (const kind of ["verified", "needs_review", "rejected", "expired", "admin_review"]) {
+    const m = composeEmail(kind, ctx);
+    assert.ok(!/choose to publish|press Publish/i.test(m.text), kind);
+  }
 });
 
 test("emails: a rejection names the board, the status and the next steps", () => {

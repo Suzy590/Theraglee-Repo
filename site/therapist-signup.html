@@ -44,9 +44,10 @@
       <h3 style="margin-bottom:10px">What happens next</h3>
       <ol class="muted" style="margin:0;padding-left:20px;font-size:.93rem;line-height:1.6">
         <li>Create your account (about a minute).</li>
+        <li id="next-step-2">Start your membership.</li>
         <li>Fill in your profile: license, specialties, insurances, fees, locations.</li>
-        <li>We verify your license with your state board.</li>
-        <li id="next-step-4">Start your membership and publish. Referrals are counted from day one.</li>
+        <li>We verify your license with your state board. The moment it clears, your listing
+          goes live on its own, and referrals are counted from day one.</li>
       </ol>
     </div>
     <p class="center muted" style="margin-top:22px">
@@ -90,8 +91,8 @@ if (qs('plan') === 'founding') {
       <div class="rate"><b>$${esc(offer.rate)}</b><small>/month, locked in for as long as your membership stays active</small></div>
       <p>For ${who}${by}. Create your account below, and the founding rate will be waiting on
         your practice dashboard, one click away. <a href="founding-members.html">How the offer works</a>.</p></div>`;
-    document.getElementById('next-step-4').textContent =
-      `Start your founding membership at $${offer.rate}/month and publish. Referrals are counted from day one.`;
+    document.getElementById('next-step-2').textContent =
+      `Start your founding membership at $${offer.rate}/month.`;
     document.getElementById('price-line').innerHTML =
       `Founding member rate: $${esc(offer.rate)}/month, locked in while your membership stays active` +
       (cfg.display_therapist_monthly ? ` (regular rate $${esc(cfg.display_therapist_monthly)}/month)` : '') +

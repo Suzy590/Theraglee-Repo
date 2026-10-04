@@ -45,11 +45,11 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 type Therapist = {
   id: string; user_id: string; first_name: string; last_name: string;
   license_number: string | null; license_states: string[] | null; license_type: string | null;
-  contact_email: string | null; verification: string;
+  contact_email: string | null; verification: string; published: boolean;
 };
 
 const THERAPIST_COLS =
-  "id, user_id, first_name, last_name, license_number, license_states, license_type, contact_email, verification";
+  "id, user_id, first_name, last_name, license_number, license_states, license_type, contact_email, verification, published";
 
 /* ---------------------------------------------------------------- auth -- */
 
@@ -184,7 +184,10 @@ async function check(t: Therapist) {
   const { data: recorded, error } = await admin.rpc("record_license_check", args);
   if (error) throw new Error(`record_license_check: ${error.message}`);
 
-  return { status, method, board: board?.board_name ?? null, lookup_url: args.p_source_url, recorded };
+  // A verified license puts the listing live on its own, as long as the
+  // membership is active; the database says whether it did.
+  const live = Boolean(recorded?.live);
+  return { status, method, live, board: board?.board_name ?? null, lookup_url: args.p_source_url, recorded };
 }
 
 /* -------------------------------------------------------------- notify -- */
@@ -225,7 +228,7 @@ async function notify(verificationId: string) {
     licenseType: v.license_type ?? t.license_type ?? null,
     boardName: v.board_name, lookupUrl: v.source_url, site: SITE,
     notes: v.notes, licenseStatus: v.license_status, expiresOn: v.expires_on,
-    automatic: v.method !== "manual",
+    automatic: v.method !== "manual", live: Boolean(t.published),
   };
 
   const { data: cfg } = await admin.from("app_config").select("value").eq("key", "admin_email").maybeSingle();
@@ -293,7 +296,9 @@ Deno.serve(async (req) => {
     return json({
       ok: true, ...r, automatic: r.method !== "manual",
       message: r.status === "verified"
-        ? "License verified against the board record. Your account is active."
+        ? (r.live
+          ? "License verified against the board record. Your listing is live in the directory."
+          : "License verified against the board record. Your listing goes live as soon as your membership is active.")
         : r.status === "rejected"
         ? "That license is not showing as current and in good standing. We have emailed you what to do next."
         : r.status === "expired"
