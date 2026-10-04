@@ -561,14 +561,24 @@ export async function mountGoals(host, ctx) {
     });
   }
 
+  /* Opened by tapping a camp on the map or a milestone pill under it. */
   function milestoneModal(q, ms, i, d) {
     const m = ms[i], state = m.reached_on ? 'reached' : i === d.ci ? 'current' : 'ahead';
     const stones = stonesOf(m);
-    const back = modal(`<span class="badge ${state === 'current' ? 'live' : state === 'reached' ? 'done' : 'gray'}">${state === 'current' ? 'Working on now' : state === 'reached' ? `Reached ${fmtDate(m.reached_on + 'T12:00')}` : 'Ahead'} · milestone ${i + 1} of ${ms.length}</span>
+    const before = ms[i - 1];
+    const badge = state === 'current' ? 'Working on now' : state === 'reached' ? 'Reached' : 'Coming up';
+    const intro = state === 'current'
+      ? `This is the milestone you are working on right now. The stepping stones on your main page come from here. When it feels true in your life, the page will ask, and you move on to the next camp.`
+      : state === 'reached'
+        ? `You reached this milestone on ${fmtDate(m.reached_on + 'T12:00')}. Nothing to do here; it stays on your trail as a place you have been.`
+        : `You tapped a camp further along your trail. Nothing happens yet: this milestone opens after you reach <strong>${esc(before?.title || 'the one before it')}</strong>${before && i - 1 === d.ci ? ', the one you are working on now' : ''}. When it opens, these will be your stepping stones:`;
+    const back = modal(`<span class="badge ${state === 'current' ? 'live' : state === 'reached' ? 'done' : 'gray'}">${badge} · milestone ${i + 1} of ${ms.length}</span>
       <h2 style="margin:12px 0 6px">${esc(m.title)}</h2>
-      <p class="muted">${state === 'ahead' ? 'Its stepping stones open when you reach the milestone before it. A peek:' : state === 'reached' ? 'The stepping stones that got you here:' : 'Its stepping stones:'}</p>
+      <p class="muted">${intro}</p>
+      ${state === 'reached' ? '<p class="faint" style="margin:-6px 0 6px">The stepping stones that got you here:</p>' : ''}
       <ul class="muted" style="padding-left:18px">${stones.map(s => `<li>${esc(s.text)}</li>`).join('') || '<li>None picked yet.</li>'}</ul>
-      <div class="row" style="justify-content:flex-end;margin-top:14px">${state !== 'reached' ? '<button class="btn ghost" id="edit">Change milestones</button>' : ''}<button class="btn" id="ok">Close</button></div>`);
+      ${state === 'ahead' ? '<p class="faint">Want this one sooner, or worded differently? You can reorder or rewrite your milestones any time.</p>' : ''}
+      <div class="row" style="justify-content:flex-end;margin-top:14px">${state !== 'reached' ? '<button class="btn ghost" id="edit">Change my milestones</button>' : ''}<button class="btn" id="ok">Close</button></div>`);
     back.querySelector('#ok').onclick = () => back.remove();
     back.querySelector('#edit')?.addEventListener('click', () => { back.remove(); editMilestones(q, ms); });
   }
