@@ -144,6 +144,7 @@
       <button data-tab="explore" role="tab">Explore Library</button>
       <button data-tab="discover" role="tab">Self-Discovery</button>
       <button data-tab="tools" role="tab">Tools</button>
+      <button data-tab="fun" role="tab">Fun</button>
       <button data-tab="messages" role="tab">Messages</button>
       <button data-tab="nearby" role="tab">Nearby help</button>
     </div>
@@ -306,6 +307,24 @@
           </div>
           <div class="showcase-slot"></div>
         </div>
+        <!-- Fun: the desktop pet, mental health trivia and mandalas, moved here
+             from the Tools tab so the lighter things have a place of their own. -->
+        <div class="tab-top" data-panel="fun">
+          <div class="card tab-intro">
+            <span class="badge">Fun</span>
+            <p class="hero-line">A little play goes a long way.</p>
+          </div>
+          <div class="tab-body">
+            <section class="zone" aria-labelledby="fun-zone-title">
+              <div class="zone-head">
+                <h2 id="fun-zone-title">Fun</h2>
+                <p class="muted">A companion for your screen, quizzes on how minds work, and mandalas to color.</p>
+              </div>
+              <div class="grid g4" id="fun-quick"></div>
+            </section>
+          </div>
+          <div class="showcase-slot"></div>
+        </div>
         <div class="tab-top" data-panel="messages">
           <div class="card tab-intro">
             <span class="badge">Messages</span>
@@ -385,7 +404,7 @@ document.getElementById('tierbadge').textContent = tierName(a.level) + ' members
    The dashboard opens on Today. The other tabs are reached by their buttons or
    by address (dashboard.html#progress), and the address follows the tab so a
    refresh or a shared link comes back to the same one. */
-const PANELS = ['today', 'journal', 'playlists', 'explore', 'discover', 'progress', 'tools', 'messages', 'nearby'];
+const PANELS = ['today', 'journal', 'playlists', 'explore', 'discover', 'progress', 'tools', 'fun', 'messages', 'nearby'];
 let tab = 'today';
 // A hash that names something inside a tab (dashboard.html#match-mode, #daily-quote)
 // opens that tab and scrolls to it. The feature showcase under the header links this way.
@@ -698,23 +717,29 @@ const quick = [
   ['Challenges', 'challenges.html', 1],
   ['Quizzes', 'explore.html?type=quiz', 2],
   ['Worksheets', 'explore.html?type=worksheet', 2],
-  ['Desktop pet', 'pet.html', 2, true],
-  ['Mental health trivia', 'trivia.html', 2, true],
   ['Music playlists', 'dashboard.html#playlists', 3, false, 'Pick a mood and a genre, get 40 songs'],
   ['Goals & tracking', 'goals.html', 3],
-  ['Mandalas', 'mandalas.html', 3],
   ['Find a therapist', 'therapists.html', 0, false, 'Search the Theraglee directory for therapists in your area'],
   ['Help near you', 'dashboard.html#nearby', 0, false, 'Clinics and crisis services on a map, plus national lines'],
+];
+/* The Fun tab: the same kind of tiles, for the lighter things. These used to sit
+   under Tools; they live only here now. */
+const fun = [
+  ['Desktop pet', 'pet.html', 2, true, 'Meet Pip, a small companion for the corner of your screen'],
+  ['Mental health trivia', 'trivia.html', 2, true, 'Quick quizzes on how minds work'],
+  ['Mandalas', 'mandalas.html', 3, false, 'Print one for your pencils, or color it on the screen'],
 ];
 /* A tile flagged `ownGate` opens its page even when locked, because that page makes its
    own upgrade ask. Every other locked tile goes straight to the plans.
    The last slot is an optional line under the title; tiles without one just say `Open`. */
-document.getElementById('quick').innerHTML = quick.map(([label, href, need, ownGate, note]) => {
+const tiles = (list) => list.map(([label, href, need, ownGate, note]) => {
   const locked = a.level < need;
   return `<a class="tile ${locked?'locked':''}" href="${locked && !ownGate ? 'pricing.html' : href}">
     <h3 style="font-size:.98rem">${esc(label)}</h3>
     ${locked ? `<span class="badge lock">${tierName(need)}</span>` : `<span class="meta">${esc(note || 'Open')}</span>`}</a>`;
 }).join('');
+document.getElementById('quick').innerHTML = tiles(quick);
+document.getElementById('fun-quick').innerHTML = tiles(fun);
 
 /* ---- upsell: the same three tiers as the landing page (assets/plans.js) ---- */
 if (a.level < 3) {

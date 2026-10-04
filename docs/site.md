@@ -57,7 +57,8 @@ Library** (the whole library with search and filters, the same browser as
 free discovery tools with search and topic chips, the same browser as
 `discover.html`, drawn from `site/assets/discover-ui.js`), **Progress**
 (the week's counts, challenges in progress, favorites, saved for later and
-unfinished items), **Tools** (quick links into the library), **Messages**
+unfinished items), **Tools** (quick links into the library), **Fun** (the
+desktop pet, mental health trivia and mandalas), **Messages**
 (messages from therapists who reached out through Match Mode, with the
 member's replies and blocks, drawn from `site/assets/inbox.js`, the same inbox
 as the account page's Inbox tab) and **Nearby help** (a map of clinics,
