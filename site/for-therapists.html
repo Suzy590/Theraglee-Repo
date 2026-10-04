@@ -659,7 +659,7 @@ if (!a.authenticated) {
 } else if (!a.therapist) {
   box.innerHTML = `<h2>Let's build your profile</h2>
     <p class="muted">Everything can be edited later, and nothing is public until your license
-      is verified and you choose to publish.</p>
+      is verified and your membership is active.</p>
     <a class="btn lg" href="therapist-dashboard.html#profile">Start my profile</a>`;
 } else {
   const st = a.therapist.verification;
@@ -669,7 +669,7 @@ if (!a.authenticated) {
     <h2 style="margin-top:12px">Your listing</h2>
     <p class="muted">${st==='verified'
       ? (a.therapist.published ? 'Your profile is live in the directory.'
-                               : 'Verified — publish it whenever you are ready.')
+                               : 'Verified — not live yet. Your dashboard shows what is next.')
       : st==='rejected' ? 'We could not confirm that license as current and in good standing.'
       : 'We are checking your license with the state board.'}</p>
     <a class="btn lg" href="therapist-dashboard.html">Open my dashboard</a>`;

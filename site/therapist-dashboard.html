@@ -210,7 +210,8 @@ async function home(){
   const idOk = T.identity_status === 'verified';
   const needsId = cfg.identity_required === 'true' && !idOk;
 
-  // The one thing to do next, in order: license, membership, identity, publish.
+  // The one thing to do next, in order: license, membership, identity. The
+  // database publishes the listing itself when the last of those is in place.
   const nextStep = liveListing
     ? { text: 'Your profile is live in the directory.', cta: T.slug
         ? `<a class="btn sm ghost" href="therapist.html?slug=${esc(T.slug)}">View my public profile</a>` : '' }
@@ -221,12 +222,12 @@ async function home(){
     ? { text: 'We are checking your license with the state board. You will get an email either way.',
         cta: '<a class="btn sm ghost" href="#membership">See the check</a>' }
     : !paid
-    ? { text: 'Your license is verified. Start your membership to publish the listing and open the library.',
+    ? { text: 'Your license is verified. Start your membership to put the listing live and open the library.',
         cta: '<a class="btn sm" href="#membership">Start membership</a>' }
     : needsId
-    ? { text: 'One more step before publishing: a quick identity check through Stripe.',
+    ? { text: 'One more step before your listing goes live: a quick identity check through Stripe.',
         cta: '<a class="btn sm" href="#membership">Verify my identity</a>' }
-    : { text: 'Everything is in place. Publish whenever you are ready.',
+    : { text: 'Your listing is unpublished. Publish it again whenever you are ready.',
         cta: '<a class="btn sm" href="#profile">Publish from My profile</a>' };
 
   const tile = (n, label) => `<div class="stat"><div class="n">${n ?? 0}</div><div class="l">${label}</div></div>`;
@@ -311,7 +312,7 @@ async function home(){
         state(paid && verified, 'Open', 'Opens with membership'))}
       ${benefit('#membership', 'Identity check',
         'A government ID and a selfie through Stripe Identity, so the person on the profile holds the license.',
-        state(idOk, 'Verified', cfg.identity_required === 'true' ? 'Required to publish' : 'Optional'))}
+        state(idOk, 'Verified', cfg.identity_required === 'true' ? 'Required to go live' : 'Optional'))}
       ${cfg.connect_enabled === 'true' ? benefit('#membership', 'Get paid through Theraglee',
         'Clients can pay for a session from your profile. Stripe pays out to your own bank account.',
         state(T.stripe_account_status === 'enabled', 'Ready for payouts', 'Set up in Membership')) : ''}
@@ -376,7 +377,7 @@ async function referrals(){
     ${!liveListing ? `<div class="notice warn" style="margin-top:22px">
       Your profile is not live yet, so there is nothing to count.
       ${T.verification!=='verified' ? 'We are verifying your license.'
-        : !paid ? 'Start your membership to publish it.' : 'Publish it from My profile.'}
+        : !paid ? 'Start your membership and it goes live.' : 'Publish it again from My profile.'}
     </div>` : `<div class="notice" style="margin-top:22px">
       <strong>Phone calls</strong> counts people who tapped your Theraglee number.
       ${c.verified_calls ? `${c.verified_calls} connected calls were confirmed by the phone network.`
@@ -763,7 +764,7 @@ function profile(){
         We could not confirm that license as current and in good standing. Check the number,
         state and license type, then save to resubmit.</div>` : ''}
       ${!t.id ? `<div class="notice" style="margin-bottom:20px">Nothing is public until your
-        license is verified and you publish.</div>` : ''}
+        license is verified and your membership is active. Then your listing goes live on its own.</div>` : ''}
 
       <h2>Who you are</h2>
       <div class="grid g2">

@@ -299,7 +299,7 @@ dispute.
 3. When you want the check to be mandatory: `/admin.html` → tick **Require the
    Stripe Identity check before a listing publishes** → Save. From then on a
    listing cannot go live without a passed check, and the therapist dashboard
-   says so.
+   says so. A listing waiting only on the check goes live the moment it passes.
 
 ### 10. Stripe Connect (session payments)
 

@@ -310,13 +310,13 @@ export function composeEmail(kind: Outcome | "admin_review", c: EmailContext): E
       `<p>${esc(hi)}</p>` +
       `<p>Good news: your ${esc(licenseLine(c))} checks out as current and in good standing` +
       (c.expiresOn ? `, through ${esc(c.expiresOn)}` : "") + `. Your Theraglee therapist account is active.</p>` +
-      `<p>Your listing appears in the directory as soon as your membership is active and you press <strong>Publish</strong> on your dashboard. Nothing is public until you do.</p>` +
+      `<p>Your listing goes live in the directory as soon as your membership is active, with nothing more to press. If your membership is active already, you are live now.</p>` +
       btn(dash, "Open my dashboard") +
       `<p style="color:#5A6760;font-size:14px;margin-top:22px">We re-check your license with the board before it expires, so there is nothing to send us.</p>`,
     );
     const text = `${hi}\n\nGood news: your ${licenseLine(c)} checks out as current and in good standing` +
       (c.expiresOn ? `, through ${c.expiresOn}` : "") + `. Your Theraglee therapist account is active.\n\n` +
-      `Your listing appears in the directory as soon as your membership is active and you press Publish on your dashboard: ${dash}\n\n` +
+      `Your listing goes live in the directory as soon as your membership is active, with nothing more to press. If your membership is active already, you are live now: ${dash}\n\n` +
       `We re-check your license with the board before it expires, so there is nothing to send us.`;
     return { subject, html, text };
   }
@@ -326,12 +326,12 @@ export function composeEmail(kind: Outcome | "admin_review", c: EmailContext): E
     const html = wrap(
       `<p>${esc(hi)}</p>` +
       `<p>Thanks for creating a Theraglee therapist profile. We are confirming your ${esc(licenseLine(c))} against the board's own record. This usually takes one to two business days, and we email you either way.</p>` +
-      `<p>Meanwhile you can finish your profile, and nothing is public until your license is confirmed and you choose to publish.</p>` +
+      `<p>Meanwhile you can finish your profile, and nothing is public until your license is confirmed and your membership is active.</p>` +
       btn(dash, "Finish my profile"),
     );
     const text = `${hi}\n\nThanks for creating a Theraglee therapist profile. We are confirming your ${licenseLine(c)} against the board's own record. ` +
       `This usually takes one to two business days, and we email you either way.\n\nMeanwhile you can finish your profile: ${dash}\n` +
-      `Nothing is public until your license is confirmed and you choose to publish.`;
+      `Nothing is public until your license is confirmed and your membership is active.`;
     return { subject, html, text };
   }
 

@@ -138,6 +138,12 @@ every benefit below with its current state. It includes:
 - the names and topics of members who opted in to being contacted (any registered member can)
 - a clinician library of 375 resources (worksheets, CBT, ACT, DBT, couples, kids, games), with five more of every kind and five on each of eighteen topics added every day, all adjuncts to the therapist's own judgment rather than protocols — see [`therapist-resources.md`](therapist-resources.md)
 
+The listing goes live on its own the moment the last gate opens: the license is
+verified, the membership is active, and the Stripe Identity check has passed
+where the admin requires it
+(`supabase/migrations/20261004120000_auto_publish_verified_listings.sql`).
+There is nothing to press; the **Publish** button on My profile is only for
+putting a listing back after unpublishing it.
 If either the license or the membership lapses, the listing comes down on its own
 and the library and member list close, while the therapist keeps their own inbox
 and their referral history.
@@ -171,9 +177,11 @@ Cloudflare bot check, for instance). So verification runs like this:
    audit row to `license_verifications`, moves the profile's `verification`
    (*verified* activates the account; *rejected* and *expired* deny it), sets
    the expiry and the re-check date, and unpublishes anything not verified.
+   A newly verified profile with an active membership (and a passed identity
+   check, where required) is published by the same update.
 4. **Everyone is emailed.** A trigger on `license_verifications` calls the
    function again, which emails the therapist the outcome: verified (the
-   account is active; publish when the membership is active), on hold with
+   account is active and the listing goes live as soon as the membership is), on hold with
    the reason and what to do next (check the board record, renew, correct the
    profile to match, or reply), or "we are checking". When a person has to
    look, the administrator (`app_config.admin_email`) gets the board lookup
