@@ -121,7 +121,7 @@ if (a.profile.role !== 'therapist' && a.profile.role !== 'admin') {
 } else {
 
 let T = a.therapist || null;
-let tab = location.hash.replace('#','') || (T ? 'home' : 'profile');
+let tab = location.hash.replace('#','') || (T ? 'membership' : 'profile');
 
 // Arrived from the founding-member sign-up: open the Membership tab with the
 // founding option pointed out. The sign-up page passes ?plan=founding, and
@@ -234,7 +234,6 @@ if (payFirst) tab = 'membership';
 
 /* ------------------------------------------------------------ shell */
 const TABS = [
-  ['home','Home'],
   ['referrals','Stats'], ['messages','Messages'], ['members','Member requests'],
   ['library','Resource library'], ['profile','My profile'], ['membership','Membership'],
 ];
@@ -275,58 +274,6 @@ function needsListing(){
       moment it clears.</p>
     <button class="btn lg" id="go">Complete my profile</button></div>`);
   document.getElementById('go').onclick = () => { tab='profile'; route(); };
-}
-
-/* ------------------------------------------------------------- home */
-// The therapist's own front page: everything the membership includes. The
-// listing card, the 30-day referral tiles and the Messages and Member requests
-// cards were removed on 2026-10-05; the Stats, Messages and Member requests
-// tabs carry those.
-async function home(){
-  if (!T) return needsListing();
-  render('<div class="skeleton" style="height:200px"></div>');
-  const [{ data: cat }, { data: cfgRows }] = await Promise.all([
-    sb.from('therapist_resource_catalog').select('*'),
-    sb.from('app_config').select('key,value').in('key', ['connect_enabled']),
-  ]);
-  const cfg = Object.fromEntries((cfgRows||[]).map(r=>[r.key,r.value]));
-  const libTotal = (cat||[]).reduce((s,r)=>s+r.total, 0);
-  const verified = T.verification === 'verified';
-
-  const state = (ok, yes, no) => ok ? `<span class="badge">${yes}</span>` : `<span class="badge gray">${no}</span>`;
-  const benefit = (href, title, blurb, badge, cls = '') => `
-    <a class="tile${cls ? ' ' + cls : ''}" href="${href}">
-      <div class="row" style="justify-content:space-between;align-items:flex-start">
-        <h3>${title}</h3>${badge}</div>
-      <p class="meta"${cls ? '' : ' style="color:var(--muted)"'}>${blurb}</p></a>`;
-
-  render(`
-    <h2 style="margin-top:0">What your membership includes</h2>
-    <p class="muted">One flat therapist membership. Nothing here is tiered, and nothing from the
-      member plans is mixed in.</p>
-    <div class="grid g3">
-      ${benefit('#members', 'Theraglee Match Mode',
-        'Reach out to members who asked to be contacted, instead of waiting to be found. They stay pseudonymous until they reply.',
-        state(liveListing, 'Ready', 'Needs a live listing'), 'star')}
-      ${benefit('#profile', 'A verified, searchable directory listing',
-        'Specialties, insurances, languages, locations, fees and telehealth, found by zip and more.',
-        state(verified, 'License verified', T.verification === 'rejected' ? 'Not verified' : 'Verification pending'))}
-      ${benefit('#profile', 'A Theraglee phone number',
-        'Callers reach you through a tracking number, so your own line stays private and every call is counted.',
-        state(!!T.tracking_phone, 'Assigned', 'Assigned when you go live'))}
-      ${benefit('#messages', 'Messages without your address',
-        'People write to you through Theraglee. You reply from your own inbox; they never see it.',
-        state(true, 'Included', ''))}
-      ${benefit('#referrals', 'Referral stats',
-        'Match Mode matches, calls, messages, website clicks, shares and profile views, with the previous period alongside.',
-        state(true, 'Included', ''))}
-      ${benefit('#library', 'Clinician library',
-        `${libTotal || 'Dozens of'} worksheets and CBT, ACT, DBT, couples, kids and game exercises, printable with guidance.`,
-        state(paid && verified, 'Open', 'Opens with membership'))}
-      ${cfg.connect_enabled === 'true' ? benefit('#membership', 'Get paid through Theraglee',
-        'Clients can pay for a session from your profile. Stripe pays out to your own bank account.',
-        state(T.stripe_account_status === 'enabled', 'Ready for payouts', 'Set up in Membership')) : ''}
-    </div>`);
 }
 
 /* -------------------------------------------------------- referrals */
@@ -1208,7 +1155,7 @@ async function save(e){
   // check in the database; the result arrives by email, and a verified
   // listing goes live on its own.
   toast(isNew ? 'Saved. We are checking your license with the state board. Your listing goes live the moment it clears, and we will email you either way.' : 'Saved.', 'ok');
-  if (isNew) { tab = 'home'; history.replaceState({}, '', '#home'); }
+  if (isNew) { tab = 'membership'; history.replaceState({}, '', '#membership'); }
   route();
 }
 
@@ -1235,10 +1182,11 @@ async function runVerification(e){
 /* ------------------------------------------------------- membership */
 async function membership(){
   render('<div class="skeleton" style="height:140px"></div>');
-  const [{ data: checks }, { data: cfgRows }] = await Promise.all([
+  const [{ data: checks }, { data: cat }, { data: cfgRows }] = await Promise.all([
     T ? sb.from('license_verifications').select('*')
           .eq('therapist_id', T.id).order('checked_at', { ascending:false }).limit(5)
       : Promise.resolve({ data: [] }),
+    sb.from('therapist_resource_catalog').select('*'),
     sb.from('app_config').select('key,value')
       .in('key', ['identity_required','connect_enabled','platform_fee_percent',
                   'display_therapist_monthly','display_therapist_yearly','founding_enabled',
@@ -1260,6 +1208,17 @@ async function membership(){
                       enabled:'Ready for payouts', restricted:'Needs attention' }[acct] || acct;
   const connectOn = cfg.connect_enabled === 'true';
   const feeDollars = T?.session_fee_cents ? String(Math.round(T.session_fee_cents / 100)) : '';
+
+  // "What your membership includes": one tile per benefit, each marked with
+  // where this account stands on it.
+  const verified = T?.verification === 'verified';
+  const libTotal = (cat||[]).reduce((s,r)=>s+r.total, 0);
+  const state = (ok, yes, no) => ok ? `<span class="badge">${yes}</span>` : `<span class="badge gray">${no}</span>`;
+  const benefit = (href, title, blurb, badge, cls = '') => `
+    <a class="tile${cls ? ' ' + cls : ''}" href="${href}">
+      <div class="row" style="justify-content:space-between;align-items:flex-start">
+        <h3>${title}</h3>${badge}</div>
+      <p class="meta"${cls ? '' : ' style="color:var(--muted)"'}>${blurb}</p></a>`;
 
   // One-time pointer for an account that chose the founding rate at sign-up.
   const foundingHello = wantFounding && !paid
@@ -1305,9 +1264,36 @@ async function membership(){
       ${paid ? '' : `<p class="faint" style="margin:14px 0 0">One flat membership for licensed
         professionals, separate from the member plans. Your listing goes live once your license
         is verified, and it opens the clinician library and Theraglee Match Mode. Cancel any time.
-        <a href="for-therapists.html#membership">Everything it includes</a>.</p>`}
+        Everything it includes is listed below.</p>`}
     </div>
     ${paysStripe ? discountCodeBox() : ''}
+
+    <h2 style="margin-top:34px">What your membership includes</h2>
+    <p class="muted">One flat therapist membership. Nothing here is tiered, and nothing from the
+      member plans is mixed in.</p>
+    <div class="grid g3">
+      ${benefit('#members', 'Theraglee Match Mode',
+        'Reach out to members who asked to be contacted, instead of waiting to be found. They stay pseudonymous until they reply.',
+        state(liveListing, 'Ready', 'Needs a live listing'), 'star')}
+      ${benefit('#profile', 'A verified, searchable directory listing',
+        'Specialties, insurances, languages, locations, fees and telehealth, found by zip and more.',
+        state(verified, 'License verified', T?.verification === 'rejected' ? 'Not verified' : 'Verification pending'))}
+      ${benefit('#profile', 'A Theraglee phone number',
+        'Callers reach you through a tracking number, so your own line stays private and every call is counted.',
+        state(!!T?.tracking_phone, 'Assigned', 'Assigned when you go live'))}
+      ${benefit('#messages', 'Messages without your address',
+        'People write to you through Theraglee. You reply from your own inbox; they never see it.',
+        state(true, 'Included', ''))}
+      ${benefit('#referrals', 'Referral stats',
+        'Match Mode matches, calls, messages, website clicks, shares and profile views, with the previous period alongside.',
+        state(true, 'Included', ''))}
+      ${benefit('#library', 'Clinician library',
+        `${libTotal || 'Dozens of'} worksheets and CBT, ACT, DBT, couples, kids and game exercises, printable with guidance.`,
+        state(paid && verified, 'Open', 'Opens with membership'))}
+      ${connectOn ? benefit('#membership', 'Get paid through Theraglee',
+        'Clients can pay for a session from your profile. Stripe pays out to your own bank account.',
+        state(acct === 'enabled', 'Ready for payouts', 'Set up below')) : ''}
+    </div>
 
     ${T ? `
     <h3 style="margin-top:32px">Identity check</h3>
@@ -1412,12 +1398,15 @@ async function membership(){
 
 /* ------------------------------------------------------------ route */
 function route(){
-  // The Mood tab was removed on 2026-09-29; an old #mood link opens Home.
-  if (tab === 'mood') tab = 'home';
+  // The Mood tab was removed on 2026-09-29 and the Home tab on 2026-10-05
+  // (its listing card, referral tiles and Messages and Member requests cards
+  // are on the Membership, Stats, Messages and Member requests tabs); an old
+  // #mood or #home link opens Membership.
+  if (tab === 'mood' || tab === 'home') tab = 'membership';
   if (payFirst) tab = 'membership';
-  ({ home, referrals, messages, members, library, profile, membership }[tab] || home)();
+  ({ referrals, messages, members, library, profile, membership }[tab] || membership)();
 }
-// The header links and the buttons on the Home tab point at #tabs of this page.
+// The header links and the buttons on the tabs point at #tabs of this page.
 addEventListener('hashchange', () => {
   const h = location.hash.replace('#','');
   if (h && h !== tab) { tab = h; route(); }

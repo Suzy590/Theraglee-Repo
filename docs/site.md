@@ -136,10 +136,10 @@ facts (license verified, membership active, and the identity check when
 `identity_required` is on) and kept in step by triggers on `therapist_profiles`,
 `profiles.subscription_status` and `app_config`
 (`supabase/migrations/20261004120000_listing_live_on_verification.sql`). The
-practice dashboard opens on a **Home** tab: every membership benefit with its
-current state (the listing card, the thirty-day referral tiles and the Messages
-and Member requests cards were removed on 2026-10-05; the **Stats**, **Messages**
-and **Member requests** tabs carry those). Whichever tab the page opens on, the
+practice dashboard opens on the **Membership** tab. (The **Home** tab was removed
+on 2026-10-05: its listing card, thirty-day referral tiles and Messages and
+Member requests cards are on the Membership, Stats, Messages and Member requests
+tabs, and an old `#home` link opens Membership.) Whichever tab the page opens on, the
 **Messages** tab carries a green pill with the number of conversations from the
 profile's contact form with something unread in them (`therapist_messages.read_at`
 empty, or a member's write-back in `therapist_message_replies` with `read_at`
