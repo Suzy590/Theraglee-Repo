@@ -121,7 +121,7 @@ if (a.profile.role !== 'therapist' && a.profile.role !== 'admin') {
 } else {
 
 let T = a.therapist || null;
-let tab = location.hash.replace('#','') || (T ? 'membership' : 'profile');
+let tab = location.hash.replace('#','') || (T ? 'home' : 'profile');
 
 // Arrived from the founding-member sign-up: open the Membership tab with the
 // founding option pointed out. The sign-up page passes ?plan=founding, and
@@ -133,11 +133,12 @@ try {
   localStorage.removeItem('theraglee_plan');
 } catch {}
 if (wantFounding) { tab = 'membership'; history.replaceState({}, '', 'therapist-dashboard.html#membership'); }
-// Unread counts for the pills on the Messages and Member requests tabs:
+// Unread counts for the pills on the Messages and Home tabs:
 // messages from the profile's contact form (therapist_messages.read_at empty)
 // plus the member's later turns in those conversations
 // (therapist_message_replies with sender 'member' and read_at empty), and
-// replies from Match Mode members (outreach_replies.read_at empty). Counted as
+// replies from Match Mode members (outreach_replies.read_at empty), which the
+// Home tab lists. Counted as
 // soon as the page opens, whichever tab it opens on, and again by the tabs
 // that load the rows themselves; "Mark as read" on a message or a thread
 // takes them down.
@@ -173,7 +174,7 @@ function tabButton(k, l, n, on){
   return `<button data-tab="${k}" class="${on?'on':''}"${n ? ` aria-label="${l}, ${n} unread"` : ''}>${l}${
     n ? `<span class="dot" aria-hidden="true">${n}</span>` : ''}</button>`;
 }
-function tabCount(k){ return k==='messages' ? unread : k==='members' ? unreadReplies : 0; }
+function tabCount(k){ return k==='messages' ? unread : k==='home' ? unreadReplies : 0; }
 // Redraws the pills on the tab bar already on the page, without redrawing the tab.
 function paintDots(){
   root.querySelectorAll('.tabs button').forEach(b => {
@@ -234,7 +235,7 @@ if (payFirst) tab = 'membership';
 
 /* ------------------------------------------------------------ shell */
 const TABS = [
-  ['referrals','Stats'], ['messages','Messages'], ['members','Member requests'],
+  ['home','Home'], ['referrals','Stats'], ['messages','Messages'],
   ['library','Resource library'], ['profile','My profile'], ['membership','Membership'],
 ];
 
@@ -327,7 +328,7 @@ async function referrals(){
           you joined.</strong> Each member who switched on Match Mode and appeared on your dashboard
           is counted once, on the first day they showed up, so a member who waits a few days for
           your reply is still one match.</p>
-        <a class="btn sm" style="margin-top:14px" href="#members">See who is waiting</a>
+        <a class="btn sm" style="margin-top:14px" href="#home">See who is waiting</a>
       </div>
     </section>
 
@@ -484,9 +485,13 @@ async function messages(){
   }));
 }
 
-/* ---------------------------------------------------------- members */
+/* ------------------------------------------------------------- home */
+// The dashboard's front page: the Match Mode members waiting to hear from a
+// therapist, and the conversations with the ones who replied. This was the
+// Member requests tab until 2026-10-05, when it became Home; an old #members
+// link opens it.
 let insOnly = false;   // "Only members with an insurance plan I accept"
-async function members(){
+async function home(){
   if (!T) return needsListing();
   render('<div class="skeleton" style="height:160px"></div>');
   await noteMatches();
@@ -626,7 +631,7 @@ async function members(){
       // The database refuses a message to a member who blocked this therapist.
       if (error?.code === '42501') return toast('This member has ended the conversation.','err');
       if (error) return toast(error.message,'err');
-      back.remove(); toast('Message sent.','ok'); members();
+      back.remove(); toast('Message sent.','ok'); home();
     };
   };
 
@@ -637,11 +642,11 @@ async function members(){
   document.querySelectorAll('[data-followup]').forEach(b => b.onclick = () => send(b.dataset.followup,
     `A reply to ${esc(b.dataset.name)}. It lands in their Theraglee inbox.`,
     'Thanks for writing back — here is how to book a first session…'));
-  document.getElementById('ins-only')?.addEventListener('change', (e) => { insOnly = e.target.checked; members(); });
+  document.getElementById('ins-only')?.addEventListener('change', (e) => { insOnly = e.target.checked; home(); });
   document.querySelectorAll('[data-readall]').forEach(b => b.onclick = async () => {
     await sb.from('outreach_replies').update({ read_at: new Date().toISOString() })
       .eq('therapist_id', T.id).eq('member_id', b.dataset.readall).is('read_at', null);
-    members();
+    home();
   });
 }
 
@@ -1273,7 +1278,7 @@ async function membership(){
     <p class="muted">One flat therapist membership. Nothing here is tiered, and nothing from the
       member plans is mixed in.</p>
     <div class="grid g3">
-      ${benefit('#members', 'Theraglee Match Mode',
+      ${benefit('#home', 'Theraglee Match Mode',
         'Reach out to members who asked to be contacted, instead of waiting to be found. They stay pseudonymous until they reply.',
         state(liveListing, 'Ready', 'Needs a live listing'), 'star')}
       ${benefit('#profile', 'A verified, searchable directory listing',
@@ -1399,13 +1404,12 @@ async function membership(){
 
 /* ------------------------------------------------------------ route */
 function route(){
-  // The Mood tab was removed on 2026-09-29 and the Home tab on 2026-10-05
-  // (its listing card, referral tiles and Messages and Member requests cards
-  // are on the Membership, Stats, Messages and Member requests tabs); an old
-  // #mood or #home link opens Membership.
-  if (tab === 'mood' || tab === 'home') tab = 'membership';
+  // The Mood tab was removed on 2026-09-29; an old #mood link opens Membership.
+  // The Member requests tab became Home on 2026-10-05; an old #members link opens it.
+  if (tab === 'mood') tab = 'membership';
+  if (tab === 'members') tab = 'home';
   if (payFirst) tab = 'membership';
-  ({ referrals, messages, members, library, profile, membership }[tab] || membership)();
+  ({ home, referrals, messages, library, profile, membership }[tab] || home)();
 }
 // The header links and the buttons on the tabs point at #tabs of this page.
 addEventListener('hashchange', () => {
@@ -1413,7 +1417,7 @@ addEventListener('hashchange', () => {
   if (h && h !== tab) { tab = h; route(); }
 });
 route();
-// The pills on the Messages and Member requests tabs, whichever tab opened first.
+// The pills on the Messages and Home tabs, whichever tab opened first.
 countUnread();
 }
 }
