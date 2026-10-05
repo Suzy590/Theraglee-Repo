@@ -59,9 +59,10 @@ Library** (the whole library with search and filters, the same browser as
 free discovery tools with search and topic chips, the same browser as
 `discover.html`, drawn from `site/assets/discover-ui.js`), **Tools** (quick links into the library), **Fun** (the
 desktop pet, mental health trivia and mandalas), **Messages**
-(messages from therapists who reached out through Match Mode, with the
-member's replies and blocks, drawn from `site/assets/inbox.js`, the same inbox
-as the account page's Inbox tab) and **Nearby help** (a map of clinics,
+(every conversation with a therapist: replies from therapists the member wrote
+to from a profile, and messages from therapists who reached out through Match
+Mode, with the member's replies and blocks, drawn from `site/assets/inbox.js`,
+the same inbox as the account page's Inbox tab) and **Nearby help** (a map of clinics,
 treatment centers and crisis services near a zip code or town, plus the
 national lines, drawn from `site/assets/nearby-ui.js`; see
 [`nearby-help.md`](nearby-help.md)). Each tab has an address, for
@@ -138,15 +139,19 @@ facts (license verified, membership active, and the identity check when
 practice dashboard opens on a **Home** tab: where the listing stands and the one thing to do next, the
 last thirty days of referrals, unread messages and waiting member requests, and
 every benefit below with its current state. Whichever tab the page opens on, the
-**Messages** tab carries a green pill with the number of contact-form messages
-not yet marked read (`therapist_messages.read_at` empty) and **Member requests**
-one with the number of unread member replies (`outreach_replies.read_at` empty),
-the same pill the member dashboard puts on its Messages tab; each unread message
-is labeled **New**, and **Mark as read** takes the count down. It includes:
+**Messages** tab carries a green pill with the number of conversations from the
+profile's contact form with something unread in them (`therapist_messages.read_at`
+empty, or a member's write-back in `therapist_message_replies` with `read_at`
+empty) and **Member requests** one with the number of unread Match Mode replies
+(`outreach_replies.read_at` empty), the same pill the member dashboard puts on
+its Messages tab; each unread conversation is labeled **New**, and **Mark as
+read** (or answering it) takes the count down. It includes:
 
 - a verified, searchable listing
 - a Theraglee tracking phone number, so the therapist's own line stays private
-- a contact form that routes messages without exposing their email address
+- a contact form whose messages land in the therapist's Theraglee inbox, answered
+  from there into the member's Theraglee inbox, so no email address is exposed in
+  either direction (see **Messages from a profile** below)
 - referral reporting: calls, messages, website clicks, shares and profile views,
   and the Match Mode members who appeared on the dashboard. The Referrals tab
   sets that last figure apart in green. Each member is counted once, on the
@@ -536,7 +541,7 @@ is in `docs/match-mode-consent.md`.
 | What a therapist can read | the `member_discovery` view: `age_range`, `delivery`, `issues`, `area`, `already_contacted`, `has_replied`, `pseudonym`, `insurance`, `gender`. No name, exact age or zip column, and members who blocked the viewing therapist are left out. |
 | Blocking a therapist | `member_blocks`, written from the member's Inbox on the account page. `member_blocked()` keeps a blocked therapist out of the view and out of `therapist_outreach`, even after a reply. |
 | A therapist's message | `therapist_outreach` (unchanged) |
-| Unread messages | `therapist_outreach.read_at` is empty until the member opens the inbox, which stamps it. Until then the dashboard's Messages tab and the account page's Inbox tab show a count (`unreadCount()` in `site/assets/inbox.js`), and the inbox labels each such message **New**. The members' RLS policy "member updates own inbox" lets them set it. |
+| Unread messages | `therapist_outreach.read_at` is empty until the member opens the inbox, which stamps it. Until then the dashboard's Messages tab and the account page's Inbox tab show a count (`unreadCount()` in `site/assets/inbox.js`, which adds a therapist's unread answers from `therapist_message_replies`), and the inbox labels each such message **New**. The members' RLS policy "member updates own inbox" lets them set it. |
 | A member's reply | `outreach_replies`. `member_name` is required by a check constraint: the real name travels only here, and only to that therapist. |
 | A follow-up from the therapist | Another `therapist_outreach` row. `member_replied_to()` lets the insert through even if the member has since switched Match Mode off. |
 | The email to the therapist | Trigger `outreach_reply_alert` posts to the `match-reply-alert` Edge Function through pg_net with `app_secrets.match_hook_key`; the function emails the therapist's contact address (else their sign-in email) through Resend and records `notified_at` / `notify_error` on the reply. Needs the same `RESEND_API_KEY` secret as the digest. |
@@ -544,6 +549,27 @@ is in `docs/match-mode-consent.md`.
 
 `profiles.full_name` is now just what the dashboard greets the member by; the
 sign-up form asks for "what should we call you" and marks it optional.
+
+### Messages from a profile
+
+**Send a message** on a therapist's public profile (`therapist.html`) is the
+other way a member and a therapist talk, and it stays inside Theraglee from end
+to end: the member writes from the profile, the therapist reads and answers on
+the **Messages** tab of the practice dashboard, and the answer appears in the
+member's inbox (the dashboard's Messages tab and the account page's Inbox tab,
+both drawn from `site/assets/inbox.js`), where the member can write back. No
+email address is shown to either side, and nothing is emailed between them.
+
+| Piece | Where |
+|---|---|
+| Who can write | A signed-in member. The profile's button shows a visitor without an account the way to sign in or create a free one, with `?next=` bringing them back to the profile. A reply needs an inbox to land in. |
+| The opening message | `therapist_messages`, written only by the `contact-therapist` Edge Function (`supabase/functions/contact-therapist`), which checks the member's token itself, keeps the honeypot and the rate limits, and records `sender_user_id`. The member's account email is kept on the row for the record, never shown to the therapist. |
+| The heads-up | The same function emails the therapist (contact address, else sign-in email) that a message is waiting, with a link to the dashboard. The message itself is not in the email, and the email has no reply-to. Needs `RESEND_API_KEY`; `delivery` / `delivery_error` on the row say whether it went. |
+| Every later turn | `therapist_message_replies`: `sender` is `'therapist'` or `'member'`, `read_at` is stamped by the reader (the member's inbox stamps therapist turns when it opens; the therapist's **Mark as read** or reply stamps member turns). RLS lets the therapist answer only a message to their own listing from a signed-in member, and the member write back only on a conversation they started. |
+| Migration | `supabase/migrations/20261005150000_therapist_message_replies.sql` |
+
+Messages sent before accounts were required have no `sender_user_id`; the
+dashboard still offers **Reply by email** on those alone.
 
 ## The morning email
 
