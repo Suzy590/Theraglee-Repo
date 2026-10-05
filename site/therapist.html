@@ -62,8 +62,13 @@ if (!t) {
     <a href="therapists.html">Back to the directory</a></div>`;
 } else {
   document.title = `${t.first_name} ${t.last_name} — Theraglee`;
+  // A supabase-js query only runs once something awaits it (or calls .then),
+  // so the insert is settled here rather than returned as a bare builder: a
+  // bare builder is never sent, and the Referrals tab stays at zero. Nothing
+  // on the page depends on the result, so failures are swallowed.
   const log = (kind) => sb.from('therapist_events').insert(
-    { therapist_id: t.id, event_type: kind, actor_id: a.authenticated ? a.profile.id : null });
+    { therapist_id: t.id, event_type: kind, actor_id: a.authenticated ? a.profile.id : null })
+    .then(() => {}, () => {});
   log('profile_view');
 
   const initials = ((t.first_name?.[0]||'') + (t.last_name?.[0]||'')).toUpperCase();
