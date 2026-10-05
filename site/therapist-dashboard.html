@@ -118,21 +118,29 @@ try {
 } catch {}
 if (wantFounding) { tab = 'membership'; history.replaceState({}, '', 'therapist-dashboard.html#membership'); }
 // Unread counts for the pills on the Messages and Member requests tabs:
-// messages from the contact form (therapist_messages.read_at empty) and
-// replies from members (outreach_replies.read_at empty). Counted as soon as
-// the page opens, whichever tab it opens on, and again by the tabs that load
-// the rows themselves; "Mark as read" on a message or a thread takes them down.
+// messages from the profile's contact form (therapist_messages.read_at empty)
+// plus the member's later turns in those conversations
+// (therapist_message_replies with sender 'member' and read_at empty), and
+// replies from Match Mode members (outreach_replies.read_at empty). Counted as
+// soon as the page opens, whichever tab it opens on, and again by the tabs
+// that load the rows themselves; "Mark as read" on a message or a thread
+// takes them down.
 let unread = 0;
 let unreadReplies = 0;
+const unreadMessageCount = () => sb.from('therapist_messages')
+  .select('id', { count:'exact', head:true }).eq('therapist_id', T.id).is('read_at', null);
+const unreadWritebackCount = () => sb.from('therapist_message_replies')
+  .select('id', { count:'exact', head:true })
+  .eq('therapist_id', T.id).eq('sender', 'member').is('read_at', null);
 async function countUnread(){
   if (!T) return;
-  const [{ count: nMsgs }, { count: nReplies }] = await Promise.all([
-    sb.from('therapist_messages').select('id', { count:'exact', head:true })
-      .eq('therapist_id', T.id).is('read_at', null),
+  const [{ count: nMsgs }, { count: nBack }, { count: nReplies }] = await Promise.all([
+    unreadMessageCount(),
+    unreadWritebackCount(),
     sb.from('outreach_replies').select('id', { count:'exact', head:true })
       .eq('therapist_id', T.id).is('read_at', null),
   ]);
-  unread = nMsgs || 0;
+  unread = (nMsgs || 0) + (nBack || 0);
   unreadReplies = nReplies || 0;
   paintDots();
 }
@@ -260,7 +268,7 @@ async function home(){
   if (!T) return needsListing();
   render('<div class="skeleton" style="height:200px"></div>');
   await noteMatches();
-  const [{ data: stats }, { data: msgs }, { data: reqs }, { data: cat }, { data: cfgRows }, { count: nReplies }] = await Promise.all([
+  const [{ data: stats }, { data: msgs }, { data: reqs }, { data: cat }, { data: cfgRows }, { count: nReplies }, { count: nBack }] = await Promise.all([
     sb.rpc('therapist_stats', { p_days: 30 }),
     sb.from('therapist_messages').select('id,sender_name,created_at,read_at')
       .eq('therapist_id', T.id).order('created_at', { ascending:false }).limit(3),
@@ -269,10 +277,11 @@ async function home(){
     sb.from('app_config').select('key,value').in('key', ['identity_required','connect_enabled']),
     sb.from('outreach_replies').select('id', { count:'exact', head:true })
       .eq('therapist_id', T.id).is('read_at', null),
+    unreadWritebackCount(),
   ]);
   const cfg = Object.fromEntries((cfgRows||[]).map(r=>[r.key,r.value]));
   const c = stats?.current || {};
-  unread = stats?.unread_messages || 0;
+  unread = (stats?.unread_messages || 0) + (nBack || 0);
   unreadReplies = nReplies || 0;
   const waiting = (reqs||[]).filter(r => !r.already_contacted).length;
   const libTotal = (cat||[]).reduce((s,r)=>s+r.total, 0);
@@ -480,45 +489,118 @@ async function referrals(){
 }
 
 /* --------------------------------------------------------- messages */
+// Messages sent through the profile's contact form, each with the
+// conversation that followed. The therapist answers here; the answer lands
+// in the member's Theraglee inbox (therapist_message_replies), and the
+// member's write-backs show up here. No email address is shown or needed.
 async function messages(){
   if (!T) return needsListing();
   render('<div class="skeleton" style="height:160px"></div>');
-  const { data } = await sb.from('therapist_messages').select('*')
-    .eq('therapist_id', T.id).order('created_at', { ascending:false }).limit(100);
+  const [{ data }, { data: turns }] = await Promise.all([
+    sb.from('therapist_messages').select('*')
+      .eq('therapist_id', T.id).order('created_at', { ascending:false }).limit(100),
+    sb.from('therapist_message_replies').select('*')
+      .eq('therapist_id', T.id).order('created_at', { ascending:true }),
+  ]);
   const rows = data || [];
-  unread = rows.filter(m => !m.read_at).length;
+  const byMsg = new Map();
+  for (const r of turns || []) {
+    if (!byMsg.has(r.message_id)) byMsg.set(r.message_id, []);
+    byMsg.get(r.message_id).push(r);
+  }
+  const isNew = (m) => !m.read_at || (byMsg.get(m.id) || []).some(r => r.sender === 'member' && !r.read_at);
+  const lastAt = (m) => (byMsg.get(m.id) || []).at(-1)?.created_at || m.created_at;
+  rows.sort((x, y) => new Date(lastAt(y)) - new Date(lastAt(x)));
+  // The pill counts what is unread the same way countUnread() does: opening
+  // messages not yet read, plus unread write-backs from members.
+  unread = rows.filter(m => !m.read_at).length
+         + (turns || []).filter(r => r.sender === 'member' && !r.read_at).length;
+  paintDots();
+
+  const bubble = (from, at, text) => `
+    <div style="padding:12px 14px;border-radius:var(--r-sm);background:${from==='you'?'var(--soft)':'var(--sand)'}">
+      <div class="spread"><span class="faint">${from==='you' ? 'You' : 'They wrote'}</span>
+        <span class="faint">${fmtDate(at)}</span></div>
+      <p style="margin:6px 0 0;white-space:pre-wrap;color:var(--ink-2)">${esc(text)}</p></div>`;
 
   render(`
     <h2>Messages</h2>
-    <p class="muted">People who contacted you through your profile. Reply straight to their
-      email address — yours is never shown to them.</p>
-    ${rows.length ? rows.map(m=>`
-      <div class="msg ${m.read_at?'':'unread'}" data-id="${m.id}">
+    <p class="muted">People who wrote to you from your profile. Reply here and your answer goes
+      to their Theraglee inbox. Neither of you sees the other's email address.</p>
+    ${rows.length ? rows.map(m => {
+      const thread = byMsg.get(m.id) || [];
+      const fresh = isNew(m);
+      const canReply = !!m.sender_user_id;
+      return `
+      <div class="msg ${fresh?'unread':''}" data-id="${m.id}">
         <div class="spread">
           <span class="who">${esc(m.sender_name)}${
-            m.read_at ? '' : ' <span class="badge" style="margin-left:6px">New</span>'}</span>
+            fresh ? ' <span class="badge" style="margin-left:6px">New</span>' : ''}</span>
           <span class="faint">${fmtDate(m.created_at)}</span>
         </div>
-        <p class="faint" style="margin:4px 0 0">
-          <a href="mailto:${esc(m.sender_email)}">${esc(m.sender_email)}</a>
-          ${m.sender_phone?` · ${esc(m.sender_phone)}`:''}
-          ${m.preferred_times?` · best times: ${esc(m.preferred_times)}`:''}</p>
-        <p style="margin:12px 0 0;white-space:pre-wrap;color:var(--ink-2)">${esc(m.message)}</p>
-        <div class="row" style="margin-top:14px">
-          <a class="btn sm" href="mailto:${esc(m.sender_email)}?subject=${encodeURIComponent('Re: your message via Theraglee')}">Reply by email</a>
-          ${m.read_at ? '' : `<button class="btn sm ghost" data-read="${m.id}">Mark as read</button>`}
-          ${m.delivery === 'sent'
-            ? '<span class="faint">Emailed to you</span>'
-            : '<span class="faint">Shown here — email delivery not switched on yet</span>'}
+        ${m.sender_phone || m.preferred_times ? `<p class="faint" style="margin:4px 0 0">
+          ${m.sender_phone ? `Phone: ${esc(m.sender_phone)}` : ''}${m.sender_phone && m.preferred_times ? ' · ' : ''}${
+          m.preferred_times ? `best times: ${esc(m.preferred_times)}` : ''}</p>` : ''}
+        <div class="stack" style="margin-top:12px">
+          ${bubble('member', m.created_at, m.message)}
+          ${thread.map(r => bubble(r.sender === 'therapist' ? 'you' : 'member', r.created_at, r.message)).join('')}
         </div>
-      </div>`).join('')
+        <div class="row" style="margin-top:14px">
+          ${canReply
+            ? `<button class="btn sm" data-reply="${m.id}">${thread.some(r => r.sender === 'therapist') ? 'Reply again' : 'Reply'}</button>`
+            : `<a class="btn sm" href="mailto:${esc(m.sender_email)}?subject=${encodeURIComponent('Re: your message via Theraglee')}">Reply by email</a>
+               <span class="faint">Sent before accounts were required, so this one has no Theraglee inbox to answer to.</span>`}
+          ${fresh ? `<button class="btn sm ghost" data-read="${m.id}">Mark as read</button>` : ''}
+        </div>
+        ${canReply ? `
+        <form class="reply" data-form="${m.id}" hidden style="margin-top:16px">
+          <div class="field"><label for="rm-${m.id}">Your reply</label>
+            <textarea id="rm-${m.id}" required placeholder="Hello ${esc(m.sender_name.split(' ')[0])} — thank you for writing…"></textarea>
+            <div class="help">Goes to ${esc(m.sender_name)}'s Theraglee inbox. Nothing is emailed.</div></div>
+          <div class="row" style="justify-content:flex-end">
+            <button type="button" class="btn ghost" data-cancel="${m.id}">Cancel</button>
+            <button type="submit" class="btn">Send reply</button></div>
+        </form>` : ''}
+      </div>`;
+    }).join('')
     : '<div class="empty" style="margin-top:18px">No messages yet.</div>'}`);
 
+  // Reading a conversation: the opening message and every write-back in it.
+  const markRead = async (id) => {
+    const now = new Date().toISOString();
+    await Promise.all([
+      sb.from('therapist_messages').update({ read_at: now }).eq('id', id).is('read_at', null),
+      sb.from('therapist_message_replies').update({ read_at: now })
+        .eq('message_id', id).eq('sender', 'member').is('read_at', null),
+    ]);
+  };
   document.querySelectorAll('[data-read]').forEach(b => b.onclick = async () => {
-    await sb.from('therapist_messages')
-      .update({ read_at: new Date().toISOString() }).eq('id', b.dataset.read);
-    messages();
+    await markRead(b.dataset.read); messages();
   });
+  document.querySelectorAll('[data-reply]').forEach(b => b.onclick = () => {
+    const f = document.querySelector(`[data-form="${b.dataset.reply}"]`);
+    f.hidden = false; b.hidden = true; f.querySelector('textarea').focus();
+  });
+  document.querySelectorAll('[data-cancel]').forEach(b => b.onclick = () => {
+    document.querySelector(`[data-form="${b.dataset.cancel}"]`).hidden = true;
+    document.querySelector(`[data-reply="${b.dataset.cancel}"]`).hidden = false;
+  });
+  document.querySelectorAll('form.reply').forEach(f => f.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = f.dataset.form, m = rows.find(r => r.id === id);
+    const text = f.querySelector('textarea').value.trim();
+    if (text.length < 2) return toast('Please write a reply.', 'err');
+    const btn = f.querySelector('[type=submit]');
+    busy(btn, true, 'Sending…');
+    const { error } = await sb.from('therapist_message_replies').insert({
+      message_id: id, therapist_id: T.id, member_id: m.sender_user_id,
+      sender: 'therapist', message: text });
+    if (error) { busy(btn, false); return toast(error.message, 'err'); }
+    // Answering it is reading it.
+    await markRead(id);
+    busy(btn, false);
+    toast(`Sent to ${m.sender_name}'s Theraglee inbox.`, 'ok'); messages();
+  }));
 }
 
 /* ---------------------------------------------------------- members */

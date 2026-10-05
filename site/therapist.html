@@ -145,8 +145,9 @@ if (!t) {
         <p class="faint" style="margin:12px 0 0;font-size:.8rem">
           Payment goes to ${esc(t.first_name)} through Stripe. Book the time with them directly.</p>` : ''}
         <p class="faint" style="margin:16px 0 0;font-size:.8rem">
-          Messages go through Theraglee, so their direct line and inbox stay private
-          until they choose to share them.</p>
+          Messages go through Theraglee: you write from here, and their reply comes to your
+          Theraglee inbox. Neither of you sees the other's email address or direct line until
+          you choose to share them.</p>
       </aside>
     </div>`;
 
@@ -174,21 +175,40 @@ if (!t) {
     await navigator.clipboard.writeText(url); toast('Link copied.','ok');
   });
 
+  // "Send a message": the message goes to the therapist's Theraglee inbox and
+  // their reply comes back to the member's, so the sender has to be signed
+  // in. A visitor without an account is shown the way in and brought back here.
   document.getElementById('email')?.addEventListener('click', () => {
-    const me = a.authenticated ? a.profile : null;
+    if (!a.authenticated) {
+      const here = encodeURIComponent(`therapist.html?slug=${slug}`);
+      const back = modal(`
+        <h2 style="margin-bottom:4px">Message ${esc(t.first_name)}</h2>
+        <p class="muted" style="font-size:.92rem">Messages on Theraglee stay on Theraglee: you
+          write from here, and ${esc(t.first_name)}'s reply comes to your Theraglee inbox, not
+          your email. Sign in, or create a free account, and you will be brought straight back
+          to this page.</p>
+        <div class="row" style="margin-top:18px;justify-content:flex-end">
+          <button type="button" class="btn ghost" id="cancel">Not now</button>
+          <a class="btn ghost" href="signup.html?next=${here}">Create a free account</a>
+          <a class="btn" href="login.html?next=${here}">Sign in</a>
+        </div>`);
+      back.querySelector('#cancel').onclick = () => back.remove();
+      return;
+    }
+    const me = a.profile || {};
     const back = modal(`
       <h2 style="margin-bottom:4px">Message ${esc(t.first_name)}</h2>
-      <p class="muted" style="font-size:.92rem">They reply to you directly. Their email address
-        is never shared with anyone.</p>
+      <p class="muted" style="font-size:.92rem">${esc(t.first_name)} reads this in their Theraglee
+        inbox and replies to yours: the <strong>Messages</strong> tab on your dashboard. Neither of
+        you sees the other's email address.</p>
       <form id="cform" style="margin-top:18px">
         <input class="hp" type="text" id="company" tabindex="-1" autocomplete="off" aria-hidden="true">
         <div class="field"><label for="cn">Your name *</label>
-          <input id="cn" required value="${esc(me?.full_name||'')}"></div>
-        <div class="field"><label for="ce">Your email *</label>
-          <input id="ce" type="email" required value="${esc(me?.email||'')}">
-          <div class="help">So they can reply to you.</div></div>
+          <input id="cn" required autocomplete="name" value="${esc(me.full_name||'')}">
+          <div class="help">The name ${esc(t.first_name)} will know you by.</div></div>
         <div class="field"><label for="cp">Phone <span class="faint">(optional)</span></label>
-          <input id="cp" type="tel"></div>
+          <input id="cp" type="tel" autocomplete="tel">
+          <div class="help">Only if you would like them to be able to call you.</div></div>
         <div class="field"><label for="ct">Best times to reach you <span class="faint">(optional)</span></label>
           <input id="ct" placeholder="e.g. weekday evenings"></div>
         <div class="field"><label for="cm">Your message *</label>
@@ -204,18 +224,23 @@ if (!t) {
       e.preventDefault();
       const btn = back.querySelector('#send');
       const V = id => back.querySelector('#'+id).value.trim();
+      if (V('cn').length < 2) return toast('Please enter your name.','err');
       if (V('cm').length < 10) return toast('Please write a little more.','err');
       busy(btn, true, 'Sending…');
       try {
         const { data: { session } } = await sb.auth.getSession();
+        if (!session?.access_token) {
+          busy(btn, false);
+          return toast('Your sign-in has expired. Please sign in again.','err');
+        }
         const res = await fetch(`${FN}/contact-therapist`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}),
+            Authorization: `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({
-            therapist_slug: slug, sender_name: V('cn'), sender_email: V('ce'),
+            therapist_slug: slug, sender_name: V('cn'),
             sender_phone: V('cp'), preferred_times: V('ct'), message: V('cm'),
             company: V('company'),
           }),
@@ -228,7 +253,10 @@ if (!t) {
             <span class="badge">Message sent</span>
             <h2 style="margin-top:14px">On its way to ${esc(t.first_name)}</h2>
             <p class="muted">${esc(out.message||'')}</p>
-            <button class="btn" id="done">Close</button>
+            <div class="row" style="justify-content:center">
+              <a class="btn ghost" href="dashboard.html#messages">Open my messages</a>
+              <button class="btn" id="done">Close</button>
+            </div>
           </div>`;
         back.querySelector('#done').onclick = () => back.remove();
       } catch {
