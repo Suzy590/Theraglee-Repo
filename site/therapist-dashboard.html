@@ -93,7 +93,7 @@
 </div></main>
 
 <script type="module">
-import { chrome, sb, requireAuth, access, clearAccess, esc, toast, busy, fmtDate,
+import { chrome, sb, selectAll, requireAuth, access, clearAccess, esc, toast, busy, fmtDate,
          modal, openPortal, startCheckout, startIdentity, connectAction, callStripeFn,
          discountCodeBox, wireDiscountCode,
          FN, qs } from './assets/app.js';
@@ -787,7 +787,10 @@ let libKind = '', libTerm = '';
 
 async function library(){
   render('<div class="skeleton" style="height:160px"></div>');
-  const { data, error } = await sb.from('therapist_resources').select('*').order('title');
+  // Paged, because the library passed the 1,000 rows one request can carry
+  // and a single query would quietly stop at the first thousand titles.
+  const { data, error } = await selectAll(() =>
+    sb.from('therapist_resources').select('*').order('title').order('slug'));
 
   if (error || !data) {
     return render(`<div class="card pad-lg center">

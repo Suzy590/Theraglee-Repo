@@ -5,7 +5,7 @@
    comes from the workspace's `vocabulary`, so the same module serves teachers
    and trainers when this moves to assignremind.com.
    ========================================================================== */
-import { sb, esc, toast, busy, modal, fmtDate, FN } from './app.js';
+import { sb, selectAll, esc, toast, busy, modal, fmtDate, FN } from './app.js';
 
 const STATE_LABEL = {
   sent: 'Sent', received: 'Received', started: 'In progress',
@@ -259,7 +259,8 @@ function newForm(clients) {
 
 async function wireNewForm(host, clients, siteOrigin) {
   // fill the library picker
-  const { data: res } = await sb.from('therapist_resources').select('id,title,kind').order('title');
+  const { data: res } = await selectAll(() =>
+    sb.from('therapist_resources').select('id,title,kind').order('title').order('id'));
   const sel = host.querySelector('#ar-res');
   (res||[]).forEach(r => {
     const o = document.createElement('option');
