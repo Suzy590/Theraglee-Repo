@@ -107,8 +107,9 @@
   }
   @media(prefers-reduced-motion:reduce){.mm-switch,.mm-switch i{transition:none}}
   .tabs{display:flex;gap:4px;border-bottom:1px solid var(--hair);margin:0 0 22px;overflow-x:auto}
-  .tabs button{border:0;background:none;font:inherit;font-size:.95rem;padding:12px 18px;cursor:pointer;
-    color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap}
+  .tabs button,.tabs a{border:0;background:none;font:inherit;font-size:.95rem;padding:12px 18px;cursor:pointer;
+    color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap;text-decoration:none}
+  .tabs a:hover{color:var(--ink)}
   .tabs button.on{color:var(--green);border-bottom-color:var(--green);font-weight:500}
   /* The unread count on the Messages tab, the same pill the therapist dashboard uses. */
   .tabs .dot{display:inline-block;min-width:18px;padding:0 5px;height:18px;line-height:18px;
@@ -178,6 +179,8 @@
       <button data-tab="fun" role="tab">Fun</button>
       <button data-tab="messages" role="tab">Messages</button>
       <button data-tab="nearby" role="tab">Nearby help</button>
+      <!-- Therapist directory is a page of its own (therapists.html), so this tab is a link. -->
+      <a href="therapists.html" role="tab" aria-selected="false">Therapist directory</a>
     </div>
 
     <div class="dash-top">

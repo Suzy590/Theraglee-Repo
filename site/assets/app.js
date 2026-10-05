@@ -295,7 +295,8 @@ const THERAPIST_NAV = [
 
 // The dashboard's own tab row, repeated on the pages its Tools tab (and its
 // other tabs) lead to, so a member can always get back to any part of the
-// dashboard. Keep it in step with the tab buttons in dashboard.html.
+// dashboard. Keep it in step with the tab buttons in dashboard.html. A tab
+// whose second value ends in .html is a page of its own rather than a panel.
 const DASH_TABS = [
   ['Today',           'today'],
   ['Journal',         'journal'],
@@ -306,13 +307,14 @@ const DASH_TABS = [
   ['Fun',             'fun'],
   ['Messages',        'messages'],
   ['Nearby help',     'nearby'],
+  ['Therapist directory', 'therapists.html'],
 ];
 // The member pages that show that row, and the tab each one sits under.
 const DASH_PAGES = {
   'discover.html': 'discover',
   'explore.html': 'tools', 'challenges.html': 'tools',
   'checklist.html': 'tools', 'quiz.html': 'tools', 'worksheet.html': 'tools',
-  'goals.html': 'tools', 'therapists.html': 'tools', 'therapist.html': 'tools',
+  'goals.html': 'tools', 'therapists.html': 'therapists.html', 'therapist.html': 'therapists.html',
   'pet.html': 'fun', 'trivia.html': 'fun', 'mandalas.html': 'fun',
   'articles.html': 'explore', 'article.html': 'explore',
 };
@@ -322,7 +324,7 @@ function dashTabs(here) {
   nav.className = 'dash-tabs';
   nav.setAttribute('aria-label', 'Dashboard');
   nav.innerHTML = `<div class="wrap"><div class="dash-tabs-row">${DASH_TABS.map(([label, tab]) =>
-    `<a href="dashboard.html#${tab}"${DASH_PAGES[here] === tab ? ' class="on"' : ''}>${label}</a>`).join('')}</div></div>`;
+    `<a href="${tab.endsWith('.html') ? tab : `dashboard.html#${tab}`}"${DASH_PAGES[here] === tab ? ' class="on"' : ''}>${label}</a>`).join('')}</div></div>`;
   return nav;
 }
 

@@ -62,11 +62,12 @@ desktop pet, mental health trivia and mandalas), **Messages**
 (every conversation with a therapist: replies from therapists the member wrote
 to from a profile, and messages from therapists who reached out through Match
 Mode, with the member's replies and blocks, drawn from `site/assets/inbox.js`,
-the same inbox as the account page's Inbox tab) and **Nearby help** (a map of clinics,
+the same inbox as the account page's Inbox tab), **Nearby help** (a map of clinics,
 treatment centers and crisis services near a zip code or town, plus the
 national lines, drawn from `site/assets/nearby-ui.js`; see
-[`nearby-help.md`](nearby-help.md)). Each tab has an address, for
-example `dashboard.html#journal`. The **Theraglee Match Mode** switch (a
+[`nearby-help.md`](nearby-help.md)) and **Therapist directory**, which is not
+a panel but a link to the Find a therapist page (`therapists.html`). Each
+panel tab has an address, for example `dashboard.html#journal`. The **Theraglee Match Mode** switch (a
 smaller copy of the one on the landing page) sits under the greeting, and to
 the right of the greeting one box holds what it does and the line therapists
 read. On narrower screens that box moves under the greeting, and on a phone
