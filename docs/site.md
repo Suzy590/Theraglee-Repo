@@ -147,7 +147,15 @@ is labeled **New**, and **Mark as read** takes the count down. It includes:
 - a verified, searchable listing
 - a Theraglee tracking phone number, so the therapist's own line stays private
 - a contact form that routes messages without exposing their email address
-- referral reporting: calls, messages, website clicks, shares and profile views
+- referral reporting: calls, messages, website clicks, shares and profile views,
+  and the Match Mode members who appeared on the dashboard. The Referrals tab
+  sets that last figure apart in green. Each member is counted once, on the
+  first day they showed up for that therapist, however long the reply takes:
+  `match_sightings` keeps one row per therapist and member (their ids and the
+  moment, nothing else), `note_match_sightings()` adds the missing rows from
+  `member_discovery` whenever the dashboard opens or the Member requests tab is
+  drawn, and `therapist_stats()` counts them by `first_seen_at`
+  (`supabase/migrations/20261005120000_match_sightings.sql`)
 - the names and topics of members who opted in to being contacted (any registered member can)
 - a clinician library of 375 resources (worksheets, CBT, ACT, DBT, couples, kids, games), with five more of every kind and five on each of eighteen topics added every day, all adjuncts to the therapist's own judgment rather than protocols — see [`therapist-resources.md`](therapist-resources.md)
 

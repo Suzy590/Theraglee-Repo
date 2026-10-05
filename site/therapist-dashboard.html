@@ -26,6 +26,16 @@
   .stat .l{font-size:.84rem;color:var(--muted);margin-top:6px}
   .stat .d{font-size:.76rem;margin-top:6px;font-weight:500}
   .up{color:var(--green)} .down{color:var(--warn)} .flat{color:var(--faint)}
+  /* The Match Mode figure on the Referrals tab: the one stat set apart in green. */
+  .hero-stat{display:flex;flex-wrap:wrap;align-items:center;gap:18px 36px;padding:26px 30px;
+    margin-bottom:22px;border-radius:var(--r);background:var(--soft);border:1px solid var(--lime-2);
+    box-shadow:0 0 0 4px rgba(141,198,29,.18)}
+  .hero-stat .n{font-size:3.4rem;font-weight:300;letter-spacing:-.04em;line-height:1;
+    color:var(--green-deep);font-variant-numeric:tabular-nums}
+  .hero-stat .l{font-size:1.05rem;color:var(--ink);margin-top:8px;font-weight:500}
+  .hero-stat .d{font-size:.8rem;margin-top:6px;font-weight:500;display:block}
+  .hero-stat .what{flex:1 1 260px;color:var(--muted);font-size:.92rem;margin:0}
+  .hero-stat .what strong{color:var(--ink)}
   .chart{display:flex;align-items:flex-end;gap:3px;height:130px;padding-top:12px}
   .chart div{flex:1;min-height:2px;background:var(--mist);border-radius:3px 3px 0 0;position:relative}
   .chart div.has{background:var(--lime)}
@@ -125,6 +135,14 @@ async function countUnread(){
   unread = nMsgs || 0;
   unreadReplies = nReplies || 0;
   paintDots();
+}
+// Match Mode members are counted once each, on the first day they appear on
+// this dashboard: match_sightings keeps one row per member, and the Referrals
+// tab counts those rows. Noted before any tab that shows members or the
+// count is drawn, so the figure and the list agree. A failure is not news.
+async function noteMatches(){
+  if (!T) return;
+  try { await sb.rpc('note_match_sightings'); } catch {}
 }
 // The pill on a tab: the count, with the label a screen reader hears.
 function tabButton(k, l, n, on){
@@ -241,6 +259,7 @@ function needsListing(){
 async function home(){
   if (!T) return needsListing();
   render('<div class="skeleton" style="height:200px"></div>');
+  await noteMatches();
   const [{ data: stats }, { data: msgs }, { data: reqs }, { data: cat }, { data: cfgRows }, { count: nReplies }] = await Promise.all([
     sb.rpc('therapist_stats', { p_days: 30 }),
     sb.from('therapist_messages').select('id,sender_name,created_at,read_at')
@@ -356,7 +375,7 @@ async function home(){
         'People write to you through Theraglee. You reply from your own inbox; they never see it.',
         state(true, 'Included', ''))}
       ${benefit('#referrals', 'Referral stats',
-        'Calls, messages, website clicks, shares and profile views, with the previous period alongside.',
+        'Match Mode matches, calls, messages, website clicks, shares and profile views, with the previous period alongside.',
         state(true, 'Included', ''))}
       ${benefit('#library', 'Clinician library',
         `${libTotal || 'Dozens of'} worksheets and CBT, ACT, DBT, couples, kids and game exercises, printable with guidance.`,
@@ -372,6 +391,7 @@ async function referrals(){
   if (!T) return needsListing();
   render('<div class="skeleton" style="height:160px"></div>');
   const days = Number(sessionStorage.getItem('tg-range') || 30);
+  await noteMatches();
   const { data, error } = await sb.rpc('therapist_stats', { p_days: days });
   if (error || data?.error) {
     return render(`<div class="notice err">${esc(error?.message || 'No listing found.')}</div>`);
@@ -390,6 +410,11 @@ async function referrals(){
 
   const series = data.series || [];
   const peak = Math.max(1, ...series.map(d => d.views + d.calls + d.messages));
+  // Match Mode members who appeared on this dashboard, each counted once on
+  // the first day they showed up, however long the reply took.
+  const matches = c.matches || 0, matchesBefore = p.matches || 0;
+  const matchesTotal = data.matches_total || 0;
+  const spanLabel = days === 365 ? 'the last 12 months' : `the last ${days} days`;
 
   render(`
     <div class="spread" style="margin-bottom:18px">
@@ -399,6 +424,22 @@ async function referrals(){
           ${d===365?'12 months':d+' days'}</button>`).join('')}
       </div>
     </div>
+
+    <section class="hero-stat" aria-label="Theraglee Match Mode matches">
+      <div>
+        <span class="kicker" style="color:var(--green)">Theraglee Match Mode</span>
+        <div class="n" style="margin-top:8px">${matches}</div>
+        <div class="l">${matches === 1 ? 'member matched with you' : 'members matched with you'} in ${spanLabel}</div>
+        ${delta(matches, matchesBefore)}
+      </div>
+      <div class="what">
+        <p style="margin:0"><strong>${matchesTotal} ${matchesTotal === 1 ? 'member' : 'members'} since
+          you joined.</strong> Each member who switched on Match Mode and appeared on your dashboard
+          is counted once, on the first day they showed up, so a member who waits a few days for
+          your reply is still one match.</p>
+        <a class="btn sm" style="margin-top:14px" href="#members">See who is waiting</a>
+      </div>
+    </section>
 
     <div class="stats">
       ${card(c.profile_views, 'Profile views', p.profile_views)}
@@ -413,7 +454,8 @@ async function referrals(){
       <div class="chart">${series.map(d=>{
         const total = d.views + d.calls + d.messages;
         return `<div class="${total?'has':''}" style="height:${Math.max(2,total/peak*100)}%"
-          title="${d.day}: ${d.views} views, ${d.calls} calls, ${d.messages} messages"></div>`;
+          title="${d.day}: ${d.views} views, ${d.calls} calls, ${d.messages} messages${
+            d.matches ? `, ${d.matches} Match Mode ${d.matches === 1 ? 'match' : 'matches'}` : ''}"></div>`;
       }).join('')}</div>
       <div class="spread" style="margin-top:12px">
         <span class="faint">${series.length?fmtDate(series[0].day):''}</span>
@@ -484,6 +526,7 @@ let insOnly = false;   // "Only members with an insurance plan I accept"
 async function members(){
   if (!T) return needsListing();
   render('<div class="skeleton" style="height:160px"></div>');
+  await noteMatches();
   const [{ data, error }, { data: sent }, { data: replies }] = await Promise.all([
     sb.from('member_discovery').select('*').limit(100),
     sb.from('therapist_outreach').select('id,member_id,message,created_at')
