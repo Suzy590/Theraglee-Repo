@@ -300,8 +300,8 @@ const THERAPIST_NAV = [
 const DASH_TABS = [
   ['Today',           'today'],
   ['Journal',         'journal'],
-  ['Mental Health Goals', 'goals'],
   ['Playlists',       'playlists'],
+  ['Mental Health Goals', 'goals'],
   ['Explore Library', 'explore'],
   ['Self-Discovery',  'discover'],
   ['Tools',           'tools'],
