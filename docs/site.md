@@ -65,11 +65,12 @@ desktop pet, mental health trivia and mandalas), **Messages**
 (every conversation with a therapist: replies from therapists the member wrote
 to from a profile, and messages from therapists who reached out through Match
 Mode, with the member's replies and blocks, drawn from `site/assets/inbox.js`,
-the same inbox as the account page's Inbox tab) and **Nearby help** (a map of clinics,
+the same inbox as the account page's Inbox tab), **Nearby help** (a map of clinics,
 treatment centers and crisis services near a zip code or town, plus the
 national lines, drawn from `site/assets/nearby-ui.js`; see
-[`nearby-help.md`](nearby-help.md)). Each tab has an address, for
-example `dashboard.html#journal`. The **Theraglee Match Mode** switch (a
+[`nearby-help.md`](nearby-help.md)) and **Therapist directory**, which is not
+a panel but a link to the Find a therapist page (`therapists.html`). Each
+panel tab has an address, for example `dashboard.html#journal`. The **Theraglee Match Mode** switch (a
 smaller copy of the one on the landing page) sits under the greeting, and to
 the right of the greeting one box holds what it does and the line therapists
 read. On narrower screens that box moves under the greeting, and on a phone
@@ -681,7 +682,7 @@ Most of it was imported from the Word documents in the parent folder:
 - 186 interactive worksheets (16 imported, 170 written for the site — see below)
 - 34 checklists, with two more added every day — see [`checklists.md`](checklists.md)
 - 42 themed challenges (365 daily to-dos each), with two more themes added every day — see [`challenges.md`](challenges.md)
-- 137 articles, free to everyone, with five more published every day — see [`articles.md`](articles.md)
+- 142 articles, free to everyone, with five more published every day — see [`articles.md`](articles.md)
 - 282 mandalas to print or color online (drawn in the browser from a seed): 200 round, 82 shaped like animals, plants and symbols
 - 150 mental health trivia quizzes (1,500 questions), written for the site rather than imported
 - 140 daily items — affirmations, tips, fun facts, quotes

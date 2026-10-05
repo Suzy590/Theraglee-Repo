@@ -318,4 +318,10 @@ test("Nearby help stays on the member dashboard's menu bar", () => {
   assert.match(app, /\['Nearby help',\s*'nearby'\]/);
 });
 
+test("Therapist directory is on the member dashboard's menu bar and leads to Find a therapist", () => {
+  assert.match(dash, /<a href="therapists.html" role="tab"[^>]*>Therapist directory<\/a>/);
+  assert.match(app, /\['Therapist directory',\s*'therapists.html'\]/);
+  assert.match(app, /'therapists.html': 'therapists.html'/, "the directory tab is highlighted on the directory");
+});
+
 console.log(`\n${n} checks passed`);
