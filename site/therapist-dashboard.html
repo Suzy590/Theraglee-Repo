@@ -400,7 +400,7 @@ async function messages(){
 
   const bubble = (from, at, text) => `
     <div style="padding:12px 14px;border-radius:var(--r-sm);background:${from==='you'?'var(--soft)':'var(--sand)'}">
-      <div class="spread"><span class="faint">${from==='you' ? 'You' : 'They wrote'}</span>
+      <div class="spread"><span class="faint">${from==='you' ? 'You wrote' : 'They wrote'}</span>
         <span class="faint">${fmtDate(at)}</span></div>
       <p style="margin:6px 0 0;white-space:pre-wrap;color:var(--ink-2)">${esc(text)}</p></div>`;
 
