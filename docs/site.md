@@ -332,6 +332,43 @@ messaging and session payment live only there). The office photos never appear
 on the collapsed card. The panel is built from the row `search_therapists`
 already returned, so opening it makes no further request.
 
+### Searching by zip code
+
+The directory's **Zip code** box changes what the **Sessions** chips mean. With
+no zip code they are a plain filter (Either, the default, shows everyone; In
+person and Telehealth (video) match the therapist's `delivery`, with a
+therapist offering both appearing under each), and the **State** filter works
+on its own. Typing a zip code turns the chips into a prompt, **How would you
+like to meet?**, with nothing chosen, and the page searches only once the
+visitor answers:
+
+| Choice | What the results are |
+| --- | --- |
+| In person | Therapists who offer in-person sessions (`delivery` in_person or both) with a practice location in the zip code area: every zip code that starts with the same three digits (902xx for 90210). An office in the very same zip code sorts first. |
+| Telehealth (video), or Either | Therapists licensed in the zip code's state who offer telehealth (`delivery` telehealth or both), anywhere in that state. |
+
+The page says all of this twice: under the chips (the explanation of both
+choices, naming the area and the state) and in a note above the results
+("Showing therapists licensed in California who offer telehealth (video),
+anywhere in the state, because you chose Either for 90210"), so a visitor can
+tell how their choice shaped the list. The State select is set to the zip
+code's state and disabled while a zip code is in; clearing the zip code hands
+it back. A zip code that is not five digits, or whose prefix is military,
+a territory or unassigned, is called out under the box and never searched.
+
+`site/assets/zip-state.js` turns a zip code into its state by the USPS
+three-digit prefix (`ZIP_STATE_RANGES`, `zipState`, `zipArea`). The database
+carries the same table as `public.zip_state(text)`, and `search_therapists`
+applies the rule above itself from `p_zip` and `p_delivery`, so a caller that
+passes only those two gets the same results (the page passes `p_state` as well
+so the disabled State select agrees with the search). Both live in the
+migration `therapist_search_by_zip_and_delivery`, which is also the first
+copy of `search_therapists` in this repository; it used to live only in the
+Supabase Dashboard. `node tests/zip-state/check.mjs` checks the two prefix
+tables agree and that well-known zip codes land in the right state. The
+generated county landing pages (`docs/seo.md`) call the function with
+`p_state` only, so they are untouched.
+
 ### Insurance accepted
 
 The **Insurance accepted** picker on My profile lists 103 plans — `INSURANCES`
