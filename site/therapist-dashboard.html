@@ -42,6 +42,22 @@
   .msg{background:var(--paper);border:1px solid var(--hair);border-radius:var(--r);
     padding:20px;margin-bottom:12px}
   .msg.unread{border-color:var(--lime-2);background:linear-gradient(180deg,var(--soft),var(--paper) 40%)}
+  /* The Match Mode members (left two thirds) beside the note on how matching
+     works (right third). Under a narrow content box the two stack, note first. */
+  .mm-layout{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:28px;
+    align-items:start;margin-top:22px}
+  .mm-layout>*{min-width:0}
+  .mm-layout .mm-members>h3{margin-top:0}
+  .mm-note{padding:22px;border-radius:var(--r);background:var(--paper);border:1px solid var(--hair);
+    font-size:.92rem}
+  .mm-note p,.mm-note ul{margin:0 0 12px}
+  .mm-note ul{padding-left:20px}
+  .mm-note li+li{margin-top:6px}
+  .mm-note>:last-child{margin-bottom:0}
+  @container (max-width:640px){
+    .mm-layout{grid-template-columns:minmax(0,1fr);gap:22px}
+    .mm-layout .mm-note{order:-1}
+  }
   /* A Match Mode member's card: one labeled row per detail they share. */
   .mm-facts{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:12px 0 0;font-size:.9rem}
   .mm-facts dt{color:var(--muted)}
@@ -560,31 +576,6 @@ async function members(){
 
   render(`
     <h2>Members who have toggled ON <strong>Theraglee Match Mode</strong></h2>
-    <p class="muted">Theraglee members who have switched ON <strong>Theraglee Match Mode</strong> will be
-      listed here.</p>
-    <p class="muted">Each profile shown below is pseudonymous. You see their pseudonym, their age range,
-      their gender (they can choose not to provide it), the broad topics they would like to work on in
-      therapy, whether they prefer in-person, telehealth (video), or either, their insurance plan (or
-      that they plan to pay out-of-pocket), and the first three digits of their zip code.</p>
-    <p class="muted">Members are matched with you based on:</p>
-    <ul class="muted">
-      <li>your specialties listed on your profile and the broad topics the member has indicated they
-        would like to work on.</li>
-      <li>the proximity of your zip code and the member's zip code. If the member has indicated they
-        are open to telehealth (video) and so have you, you may see members who are not necessarily
-        near your zip code; you may see members open to telehealth (video) throughout your entire
-        state of practice.</li>
-      <li>the insurance plans that you have indicated you are credentialed with and the insurance plan
-        the member has. If the member has selected that they plan to pay cash for their sessions, it
-        is assumed that you will accept cash.</li>
-      <li>the age range you have indicated you work with in your practice and the age range the member
-        has indicated they are.</li>
-    </ul>
-    <p class="muted">If you do not feel that a member is a good match for you, you do not need to reply
-      to them. The member will not know who they were matched with. They will only know who chose to
-      respond.</p>
-    <p class="muted">Once you respond to a member, your message will be in their Theraglee inbox. If
-      they choose to respond to you, they will then be required to share their real name with you.</p>
     ${!liveListing ? `<div class="notice warn">Your listing has to be live before you can
       reach out.</div>` : ''}
 
@@ -609,7 +600,9 @@ async function members(){
           </div>
         </div>`).join('')}</div>` : ''}
 
-    <h3 style="margin-top:28px">Waiting to hear from a therapist</h3>
+    <div class="mm-layout">
+    <div class="mm-members">
+    <h3>Waiting to hear from a therapist</h3>
     ${rows.some(m => takesInsurance(T.insurances, m.insurance)) ? `<label class="row" style="gap:8px;margin-top:8px">
       <input type="checkbox" id="ins-only" ${insOnly?'checked':''}> Only members with an insurance plan I accept</label>` : ''}
     ${shown.length ? `<div class="grid g3" style="margin-top:14px">${shown.map(m=>`
@@ -634,7 +627,37 @@ async function members(){
           ${(!liveListing || m.already_contacted)?'disabled':''}>
           ${m.already_contacted?'Already contacted':'<strong>Theraglee Match Mode</strong>'}</button>
       </div>`).join('')}</div>`
-    : `<div class="empty" style="margin-top:20px">No members have turned on <strong>Theraglee Match Mode</strong> yet.</div>`}`);
+    : `<div class="empty" style="margin-top:20px">No members have turned on <strong>Theraglee Match Mode</strong> yet.</div>`}
+    </div>
+
+    <aside class="mm-note muted" aria-label="How Theraglee Match Mode works">
+      <p>Theraglee members who have switched ON <strong>Theraglee Match Mode</strong> will be listed
+        here.</p>
+      <p>Each profile shown here is pseudonymous. You see their pseudonym, their age range, their
+        gender (they can choose not to provide it), the broad topics they would like to work on in
+        therapy, whether they prefer in-person, telehealth (video), or either, their insurance plan (or
+        that they plan to pay out-of-pocket), and the first three digits of their zip code.</p>
+      <p>Members are matched with you based on:</p>
+      <ul>
+        <li>your specialties listed on your profile and the broad topics the member has indicated they
+          would like to work on.</li>
+        <li>the proximity of your zip code and the member's zip code. If the member has indicated they
+          are open to telehealth (video) and so have you, you may see members who are not necessarily
+          near your zip code; you may see members open to telehealth (video) throughout your entire
+          state of practice.</li>
+        <li>the insurance plans that you have indicated you are credentialed with and the insurance
+          plan the member has. If the member has selected that they plan to pay cash for their
+          sessions, it is assumed that you will accept cash.</li>
+        <li>the age range you have indicated you work with in your practice and the age range the
+          member has indicated they are.</li>
+      </ul>
+      <p>If you do not feel that a member is a good match for you, you do not need to reply to them.
+        The member will not know who they were matched with. They will only know who chose to
+        respond.</p>
+      <p>Once you respond to a member, your message will be in their Theraglee inbox. If they choose
+        to respond to you, they will then be required to share their real name with you.</p>
+    </aside>
+    </div>`);
 
   const send = (memberId, intro, placeholder) => {
     const back = modal(`
