@@ -443,7 +443,7 @@ async function referrals(){
 
   render(`
     <div class="spread" style="margin-bottom:18px">
-      <h2 style="margin:0">Referrals from Theraglee</h2>
+      <h2 style="margin:0">Stats from Theraglee</h2>
       <div class="chips" id="range">
         ${[7,30,90,365].map(d=>`<button class="chip ${d===days?'on':''}" data-d="${d}">
           ${d===365?'12 months':d+' days'}</button>`).join('')}
