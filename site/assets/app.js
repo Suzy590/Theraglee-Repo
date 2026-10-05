@@ -12,6 +12,22 @@ export const sb = createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
 });
 
+// Supabase answers one request with at most 1,000 rows, however many the table
+// holds. selectAll runs the same query a page at a time and joins the pages, so
+// a table that has grown past that (the clinician library) comes back whole.
+// `build` returns a fresh query each time it is called, with its own order;
+// the order must be stable (a title, then a unique column) or rows can slip
+// between pages. Resolves like a single query: { data, error }.
+export async function selectAll(build, page = 1000) {
+  const rows = [];
+  for (let from = 0; ; from += page) {
+    const { data, error } = await build().range(from, from + page - 1);
+    if (error) return { data: null, error };
+    rows.push(...(data || []));
+    if (!data || data.length < page) return { data: rows, error: null };
+  }
+}
+
 /* ---------------------------------------------------------------- tiers */
 export const TIERS = [
   { level: 0, key: 'visitor', name: 'Visitor',  blurb: 'Browsing without an account' },
