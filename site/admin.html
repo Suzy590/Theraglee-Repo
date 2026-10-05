@@ -30,7 +30,9 @@
 
 <script type="module">
 import { chrome, sb, requireAuth, esc, toast, busy, fmtDate, modal, callStripeFn } from './assets/app.js';
-await chrome();
+// The admin screen is a working page, not a member one, so it goes without the
+// feature showcase beside it and keeps the whole width for its tables.
+await chrome({ showcase: false });
 const a = await requireAuth();
 if (a) {
 const root = document.getElementById('root');
