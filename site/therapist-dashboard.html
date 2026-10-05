@@ -846,8 +846,15 @@ function profile(){
   const initials = ((firstName?.[0]||'') + (lastName?.[0]||'')).toUpperCase();
   photoFile = null; photoRemoved = false;
   officeKeep = [...(t.practice_photos || [])]; officeAdd = []; officeDrop = [];
+  const saveLabel = t.id ? 'Save changes' : 'Save my profile';
+  const viewLink = t.published
+    ? `<a class="btn ghost" href="therapist.html?slug=${esc(t.slug)}">View public profile</a>` : '';
   render(`
     <form id="pform">
+      <div class="row" style="justify-content:flex-end;margin-bottom:20px">
+        <button class="btn lg js-save" type="submit">${saveLabel}</button>
+        ${viewLink}
+      </div>
       ${t.verification === 'rejected' ? `<div class="notice err" style="margin-bottom:20px">
         We could not confirm that license as current and in good standing. Check the number,
         state and license type, then save to resubmit.</div>` : ''}
@@ -855,7 +862,7 @@ function profile(){
         ? '<strong>Step 2 of 2 · Complete your profile.</strong> Save it and we check your license with your state board. '
         : ''}Nothing is public until your license is verified. The moment it is, your listing goes live on its own.</div>` : ''}
 
-      <h2>Who you are</h2>
+      <h2>Edit your profile here</h2>
       <div class="grid g2">
         <div class="field"><label for="fn">First name *</label><input id="fn" value="${esc(firstName)}" required></div>
         <div class="field"><label for="ln">Last name *</label><input id="ln" value="${esc(lastName)}" required></div>
@@ -994,10 +1001,10 @@ function profile(){
         <input id="web" type="url" value="${esc(t.website||'')}" placeholder="https://…"></div>
 
       <div class="row" style="margin-top:24px">
-        <button class="btn lg" id="save" type="submit">${t.id ? 'Save changes' : 'Save my profile'}</button>
+        <button class="btn lg js-save" id="save" type="submit">${saveLabel}</button>
         ${t.id && t.verification !== 'verified'
           ? `<button type="button" class="btn ghost" id="verify">Check my license now</button>` : ''}
-        ${t.published ? `<a class="btn ghost" href="therapist.html?slug=${esc(t.slug)}">View public profile</a>` : ''}
+        ${viewLink}
       </div>
     </form>`);
 
@@ -1117,8 +1124,10 @@ async function save(e){
     website: V('web') || null,
   };
 
-  const btn = document.getElementById('save');
-  busy(btn, true, 'Saving…');
+  // Both Save buttons (top and bottom of the form) show the same state.
+  const saveBtns = [...document.querySelectorAll('#pform .js-save')];
+  const setBusy = (on, label) => saveBtns.forEach(b => busy(b, on, label));
+  setBusy(true, 'Saving…');
 
   // The picture goes to storage first, so the row below can carry its address.
   // Same path every time, so a new upload replaces the old file; the ?v= makes
@@ -1126,7 +1135,7 @@ async function save(e){
   if (photoFile) {
     const { error: upErr } = await sb.storage.from(PHOTO_BUCKET)
       .upload(photoPath(), photoFile, { upsert: true, contentType: 'image/jpeg', cacheControl: '3600' });
-    if (upErr) { busy(btn, false); return toast(`The photo did not upload: ${upErr.message}`,'err'); }
+    if (upErr) { setBusy(false); return toast(`The photo did not upload: ${upErr.message}`,'err'); }
     payload.photo_url = sb.storage.from(PHOTO_BUCKET).getPublicUrl(photoPath()).data.publicUrl
       + '?v=' + Date.now();
   } else if (photoRemoved) {
@@ -1142,7 +1151,7 @@ async function save(e){
       const path = `${officeDir()}/${Date.now()}-${i}.jpg`;
       const { error: upErr } = await sb.storage.from(PHOTO_BUCKET)
         .upload(path, p.blob, { contentType: 'image/jpeg', cacheControl: '3600' });
-      if (upErr) { busy(btn, false); return toast(`An office picture did not upload: ${upErr.message}`,'err'); }
+      if (upErr) { setBusy(false); return toast(`An office picture did not upload: ${upErr.message}`,'err'); }
       added.push(sb.storage.from(PHOTO_BUCKET).getPublicUrl(path).data.publicUrl);
     }
     payload.practice_photos = [...officeKeep, ...added];
@@ -1153,7 +1162,7 @@ async function save(e){
   const { data, error } = T?.id
     ? await sb.from('therapist_profiles').update(payload).eq('id', T.id).select().single()
     : await sb.from('therapist_profiles').insert(payload).select().single();
-  busy(btn, false);
+  setBusy(false);
   if (error) return toast(error.message,'err');
   const isNew = !T?.id;
   T = data; clearAccess();
