@@ -560,14 +560,31 @@ async function members(){
 
   render(`
     <h2>Members who have toggled ON <strong>Theraglee Match Mode</strong></h2>
-    <p class="muted">Theraglee members who switched on <strong>Theraglee Match Mode</strong>. Each
-      one is pseudonymous: you see their pseudonym, their age range, their gender (they can prefer not
-      to answer), the broad topics they want to work on, whether they prefer in-person, video, or either, their insurance plan (or that they plan to pay out of
-      pocket), and the first three digits of their zip code. Members whose plan is among the insurance
-      you accept on your listing are marked <strong>Takes your insurance</strong>. Never a
-      name, an exact location or an email address, and never anything they have written in their
-      journal. A member who answers your message gives you their real name with the reply. A member
-      can block you at any time; you then stop seeing them and cannot write to them.</p>
+    <p class="muted">Theraglee members who have switched ON <strong>Theraglee Match Mode</strong> will be
+      listed here.</p>
+    <p class="muted">Each profile shown below is pseudonymous. You see their pseudonym, their age range,
+      their gender (they can choose not to provide it), the broad topics they would like to work on in
+      therapy, whether they prefer in-person, telehealth (video), or either, their insurance plan (or
+      that they plan to pay out-of-pocket), and the first three digits of their zip code.</p>
+    <p class="muted">Members are matched with you based on:</p>
+    <ul class="muted">
+      <li>your specialties listed on your profile and the broad topics the member has indicated they
+        would like to work on.</li>
+      <li>the proximity of your zip code and the member's zip code. If the member has indicated they
+        are open to telehealth (video) and so have you, you may see members who are not necessarily
+        near your zip code; you may see members open to telehealth (video) throughout your entire
+        state of practice.</li>
+      <li>the insurance plans that you have indicated you are credentialed with and the insurance plan
+        the member has. If the member has selected that they plan to pay cash for their sessions, it
+        is assumed that you will accept cash.</li>
+      <li>the age range you have indicated you work with in your practice and the age range the member
+        has indicated they are.</li>
+    </ul>
+    <p class="muted">If you do not feel that a member is a good match for you, you do not need to reply
+      to them. The member will not know who they were matched with. They will only know who chose to
+      respond.</p>
+    <p class="muted">Once you respond to a member, your message will be in their Theraglee inbox. If
+      they choose to respond to you, they will then be required to share their real name with you.</p>
     ${!liveListing ? `<div class="notice warn">Your listing has to be live before you can
       reach out.</div>` : ''}
 
