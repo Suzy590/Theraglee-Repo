@@ -19,6 +19,19 @@
   @container(max-width:700px){.layout{grid-template-columns:1fr}
     .filters{position:static!important}}
   .filters{position:sticky;top:96px}
+  /* How would you like to meet? Plain "Sessions" chips until a zip code is
+     typed; then a soft green panel that asks, and explains what each choice
+     shows. */
+  .meet.ask{background:var(--soft);border:1px solid var(--mist);border-radius:var(--r);padding:14px}
+  .meet.ask label{color:var(--ink);font-weight:500}
+  .meet .how{margin:10px 0 0;padding-left:18px;font-size:.84rem;color:var(--muted);line-height:1.45}
+  .meet .how li{margin:0 0 6px} .meet .how li:last-child{margin-bottom:0}
+  .meet .how strong{font-weight:500;color:var(--ink-2)}
+  .help.bad{color:var(--danger)}
+  /* The line above the results that says how the zip code and the choice shaped them. */
+  .how-note{margin:0 0 12px;padding:12px 16px;border-radius:var(--r-sm);background:var(--soft);
+    border:1px solid var(--mist);font-size:.9rem;color:var(--ink-2)}
+  .how-note strong{font-weight:500}
   .tcard{display:flex;gap:16px;background:var(--paper);border:1px solid var(--hair);
     border-radius:var(--r);padding:20px;margin-bottom:14px;box-shadow:var(--shadow-1);cursor:pointer;
     transition:transform .3s cubic-bezier(.22,1,.36,1),box-shadow .3s}
@@ -54,23 +67,27 @@
     <aside class="filters">
       <div class="card">
         <div class="field"><label for="f-q">Name or keyword</label><input id="f-q" type="text" placeholder="Search"></div>
-        <div class="field"><label for="f-zip">Zip code</label><input id="f-zip" type="text" inputmode="numeric" placeholder="e.g. 90210"></div>
-        <div class="field"><label for="f-state">State</label><select id="f-state"><option value="">Any state</option></select></div>
+        <div class="field"><label for="f-zip">Zip code</label><input id="f-zip" type="text" inputmode="numeric" maxlength="10" autocomplete="postal-code" placeholder="e.g. 90210">
+          <div class="help" id="zip-help">Optional. Type one and we'll ask how you'd like to meet; that choice decides which therapists you see.</div></div>
+        <div class="field meet" id="meet"><label id="meet-label">Sessions</label><div class="chips" id="f-delivery">
+          <button class="chip on" data-d="">Either</button>
+          <button class="chip" data-d="in_person">In person</button>
+          <button class="chip" data-d="telehealth">Telehealth (video)</button></div>
+          <ul class="how" id="meet-how" hidden></ul></div>
+        <div class="field"><label for="f-state">State</label><select id="f-state"><option value="">Any state</option></select>
+          <div class="help" id="state-help" hidden></div></div>
         <div class="field"><label for="f-spec">Specialty</label><select id="f-spec"><option value="">Any specialty</option></select></div>
         <div class="field"><label for="f-ins">Insurance</label><select id="f-ins"><option value="">Any insurance</option></select></div>
         <div class="field"><label for="f-lang">Language</label><select id="f-lang"><option value="">Any language</option></select></div>
         <div class="field"><label for="f-gender">Gender</label><select id="f-gender">
           <option value="">Any</option><option>Female</option><option>Male</option><option>Non-binary</option></select></div>
-        <div class="field"><label>Sessions</label><div class="chips" id="f-delivery">
-          <button class="chip on" data-d="">Either</button>
-          <button class="chip" data-d="in_person">In person</button>
-          <button class="chip" data-d="telehealth">Telehealth</button></div></div>
         <button class="btn block" id="search">Search</button>
         <button class="btn ghost block sm" id="clear" style="margin-top:8px">Clear filters</button>
       </div>
     </aside>
 
     <div>
+      <div class="how-note" id="how" hidden></div>
       <p class="faint" id="count">Searching…</p>
       <div id="results"><div class="skeleton" style="height:110px;margin-bottom:14px"></div>
         <div class="skeleton" style="height:110px"></div></div>
@@ -85,6 +102,7 @@
 <script type="module">
 import { chrome, sb, esc, toast } from './assets/app.js';
 import { SPECIALTIES, INSURANCES, LANGUAGES, STATES } from './assets/lists.js';
+import { zipDigits, zipState, zipArea } from './assets/zip-state.js';
 await chrome({ active:'therapists.html' });
 
 const fill = (id, items, val = x=>x, label = x=>x) => {
@@ -97,26 +115,132 @@ fill('f-spec', SPECIALTIES);
 fill('f-ins', INSURANCES);
 fill('f-lang', LANGUAGES);
 
+const V = id => document.getElementById(id).value.trim();
+const $ = id => document.getElementById(id);
+const STATE_NAMES = new Map(STATES);
+
+// How the visitor wants to meet: '' (either), 'in_person' or 'telehealth'.
+// Without a zip code it is a plain filter with Either chosen by default. With
+// a zip code it decides the whole search, so the page asks for it fresh each
+// time a zip code is typed and searches only once the visitor has answered:
+//   In person           an office in the zip code area (same first three
+//                       digits) and in-person sessions offered
+//   Telehealth / Either licensed in the zip code's state, anywhere in it,
+//                       and telehealth (video) offered
+// search_therapists (supabase/migrations/..._therapist_search_by_zip_and_delivery.sql)
+// applies the same rule on the server; this page explains it.
 let delivery = '';
+let asked = false;   // a zip code is typed and the visitor has not yet said how they'd like to meet
+let zip = null;      // { zip, state, stateName, area } for a valid zip code, else null
+
+const DELIVERY_LABEL = { '': 'Either', in_person: 'In person', telehealth: 'Telehealth (video)' };
+
+function setChips(value){
+  document.querySelectorAll('#f-delivery .chip').forEach(c =>
+    c.classList.toggle('on', value !== null && c.dataset.d === value));
+}
+
+// Reads the zip code box: sets the State filter to the zip code's state,
+// turns the Sessions chips into the "How would you like to meet?" prompt, and
+// says so when the zip code is not one we know.
+function readZip(){
+  const text = V('f-zip');
+  const digits = zipDigits(text);
+  const state = zipState(digits);
+  const help = $('zip-help'), stateSel = $('f-state'), stateHelp = $('state-help');
+  const before = zip;
+  zip = digits && state ? { zip: digits, state, stateName: STATE_NAMES.get(state) || state, area: zipArea(digits) } : null;
+
+  if (!text) {
+    help.textContent = "Optional. Type one and we'll ask how you'd like to meet; that choice decides which therapists you see.";
+    help.classList.remove('bad');
+  } else if (!digits) {
+    help.textContent = 'Enter a 5-digit US zip code.'; help.classList.add('bad');
+  } else if (!state) {
+    help.textContent = `We don't know which state ${digits} is in. Try another zip code, or clear it and pick a state.`;
+    help.classList.add('bad');
+  } else {
+    help.textContent = `${digits} is in ${zip.stateName}.`; help.classList.remove('bad');
+  }
+
+  if (zip) {
+    stateSel.value = zip.state; stateSel.disabled = true;
+    stateHelp.textContent = `Set by your zip code. Clear the zip code to pick a state yourself.`; stateHelp.hidden = false;
+    if (!before) { asked = true; setChips(null); }           // a fresh zip code: ask again
+  } else {
+    if (before) { stateSel.value = ''; }
+    stateSel.disabled = false; stateHelp.hidden = true;
+    if (asked) { asked = false; delivery = ''; setChips(''); }
+  }
+  renderMeet();
+}
+
+// The Sessions field: plain chips, or the prompt with its explanation once a
+// zip code is in.
+function renderMeet(){
+  const meet = $('meet'), label = $('meet-label'), how = $('meet-how');
+  meet.classList.toggle('ask', !!zip);
+  if (!zip) { label.textContent = 'Sessions'; how.hidden = true; how.innerHTML = ''; return; }
+  label.textContent = asked ? 'How would you like to meet?' : `How you'd like to meet: ${DELIVERY_LABEL[delivery]}`;
+  how.innerHTML = `
+    <li><strong>In person</strong> shows therapists who offer in-person sessions and have an office in
+      your zip code area: zip codes starting <strong>${esc(zip.area.slice(0,3))}</strong>, like ${esc(zip.zip)}.</li>
+    <li><strong>Telehealth (video)</strong> or <strong>Either</strong> shows therapists licensed in
+      <strong>${esc(zip.stateName)}</strong> who offer telehealth (video), anywhere in the state. Video
+      sessions don't depend on where you live, only on where the therapist is licensed.</li>`;
+  how.hidden = false;
+}
+
+// The note above the results, so the visitor can see how the zip code and
+// their choice shaped them.
+function renderHow(){
+  const how = $('how');
+  if (!zip || asked) { how.hidden = true; return; }
+  how.innerHTML = delivery === 'in_person'
+    ? `Showing therapists who offer <strong>in-person sessions</strong> with an office in the
+       <strong>${esc(zip.area)}</strong> zip code area, because you chose In person for ${esc(zip.zip)}.
+       Pick Telehealth (video) or Either to see therapists across ${esc(zip.stateName)} instead.`
+    : `Showing therapists licensed in <strong>${esc(zip.stateName)}</strong> who offer
+       <strong>telehealth (video)</strong>, anywhere in the state, because you chose
+       ${esc(DELIVERY_LABEL[delivery])} for ${esc(zip.zip)}. Pick In person to see only offices near you.`;
+  how.hidden = false;
+}
+
 document.querySelectorAll('#f-delivery .chip').forEach(c => c.addEventListener('click', () => {
-  document.querySelectorAll('#f-delivery .chip').forEach(x=>x.classList.remove('on'));
-  c.classList.add('on'); delivery = c.dataset.d; run();
+  setChips(c.dataset.d); delivery = c.dataset.d; asked = false; renderMeet(); run();
 }));
 
-const V = id => document.getElementById(id).value.trim();
+// A search the visitor asks for by hand (the button or Enter): says what is
+// still missing instead of searching without it.
+function search(){
+  readZip();
+  if (V('f-zip') && !zip) { toast('Enter a 5-digit US zip code.', 'err'); return $('f-zip').focus(); }
+  if (asked) { toast("Choose how you'd like to meet first.", 'err'); return $('f-delivery').querySelector('.chip').focus(); }
+  run();
+}
 
 async function run(){
-  const res = document.getElementById('results');
+  const res = $('results');
+  renderHow();
+  if (asked) {
+    $('count').textContent = 'Waiting on one more choice';
+    res.innerHTML = `<div class="empty">
+      <p style="margin:0 0 6px"><strong>How would you like to meet?</strong></p>
+      <p class="faint" style="margin:0">Choose In person, Telehealth (video) or Either under the zip code
+        to see therapists for ${esc(zip.zip)}.</p></div>`;
+    return;
+  }
+  $('count').textContent = 'Searching…';
   res.innerHTML = '<div class="skeleton" style="height:110px"></div>';
   const { data, error } = await sb.rpc('search_therapists', {
-    p_q: V('f-q') || null, p_zip: V('f-zip') || null, p_state: V('f-state') || null,
+    p_q: V('f-q') || null, p_zip: zip ? zip.zip : null, p_state: zip ? zip.state : (V('f-state') || null),
     p_specialty: V('f-spec') || null, p_insurance: V('f-ins') || null,
     p_gender: V('f-gender') || null, p_delivery: delivery || null,
     p_language: V('f-lang') || null, p_limit: 40, p_offset: 0,
   });
   if (error) { res.innerHTML = '<div class="empty">Search failed.</div>'; return console.error(error); }
 
-  document.getElementById('count').textContent =
+  $('count').textContent =
     `${data.length} therapist${data.length===1?'':'s'}`;
 
   const picked = V('f-ins');
@@ -165,7 +289,9 @@ async function run(){
       </div></div>`;
   }).join('') : `<div class="empty">
       <p style="margin:0 0 6px"><strong>No therapists match that yet.</strong></p>
-      <p class="faint" style="margin:0">Try widening your filters. New practices are added as they verify.</p>
+      <p class="faint" style="margin:0">${zip && delivery === 'in_person'
+        ? `No offices in the ${esc(zip.area)} area yet. Try Telehealth (video) or Either to see therapists across ${esc(zip.stateName)}, or widen your filters.`
+        : 'Try widening your filters. New practices are added as they verify.'}</p>
     </div>`;
 
   // The card opens the profile page, as it always has, except on its buttons,
@@ -224,16 +350,27 @@ function quickLook(card, t){
   btn.setAttribute('aria-expanded', String(opening));
 }
 
-document.getElementById('search').addEventListener('click', run);
-document.getElementById('clear').addEventListener('click', () => {
-  ['f-q','f-zip','f-state','f-spec','f-ins','f-lang','f-gender'].forEach(id => document.getElementById(id).value = '');
-  document.querySelectorAll('#f-delivery .chip').forEach((x,i)=>x.classList.toggle('on', i===0));
-  delivery = ''; run();
+$('search').addEventListener('click', search);
+$('clear').addEventListener('click', () => {
+  ['f-q','f-zip','f-state','f-spec','f-ins','f-lang','f-gender'].forEach(id => $(id).value = '');
+  delivery = ''; asked = false; setChips('');
+  readZip(); run();
 });
-document.getElementById('f-q').addEventListener('keydown', e => { if (e.key==='Enter') run(); });
+$('f-q').addEventListener('keydown', e => { if (e.key==='Enter') search(); });
+// Typing a zip code asks how the visitor would like to meet; editing one that
+// was already answered searches again; clearing it searches without it.
+$('f-zip').addEventListener('input', () => {
+  const before = zip && zip.zip;
+  readZip();
+  const now = zip && zip.zip;
+  if (asked) run();                                   // show the prompt in place of results
+  else if (before !== now) run();                     // changed to another zip code, or cleared
+});
+$('f-zip').addEventListener('keydown', e => { if (e.key==='Enter') search(); });
 ['f-state','f-spec','f-ins','f-lang','f-gender'].forEach(id =>
-  document.getElementById(id).addEventListener('change', run));
+  $(id).addEventListener('change', run));
 
+readZip();
 run();
 </script>
 </body>
