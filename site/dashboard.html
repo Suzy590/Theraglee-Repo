@@ -219,6 +219,16 @@
               <div class="card"><div class="skeleton"></div></div>
               <div class="card"><div class="skeleton"></div></div>
             </div>
+            <!-- Today's stepping stones (assets/today-step.js): the prompt for the
+                 Mental Health Goals trail, with pebbles that count right here.
+                 Premium only; the module hides the zone for everyone else. -->
+            <section class="zone" id="trail-zone" aria-labelledby="trail-zone-title" hidden>
+              <div class="zone-head">
+                <h2 id="trail-zone-title">Today's stepping stones</h2>
+                <p class="muted">One small step toward your goal counts the whole day. Tap a pebble when it is done.</p>
+              </div>
+              <div id="trail-host"><div class="card"><div class="skeleton" style="height:100px"></div></div></div>
+            </section>
             <section class="zone" aria-labelledby="mood-zone-title">
               <div class="zone-head">
                 <h2 id="mood-zone-title">Today's mood</h2>
@@ -439,6 +449,7 @@ import { mountDiscover } from './assets/discover-ui.js';
 import { mountMood } from './assets/mood-ui.js';
 import { mountJournal } from './assets/journal-ui.js';
 import { mountGoals } from './assets/goals-ui.js';
+import { mountTodayStep } from './assets/today-step.js';
 import { mountPlaylists } from './assets/playlists-ui.js';
 import { mapView as mountNearby } from './assets/nearby-ui.js';
 import { loadPrices, tierCards, PLANS_INTRO, PLANS_NOTE } from './assets/plans.js';
@@ -494,6 +505,13 @@ function showTab(next) {
       if (!PANELS.includes(next)) scrollToHash();
     });
   }
+  // Today's stepping stones: drawn the first time Today opens, and drawn again
+  // on every return so a step taken on the Goals tab shows here too.
+  if (tab === 'today') {
+    if (!mounted.trail) {
+      mounted.trail = mountTodayStep(document.getElementById('trail-host'), { sb, uid: a.profile.id, level: a.level, esc, toast });
+    } else mounted.trail.then(t => t.refresh());
+  }
   // The journal opens on today's prompt, or on the one a link names
   // (dashboard.html?prompt=…#journal, where journal.html now forwards).
   if (tab === 'journal' && !mounted.journal) {
@@ -537,6 +555,8 @@ function scrollToHash() {
   if (el && (!panel || panel.classList.contains('on'))) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 const mounted = {};
+// A pebble tapped on Today changes the trail, so the Goals tab is drawn fresh next time it opens.
+document.getElementById('trail-host').addEventListener('trail-step', () => { mounted.goals = false; });
 document.querySelectorAll('#tabs button').forEach(b => b.addEventListener('click', () => {
   history.replaceState({}, '', '#' + b.dataset.tab); showTab(b.dataset.tab);
 }));

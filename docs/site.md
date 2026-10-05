@@ -38,7 +38,9 @@ the other.
 | Header links | Dashboard (signed in only), For Therapists; visitors also get Sign in and Join free | Dashboard, Stats, Messages, Library, My profile, Directory |
 
 The member dashboard opens on a **Today** tab (the daily affirmation, quote,
-tip and fun fact, beside the Match Mode switch, the mood check-in, and under it
+tip and fun fact, beside the Match Mode switch, then for Premium members
+today's stepping stones from their Mental Health Goals trail
+(`assets/today-step.js`, see `docs/quest-map.md`), the mood check-in, and under it
 the member's progress: the week's counts, challenges in progress, favorites,
 saved for later and unfinished items, at `dashboard.html#progress`), which
 is what a member sees first after signing in. Signing in on `login.html` always

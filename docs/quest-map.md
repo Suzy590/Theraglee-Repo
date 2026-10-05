@@ -85,6 +85,27 @@ reopens the picker for the current one at any time.
 
 "Today" is the member's own calendar day (browser local date).
 
+### Where the member is asked
+
+Nobody should have to remember to open the Goals tab to be asked for today's
+step, so the prompt comes to them in two places:
+
+- **The dashboard's Today tab** has a **Today's stepping stones** zone above
+  the mood check-in (`site/assets/today-step.js`, mounted from
+  `site/dashboard.html`). It shows the same status box as the Goals tab
+  ("Today is done." or "Today still needs one step."), the goal and the
+  milestone being worked on, and the milestone's stones with pebbles that
+  write the same `quest_steps` row. It is drawn again every time Today
+  opens, and a tap there makes the Goals tab draw fresh next time. Premium
+  only; the zone stays hidden for everyone else, and a Premium member with no
+  goal sees one line and a **Set a goal** button. When the weekly question is
+  due it says so and points at the Goals tab, where the answer is given.
+- **The morning email** (`supabase/functions/daily-digest/index.ts`) carries a
+  **Today's stepping stone** section for a Premium member with an unreached
+  milestone: the goal, the milestone, "any one stepping stone counts the whole
+  day", and a button to the Goals tab. It rides along with whatever else the
+  member chose for the email; it never sends an email on its own.
+
 ## The trail map
 
 `trailMap({ goal, milestones, current, stepFrac, days, scene })` is one SVG:
