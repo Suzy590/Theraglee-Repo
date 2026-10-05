@@ -279,18 +279,18 @@ function needsListing(){
 
 /* ------------------------------------------------------------- home */
 // The therapist's own front page: where the listing stands, what Theraglee
-// brought in this month, what is waiting, and everything the membership includes.
+// brought in this month, and what is waiting. What the membership includes
+// is on the Membership tab.
 async function home(){
   if (!T) return needsListing();
   render('<div class="skeleton" style="height:200px"></div>');
   await noteMatches();
-  const [{ data: stats }, { data: msgs }, { data: reqs }, { data: cat }, { data: cfgRows }, { count: nReplies }, { count: nBack }] = await Promise.all([
+  const [{ data: stats }, { data: msgs }, { data: reqs }, { data: cfgRows }, { count: nReplies }, { count: nBack }] = await Promise.all([
     sb.rpc('therapist_stats', { p_days: 30 }),
     sb.from('therapist_messages').select('id,sender_name,created_at,read_at')
       .eq('therapist_id', T.id).order('created_at', { ascending:false }).limit(3),
     sb.from('member_discovery').select('id,already_contacted').limit(200),
-    sb.from('therapist_resource_catalog').select('*'),
-    sb.from('app_config').select('key,value').in('key', ['identity_required','connect_enabled']),
+    sb.from('app_config').select('key,value').in('key', ['identity_required']),
     sb.from('outreach_replies').select('id', { count:'exact', head:true })
       .eq('therapist_id', T.id).is('read_at', null),
     unreadWritebackCount(),
@@ -300,7 +300,6 @@ async function home(){
   unread = (stats?.unread_messages || 0) + (nBack || 0);
   unreadReplies = nReplies || 0;
   const waiting = (reqs||[]).filter(r => !r.already_contacted).length;
-  const libTotal = (cat||[]).reduce((s,r)=>s+r.total, 0);
   const verified = T.verification === 'verified';
   const idOk = T.identity_status === 'verified';
   const needsId = cfg.identity_required === 'true' && !idOk;
@@ -326,12 +325,6 @@ async function home(){
         cta: '' };
 
   const tile = (n, label) => `<div class="stat"><div class="n">${n ?? 0}</div><div class="l">${label}</div></div>`;
-  const state = (ok, yes, no) => ok ? `<span class="badge">${yes}</span>` : `<span class="badge gray">${no}</span>`;
-  const benefit = (href, title, blurb, badge, cls = '') => `
-    <a class="tile${cls ? ' ' + cls : ''}" href="${href}">
-      <div class="row" style="justify-content:space-between;align-items:flex-start">
-        <h3>${title}</h3>${badge}</div>
-      <p class="meta"${cls ? '' : ' style="color:var(--muted)"'}>${blurb}</p></a>`;
 
   render(`
     <div class="card pad-lg" style="margin-bottom:22px">
@@ -381,33 +374,6 @@ async function home(){
           ${unreadReplies===1?'reply':'replies'}</strong> from members waiting for you.</p>` : ''}
         <a class="btn sm ghost" style="margin-top:14px" href="#members">See who is waiting</a>
       </div>
-    </div>
-
-    <h2 style="margin-top:34px">What your membership includes</h2>
-    <p class="muted">One flat therapist membership. Nothing here is tiered, and nothing from the
-      member plans is mixed in.</p>
-    <div class="grid g3">
-      ${benefit('#members', 'Theraglee Match Mode',
-        'Reach out to members who asked to be contacted, instead of waiting to be found. They stay pseudonymous until they reply.',
-        state(liveListing, 'Ready', 'Needs a live listing'), 'star')}
-      ${benefit('#profile', 'A verified, searchable directory listing',
-        'Specialties, insurances, languages, locations, fees and telehealth, found by zip and more.',
-        state(verified, 'License verified', T.verification === 'rejected' ? 'Not verified' : 'Verification pending'))}
-      ${benefit('#profile', 'A Theraglee phone number',
-        'Callers reach you through a tracking number, so your own line stays private and every call is counted.',
-        state(!!T.tracking_phone, 'Assigned', 'Assigned when you go live'))}
-      ${benefit('#messages', 'Messages without your address',
-        'People write to you through Theraglee. You reply from your own inbox; they never see it.',
-        state(true, 'Included', ''))}
-      ${benefit('#referrals', 'Referral stats',
-        'Match Mode matches, calls, messages, website clicks, shares and profile views, with the previous period alongside.',
-        state(true, 'Included', ''))}
-      ${benefit('#library', 'Clinician library',
-        `${libTotal || 'Dozens of'} worksheets and CBT, ACT, DBT, couples, kids and game exercises, printable with guidance.`,
-        state(paid && verified, 'Open', 'Opens with membership'))}
-      ${cfg.connect_enabled === 'true' ? benefit('#membership', 'Get paid through Theraglee',
-        'Clients can pay for a session from your profile. Stripe pays out to your own bank account.',
-        state(T.stripe_account_status === 'enabled', 'Ready for payouts', 'Set up in Membership')) : ''}
     </div>`);
 }
 
@@ -1317,10 +1283,11 @@ async function runVerification(e){
 /* ------------------------------------------------------- membership */
 async function membership(){
   render('<div class="skeleton" style="height:140px"></div>');
-  const [{ data: checks }, { data: cfgRows }] = await Promise.all([
+  const [{ data: checks }, { data: cat }, { data: cfgRows }] = await Promise.all([
     T ? sb.from('license_verifications').select('*')
           .eq('therapist_id', T.id).order('checked_at', { ascending:false }).limit(5)
       : Promise.resolve({ data: [] }),
+    sb.from('therapist_resource_catalog').select('*'),
     sb.from('app_config').select('key,value')
       .in('key', ['identity_required','connect_enabled','platform_fee_percent',
                   'display_therapist_monthly','display_therapist_yearly','founding_enabled',
@@ -1342,6 +1309,17 @@ async function membership(){
                       enabled:'Ready for payouts', restricted:'Needs attention' }[acct] || acct;
   const connectOn = cfg.connect_enabled === 'true';
   const feeDollars = T?.session_fee_cents ? String(Math.round(T.session_fee_cents / 100)) : '';
+
+  // "What your membership includes": one tile per benefit, each marked with
+  // where this account stands on it.
+  const verified = T?.verification === 'verified';
+  const libTotal = (cat||[]).reduce((s,r)=>s+r.total, 0);
+  const state = (ok, yes, no) => ok ? `<span class="badge">${yes}</span>` : `<span class="badge gray">${no}</span>`;
+  const benefit = (href, title, blurb, badge, cls = '') => `
+    <a class="tile${cls ? ' ' + cls : ''}" href="${href}">
+      <div class="row" style="justify-content:space-between;align-items:flex-start">
+        <h3>${title}</h3>${badge}</div>
+      <p class="meta"${cls ? '' : ' style="color:var(--muted)"'}>${blurb}</p></a>`;
 
   // One-time pointer for an account that chose the founding rate at sign-up.
   const foundingHello = wantFounding && !paid
@@ -1387,9 +1365,36 @@ async function membership(){
       ${paid ? '' : `<p class="faint" style="margin:14px 0 0">One flat membership for licensed
         professionals, separate from the member plans. Your listing goes live once your license
         is verified, and it opens the clinician library and Theraglee Match Mode. Cancel any time.
-        <a href="for-therapists.html#membership">Everything it includes</a>.</p>`}
+        Everything it includes is listed below.</p>`}
     </div>
     ${paysStripe ? discountCodeBox() : ''}
+
+    <h2 style="margin-top:34px">What your membership includes</h2>
+    <p class="muted">One flat therapist membership. Nothing here is tiered, and nothing from the
+      member plans is mixed in.</p>
+    <div class="grid g3">
+      ${benefit('#members', 'Theraglee Match Mode',
+        'Reach out to members who asked to be contacted, instead of waiting to be found. They stay pseudonymous until they reply.',
+        state(liveListing, 'Ready', 'Needs a live listing'), 'star')}
+      ${benefit('#profile', 'A verified, searchable directory listing',
+        'Specialties, insurances, languages, locations, fees and telehealth, found by zip and more.',
+        state(verified, 'License verified', T?.verification === 'rejected' ? 'Not verified' : 'Verification pending'))}
+      ${benefit('#profile', 'A Theraglee phone number',
+        'Callers reach you through a tracking number, so your own line stays private and every call is counted.',
+        state(!!T?.tracking_phone, 'Assigned', 'Assigned when you go live'))}
+      ${benefit('#messages', 'Messages without your address',
+        'People write to you through Theraglee. You reply from your own inbox; they never see it.',
+        state(true, 'Included', ''))}
+      ${benefit('#referrals', 'Referral stats',
+        'Match Mode matches, calls, messages, website clicks, shares and profile views, with the previous period alongside.',
+        state(true, 'Included', ''))}
+      ${benefit('#library', 'Clinician library',
+        `${libTotal || 'Dozens of'} worksheets and CBT, ACT, DBT, couples, kids and game exercises, printable with guidance.`,
+        state(paid && verified, 'Open', 'Opens with membership'))}
+      ${connectOn ? benefit('#membership', 'Get paid through Theraglee',
+        'Clients can pay for a session from your profile. Stripe pays out to your own bank account.',
+        state(acct === 'enabled', 'Ready for payouts', 'Set up below')) : ''}
+    </div>
 
     ${T ? `
     <h3 style="margin-top:32px">Identity check</h3>
