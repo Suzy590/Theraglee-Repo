@@ -35,7 +35,7 @@ export const PLANS = [
       'Theraglee Match Mode — let the right therapist find you',
     ],
     cta: { label: 'Create my free account', href: 'signup.html' } },
-  { key: 'basic', level: 2, name: 'Basic',
+  { key: 'basic', level: 2, name: 'Basic', featured: true,
     feats: [
       'Everything in Free, plus:',
       'Expanded library access',
@@ -46,7 +46,7 @@ export const PLANS = [
       'Downloadable desktop pet',
     ],
     cta: { label: 'Go Basic', href: 'pricing.html' } },
-  { key: 'premium', level: 3, name: 'Premium', featured: true,
+  { key: 'premium', level: 3, name: 'Premium',
     feats: [
       'Everything in Basic, plus:',
       'Music playlists by genre and mood',
