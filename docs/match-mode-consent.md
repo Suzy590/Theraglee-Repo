@@ -104,6 +104,6 @@ have written.
   (`site/assets/inbox.js`)
 - The "What is Theraglee Match Mode?" answer on the pricing, account and
   For Therapists pages
-- The practice dashboard's Member requests tab (`site/therapist-dashboard.html`)
+- The member requests on the practice dashboard's Home tab (`site/therapist-dashboard.html`)
 - Privacy Policy sections on therapists and on consumer health data
   (`site/privacy.html`)

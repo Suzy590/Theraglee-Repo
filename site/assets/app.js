@@ -288,7 +288,6 @@ const THERAPIST_NAV = [
   ['Dashboard',       'therapist-dashboard.html'],
   ['Stats',           'therapist-dashboard.html#referrals'],
   ['Messages',        'therapist-dashboard.html#messages'],
-  ['Member requests', 'therapist-dashboard.html#members'],
   ['Library',         'therapist-dashboard.html#library'],
   ['My profile',      'therapist-dashboard.html#profile'],
   ['Directory',       'therapists.html'],

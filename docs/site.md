@@ -35,7 +35,7 @@ the other.
 | Home after signing in | `dashboard.html` | `therapist-dashboard.html` |
 | Account page | `account.html` (tier, profile, privacy, inbox, history) | `account.html` shows a short therapist version (membership, sign-in and data) |
 | Plans | `pricing.html` (Free, Basic, Premium) | `for-therapists.html#membership` (one flat price); billing starts from the practice dashboard |
-| Header links | Dashboard (signed in only), For Therapists; visitors also get Sign in and Join free | Dashboard, Stats, Messages, Member requests, Library, My profile, Directory |
+| Header links | Dashboard (signed in only), For Therapists; visitors also get Sign in and Join free | Dashboard, Stats, Messages, Library, My profile, Directory |
 
 The member dashboard opens on a **Today** tab (the daily affirmation, quote,
 tip and fun fact, beside the Match Mode switch, the mood check-in, and under it
@@ -98,7 +98,7 @@ both dashboards: the header shows **Practice** and **Admin** links, and the admi
 screen links to both. The practice dashboard lets `role = 'admin'` through
 everywhere a therapist would go; the one database change this needed is
 `20260912000000_admin_sees_member_requests.sql`, which lets an admin read
-`member_discovery` (the Member requests tab), and `stripe-checkout` lets an admin
+`member_discovery` (the Home tab's member requests), and `stripe-checkout` lets an admin
 test a therapist checkout the way it already lets them test with payments off.
 
 ## Membership tiers
@@ -136,14 +136,17 @@ facts (license verified, membership active, and the identity check when
 `identity_required` is on) and kept in step by triggers on `therapist_profiles`,
 `profiles.subscription_status` and `app_config`
 (`supabase/migrations/20261004120000_listing_live_on_verification.sql`). The
-practice dashboard opens on the **Membership** tab. (The **Home** tab was removed
-on 2026-10-05: its listing card, thirty-day referral tiles and Messages and
-Member requests cards are on the Membership, Stats, Messages and Member requests
-tabs, and an old `#home` link opens Membership.) Whichever tab the page opens on, the
+practice dashboard opens on a **Home** tab, which is the member requests: the
+Match Mode members waiting to hear from a therapist, each a short pseudonymous
+profile with a button to reach out, and the conversations with the ones who
+replied. (Until 2026-10-05 these were a separate **Member requests** tab and Home
+held a listing card, thirty-day referral tiles and Messages and Member requests
+cards, which are now on the Membership, Stats and Messages tabs. An old
+`#members` link opens Home.) Whichever tab the page opens on, the
 **Messages** tab carries a green pill with the number of conversations from the
 profile's contact form with something unread in them (`therapist_messages.read_at`
 empty, or a member's write-back in `therapist_message_replies` with `read_at`
-empty) and **Member requests** one with the number of unread Match Mode replies
+empty) and **Home** one with the number of unread Match Mode replies
 (`outreach_replies.read_at` empty), the same pill the member dashboard puts on
 its Messages tab; each unread conversation is labeled **New**, and **Mark as
 read** (or answering it) takes the count down. It includes:
@@ -159,7 +162,7 @@ read** (or answering it) takes the count down. It includes:
   first day they showed up for that therapist, however long the reply takes:
   `match_sightings` keeps one row per therapist and member (their ids and the
   moment, nothing else), `note_match_sightings()` adds the missing rows from
-  `member_discovery` whenever the dashboard opens or the Member requests tab is
+  `member_discovery` whenever the dashboard opens or its Home tab is
   drawn, and `therapist_stats()` counts them by `first_seen_at`
   (`supabase/migrations/20261005120000_match_sightings.sql`)
 - the names and topics of members who opted in to being contacted (any registered member can)
