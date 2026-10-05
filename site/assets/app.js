@@ -300,6 +300,7 @@ const THERAPIST_NAV = [
 const DASH_TABS = [
   ['Today',           'today'],
   ['Journal',         'journal'],
+  ['Mental Health Goals', 'goals'],
   ['Playlists',       'playlists'],
   ['Explore Library', 'explore'],
   ['Self-Discovery',  'discover'],
@@ -314,7 +315,7 @@ const DASH_PAGES = {
   'discover.html': 'discover',
   'explore.html': 'tools', 'challenges.html': 'tools',
   'checklist.html': 'tools', 'quiz.html': 'tools', 'worksheet.html': 'tools',
-  'goals.html': 'tools', 'therapists.html': 'therapists.html', 'therapist.html': 'therapists.html',
+  'therapists.html': 'therapists.html', 'therapist.html': 'therapists.html',
   'pet.html': 'fun', 'trivia.html': 'fun', 'mandalas.html': 'fun',
   'articles.html': 'explore', 'article.html': 'explore',
 };

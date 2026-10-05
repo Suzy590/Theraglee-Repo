@@ -53,7 +53,10 @@ and after seven days the patterns; see [`mood.md`](mood.md)), **Playlists**
 (Premium: pick a mood, then a genre, and get forty songs curated for the pair,
 each linking to a search on Apple Music and Spotify; the lists are
 `site/assets/playlists.js`, the tab is `site/assets/playlists-ui.js`, and
-[`playlists.md`](playlists.md) is the guide), **Explore
+[`playlists.md`](playlists.md) is the guide), **Mental Health Goals** (Premium:
+one goal in the member's words, its milestones and today's stepping stones
+with the trail map, drawn from `site/assets/goals-ui.js`; `goals.html`
+forwards here; see [`quest-map.md`](quest-map.md)), **Explore
 Library** (the whole library with search and filters, the same browser as
 `explore.html`, drawn from `site/assets/explore-ui.js`), **Discover** (the 360
 free discovery tools with search and topic chips, the same browser as

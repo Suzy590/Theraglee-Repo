@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Theraglee — the Premium Goals & tracking page (goals.html).
+   Theraglee — the Premium Mental Health Goals tab on the dashboard (dashboard.html#goals).
    --------------------------------------------------------------------------
    Three levels, top to bottom, and the map beside them:
 
