@@ -3,55 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Goals &amp; tracking — Theraglee</title>
+<title>Mental Health Goals — Theraglee</title>
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-<link rel="alternate icon" href="assets/favicon.png" sizes="48x48">
-<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap">
-<link rel="stylesheet" href="assets/styles.css">
-<link rel="stylesheet" href="assets/goals.css">
+<!-- Goals are the Mental Health Goals tab on the dashboard now. Older links
+     land there; the music and map links go to the tabs those moved to earlier. -->
+<script>
+  var tab = location.hash === '#music' ? 'playlists' : location.hash === '#map' ? 'nearby' : 'goals';
+  location.replace('dashboard.html#' + tab);
+</script>
+<noscript><meta http-equiv="refresh" content="0; url=dashboard.html#goals"></noscript>
 </head>
 <body>
-<main class="section"><div class="wrap" id="root">
-  <div class="skeleton" style="height:220px"></div>
-</div></main>
-
-<script type="module">
-import { chrome, sb, requireAuth, esc, toast, busy, fmtDate, lockNotice, modal } from './assets/app.js';
-import { mountGoals } from './assets/goals-ui.js';
-// Tabs that moved: Playlists live on the dashboard, and so does Nearby help.
-if (location.hash === '#music') location.replace('dashboard.html#playlists');
-if (location.hash === '#map') location.replace('dashboard.html#nearby');
-await chrome({ active:'dashboard.html' });
-const a = await requireAuth();
-if (a) {
-const root = document.getElementById('root');
-if (a.level < 3) {
-  lockNotice(root, 3, 'Goals and your trail');
-} else {
-  /* The wellness note. One line, on every screen of this page. */
-  const WELLNESS = `<div class="wellness" role="note"><span aria-hidden="true">🌱</span><div>
-    <strong>General wellness and self-help only.</strong> Theraglee is not psychotherapy or clinical
-    care, and it is not a substitute for help from a licensed professional.
-    <a href="therapists.html">Find a therapist</a> · <a href="dashboard.html#nearby">Help near you</a> ·
-    In crisis, call or text <a href="tel:988">988</a>, or call 911.</div></div>`;
-  root.innerHTML = `
-    <h1>Goals &amp; tracking</h1>
-    <p class="muted" style="max-width:62ch">One goal in your own words, a few milestones you would notice along the way,
-      and small stepping stones each day. The trail grows as you go.</p>
-    ${WELLNESS}
-    <section class="zone" aria-labelledby="goals-zone-title">
-      <div class="zone-head">
-        <h2 id="goals-zone-title">Your trail</h2>
-        <p class="muted">The goal is your ultimate destination at the end of the trail. Milestones are the camps along the
-          way to your goal. Today's stepping stones are the small steps you will take along the way to each camp.</p>
-      </div>
-      <div id="goals-host" class="stack"><div class="skeleton" style="height:160px"></div></div>
-    </section>`;
-  await mountGoals(document.getElementById('goals-host'), { sb, uid: a.profile.id, esc, toast, busy, modal, fmtDate });
-}
-}
-</script>
+<p><a href="dashboard.html#goals">Open your goals</a></p>
 </body>
 </html>

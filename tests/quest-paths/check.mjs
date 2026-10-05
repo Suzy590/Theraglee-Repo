@@ -282,19 +282,34 @@ test("US spelling", () => {
 });
 
 /* ---------------------------------------------------------------- pages */
-test("the page carries the wellness note and crisis line, and the three levels in order", () => {
-  assert.match(page, /General wellness and self-help only/);
-  assert.match(page, /not psychotherapy or clinical\s+care/);
-  assert.match(page, /not a substitute for help from a licensed professional/);
-  assert.match(page, /tel:988/);
-  assert.match(page, /therapists\.html/);
-  assert.match(page, /dashboard\.html#nearby/);
-  assert.match(page, /location\.hash === '#map'\) location\.replace\('dashboard\.html#nearby'\)/);
+test("the tab carries the wellness note and crisis line, and the three levels in order", () => {
+  const goalsTab = dash.slice(dash.indexOf('data-panel="goals"'), dash.indexOf('data-panel="playlists"'));
+  assert.match(goalsTab, /class="wellness"/);
+  assert.match(goalsTab, /General wellness and self-help only/);
+  assert.match(goalsTab, /not psychotherapy or clinical\s+care/);
+  assert.match(goalsTab, /not a substitute for help from a licensed professional/);
+  assert.match(goalsTab, /tel:988/);
+  assert.match(goalsTab, /therapists\.html/);
+  assert.match(goalsTab, /href="#nearby"/);
+  assert.match(goalsTab, /id="goals-host"/);
   const order = ["Your goal", "Working on now", "Today's stepping stones", "Tonight"].map(s => ui.indexOf(s));
   assert.ok(order.every((i, k) => i >= 0 && (k === 0 || i > order[k - 1])), `goal, milestone, stones, tonight: ${order}`);
   assert.match(ui, /Is it happening for you now\?/, "the member decides when a milestone is reached");
   assert.match(ui, /Your words never leave your device and no AI reads them/);
   assert.match(ui, /Today is done\./); assert.match(ui, /Today still needs one step\./);
+});
+
+test("Mental Health Goals is its own tab on the member dashboard's menu bar, and goals.html leads there", () => {
+  assert.match(dash, /<button data-tab="goals" role="tab">Mental Health Goals<\/button>/);
+  assert.match(dash, /'goals'/, "goals is in PANELS");
+  assert.match(dash, /mountGoals\(host, \{ sb, uid: a\.profile\.id/);
+  assert.match(dash, /lockNotice\(host, 3, 'Mental Health Goals'\)/, "Premium only");
+  assert.match(dash, /<link rel="stylesheet" href="assets\/goals\.css">/);
+  assert.match(app, /\['Mental Health Goals',\s*'goals'\]/);
+  assert.doesNotMatch(app, /'goals\.html':/, "the forwarding page shows no tab row");
+  assert.match(page, /location\.replace\('dashboard\.html#' \+ tab\)/);
+  assert.match(page, /'#music' \? 'playlists'/); assert.match(page, /'#map' \? 'nearby'/);
+  assert.match(page, /'goals'/);
 });
 
 test("Nearby help stays on the member dashboard's menu bar", () => {

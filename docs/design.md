@@ -57,14 +57,14 @@ adding a plain tile beside them.
 
 ## Pages outside the dashboard
 
-Challenges, Goals & tracking and Mandalas show the same pattern on a page of
-their own: the page's `h1` and a muted line of introduction, then each section
-in a `.zone` with its `.zone-head`, cards inside. The feature showcase takes
-the right third of every such page on its own (`chrome()` puts it there), so
-a page's content has two thirds of the width to work with. Goals & tracking keeps its
-wellness note above its one zone, which holds the three-level card (goal,
-milestone, stepping stones) and the trail map. A new member page starts the
-same way.
+Challenges and Mandalas show the same pattern on a page of their own: the
+page's `h1` and a muted line of introduction, then each section in a `.zone`
+with its `.zone-head`, cards inside. The feature showcase takes the right
+third of every such page on its own (`chrome()` puts it there), so a page's
+content has two thirds of the width to work with. A new member page starts
+the same way. (Mental Health Goals used to be such a page; it is a dashboard
+tab now, with its wellness note above its one zone, which holds the
+three-level card and the trail map.)
 
 ## Adding a new dashboard tab
 

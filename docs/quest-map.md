@@ -1,6 +1,7 @@
-# Goals & tracking: the goal, the milestones, the stepping stones
+# Mental Health Goals: the goal, the milestones, the stepping stones
 
-`site/goals.html` is the Premium (level 3) Goals & tracking page. It is built
+**Mental Health Goals** is a Premium (level 3) tab on the member dashboard's
+menu bar (`dashboard.html#goals`); `site/goals.html` forwards there. It is built
 from three levels, top to bottom, and one picture beside them:
 
 | Level | What it is | On the map |
@@ -15,7 +16,7 @@ milestones or stones, what grows along the trail, earlier notes, the member's
 data, starting a new goal) lives behind one **Change** menu, so the first
 screen is only the three levels and the map.
 
-Everything on the page is **general wellness and self-help**. Nothing on it
+Everything on the tab is **general wellness and self-help**. Nothing on it
 screens, scores, diagnoses or treats anything, and the wellness note (with
 links to find a therapist, help nearby and 988) sits above every screen.
 **Nearby help** is on the member dashboard's menu bar (`dashboard.html#nearby`,
@@ -23,7 +24,7 @@ links to find a therapist, help nearby and 988) sits above every screen.
 
 | Piece | File |
 |---|---|
-| The page shell: chrome, wellness note, zone | `site/goals.html` |
+| The tab: intro card, wellness note, zone, and the Premium lock | `site/dashboard.html` (`data-panel="goals"`); `site/goals.html` forwards to it |
 | Everything on it | `site/assets/goals-ui.js` (`mountGoals(host, ctx)`), styles in `site/assets/goals.css` |
 | The action library, themes (`VALUES`), categories, minutes, scenes, nudges | `site/assets/quest-paths.js` |
 | The goal matcher and the milestone suggestions | `site/assets/quest-goals.js` |

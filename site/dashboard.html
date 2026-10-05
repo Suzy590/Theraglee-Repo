@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
 <link rel="stylesheet" href="assets/styles.css">
 <link rel="stylesheet" href="assets/mood.css">
+<link rel="stylesheet" href="assets/goals.css">
 <style>
   .hero-line{font-family:var(--serif);font-style:italic;font-size:clamp(1.5rem,3.4vw,2.3rem);
     line-height:1.3;color:var(--ink);margin:0}
@@ -38,6 +39,8 @@
   .showcase-slot{grid-area:side}
   .tab-top .zone{padding:22px}
   .tab-body .zone + .zone{margin-top:0}
+  /* The Mental Health Goals tab's wellness note (assets/goals.css) sits in the column's own gap. */
+  .tab-body .wellness{margin:0}
   #affirm-card,.tab-intro{padding:18px 20px}
   #affirm-card .hero-line,.tab-intro .hero-line{font-size:clamp(1.2rem,2.3vw,1.55rem);margin-top:10px!important}
   .today-top .daily{gap:14px;grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
@@ -171,6 +174,7 @@
     <div class="tabs" id="tabs" role="tablist">
       <button data-tab="today" role="tab">Today</button>
       <button data-tab="journal" role="tab">Journal</button>
+      <button data-tab="goals" role="tab">Mental Health Goals</button>
       <button data-tab="playlists" role="tab">Playlists</button>
       <button data-tab="explore" role="tab">Explore Library</button>
       <button data-tab="discover" role="tab">Self-Discovery</button>
@@ -262,6 +266,31 @@
                 <p class="muted">Private to your account. Nobody else can read it — not therapists, not us.</p>
               </div>
               <div id="journal-host"><div class="card"><div class="skeleton" style="height:120px"></div></div></div>
+            </section>
+          </div>
+          <div class="showcase-slot"></div>
+        </div>
+        <!-- Mental Health Goals: the Premium goal, milestones and stepping stones with
+             the trail map (assets/goals-ui.js), moved here from goals.html, which forwards.
+             The wellness note stays above it on every screen. -->
+        <div class="tab-top" data-panel="goals">
+          <div class="card tab-intro">
+            <span class="badge">Mental Health Goals</span>
+            <p class="hero-line">One goal in your own words, and small steps toward it.</p>
+          </div>
+          <div class="tab-body">
+            <div class="wellness" role="note"><span aria-hidden="true">🌱</span><div>
+              <strong>General wellness and self-help only.</strong> Theraglee is not psychotherapy or clinical
+              care, and it is not a substitute for help from a licensed professional.
+              <a href="therapists.html">Find a therapist</a> · <a href="#nearby">Help near you</a> ·
+              In crisis, call or text <a href="tel:988">988</a>, or call 911.</div></div>
+            <section class="zone" aria-labelledby="goals-zone-title">
+              <div class="zone-head">
+                <h2 id="goals-zone-title">Your trail</h2>
+                <p class="muted">The goal is your ultimate destination at the end of the trail. Milestones are the camps along the
+                  way to your goal. Today's stepping stones are the small steps you will take along the way to each camp.</p>
+              </div>
+              <div id="goals-host" class="stack"><div class="card"><div class="skeleton" style="height:160px"></div></div></div>
             </section>
           </div>
           <div class="showcase-slot"></div>
@@ -406,6 +435,7 @@ import { mountLibrary } from './assets/explore-ui.js';
 import { mountDiscover } from './assets/discover-ui.js';
 import { mountMood } from './assets/mood-ui.js';
 import { mountJournal } from './assets/journal-ui.js';
+import { mountGoals } from './assets/goals-ui.js';
 import { mountPlaylists } from './assets/playlists-ui.js';
 import { mapView as mountNearby } from './assets/nearby-ui.js';
 import { loadPrices, tierCards, PLANS_INTRO, PLANS_NOTE } from './assets/plans.js';
@@ -428,7 +458,7 @@ document.getElementById('tierbadge').textContent = tierName(a.level) + ' members
    The dashboard opens on Today. The other tabs are reached by their buttons or
    by address (dashboard.html#journal), and the address follows the tab so a
    refresh or a shared link comes back to the same one. */
-const PANELS = ['today', 'journal', 'playlists', 'explore', 'discover', 'tools', 'fun', 'messages', 'nearby'];
+const PANELS = ['today', 'journal', 'goals', 'playlists', 'explore', 'discover', 'tools', 'fun', 'messages', 'nearby'];
 let tab = 'today';
 // A hash that names something inside a tab (dashboard.html#match-mode, #daily-quote)
 // opens that tab and scrolls to it. The feature showcase under the header links this way.
@@ -466,6 +496,14 @@ function showTab(next) {
   if (tab === 'journal' && !mounted.journal) {
     mounted.journal = true;
     mountJournal(document.getElementById('journal-host'), a, new URLSearchParams(location.search).get('prompt'));
+  }
+  // Mental Health Goals are Premium: the goal, its milestones and today's
+  // stepping stones, with the trail map (assets/goals-ui.js).
+  if (tab === 'goals' && !mounted.goals) {
+    mounted.goals = true;
+    const host = document.getElementById('goals-host');
+    if (a.level < 3) lockNotice(host, 3, 'Mental Health Goals');
+    else mountGoals(host, { sb, uid: a.profile.id, esc, toast, busy, modal, fmtDate });
   }
   if (tab === 'discover' && !mounted.discover) {
     mounted.discover = true;
@@ -754,7 +792,7 @@ const quick = [
   ['Quizzes', 'explore.html?type=quiz', 2],
   ['Worksheets', 'explore.html?type=worksheet', 2],
   ['Music playlists', 'dashboard.html#playlists', 3, false, 'Pick a mood and a genre, get 40 songs'],
-  ['Goals & tracking', 'goals.html', 3],
+  ['Mental health goals', 'dashboard.html#goals', 3],
   ['Find a therapist', 'therapists.html', 0, false, 'Search the Theraglee directory for therapists in your area'],
   ['Help near you', 'dashboard.html#nearby', 0, false, 'Clinics and crisis services on a map, plus national lines'],
 ];

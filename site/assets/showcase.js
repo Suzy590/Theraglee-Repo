@@ -76,7 +76,7 @@ export const FEATURES = [
    'pet.html', 2],
   ['Goals and Your Trail',
    'Set a goal in your own words, pick milestones you would notice, and take small steps each day.',
-   'goals.html', 3],
+   'dashboard.html#goals', 3],
   ['Music Playlists by Genre and Mood',
    'Pick a mood and a genre, and get forty songs to play right on the page.',
    'dashboard.html#playlists', 3],
