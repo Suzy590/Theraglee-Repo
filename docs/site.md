@@ -35,7 +35,7 @@ the other.
 | Home after signing in | `dashboard.html` | `therapist-dashboard.html` |
 | Account page | `account.html` (tier, profile, privacy, inbox, history) | `account.html` shows a short therapist version (membership, sign-in and data) |
 | Plans | `pricing.html` (Free, Basic, Premium) | `for-therapists.html#membership` (one flat price); billing starts from the practice dashboard |
-| Header links | Dashboard (signed in only), For Therapists; visitors also get Sign in and Join free | Dashboard, Referrals, Messages, Member requests, Library, My profile, Directory |
+| Header links | Dashboard (signed in only), For Therapists; visitors also get Sign in and Join free | Dashboard, Stats, Messages, Member requests, Library, My profile, Directory |
 
 The member dashboard opens on a **Today** tab (the daily affirmation, quote,
 tip and fun fact, beside the Match Mode switch, the mood check-in, and under it
