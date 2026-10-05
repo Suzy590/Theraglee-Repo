@@ -48,6 +48,14 @@ will be shared with therapists and must not be their real name.
 
 Nothing else. The view has no real name, exact age, zip, email or content column.
 
+The practice dashboard also remembers *when* a member first appeared on a
+therapist's dashboard, so the Referrals tab can count each match once:
+`match_sightings` holds the therapist's id, the member's id and that moment,
+nothing more, and only the database's own functions read or write it
+(`20261005120000_match_sightings.sql`). Switching Match Mode off or blocking a
+therapist does not remove the row, since it is a count of the past, not a
+view of the member; deleting the account does.
+
 ## How the answers are loaded
 
 Every page reads the signed-in member's profile from `my_access()`
