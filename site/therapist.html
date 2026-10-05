@@ -11,24 +11,32 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
 <link rel="stylesheet" href="assets/styles.css">
 <style>
-  .hdr{display:flex;gap:26px;align-items:flex-start;flex-wrap:wrap}
-  .photo{flex:0 0 150px;height:150px;border-radius:24px;background:var(--soft);object-fit:cover;
-    display:grid;place-items:center;font-size:2.4rem;color:var(--green);font-weight:400}
-  .kv{display:grid;grid-template-columns:auto 1fr;gap:9px 22px;font-size:.94rem}
+  /* The profile has the whole page to itself (chrome() is told to leave the
+     feature showcase off), so everything is drawn a size up: a bigger photo,
+     a taller name, roomier text and a wider contact column. */
+  .hdr{display:flex;gap:34px;align-items:flex-start;flex-wrap:wrap}
+  .photo{flex:0 0 220px;height:220px;border-radius:28px;background:var(--soft);object-fit:cover;
+    display:grid;place-items:center;font-size:3.4rem;color:var(--green);font-weight:400}
+  .hdr h1{margin:0;font-size:2.8rem;line-height:1.1;letter-spacing:-.02em}
+  .hdr .faint{font-size:1.05rem}
+  .about{font-size:1.12rem;line-height:1.7;white-space:pre-wrap}
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:12px 26px;font-size:1.02rem}
   .kv dt{color:var(--faint)}
   .kv dd{margin:0;color:var(--ink-2)}
   .verified{display:inline-flex;align-items:center;gap:6px;color:var(--green);
-    font-size:.82rem;font-weight:500}
+    font-size:.95rem;font-weight:500}
   .contact-box{background:var(--paper);border:1px solid var(--hair);border-radius:var(--r);
-    padding:22px;box-shadow:var(--shadow-1);position:sticky;top:96px}
+    padding:26px;box-shadow:var(--shadow-1);position:sticky;top:96px}
   .phone{font-size:1.4rem;font-weight:500;letter-spacing:-.02em;color:var(--ink);
     display:block;margin:6px 0 2px}
-  .layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:34px;align-items:start}
-  @media(max-width:880px){.layout{grid-template-columns:1fr}.contact-box{position:static}}
-  /* The layout is two thirds of the page beside the feature showcase, so it also folds by its own width. */
-  @container(max-width:700px){.layout{grid-template-columns:1fr}.contact-box{position:static}}
+  .layout{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:48px;align-items:start}
+  @media(max-width:880px){
+    .layout{grid-template-columns:1fr}.contact-box{position:static}
+    .photo{flex-basis:160px;height:160px;font-size:2.6rem}
+    .hdr h1{font-size:2.1rem}
+  }
   .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
-  .office{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+  .office{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
   .office a{display:block;aspect-ratio:4/3;border-radius:var(--r-sm);overflow:hidden;background:var(--soft)}
   .office img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
   .office a:hover img{transform:scale(1.03)}
@@ -41,7 +49,9 @@
 
 <script type="module">
 import { chrome, sb, esc, qs, access, toast, busy, modal, FN, startSessionPayment } from './assets/app.js';
-const a = await chrome({ active:'therapists.html' });
+// The profile stands alone, without the feature showcase beside it, so it has
+// the full width of the page.
+const a = await chrome({ active:'therapists.html', showcase: false });
 const root = document.getElementById('root');
 const slug = qs('slug');
 
@@ -65,27 +75,27 @@ if (!t) {
 
   root.innerHTML = `
     <a class="faint" href="therapists.html">← All therapists</a>
-    <div class="layout" style="margin-top:16px">
+    <div class="layout" style="margin-top:20px">
       <div>
         <div class="hdr">
           ${t.photo_url ? `<img class="photo" src="${esc(t.photo_url)}" alt="">`
                         : `<div class="photo">${initials}</div>`}
           <div style="flex:1;min-width:240px">
-            <h1 style="margin:0;font-size:2rem">${esc(t.first_name)} ${esc(t.last_name)}${t.credentials?`, ${esc(t.credentials)}`:''}</h1>
-            <p class="verified" style="margin:6px 0 8px">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            <h1>${esc(t.first_name)} ${esc(t.last_name)}${t.credentials?`, ${esc(t.credentials)}`:''}</h1>
+            <p class="verified" style="margin:10px 0 10px">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                 stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M20 6 9 17l-5-5"/></svg>
               License verified with the state board</p>
-            <p class="faint" style="margin:0 0 12px">
+            <p class="faint" style="margin:0 0 14px">
               ${t.delivery==='telehealth'?'Telehealth':t.delivery==='both'?'In person &amp; telehealth':'In person'}
               ${(t.license_states||[]).length?' · Licensed in '+t.license_states.join(', '):''}</p>
             <div class="chips">${(t.top_specialties||[]).map(s=>`<span class="badge">★ ${esc(s)}</span>`).join('')}</div>
           </div>
         </div>
 
-        ${t.bio?`<h2 style="margin-top:36px">About</h2>
-          <p class="muted" style="white-space:pre-wrap">${esc(t.bio)}</p>`:''}
+        ${t.bio?`<h2 style="margin-top:40px">About</h2>
+          <p class="muted about">${esc(t.bio)}</p>`:''}
 
         ${(t.specialties||[]).length || (t.top_specialties||[]).length ? `<h2 style="margin-top:36px">Specialties</h2>
           <div class="chips">
@@ -113,7 +123,7 @@ if (!t) {
           <dt>Degree/Diploma</dt><dd>${esc(t.education_degree||'—')}</dd>
           <dt>Year graduated</dt><dd>${esc(t.education_year||'—')}</dd>`
           : `<dt>Education</dt><dd>${esc(t.education||'—')}</dd>`}
-          ${locs.length?`<dt>Locations</dt><dd>${locs.map(esc).join('<br>')}</dd>`:''}
+          ${locs.length?`<dt>Office location(s)</dt><dd>${locs.map(esc).join('<br>')}</dd>`:''}
         </dl>
       </div>
 

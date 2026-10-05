@@ -386,8 +386,9 @@ export async function chrome({ active = '', showcase = true } = {}) {
 
   // The feature showcase stands beside the content on every page a member or
   // visitor sees. The therapist pages (practice dashboard, sign-in, sign-up)
-  // are the other front door, so they go without, and a page that places the
-  // strip itself (the landing page puts it in the explore section) passes
+  // are the other front door, so they go without. A page that places the
+  // strip itself (the landing page puts it in the explore section) or wants
+  // the whole width for itself (a therapist's profile) passes
   // `showcase: false`.
   const therapistPages = [DOORS.therapist.home, DOORS.therapist.signin, DOORS.therapist.signup];
   if (showcase && !therapistPages.includes(here)) placeShowcase(a);
