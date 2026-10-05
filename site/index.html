@@ -182,7 +182,9 @@
   .match-col li strong{color:#fff;font-weight:500}
   .match-col li::before{content:"";position:absolute;left:4px;top:15px;width:13px;height:7px;
     border-left:2px solid var(--lime);border-bottom:2px solid var(--lime);transform:rotate(-45deg)}
-  .match-col .btn{margin-top:auto;align-self:flex-start}
+  /* The buttons at the foot of each column sit in one row, wrapping onto a
+     second line with the same gap when the column is narrow. */
+  .match-col .match-actions{margin-top:auto;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
   .match-col .btn.ghost,.match-col .btn.ghost:hover{color:#fff;border-color:rgba(255,255,255,.55);background:transparent}
   .match-col .btn.ghost:hover{border-color:#fff}
   .match-privacy{margin-top:26px;display:grid;grid-template-columns:1fr 1fr;gap:18px;
@@ -319,8 +321,10 @@
             <li><strong>Pseudonymous by design.</strong> <strong>Theraglee Match Mode</strong> lets you
               explore getting help without putting your name on it first.</li>
           </ul>
-          <a class="btn lime" href="signup.html">Create my free account</a>
-          <a class="btn ghost" href="match-mode.html" style="margin-left:8px">How Theraglee Match Mode works</a>
+          <div class="match-actions">
+            <a class="btn lime" href="signup.html">Create my free account</a>
+            <a class="btn ghost" href="match-mode.html">How Theraglee Match Mode works</a>
+          </div>
         </div>
         <div class="match-col">
           <span class="who">For therapists</span>
@@ -337,7 +341,9 @@
             <li><strong>Verified professionals only.</strong> <strong>Theraglee Match Mode</strong> is
               available to licensed therapists with a live Theraglee listing.</li>
           </ul>
-          <a class="btn ghost" href="for-therapists.html">List my practice</a>
+          <div class="match-actions">
+            <a class="btn ghost" href="for-therapists.html">List my practice</a>
+          </div>
         </div>
       </div>
 
