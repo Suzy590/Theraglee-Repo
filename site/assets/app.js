@@ -286,7 +286,7 @@ const NAV = [
 // A signed-in therapist gets the practice, not the member library.
 const THERAPIST_NAV = [
   ['Dashboard',       'therapist-dashboard.html'],
-  ['Referrals',       'therapist-dashboard.html#referrals'],
+  ['Stats',           'therapist-dashboard.html#referrals'],
   ['Messages',        'therapist-dashboard.html#messages'],
   ['Member requests', 'therapist-dashboard.html#members'],
   ['Library',         'therapist-dashboard.html#library'],
