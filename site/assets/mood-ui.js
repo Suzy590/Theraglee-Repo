@@ -61,7 +61,7 @@ export async function mountMood(host, profile) {
     </div>
 
     <div class="card" id="mood-factors" style="margin-top:26px">
-      <h3>What might be shaping it?</h3>
+      <h3>What might be shaping mood?</h3>
       <p class="faint" style="margin-top:-4px">How does each of these feel <strong>today</strong>?
         1 is terrible, 10 is fantastic. One tap each, then press Submit at the bottom.</p>
       <div class="factor-list">${FACTORS.map(([key, label, hint]) => `

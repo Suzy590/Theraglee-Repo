@@ -10,7 +10,7 @@ therapist practice dashboard's Mood tab was removed the same day, and
 writes the signed-in account's own `mood_logs` rows. It does three things:
 
 1. **The day's mood.** One tap on one of five faces (`mood_logs.mood`, 1 to 5).
-2. **What might be shaping it.** Shown from the start, below the faces, the member rates nine
+2. **What might be shaping mood.** Shown from the start, below the faces, the member rates nine
    factors for how each feels *today*, one tap each on a 1 to 10 scale, where
    1 is terrible and 10 is fantastic: sleep, home life stress, school/work
    stress, nutrition, hunger in this moment, loneliness, overall thoughts,
