@@ -1,6 +1,8 @@
 // Sends the morning email: an article the member has not seen lately, plus
 // the same personalized daily picks the dashboard shows (affirmation, quote,
 // tip, fun fact, journal prompt) — whichever the member chose on their account.
+// A Premium member with a goal on their trail also gets today's stepping
+// stone prompt: the goal, the milestone they are working on, and the way in.
 //
 // verify_jwt is false because pg_cron calls this over HTTP and cannot mint a
 // user JWT. Authenticity comes from the shared key in app_secrets. The one
@@ -47,8 +49,23 @@ type Pick = { id: string; body: string; author: string | null } | null;
 type Article = {
   id: string; slug: string; title: string; excerpt: string | null; tags: string[] | null;
 } | null;
+// The Mental Health Goals trail (Premium): the goal in the member's words and
+// the milestone they are working on, so the email can ask for today's step.
+type Trail = { goal: string; milestone: string } | null;
 
 /* ----------------------------------------------------------- composition -- */
+
+async function trailFor(r: Recipient): Promise<Trail> {
+  if (r.level < 3) return null;
+  const { data: q } = await admin.from("quests").select("id, intention")
+    .eq("user_id", r.user_id).eq("active", true).maybeSingle();
+  if (!q) return null;
+  const { data: ms } = await admin.from("quest_milestones").select("title, reached_on")
+    .eq("quest_id", q.id).order("position", { ascending: true });
+  const cur = (ms ?? []).find((m) => !m.reached_on);
+  if (!cur) return null;
+  return { goal: (q.intention || "").trim() || "your goal", milestone: cur.title };
+}
 
 async function gather(r: Recipient) {
   const kinds = (r.kinds || []).filter((k) => KINDS.includes(k));
@@ -66,7 +83,7 @@ async function gather(r: Recipient) {
   return { kinds, picks, article };
 }
 
-function compose(r: Recipient, picks: Record<string, Pick>, article: Article) {
+function compose(r: Recipient, picks: Record<string, Pick>, article: Article, trail: Trail = null) {
   const first = (r.full_name || "").trim().split(/\s+/)[0];
   const hello = first ? `Good morning, ${first}.` : "Good morning.";
   const unsub = `${SELF}?u=${encodeURIComponent(r.email_token)}`;
@@ -111,6 +128,17 @@ function compose(r: Recipient, picks: Record<string, Pick>, article: Article) {
     text += `\nToday's article: ${article.title}\n` +
       (excerpt ? `${excerpt}\n` : "") +
       `${SITE}/article.html?slug=${encodeURIComponent(article.slug)}\n`;
+  }
+  if (trail) {
+    const href = `${SITE}/dashboard.html#goals`;
+    html += H("Today's stepping stone",
+      `<div style="padding:18px 20px;background:#FFF6E0;border-radius:14px">` +
+      `<p style="margin:0;font-size:16px;font-weight:500">Today still needs one step toward “${esc(trail.goal)}”.</p>` +
+      `<p style="margin:8px 0 0;color:#5A6760;line-height:1.5">You are working on: ${esc(trail.milestone)}. ` +
+      `Any one stepping stone counts the whole day.</p>` +
+      button(href, "See today's stepping stones") + `</div>`);
+    text += `\nToday's stepping stone: today still needs one step toward “${trail.goal}”. ` +
+      `You are working on: ${trail.milestone}. Any one stepping stone counts the whole day.\n${href}\n`;
   }
   if (picks.quote) {
     html += H("Quote", `<p style="margin:0;font-style:italic;font-size:16px">“${esc(picks.quote.body)}”</p>` +
@@ -233,7 +261,7 @@ Deno.serve(async (req) => {
     const { kinds, picks, article } = await gather(r);
     if (!article && !Object.values(picks).some(Boolean)) { skipped++; continue; }
 
-    const msg = compose(r, picks, article);
+    const msg = compose(r, picks, article, await trailFor(r));
     if (dryRun) {
       previews.push({ to: r.email, subject: msg.subject, article: article?.title ?? null,
         kinds: kinds.filter((k) => k === "article" ? Boolean(article) : Boolean(picks[k])), html: msg.html });

@@ -168,3 +168,10 @@
 .glist{max-height:52vh;overflow:auto;margin-top:12px;padding-right:4px}
 .ggroup{margin:0 0 16px}
 .ggroup .kicker{margin-bottom:8px}
+
+/* Today's stepping stones on the dashboard's Today tab (assets/today-step.js):
+   the same status box, stones and pebbles as the Goals tab, in one card. */
+.trail-today .today-status{margin-top:0}
+.trail-today-ctx{display:flex;flex-wrap:wrap;gap:6px 22px;margin:0 0 6px;font-size:.9rem;color:var(--muted)}
+.trail-today-ctx b{color:var(--ink);font-weight:500}
+.trail-today-ask{margin:10px 0 0;padding:10px 14px;border-radius:var(--r-sm);background:var(--soft);border:1px solid var(--mist);color:var(--ink);font-size:.92rem}

@@ -324,4 +324,31 @@ test("Therapist directory is on the member dashboard's menu bar and leads to Fin
   assert.match(app, /'therapists.html': 'therapists.html'/, "the directory tab is highlighted on the directory");
 });
 
+test("The Today tab and the morning email prompt for today's stepping stones", () => {
+  const card = read("site/assets/today-step.js");
+  const digest = read("supabase/functions/daily-digest/index.ts");
+  // The dashboard's Today tab: a zone above the mood check-in, drawn by the module.
+  const todayTab = dash.slice(dash.indexOf('data-panel="today"'), dash.indexOf('id="mood-zone-title"'));
+  assert.match(todayTab, /id="trail-zone"[^>]*hidden/, "the zone waits hidden until the module decides");
+  assert.match(todayTab, /Today's stepping stones/);
+  assert.match(dash, /import \{ mountTodayStep \} from '\.\/assets\/today-step\.js'/);
+  assert.match(dash, /mountTodayStep\(document\.getElementById\('trail-host'\), \{ sb, uid: a\.profile\.id, level: a\.level/);
+  assert.match(dash, /mounted\.trail\.then\(t => t\.refresh\(\)\)/, "redrawn each time Today opens");
+  // The card says the same two things the Goals tab says, and writes the same row.
+  assert.match(card, /Today is done\./); assert.match(card, /Today still needs one step\./);
+  assert.match(card, /from\('quest_steps'\)\.insert\(\{ quest_id: q\.id, user_id: uid, milestone_id: cur\.id, action_key: key, done_on: t \}\)/);
+  assert.match(card, /if \(level < 3\)/, "Premium only, like the trail");
+  assert.doesNotMatch(card, /fetch\(|XMLHttpRequest|navigator\.sendBeacon/, "nothing leaves the browser but the Supabase rows");
+  assert.match(card, /dashboard\.html#goals/);
+  for (const w of ["streak", "diagnos", "symptom", "disorder", "therapy"]) {
+    assert.ok(!card.toLowerCase().includes(w), `Today card: no "${w}"`);
+  }
+  // The morning email: the goal and the milestone, only for Premium members with a trail.
+  assert.match(digest, /async function trailFor\(r: Recipient\)/);
+  assert.match(digest, /if \(r\.level < 3\) return null;/);
+  assert.match(digest, /Today's stepping stone/);
+  assert.match(digest, /compose\(r, picks, article, await trailFor\(r\)\)/);
+  assert.match(digest, /dashboard\.html#goals/);
+});
+
 console.log(`\n${n} checks passed`);
