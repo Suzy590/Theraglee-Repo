@@ -165,6 +165,14 @@ export function unlockHref(needed, authenticated) {
   return (needed <= 1 && !authenticated) ? DOORS.member.signup : 'pricing.html';
 }
 
+/** The line at the top of a page the dashboard's Fun tab opens (Pip, trivia,
+ *  mandalas): the way back to the dashboard and to that tab, in the style of
+ *  the tool pages' "← All tools · Anxiety tools" crumb. A visitor has no
+ *  dashboard, so it shows only to someone signed in. */
+export const funCrumb = (a) => a?.authenticated
+  ? `<p class="faint no-print" style="margin:0 0 14px"><a class="faint" href="dashboard.html">&larr; Your dashboard</a> · <a class="faint" href="dashboard.html#fun">Fun</a></p>`
+  : '';
+
 /** Renders an inline upgrade prompt into `host` when the tier is too low. */
 export async function lockNotice(host, needed, what = 'This') {
   const a = await access();

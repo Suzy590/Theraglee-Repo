@@ -67,7 +67,7 @@
 </div></main>
 
 <script type="module">
-import { chrome, sb, esc, qs, tierName, toast, logActivity, unlockHref } from './assets/app.js';
+import { chrome, sb, esc, qs, tierName, toast, logActivity, unlockHref, funCrumb } from './assets/app.js';
 import { library, isFavorite, isLater, favButton, laterButton, bindLibrary, setProgress } from './assets/library.js';
 import { SETS, TOPICS } from './assets/trivia-sets.js';
 import { DIFFICULTY, band, playOrder, score, summarize, scoreKey, QUESTIONS_PER_SET } from './assets/trivia.js';
@@ -78,6 +78,9 @@ const slug = qs('slug');
 const bySlug = new Map(SETS.map(s => [s.slug, s]));
 const set = slug ? bySlug.get(slug) : null;
 const N = QUESTIONS_PER_SET;
+/* The quiz list and the locked notice are where the Fun tab lands, so they
+   carry the way back to it; a quiz in play has its own "← All trivia" line. */
+if (!set) root.insertAdjacentHTML('beforebegin', funCrumb(a));
 const NEEDED = 2;                                // Basic
 
 document.title = (set ? set.title : 'Mental health trivia') + ' — Theraglee';
