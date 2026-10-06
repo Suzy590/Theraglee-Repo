@@ -88,6 +88,15 @@ export async function mountGoals(host, ctx) {
     const checkDue = cur && sinceCheck >= 7 && (stepDays.size >= STEPS_PER_MILESTONE || sinceStart >= 7);
     const next = ms[ci + 1] || null;
     const left = Math.max(0, STEPS_PER_MILESTONE - stepDays.size);
+    // How far, at one stepping stone a day. A camp asks whether it is reached
+    // once seven step-days (or seven days) have passed since it opened or was
+    // last asked, so that is the day it can be reached; each camp beyond adds
+    // another seven. The member still decides, so the page calls it a guide.
+    const ahead = cur ? ms.length - ci - 1 : 0;
+    const toCamp = cur ? Math.max(0, Math.max(STEPS_PER_MILESTONE - sinceCheck,
+      Math.min(STEPS_PER_MILESTONE - stepDays.size, STEPS_PER_MILESTONE - sinceStart))) : 0;
+    const toGoal = toCamp + ahead * STEPS_PER_MILESTONE;
+    const inDays = (n) => n === 0 ? 'Today' : `About ${n} day${n === 1 ? '' : 's'}`;
     const scene = SCENES.find(x => x.key === q.scene) || SCENES[0];
     const loggedToday = new Set(d.logs.filter(l => l.logged_on === t).map(l => l.goal_id));
 
@@ -122,6 +131,11 @@ export async function mountGoals(host, ctx) {
           <h3>${esc(cur.title)}</h3>
           <div class="row" style="gap:14px">${pebbles(stepsN)}
             <span class="faint">${stepDays.size} step${stepDays.size === 1 ? '' : 's'} so far · ${steppedToday ? "today's step is done" : 'no step yet today'} · each day with a stepping stone adds one</span></div>
+          <div class="trail-eta" role="group" aria-label="How far, at one stepping stone a day">
+            <div class="eta"><b>${inDays(toCamp)}</b><span>${toCamp === 0 ? 'this camp is ready to be reached' : 'to this camp'}</span></div>
+            <div class="eta"><b>${inDays(toGoal)}</b><span>to your destination${ahead ? ` · ${ahead} more camp${ahead === 1 ? '' : 's'} after this one` : ' · the last camp before it'}</span></div>
+            <p class="faint">At one stepping stone a day. When a camp's days are up, the page asks whether it is happening for you, and you decide. A guide, not a clock.</p>
+          </div>
           ${checkDue ? `<div class="checkin">
             <strong>${stepDays.size >= STEPS_PER_MILESTONE ? `You have taken ${stepDays.size} steps toward this.` : 'A week has passed.'} Is it happening for you now?</strong>
             <p class="faint" style="margin:4px 0 10px">You decide, not a counter. Any answer is a fine answer.</p>

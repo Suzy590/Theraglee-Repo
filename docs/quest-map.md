@@ -72,6 +72,13 @@ reopens the picker for the current one at any time.
   action (`write: true`) opens the note box first, as before.
 - The pebbles under the milestone count distinct days with a step toward it.
   The hiker on the map moves the same way.
+- Under the pebbles, **how far at one stepping stone a day**: days to this
+  camp and days to the destination. The first is the day the weekly question
+  (below) would next appear if the member took a stone every day: seven
+  step-days, or seven days, since the camp opened or was last asked, whichever
+  comes first, and never less than seven days since it was last asked. Each
+  camp beyond adds seven. It reads "Today" when the question is already
+  showing, and says it is a guide, not a clock: the member decides.
 - **Is it happening for you now?** appears on the milestone once a week
   (seven steps, or seven days since it started or was last asked). *Yes,
   mostly* sets `reached_on` and opens the next milestone (a small
