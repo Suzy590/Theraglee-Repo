@@ -13,16 +13,21 @@
    ========================================================================== */
 import { DOORS, tierName } from './app.js';
 
-/* [name, description, where it opens, tier needed]. Tier 0 is open to everyone,
-   1 needs a free account, 2 is Basic and 3 is Premium (see TIERS in app.js).
-   The first entry is Theraglee Match Mode, drawn bigger and in brand green. It
-   opens match-mode.html, the explainer, for everyone (tier 0), and it
+/* [name, description, where it opens, tier needed, public]. Tier 0 is open to
+   everyone, 1 needs a free account, 2 is Basic and 3 is Premium (see TIERS in
+   app.js). The label on the card says what the feature needs. A fifth entry of
+   true marks a page anyone can read (an explainer rather than the feature
+   itself): the card links straight to it whoever is looking, instead of sending
+   a visitor to sign-up first.
+   The first entry is Theraglee Match Mode, drawn bigger and in brand green. The
+   switch itself is part of the free membership (tier 1), so the card says Free;
+   the card opens match-mode.html, the public explainer, for everyone. It
    opens the strip and comes round again after every four other features
    (see cardOrder), so it is never far away however far someone scrolls. */
 export const FEATURES = [
   ['Theraglee Match Mode',
    'Flip one switch and let licensed therapists near you reach out. Your name stays private until you reply.',
-   'match-mode.html', 0],
+   'match-mode.html', 1, true],
   ['Find a Therapist',
    'Browse licensed clinicians by location, insurance and specialty. No account needed.',
    'therapists.html', 0],
@@ -94,9 +99,10 @@ const RESUME_MS  = 9000;   // how long after the visitor last touched it before 
     holds for a Premium member as much as for a visitor. */
 const tierLabel = (need) => need === 0 ? 'Open to everyone' : tierName(need);
 
-/** Where a card sends someone (see the note at the top). */
-const hrefFor = (href, need, a) =>
-  a.level >= need ? href
+/** Where a card sends someone (see the note at the top). A public page opens
+    for everyone whatever the feature needs. */
+const hrefFor = (href, need, a, pub = false) =>
+  pub || a.level >= need ? href
   : !a.authenticated ? `${DOORS.member.signup}?next=${encodeURIComponent(href)}`
   : 'pricing.html';
 
@@ -139,11 +145,11 @@ export function mountShowcase(a, target, { replace = false, inside = false, embe
     </div>
     <div class="showcase-track" tabindex="0" aria-live="off">
       ${cardOrder().map((feature) => {
-        const [name, blurb, href, need] = feature;
+        const [name, blurb, href, need, pub = false] = feature;
         const locked = a.level < need;
         const star = feature === FEATURES[0];
         return `<a class="showcase-card${star ? ' star' : ''}${locked ? ' locked' : ''}"
-            href="${hrefFor(href, need, a)}"
+            href="${hrefFor(href, need, a, pub)}"
             aria-label="${name}, ${need === 0 ? 'open to everyone' : `${tierName(need)} membership`}">
           ${star ? '<span class="showcase-flag"><span class="dot"></span> Featured</span>' : ''}
           <strong class="showcase-name">${name}</strong>
