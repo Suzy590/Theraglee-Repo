@@ -392,10 +392,11 @@ export async function chrome({ active = '', showcase = true } = {}) {
     : `<a class="btn sm" href="${DOORS.member.signin}">Sign in</a>`;
 
   // On the landing page a signed-in member or therapist is greeted by name in
-  // the top right corner, so it is plain they are still signed in.
+  // the top right corner, so it is plain they are still signed in. The
+  // greeting opens their account page.
   const who = (a.profile?.full_name || '').trim().split(/\s+/)[0] || (a.profile?.email || '').split('@')[0];
   const hello = a.authenticated && here === 'index.html' && who
-    ? `<span class="hello" title="You're signed in">Hello, ${esc(who)}</span>` : '';
+    ? `<a class="hello" href="account.html" title="You're signed in. Open your account">Hello, ${esc(who)}</a>` : '';
 
   const header = document.createElement('div');
   header.innerHTML = `
