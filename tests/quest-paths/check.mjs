@@ -324,6 +324,16 @@ test("Therapist directory is on the member dashboard's menu bar and leads to Fin
   assert.match(app, /'therapists.html': 'therapists.html'/, "the directory tab is highlighted on the directory");
 });
 
+test("The milestone shows how far it is, at one stepping stone a day", () => {
+  assert.match(ui, /class="trail-eta"/);
+  assert.match(ui, /to this camp/); assert.match(ui, /to your destination/);
+  // The estimate follows the weekly question's own rule: seven step-days (or seven
+  // days) since the camp opened or was last asked, and seven more for each camp beyond.
+  assert.match(ui, /const toCamp = cur \? Math\.max\(0, Math\.max\(STEPS_PER_MILESTONE - sinceCheck,\s*Math\.min\(STEPS_PER_MILESTONE - stepDays\.size, STEPS_PER_MILESTONE - sinceStart\)\)\) : 0;/);
+  assert.match(ui, /const toGoal = toCamp \+ ahead \* STEPS_PER_MILESTONE;/);
+  assert.match(ui, /A guide, not a clock\./, "the member still decides when a camp is reached");
+});
+
 test("The Today tab and the morning email prompt for today's stepping stones", () => {
   const card = read("site/assets/today-step.js");
   const digest = read("supabase/functions/daily-digest/index.ts");
