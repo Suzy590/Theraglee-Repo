@@ -52,10 +52,16 @@ const TABS = isTherapist
      ['inbox','Inbox'],['history','Your history']];
 let tab = location.hash.replace('#','') || 'membership';
 if (!TABS.some(([k]) => k === tab)) tab = 'membership';
-// Unread messages from therapists, counted on the Inbox tab until it is opened.
+// Unread messages from therapists, counted on the Inbox tab until each one
+// is opened (assets/inbox.js fires the event with how many are still unread).
 let inboxUnread = isTherapist ? 0 : await unreadCount(a);
-document.addEventListener('theraglee:inbox-read', () => {
-  inboxUnread = 0; root.querySelector('.tabs .dot')?.remove();
+document.addEventListener('theraglee:inbox-read', (e) => {
+  inboxUnread = e.detail?.remaining || 0;
+  const b = root.querySelector('.tabs button[data-tab="inbox"]');
+  if (!b) return;
+  b.querySelector('.dot')?.remove();
+  b.setAttribute('aria-label', inboxUnread ? `Inbox, ${inboxUnread} unread` : 'Inbox');
+  if (inboxUnread) b.insertAdjacentHTML('beforeend', `<span class="dot" aria-hidden="true">${inboxUnread}</span>`);
 });
 
 if (qs('checkout') === 'success') {
