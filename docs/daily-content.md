@@ -1,7 +1,11 @@
 # Daily cards
 
 The dashboard shows one affirmation, quote, tip and fun fact ("Did you know")
-a day, picked by `public.daily_pick_for()` from `public.daily_content`.
+a day, picked by `public.daily_pick_for()` from `public.daily_content`. The
+landing page shows the same four under its hero, in a "Today on Theraglee"
+zone (`site/index.html#today`): a visitor gets the open deck (`min_level = 0`,
+since `daily_pick()` sees no user), a signed-in member the same personalized
+pick as their dashboard. The zone stays hidden until at least one card is back.
 
 ## How a card is picked
 
