@@ -549,7 +549,7 @@ async function home(){
   const shown = insOnly ? rows.filter(m => takesInsurance(T.insurances, m.insurance)) : rows;
 
   render(`
-    <h2>Members who have toggled ON <strong>Theraglee Match Mode</strong></h2>
+    <h2>Members who have toggled <span style="color:var(--green)">ON</span> <strong>Theraglee Match Mode</strong></h2>
     ${!liveListing ? `<div class="notice warn">Your listing has to be live before you can
       reach out.</div>` : ''}
 
