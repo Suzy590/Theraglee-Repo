@@ -40,7 +40,7 @@
 </div></main>
 
 <script type="module">
-import { chrome, contentCounts, counted } from './assets/app.js';
+import { chrome, contentCounts, counted, funCrumb } from './assets/app.js';
 const a = await chrome({ active:'dashboard.html' });
 const c = await contentCounts();
 const root = document.getElementById('root');
@@ -145,6 +145,7 @@ const upgradeView = () => `
   </div>
   ${ABOUT}`;
 
+root.insertAdjacentHTML('beforebegin', funCrumb(a));   // back to the Fun tab
 root.innerHTML = a.level >= 2 ? memberView() : upgradeView();
 </script>
 </body>

@@ -69,7 +69,7 @@
 </div></main>
 
 <script type="module">
-import { chrome, sb, esc, qs, toast, modal, lockNotice, logActivity } from './assets/app.js';
+import { chrome, sb, esc, qs, toast, modal, lockNotice, logActivity, funCrumb } from './assets/app.js';
 import { library, isFavorite, favButton, bindLibrary, setProgress } from './assets/library.js';
 import { mandala, colorable } from './assets/mandala.js';
 import { SHAPES } from './assets/mandala-shapes.js';
@@ -117,6 +117,9 @@ function applyFills(host, fills) {
 }
 
 const shareToken = qs('share');
+/* The gallery and the locked notice are where the Fun tab lands, so they carry
+   the way back to it; a single mandala and a share link have their own "← All mandalas". */
+if (!shareToken && !qs('slug')) root.insertAdjacentHTML('beforebegin', funCrumb(a));
 if (shareToken) {
   await shared(shareToken);                     // a link anyone can open, signed in or not
 } else {
