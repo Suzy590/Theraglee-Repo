@@ -78,8 +78,16 @@ if (!t) {
   const ageRanges = [t.age_range_1, t.age_range_2].filter(Boolean);
   const locs = (t.locations||[]).map(l => [l.address, l.city, l.state, l.zip].filter(Boolean).join(', '));
 
+  // A therapist looking at their own listing came from the My profile tab of
+  // the practice dashboard, so the way back there sits where the directory
+  // link sits for everyone else.
+  const mine = a.authenticated && a.therapist?.slug === slug;
   root.innerHTML = `
-    <a class="faint" href="therapists.html">← All therapists</a>
+    ${mine ? `<div class="row" style="justify-content:space-between;align-items:center;gap:12px">
+        <a class="btn sm ghost" href="therapist-dashboard.html#profile">← Back to My profile</a>
+        <span class="faint" style="font-size:.9rem">This is your profile as visitors see it.</span>
+      </div>`
+    : `<a class="faint" href="therapists.html">← All therapists</a>`}
     <div class="layout" style="margin-top:20px">
       <div>
         <div class="hdr">
