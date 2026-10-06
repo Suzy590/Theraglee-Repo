@@ -124,18 +124,30 @@
   .up{animation:fadeUp .8s cubic-bezier(.22,1,.36,1) both}
   @keyframes halo{0%{box-shadow:0 0 0 0 rgba(106,178,30,.55)}70%{box-shadow:0 0 0 7px rgba(106,178,30,0)}100%{box-shadow:0 0 0 0 rgba(106,178,30,0)}}
   .dot{width:8px;height:8px;border-radius:50%;background:var(--lime-2);animation:halo 2.4s ease-out infinite}
-  /* Today on Theraglee: the dashboard's daily cards for everyone, right under
-     the hero, in the Today look (a soft green zone holding white cards). The
-     affirmation takes a wide card; the quote, tip and fact share a row. */
-  .daily-sec{padding-bottom:0}
+  /* Under the hero: the explore strip in the left two thirds and "Today on
+     Theraglee" (the dashboard's daily cards, in the Today look: a soft green
+     zone holding white cards) in the right third. The two stack below 900px.
+     The zone leaves the row if no card comes back. */
+  .under-hero{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:22px;align-items:stretch}
+  .under-hero.no-today{grid-template-columns:minmax(0,1fr)}
+  .daily-zone{display:flex;flex-direction:column}
+  .daily-zone[hidden]{display:none}
+  .daily-zone .zone-head{margin-bottom:16px}
+  .daily-zone .zone-head h2{font-size:1.55rem}
+  .daily-zone .zone-head p{font-size:.92rem}
   .daily-head .kicker{margin-bottom:8px}
-  .daily-affirm{margin-bottom:16px}
-  .hero-line{font-family:var(--serif);font-style:italic;font-size:clamp(1.25rem,2.4vw,1.7rem);
-    line-height:1.3;color:var(--ink);margin:12px 0 0}
-  .daily{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
-  .daily .card{display:flex;flex-direction:column;gap:10px}
-  .daily p{margin:0;font-size:.95rem;line-height:1.5}
-  .daily .quote p{font-family:var(--serif);font-style:italic;font-size:1.1rem}
+  .daily-affirm{margin-bottom:14px;padding:18px 20px}
+  .hero-line{font-family:var(--serif);font-style:italic;font-size:1.25rem;
+    line-height:1.3;color:var(--ink);margin:10px 0 0}
+  .daily{display:grid;gap:14px;grid-template-columns:minmax(0,1fr)}
+  .daily .card{display:flex;flex-direction:column;gap:8px;padding:16px 20px}
+  .daily p{margin:0;font-size:.92rem;line-height:1.5}
+  .daily .quote p{font-family:var(--serif);font-style:italic;font-size:1.05rem}
+  /* The explore card is as tall as the zone beside it; the strip sits in the
+     middle of the room that leaves, with the fine print at the foot. */
+  .under-hero .showcase.embedded{margin-top:auto;margin-bottom:auto;min-width:0}
+  .under-hero .explore-plug .fine{margin-top:0}
+  @media(max-width:900px){.under-hero{grid-template-columns:minmax(0,1fr)}}
   .explore-plug{background:var(--paper);border:1px solid var(--hair);border-radius:var(--r-lg);
     padding:30px;box-shadow:var(--shadow-2);display:flex;flex-direction:column}
   .explore-plug h2{margin:0 0 6px;font-size:1.55rem;line-height:1.2}
@@ -269,32 +281,32 @@
     </div>
   </section>
 
-  <!-- Today on Theraglee: the same four daily cards the dashboard shows, for
-       everyone. daily_pick() answers a visitor with the open deck (min_level 0)
-       and a member with cards chosen for their topics. Hidden if nothing
-       comes back. -->
-  <section class="section tight daily-sec" id="today" aria-labelledby="daily-title" hidden>
-    <div class="wrap">
-      <div class="zone">
-        <div class="zone-head daily-head">
-          <span class="kicker" id="daily-date"></span>
-          <h2 id="daily-title">Today on Theraglee</h2>
-          <p class="muted" id="daily-note">A fresh affirmation, quote, tip and fact every day.</p>
-        </div>
-        <div class="card daily-affirm" id="home-affirm"></div>
-        <div class="daily" id="home-daily"></div>
-      </div>
-    </div>
-  </section>
-
   <section class="section tight">
-    <div class="wrap">
+    <div class="wrap under-hero" id="under-hero">
       <section class="explore-plug" aria-labelledby="explore-title">
         <h2 id="explore-title">What would you like to explore today?</h2>
         <p class="muted">Tap anything below. Some tools need a free account, and a few come with a
           paid membership — the label on each tile tells you which.</p>
         <div id="explore-grid" class="skeleton" style="height:230px;margin-top:18px"></div>
         <small class="fine" id="explore-fine"></small>
+      </section>
+
+      <!-- Today on Theraglee: the same four daily cards the dashboard shows,
+           for everyone. daily_pick() answers a visitor with the open deck
+           (min_level 0) and a member with cards chosen for their topics.
+           Shows loading cards until they arrive; leaves if nothing comes back. -->
+      <section class="zone daily-zone" id="today" aria-labelledby="daily-title">
+        <div class="zone-head daily-head">
+          <span class="kicker" id="daily-date"></span>
+          <h2 id="daily-title">Today on Theraglee</h2>
+          <p class="muted" id="daily-note">A fresh affirmation, quote, tip and fact every day.</p>
+        </div>
+        <div class="card daily-affirm" id="home-affirm"><div class="skeleton" style="height:56px"></div></div>
+        <div class="daily" id="home-daily">
+          <div class="card"><div class="skeleton" style="height:48px"></div></div>
+          <div class="card"><div class="skeleton" style="height:48px"></div></div>
+          <div class="card"><div class="skeleton" style="height:48px"></div></div>
+        </div>
       </section>
     </div>
   </section>
@@ -491,15 +503,20 @@ mountShowcase(a, document.getElementById('explore-grid'), { replace: true, embed
 
 /* ---- Today on Theraglee ----
    The four daily picks, the way the dashboard's Today tab shows them. Fetched
-   after the page is drawn; the section stays hidden until at least one card
-   is back, so a visitor never sees an empty panel. */
+   after the page is drawn, over loading cards; if nothing comes back the zone
+   goes and the explore strip takes the whole row. */
 (async () => {
   const kinds = ['affirmation', 'quote', 'tip', 'fun_fact'];
   const picks = Object.fromEntries(await Promise.all(kinds.map(async k => {
     const { data } = await sb.rpc('daily_pick', { p_kind: k });
     return [k, data?.[0] || null];
   })));
-  if (!kinds.some(k => picks[k])) return;
+  const today = document.getElementById('today');
+  const dropToday = () => {
+    today.hidden = true;
+    document.getElementById('under-hero').classList.add('no-today');
+  };
+  if (!kinds.some(k => picks[k])) return dropToday();
 
   document.getElementById('daily-date').textContent =
     new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
@@ -524,8 +541,10 @@ mountShowcase(a, document.getElementById('explore-grid'), { replace: true, embed
   const daily = document.getElementById('home-daily');
   daily.style.display = cards.length ? '' : 'none';
   daily.innerHTML = cards.join('');
-  document.getElementById('today').hidden = false;
-})().catch(() => {});
+})().catch(() => {
+  document.getElementById('today').hidden = true;
+  document.getElementById('under-hero').classList.add('no-today');
+});
 
 /* ---- Match Mode switch ----
    Flips to ON the first time it scrolls into view, and anyone can tap it to
