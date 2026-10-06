@@ -11,12 +11,18 @@
      reply carries the member's real name to that one therapist
      (outreach_replies.member_name). One tap blocks a therapist (member_blocks).
 
-   A therapist's turn is unread until the member opens the inbox, which stamps
-   therapist_outreach.read_at or therapist_message_replies.read_at. Until then
-   the Messages tab on the dashboard and the Inbox tab on the account page
-   carry a count, drawn from unreadCount(); once the inbox has marked them read
-   it fires `theraglee:inbox-read` on `document` so the page can take the
-   count down. */
+   Each conversation is one collapsed .thread (a <details>): closed, it is a
+   header with the therapist's name, a status pill, the date and first line
+   of the last turn, and a "New" pill while a turn in it is unread. Opening
+   one closes any other, so one conversation is open at a time.
+
+   A therapist's turn is unread until the member opens its thread, which
+   stamps therapist_outreach.read_at or therapist_message_replies.read_at.
+   Until then the Messages tab on the dashboard and the Inbox tab on the
+   account page carry a count, drawn from unreadCount(); each time the inbox
+   marks a thread read it fires `theraglee:inbox-read` on `document` with
+   `detail.remaining`, the unread count that is left, so the page can take
+   the count down. */
 
 import { sb, esc, busy, toast, fmtDate } from './app.js';
 
@@ -32,6 +38,10 @@ export async function unreadCount(a){
   ]);
   return (outreach || 0) + (answers || 0);
 }
+
+// The thread left open when the inbox last drew, so sending a reply (which
+// redraws) keeps the member's place. Null when none is open.
+let openKey = null;
 
 // Draws the inbox into `host`. `where` finishes the sentence saying where the
 // member turns Match Mode on, so each page can point at its own switch.
@@ -98,16 +108,30 @@ export async function mountInbox(host, a, { where = 'on your dashboard', heading
       <p class="muted" style="margin:6px 0 0;white-space:pre-wrap">${esc(i.text)}</p></div>`;
   const whoIs = (th) => `${esc(th.first_name||'')} ${esc(th.last_name||'')}${th.credentials?', '+esc(th.credentials):''}`;
 
+  // The collapsed shell of a conversation: a <details> whose <summary> is
+  // the closed view and whose body is `inner`. `pill` is the status pill.
+  const shell = (key, t, pill, inner) => {
+    const newest = t.items.at(-1);
+    const unread = t.items.filter(i => i.fresh).length;
+    return `<details class="thread${unread ? ' fresh' : ''}" data-thread="${esc(key)}"${openKey === key ? ' open' : ''}>
+      <summary>
+        <span class="thread-who">${whoIs(t.therapist)} ${pill}${
+          unread ? `<span class="badge" data-new>${unread === 1 ? 'New message' : unread + ' new messages'}</span>` : ''}</span>
+        <span class="thread-when">${fmtDate(newest.at)}</span>
+        <p class="thread-peek">${newest.from === 'you' ? 'You: ' : ''}${esc(newest.text)}</p>
+      </summary>
+      <div class="thread-body">${inner}</div>
+    </details>`;
+  };
+
   // A conversation the member started from a therapist's profile.
   const askedCard = (key, t) => {
     const th = t.therapist;
     const answered = t.items.some(i => i.from === 'therapist');
     const theirTurn = t.items.at(-1).from === 'you';
-    return `<div class="card" style="margin-top:14px" data-thread="${esc(key)}">
-      <div class="spread">
-        <strong>${whoIs(th)}</strong>
-        ${theirTurn ? '<span class="badge gray">Waiting for their reply</span>' : '<span class="badge">They replied</span>'}</div>
-      <p class="faint" style="margin:6px 0 0">You wrote to them from their profile. Their replies come here, not to your email.</p>
+    return shell(key, t,
+      theirTurn ? '<span class="badge gray">Waiting for their reply</span>' : '<span class="badge">They replied</span>', `
+      <p class="faint">You wrote to them from their profile. Their replies come here, not to your email.</p>
       <div class="stack" style="margin-top:12px">${t.items.map(turn).join('')}</div>
       <div class="row" style="margin-top:12px">
         ${th.slug?`<a class="btn sm ghost" href="therapist.html?slug=${esc(th.slug)}">View their profile</a>`:''}
@@ -120,8 +144,7 @@ export async function mountInbox(host, a, { where = 'on your dashboard', heading
         <div class="row" style="justify-content:flex-end">
           <button type="button" class="btn ghost" data-cancel="${esc(key)}">Cancel</button>
           <button type="submit" class="btn">Send</button></div>
-      </form>
-    </div>`;
+      </form>`);
   };
 
   // A therapist who reached out through Match Mode.
@@ -129,12 +152,10 @@ export async function mountInbox(host, a, { where = 'on your dashboard', heading
     const th = t.therapist;
     const replied = t.items.some(i => i.from === 'you');
     const isBlocked = blocked.has(tid);
-    return `<div class="card" style="margin-top:14px" data-thread="${esc(tid)}">
-      <div class="spread">
-        <strong>${whoIs(th)}</strong>
-        ${isBlocked ? '<span class="badge lock">Blocked</span>'
-          : replied ? '<span class="badge">You replied</span>' : '<span class="badge gray">Waiting for you</span>'}</div>
-      <p class="faint" style="margin:6px 0 0">They reached out through Theraglee Match Mode.</p>
+    return shell(tid, t,
+      isBlocked ? '<span class="badge lock">Blocked</span>'
+        : replied ? '<span class="badge">You replied</span>' : '<span class="badge gray">Waiting for you</span>', `
+      <p class="faint">They reached out through Theraglee Match Mode.</p>
       <div class="stack" style="margin-top:12px">${t.items.map(turn).join('')}</div>
       <div class="row" style="margin-top:12px">
         ${th.slug?`<a class="btn sm ghost" href="therapist.html?slug=${esc(th.slug)}">View their profile</a>`:''}
@@ -158,8 +179,7 @@ export async function mountInbox(host, a, { where = 'on your dashboard', heading
         <div class="row" style="justify-content:flex-end">
           <button type="button" class="btn ghost" data-cancel="${esc(tid)}">Cancel</button>
           <button type="submit" class="btn">Send my reply</button></div>
-      </form>
-    </div>`;
+      </form>`);
   };
 
   host.innerHTML = `
@@ -175,21 +195,38 @@ export async function mountInbox(host, a, { where = 'on your dashboard', heading
       ? list.map(([key, t]) => t.kind === 'asked' ? askedCard(key, t) : matchCard(key, t)).join('')
       : '<div class="empty" style="margin-top:18px">No messages.</div>'}`;
 
-  // Opening the inbox is reading it: the new turns are stamped read, and
-  // the page hears about it so the count on its tab goes away.
-  if (fresh.size) {
+  // Opening a thread is reading it: its new turns are stamped read, its
+  // "New" pill goes, and the page hears how many unread are left so the
+  // count on its tab can come down. The "New" tags on the turns themselves
+  // stay until the next draw, so the member can see which ones were new.
+  let remaining = fresh.size;
+  const readThread = async (key) => {
+    const t = threads.get(key);
+    const mine = (t?.items || []).filter(i => i.fresh);
+    if (!mine.length) return;
+    mine.forEach(i => { i.fresh = false; });
     const now = new Date().toISOString();
-    const results = await Promise.all([
-      freshOutreach.length
-        ? sb.from('therapist_outreach').update({ read_at: now }).eq('member_id', me).is('read_at', null)
-        : { error: null },
-      freshAnswers.length
-        ? sb.from('therapist_message_replies').update({ read_at: now })
-            .eq('member_id', me).eq('sender', 'therapist').is('read_at', null)
-        : { error: null },
-    ]);
-    if (!results.some(r => r.error)) document.dispatchEvent(new CustomEvent('theraglee:inbox-read'));
-  }
+    const { error } = t.kind === 'match'
+      ? await sb.from('therapist_outreach').update({ read_at: now })
+          .eq('member_id', me).eq('therapist_id', t.tid).is('read_at', null)
+      : await sb.from('therapist_message_replies').update({ read_at: now })
+          .eq('member_id', me).eq('message_id', t.msg.id).eq('sender', 'therapist').is('read_at', null);
+    if (error) return;
+    const el = host.querySelector(`[data-thread="${CSS.escape(key)}"]`);
+    el?.classList.remove('fresh');
+    el?.querySelector('[data-new]')?.remove();
+    remaining = Math.max(0, remaining - mine.length);
+    document.dispatchEvent(new CustomEvent('theraglee:inbox-read', { detail: { remaining } }));
+  };
+  // One thread open at a time: opening one closes the others.
+  host.querySelectorAll('details.thread').forEach(d => d.addEventListener('toggle', () => {
+    if (!d.open) { if (openKey === d.dataset.thread) openKey = null; return; }
+    openKey = d.dataset.thread;
+    host.querySelectorAll('details.thread[open]').forEach(o => { if (o !== d) o.open = false; });
+    readThread(d.dataset.thread);
+  }));
+  // The thread that was open before a redraw is still open, and read.
+  host.querySelectorAll('details.thread[open]').forEach(d => readThread(d.dataset.thread));
 
   const show = (key, opener) => {
     const f = host.querySelector(`[data-form="${key}"]`);

@@ -39,9 +39,9 @@
   .chart{display:flex;align-items:flex-end;gap:3px;height:130px;padding-top:12px}
   .chart div{flex:1;min-height:2px;background:var(--mist);border-radius:3px 3px 0 0;position:relative}
   .chart div.has{background:var(--lime)}
-  .msg{background:var(--paper);border:1px solid var(--hair);border-radius:var(--r);
-    padding:20px;margin-bottom:12px}
-  .msg.unread{border-color:var(--lime-2);background:linear-gradient(180deg,var(--soft),var(--paper) 40%)}
+  /* A conversation is a collapsed .thread (styles.css); the first one in a
+     list sits straight under its heading. */
+  .thread-list>.thread:first-child{margin-top:0}
   /* The Match Mode members (left two thirds) beside the note on how matching
      works (right third). Under a narrow content box the two stack, note first. */
   .mm-layout{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:28px;
@@ -62,7 +62,6 @@
   .mm-facts{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:12px 0 0;font-size:.9rem}
   .mm-facts dt{color:var(--muted)}
   .mm-facts dd{margin:0;color:var(--ink-2)}
-  .msg .who{font-family:var(--sans);font-weight:600}
   .res{background:var(--paper);border:1px solid var(--hair);border-radius:var(--r);padding:20px;
     display:flex;flex-direction:column;gap:8px;cursor:pointer;transition:transform .3s,box-shadow .3s}
   .res:hover{transform:translateY(-4px);box-shadow:var(--shadow-2)}
@@ -370,6 +369,31 @@ async function referrals(){
   });
 }
 
+/* --------------------------------------------------------- threads */
+// A conversation on the Messages and Home tabs is a collapsed <details
+// class="thread"> (styles.css): closed, it is one line with who it is with,
+// a "New" pill while a turn in it is unread, the date and first line of the
+// last turn. Opening one closes the others, so one is open at a time, and
+// `openThread` remembers which so a redraw (after a reply, say) keeps it.
+let openThread = null;
+function thread(key, { fresh, who, pill = '', at, peek, body }){
+  return `<details class="thread${fresh ? ' fresh' : ''}" data-thread="${esc(key)}"${openThread === key ? ' open' : ''}>
+    <summary>
+      <span class="thread-who">${who} ${pill}${fresh ? '<span class="badge">New</span>' : ''}</span>
+      <span class="thread-when">${fmtDate(at)}</span>
+      <p class="thread-peek">${peek}</p>
+    </summary>
+    <div class="thread-body">${body}</div>
+  </details>`;
+}
+function wireThreads(){
+  document.querySelectorAll('details.thread').forEach(d => d.addEventListener('toggle', () => {
+    if (!d.open) { if (openThread === d.dataset.thread) openThread = null; return; }
+    openThread = d.dataset.thread;
+    document.querySelectorAll('details.thread[open]').forEach(o => { if (o !== d) o.open = false; });
+  }));
+}
+
 /* --------------------------------------------------------- messages */
 // Messages sent through the profile's contact form, each with the
 // conversation that followed. The therapist answers here; the answer lands
@@ -409,27 +433,25 @@ async function messages(){
     <h2>Messages</h2>
     <p class="muted">People who wrote to you from your profile. Reply here and your answer goes
       to their Theraglee inbox. Neither of you sees the other's email address.</p>
-    ${rows.length ? rows.map(m => {
-      const thread = byMsg.get(m.id) || [];
+    ${rows.length ? `<div class="thread-list">${rows.map(m => {
+      const turns = byMsg.get(m.id) || [];
       const fresh = isNew(m);
       const canReply = !!m.sender_user_id;
-      return `
-      <div class="msg ${fresh?'unread':''}" data-id="${m.id}">
-        <div class="spread">
-          <span class="who">${esc(m.sender_name)}${
-            fresh ? ' <span class="badge" style="margin-left:6px">New</span>' : ''}</span>
-          <span class="faint">${fmtDate(m.created_at)}</span>
-        </div>
-        ${m.sender_phone || m.preferred_times ? `<p class="faint" style="margin:4px 0 0">
+      const newest = turns.at(-1);
+      return thread(m.id, {
+        fresh, who: esc(m.sender_name), at: lastAt(m),
+        peek: `${newest?.sender === 'therapist' ? 'You: ' : ''}${esc(newest?.message || m.message)}`,
+        body: `
+        ${m.sender_phone || m.preferred_times ? `<p class="faint" style="margin:0">
           ${m.sender_phone ? `Phone: ${esc(m.sender_phone)}` : ''}${m.sender_phone && m.preferred_times ? ' · ' : ''}${
           m.preferred_times ? `best times: ${esc(m.preferred_times)}` : ''}</p>` : ''}
-        <div class="stack" style="margin-top:12px">
+        <div class="stack">
           ${bubble('member', m.created_at, m.message)}
-          ${thread.map(r => bubble(r.sender === 'therapist' ? 'you' : 'member', r.created_at, r.message)).join('')}
+          ${turns.map(r => bubble(r.sender === 'therapist' ? 'you' : 'member', r.created_at, r.message)).join('')}
         </div>
         <div class="row" style="margin-top:14px">
           ${canReply
-            ? `<button class="btn sm" data-reply="${m.id}">${thread.some(r => r.sender === 'therapist') ? 'Reply again' : 'Reply'}</button>`
+            ? `<button class="btn sm" data-reply="${m.id}">${turns.some(r => r.sender === 'therapist') ? 'Reply again' : 'Reply'}</button>`
             : `<a class="btn sm" href="mailto:${esc(m.sender_email)}?subject=${encodeURIComponent('Re: your message via Theraglee')}">Reply by email</a>
                <span class="faint">Sent before accounts were required, so this one has no Theraglee inbox to answer to.</span>`}
           ${fresh ? `<button class="btn sm ghost" data-read="${m.id}">Mark as read</button>` : ''}
@@ -442,10 +464,10 @@ async function messages(){
           <div class="row" style="justify-content:flex-end">
             <button type="button" class="btn ghost" data-cancel="${m.id}">Cancel</button>
             <button type="submit" class="btn">Send reply</button></div>
-        </form>` : ''}
-      </div>`;
-    }).join('')
+        </form>` : ''}` });
+    }).join('')}</div>`
     : '<div class="empty" style="margin-top:18px">No messages yet.</div>'}`);
+  wireThreads();
 
   // Reading a conversation: the opening message and every write-back in it.
   const markRead = async (id) => {
@@ -533,12 +555,11 @@ async function home(){
 
     ${convos.length ? `
       <h3 style="margin-top:28px">Replies from members</h3>
-      <div class="stack">${convos.map(([mid, t]) => `
-        <div class="msg ${t.unread?'unread':''}" data-thread="${esc(mid)}">
-          <div class="spread">
-            <span class="who">${esc(t.name)}</span>
-            <span class="faint">${fmtDate(t.items.at(-1).at)}</span></div>
-          <p class="faint" style="margin:4px 0 0">${rows.some(r => r.id === mid)
+      <div class="thread-list">${convos.map(([mid, t]) => thread(mid, {
+        fresh: !!t.unread, who: esc(t.name), at: t.items.at(-1).at,
+        peek: `${t.items.at(-1).from === 'you' ? 'You: ' : ''}${esc(t.items.at(-1).text)}`,
+        body: `
+          <p class="faint" style="margin:0">${rows.some(r => r.id === mid)
             ? esc(line(rows.find(r => r.id === mid)))
             : 'Has since switched Theraglee Match Mode off or blocked you. If they only switched it off, you can still answer this conversation.'}</p>
           <div class="stack" style="margin-top:12px">${t.items.map(i => `
@@ -549,8 +570,7 @@ async function home(){
           <div class="row" style="margin-top:14px">
             <button class="btn sm" data-followup="${esc(mid)}" data-name="${esc(t.name)}" ${liveListing?'':'disabled'}>Write back</button>
             ${t.unread ? `<button class="btn sm ghost" data-readall="${esc(mid)}">Mark as read</button>` : ''}
-          </div>
-        </div>`).join('')}</div>` : ''}
+          </div>` })).join('')}</div>` : ''}
 
     <div class="mm-layout">
     <div class="mm-members">
@@ -635,6 +655,7 @@ async function home(){
     };
   };
 
+  wireThreads();
   document.querySelectorAll('[data-reach]').forEach(b => b.onclick = () => send(b.dataset.reach,
     `They see this in their Theraglee inbox along with a link to your profile. They stay
      pseudonymous until they choose to reply. Keep it short and warm.`,

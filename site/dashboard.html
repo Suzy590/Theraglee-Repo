@@ -564,14 +564,15 @@ addEventListener('hashchange', () => showTab(location.hash.replace('#', '')));
 showTab(location.hash.replace('#', ''));
 
 // A count of unread messages from therapists sits on the Messages tab until
-// the member opens it (assets/inbox.js marks them read and fires the event).
+// the member opens each one (assets/inbox.js marks a thread read when it is
+// opened and fires the event with how many are still unread).
 const msgTab = document.querySelector('#tabs button[data-tab="messages"]');
 function showUnread(n) {
   msgTab.querySelector('.dot')?.remove();
   msgTab.setAttribute('aria-label', n ? `Messages, ${n} unread` : 'Messages');
   if (n) msgTab.insertAdjacentHTML('beforeend', `<span class="dot" aria-hidden="true">${n}</span>`);
 }
-document.addEventListener('theraglee:inbox-read', () => showUnread(0));
+document.addEventListener('theraglee:inbox-read', (e) => showUnread(e.detail?.remaining || 0));
 unreadCount(a).then(n => { if (tab !== 'messages') showUnread(n); });
 
 /* ---- daily content ---- */

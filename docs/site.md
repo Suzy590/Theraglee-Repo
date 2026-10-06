@@ -154,8 +154,12 @@ profile's contact form with something unread in them (`therapist_messages.read_a
 empty, or a member's write-back in `therapist_message_replies` with `read_at`
 empty) and **Home** one with the number of unread Match Mode replies
 (`outreach_replies.read_at` empty), the same pill the member dashboard puts on
-its Messages tab; each unread conversation is labeled **New**, and **Mark as
-read** (or answering it) takes the count down. It includes:
+its Messages tab. On both tabs a conversation is a collapsed thread (a
+`<details class="thread">`, styled in `site/assets/styles.css`): closed, it
+is one line with who it is with, the date and first words of the last turn,
+and a **New** pill while a turn in it is unread. Opening one closes any
+other, so one is open at a time, and **Mark as read** (or answering it)
+takes the count down. It includes:
 
 - a verified, searchable listing
 - a Theraglee tracking phone number, so the therapist's own line stays private
@@ -552,7 +556,7 @@ is in `docs/match-mode-consent.md`.
 | What a therapist can read | the `member_discovery` view: `age_range`, `delivery`, `issues`, `area`, `already_contacted`, `has_replied`, `pseudonym`, `insurance`, `gender`. No name, exact age or zip column, and members who blocked the viewing therapist are left out. |
 | Blocking a therapist | `member_blocks`, written from the member's Inbox on the account page. `member_blocked()` keeps a blocked therapist out of the view and out of `therapist_outreach`, even after a reply. |
 | A therapist's message | `therapist_outreach` (unchanged) |
-| Unread messages | `therapist_outreach.read_at` is empty until the member opens the inbox, which stamps it. Until then the dashboard's Messages tab and the account page's Inbox tab show a count (`unreadCount()` in `site/assets/inbox.js`, which adds a therapist's unread answers from `therapist_message_replies`), and the inbox labels each such message **New**. The members' RLS policy "member updates own inbox" lets them set it. |
+| Unread messages | `therapist_outreach.read_at` is empty until the member opens that therapist's thread in the inbox, which stamps it. Until then the dashboard's Messages tab and the account page's Inbox tab show a count (`unreadCount()` in `site/assets/inbox.js`, which adds a therapist's unread answers from `therapist_message_replies`), and the inbox shows a **New message** pill on the collapsed thread and labels each such turn **New** inside it. Every conversation in the inbox is a collapsed `<details class="thread">`, one open at a time; opening one marks it read and fires `theraglee:inbox-read` with `detail.remaining` so the tab's count comes down. The members' RLS policy "member updates own inbox" lets them set it. |
 | A member's reply | `outreach_replies`. `member_name` is required by a check constraint: the real name travels only here, and only to that therapist. |
 | A follow-up from the therapist | Another `therapist_outreach` row. `member_replied_to()` lets the insert through even if the member has since switched Match Mode off. |
 | The email to the therapist | Trigger `outreach_reply_alert` posts to the `match-reply-alert` Edge Function through pg_net with `app_secrets.match_hook_key`; the function emails the therapist's contact address (else their sign-in email) through Resend and records `notified_at` / `notify_error` on the reply. Needs the same `RESEND_API_KEY` secret as the digest. |
@@ -576,7 +580,7 @@ email address is shown to either side, and nothing is emailed between them.
 | Who can write | A signed-in member. The profile's button shows a visitor without an account the way to sign in or create a free one, with `?next=` bringing them back to the profile. A reply needs an inbox to land in. |
 | The opening message | `therapist_messages`, written only by the `contact-therapist` Edge Function (`supabase/functions/contact-therapist`), which checks the member's token itself, keeps the honeypot and the rate limits, and records `sender_user_id`. The member's account email is kept on the row for the record, never shown to the therapist. |
 | The heads-up | The same function emails the therapist (contact address, else sign-in email) that a message is waiting, with a link to the dashboard. The message itself is not in the email, and the email has no reply-to. Needs `RESEND_API_KEY`; `delivery` / `delivery_error` on the row say whether it went. |
-| Every later turn | `therapist_message_replies`: `sender` is `'therapist'` or `'member'`, `read_at` is stamped by the reader (the member's inbox stamps therapist turns when it opens; the therapist's **Mark as read** or reply stamps member turns). RLS lets the therapist answer only a message to their own listing from a signed-in member, and the member write back only on a conversation they started. |
+| Every later turn | `therapist_message_replies`: `sender` is `'therapist'` or `'member'`, `read_at` is stamped by the reader (the member's inbox stamps therapist turns when the member opens that conversation's thread; the therapist's **Mark as read** or reply stamps member turns). RLS lets the therapist answer only a message to their own listing from a signed-in member, and the member write back only on a conversation they started. |
 | Migration | `supabase/migrations/20261005150000_therapist_message_replies.sql` |
 
 Messages sent before accounts were required have no `sender_user_id`; the
