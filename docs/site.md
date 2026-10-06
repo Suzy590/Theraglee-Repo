@@ -513,9 +513,10 @@ the same cards, arrows and self-advance work either way.
 
 Three pages pass `chrome({ showcase: false })` and go without the column. The
 landing page mounts the strip itself, sideways, inside "What would you like to
-explore today?" under the hero, where the explore tiles used to be. Between
-the hero and that strip sits "Today on Theraglee", the dashboard's four daily
-cards for everyone (see [`daily-content.md`](daily-content.md)). A
+explore today?" under the hero, where the explore tiles used to be, in the
+left two thirds of the row; "Today on Theraglee", the dashboard's four daily
+cards for everyone, takes the right third (see
+[`daily-content.md`](daily-content.md)). A
 therapist's profile (`therapist.html`) has no showcase at all, so the profile
 takes the full width of the page and is drawn a size up: a larger photo and
 name, roomier text and a wider contact column. The admin page (`admin.html`)
