@@ -6,7 +6,7 @@
 import { sb, esc, tierName, unlockHref } from './app.js';
 import { library, isFavorite, isLater, favButton, statusBadge,
          bindLibrary, progressOf } from './library.js';
-import { TOOLS } from './discover-tools.js';
+import { TOOLS, TOPICS } from './discover-tools.js';
 import { SETS as TRIVIA } from './trivia-sets.js';
 
 const HREF = {
@@ -42,6 +42,11 @@ const SHELL = `
       <button class="chip" data-t="mandala">Mandalas</button>
       <button class="chip" data-t="trivia">Trivia</button>
     </div>
+    <!-- The discovery tools' eighteen topics; shown while the Self-discovery tools chip is on. -->
+    <div class="chips hide" data-topics style="margin-top:12px">
+      <button class="chip on" data-c="">All topics</button>
+      ${TOPICS.map(t => `<button class="chip" data-c="${esc(t)}">${esc(t)}</button>`).join('')}
+    </div>
     <div class="chips" data-tiers style="margin-top:12px">
       <button class="chip on" data-l="">Any tier</button>
       <button class="chip" data-l="unlocked">Available to me</button>
@@ -76,7 +81,7 @@ export async function mountLibrary(root, a, { type = '', view = '' } = {}) {
   // catalog rows here so the filters, favorites and progress treat them the same.
   const discoverRows = TOOLS.map(t => ({
     kind: 'discover', id: t.id, slug: t.slug, title: t.title, description: t.description,
-    category: t.topic, tags: t.tags, min_level: 0,
+    category: t.topic, tags: t.tags, min_level: 0, minutes: t.minutes,
   }));
 
   // The 150 trivia quizzes ship with the site too (assets/trivia-sets.js). They are
@@ -92,21 +97,23 @@ export async function mountLibrary(root, a, { type = '', view = '' } = {}) {
   if (error) console.error(error);
   const all = [...discoverRows, ...(rows || []), ...triviaRows];
 
-  let term = '', onlyMine = false;
+  let term = '', onlyMine = false, topic = '';
   if (type) $$('[data-types] .chip').forEach(c => c.classList.toggle('on', c.dataset.t === type));
+  $('[data-topics]').classList.toggle('hide', type !== 'discover');
   if (view) $(`[data-views] .chip[data-v="${view}"]`)?.classList.add('on');
 
   function render(){
     const t = term.trim().toLowerCase();
     const list = all.filter(r =>
       (!type || r.kind === type) &&
+      (!topic || r.category === topic) &&
       (!onlyMine || r.min_level <= a.level) &&
       (!view ||
         (view === 'favorite' && isFavorite(lib, r.kind, r.id)) ||
         (view === 'later'    && isLater(lib, r.kind, r.id))    ||
         (view === 'started'  && progressOf(lib, r.kind, r.id)?.status === 'started') ||
         (view === 'completed'&& progressOf(lib, r.kind, r.id)?.status === 'completed')) &&
-      (!t || (r.title + ' ' + (r.description||'') + ' ' + (r.tags||[]).join(' ')).toLowerCase().includes(t))
+      (!t || (r.title + ' ' + (r.description||'') + ' ' + (r.category||'') + ' ' + (r.tags||[]).join(' ')).toLowerCase().includes(t))
     ).sort((x,y) => x.min_level - y.min_level || x.title.localeCompare(y.title));
 
     $('[data-count]').textContent =
@@ -125,7 +132,7 @@ export async function mountLibrary(root, a, { type = '', view = '' } = {}) {
               ${locked ? `<span class="badge lock">${tierName(r.min_level)}</span>` : ''}
             </div>
             ${r.description ? `<p class="meta" style="color:var(--muted)">${esc(String(r.description).slice(0,120))}${String(r.description).length>120?'…':''}</p>` : ''}
-            <span class="meta">${LABEL[r.kind]}${r.category && r.category!==LABEL[r.kind] ? ' · '+esc(r.category) : ''}</span>
+            <span class="meta">${LABEL[r.kind]}${r.category && r.category!==LABEL[r.kind] ? ' · '+esc(r.category) : ''}${r.minutes ? ` · ${r.minutes} min` : ''}</span>
             <div class="row" style="gap:7px;margin-top:2px">
               ${statusBadge(p)}${isLater(lib, r.kind, r.id) ? '<span class="badge gray">Saved for later</span>' : ''}
             </div>
@@ -138,7 +145,18 @@ export async function mountLibrary(root, a, { type = '', view = '' } = {}) {
   $('[data-q]').addEventListener('input', e => { term = e.target.value; render(); });
   $$('[data-types] .chip').forEach(c => c.addEventListener('click', () => {
     $$('[data-types] .chip').forEach(x=>x.classList.remove('on'));
-    c.classList.add('on'); type = c.dataset.t; render();
+    c.classList.add('on'); type = c.dataset.t;
+    // The topic chips belong to the discovery tools; leaving that kind clears the topic.
+    $('[data-topics]').classList.toggle('hide', type !== 'discover');
+    if (type !== 'discover') {
+      topic = '';
+      $$('[data-topics] .chip').forEach(x => x.classList.toggle('on', !x.dataset.c));
+    }
+    render();
+  }));
+  $$('[data-topics] .chip').forEach(c => c.addEventListener('click', () => {
+    $$('[data-topics] .chip').forEach(x=>x.classList.remove('on'));
+    c.classList.add('on'); topic = c.dataset.c; render();
   }));
   $$('[data-tiers] .chip').forEach(c => c.addEventListener('click', () => {
     $$('[data-tiers] .chip').forEach(x=>x.classList.remove('on'));
