@@ -61,8 +61,9 @@ with the trail map, drawn from `site/assets/goals-ui.js`; `goals.html`
 forwards here; see [`quest-map.md`](quest-map.md)), **Explore
 Library** (the whole library with search and filters, the 360 free discovery
 tools among it with their topic chips, the same browser as `explore.html`,
-drawn from `site/assets/explore-ui.js`; there is no separate Discover tab),
-**Tools** (quick links into the library), **Fun** (the
+drawn from `site/assets/explore-ui.js`, with the three membership tiers under
+it for a member who is not yet Premium; there is no separate Discover or Tools
+tab), **Fun** (the
 desktop pet, mental health trivia and mandalas), **Messages**
 (every conversation with a therapist: replies from therapists the member wrote
 to from a profile, and messages from therapists who reached out through Match
