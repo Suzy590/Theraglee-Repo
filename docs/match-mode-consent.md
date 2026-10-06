@@ -24,13 +24,15 @@ request.
 > - Turning Theraglee Match Mode off makes you invisible to therapists again.
 
 This is `MATCH_BLURB` in `site/assets/match.js`, shown under the Match Mode
-switch on the dashboard and on the account page (its lead ends with a link to
+switch on the dashboard and on the account page: a circled "i" labeled "How
+Theraglee Match Mode works". The whole of the wording is folded under it as
+one list, the bold lead and its sentence first (ending with a link to
 `site/match-mode.html`, the plain-language explainer; see
-[`therapist-pages.md`](therapist-pages.md)): the bold lead and one
-sentence, then a circled "i" labeled "How Theraglee Match Mode works". The list is folded under
-it and opens when the member hovers over it or clicks (or taps) it; the
-button reports whether it is open (`aria-expanded`) to screen readers. When the switch is turned on, a window asks for every
-detail below, all required. It suggests a pseudonym ("Quiet Harbor 27") that
+[`therapist-pages.md`](therapist-pages.md)), then the details. The list opens
+when the member hovers over it or clicks (or taps) it; the button reports
+whether it is open (`aria-expanded`) to screen readers, and the dashboard's
+switch names the list as its description. When the switch is turned on, a
+window asks for every detail below, all required. It suggests a pseudonym ("Quiet Harbor 27") that
 the member can keep, replace with another suggestion, or type over, and says it
 will be shared with therapists and must not be their real name.
 
@@ -60,8 +62,9 @@ view of the member; deleting the account does.
 
 Every page reads the signed-in member's profile from `my_access()`
 (`20260928190000_match_mode_insurance_and_reload.sql`). It must return every
-`match_*` column above; if one is left out, the "What therapists see" line forgets
-it at each sign-in and the window opens blank for it, even though the answer is
+`match_*` column above; if one is left out, the "What therapists see" line (on
+the dashboard, the link beside ON that opens it on hover or tap) forgets it at
+each sign-in and the window opens blank for it, even though the answer is
 saved. Add any new Match Mode column there too.
 
 ## What therapists never see

@@ -37,8 +37,8 @@ the other.
 | Plans | `pricing.html` (Free, Basic, Premium) | `for-therapists.html#membership` (one flat price); billing starts from the practice dashboard |
 | Header links | Dashboard (signed in only), For Therapists; visitors also get Sign in and Join free | Dashboard, Stats, Messages, Library, My profile, Directory |
 
-The member dashboard opens on a **Today** tab (the daily affirmation, quote,
-tip and fun fact, beside the Match Mode switch, then for Premium members
+The member dashboard opens on a **Today** tab (the daily affirmation beside
+the greeting, the quote, tip and fun fact, then for Premium members
 today's stepping stones from their Mental Health Goals trail
 (`assets/today-step.js`, see `docs/quest-map.md`), the mood check-in, and under it
 the member's progress: the week's counts, challenges in progress, favorites,
@@ -73,10 +73,13 @@ national lines, drawn from `site/assets/nearby-ui.js`; see
 [`nearby-help.md`](nearby-help.md)) and **Therapist directory**, which is not
 a panel but a link to the Find a therapist page (`therapists.html`). Each
 panel tab has an address, for example `dashboard.html#journal`. The **Theraglee Match Mode** switch (a
-smaller copy of the one on the landing page) sits under the greeting, and to
-the right of the greeting one box holds what it does and the line therapists
-read. On narrower screens that box moves under the greeting, and on a phone
-its two parts stack. The morning email is switched on and off on the account page
+smaller copy of the one on the landing page) sits under the greeting with ON
+or OFF beside it; while it is on, a "What therapists see" link beside that
+opens the line therapists read on hover or tap, and under the switch "How
+Theraglee Match Mode works" opens what it does the same way. To the right of
+the greeting sits the open tab's white card (Today's affirmation, or the pill
+and line naming the tab), which moves under the greeting on narrower screens.
+The morning email is switched on and off on the account page
 (`account.html#profile`). The header no longer links to Today, the
 library, Discover, Challenges, Journal, Articles or the therapist directory: the
 dashboard, the landing page's feature showcase and the pages themselves do.
@@ -494,8 +497,8 @@ scrolls. `chrome()` in `site/assets/app.js` mounts it from
 `therapist-signup.html`) and places it one of two ways (`placeShowcase()`):
 
 - A page with a `.showcase-slot` gets the column inside it. The dashboard has
-  one in every tab, under the tab's white intro card (or Today's affirmation),
-  and `showTab()` moves the column into whichever tab is open. `articles.html`
+  one in every tab, beside the tab's panels, and `showTab()` moves the column
+  into whichever tab is open. `articles.html`
   and `therapists.html` have one under their search box. The slot and the
   content beside it share a `.beside-showcase` grid.
 - Any other page gets it beside everything in `<main>`: `chrome()` gathers the
