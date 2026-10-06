@@ -124,39 +124,47 @@
   .up{animation:fadeUp .8s cubic-bezier(.22,1,.36,1) both}
   @keyframes halo{0%{box-shadow:0 0 0 0 rgba(106,178,30,.55)}70%{box-shadow:0 0 0 7px rgba(106,178,30,0)}100%{box-shadow:0 0 0 0 rgba(106,178,30,0)}}
   .dot{width:8px;height:8px;border-radius:50%;background:var(--lime-2);animation:halo 2.4s ease-out infinite}
-  /* Under the hero: the explore strip in the left two thirds and "Today on
-     Theraglee" (the dashboard's daily cards, in the Today look: a soft green
-     zone holding white cards) in the right third. The two panels share one
-     padding, radius and shadow, and their headings start on the same line.
-     The strip runs in two rows here, so it fills its panel; the zone leaves
-     the row if no card comes back. The two stack below 900px. */
+  /* Under the hero: "Today on Theraglee" (the dashboard's daily cards, in the
+     Today look: a soft green zone holding white cards) in the left two thirds,
+     and the explore strip in the right third, running top to bottom the way
+     it does beside every other page (.showcase.aside). The two panels share
+     one padding, radius and shadow, and their headings start on the same
+     line. The strip fills whatever height the zone gives the row. The zone
+     leaves the row if no card comes back, and the strip turns sideways
+     again. The two stack below 900px, the strip sideways. */
   .under-hero{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:22px;align-items:stretch}
   .under-hero.no-today{grid-template-columns:minmax(0,1fr)}
   .under-hero .explore-plug,.under-hero .daily-zone{padding:26px 28px;border-radius:var(--r-lg);box-shadow:var(--shadow-2)}
   .daily-zone{display:flex;flex-direction:column}
   .daily-zone[hidden]{display:none}
-  .daily-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 12px;margin:0 0 14px}
+  .daily-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 12px;margin:0 0 16px}
   .daily-head h2,.daily-zone .zone-head h2{margin:0;font-size:1.55rem;line-height:1.2}
-  .daily-head .kicker{margin:0;font-size:.7rem}
-  .daily-head p{flex-basis:100%;margin:2px 0 0;font-size:.92rem}
-  .daily-affirm{margin-bottom:12px;padding:16px 18px}
-  .daily-affirm .badge{font-size:.7rem}
-  .hero-line{font-family:var(--serif);font-style:italic;font-size:1.2rem;
-    line-height:1.3;color:var(--ink);margin:8px 0 0}
-  .daily{display:grid;gap:12px;grid-template-columns:minmax(0,1fr)}
-  .daily .card{display:flex;flex-direction:column;gap:6px;padding:14px 18px}
-  .daily p{margin:0;font-size:.9rem;line-height:1.45}
-  .daily .quote p{font-family:var(--serif);font-style:italic;font-size:1.02rem}
-  .daily .quote .faint{font-size:.82rem}
-  /* The strip sits in the middle of the room its panel has beside the zone,
-     with the fine print at the foot. */
-  .under-hero .showcase.embedded{margin-top:auto;margin-bottom:auto;min-width:0}
-  .under-hero .explore-plug .fine{margin-top:0}
+  .daily-head .kicker{margin:0;font-size:.72rem}
+  .daily-head p{flex-basis:100%;margin:2px 0 0;font-size:.95rem}
+  .daily-affirm{margin-bottom:16px;padding:24px 28px}
+  .hero-line{font-family:var(--serif);font-style:italic;font-size:clamp(1.4rem,2.6vw,1.85rem);
+    line-height:1.3;color:var(--ink);margin:12px 0 0}
+  .daily{display:grid;gap:16px;grid-template-columns:minmax(0,1fr);flex:1}
+  .daily .card{display:flex;flex-direction:column;gap:10px;padding:22px 24px}
+  .daily p{margin:0;font-size:1rem;line-height:1.55}
+  .daily .quote p{font-family:var(--serif);font-style:italic;font-size:1.15rem}
+  .daily-zone .fine{display:block;margin-top:16px;color:var(--faint);font-size:.85rem;text-align:center}
+  /* The strip in its panel: never sticky here, and tall enough to fill the
+     room under the heading, with the fine print at the foot. */
+  .under-hero .showcase.aside{position:static;margin-top:14px}
+  .under-hero .explore-plug .fine{margin-top:14px}
   @media(min-width:901px){
-    .under-hero .showcase-track{display:grid;grid-auto-flow:column;grid-template-rows:repeat(2,minmax(0,1fr));
-      grid-auto-columns:max-content;align-items:stretch}
-    .under-hero .showcase-card{width:250px}
-    .under-hero .showcase-card.star{width:340px}
+    .daily{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .under-hero .showcase.aside,.under-hero .showcase.aside .wrap{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
+    /* A zero basis, so the column's own cards never set the row's height:
+       the track is 280px tall by itself, then grows to the room the zone gives. */
+    .under-hero .showcase.aside .showcase-track{flex:1 1 0px;min-height:200px;height:auto}
+    /* Without the zone the strip has the whole row: sideways again. */
+    .under-hero.no-today .showcase.aside .showcase-track{flex-direction:row;overflow:auto hidden;
+      scroll-snap-type:x mandatory;padding:4px 0 6px;min-height:0;flex:0 0 auto}
+    .under-hero.no-today .showcase.aside .showcase-card{width:auto;flex:0 0 250px}
+    .under-hero.no-today .showcase.aside .showcase-card.star{flex-basis:340px}
+    .under-hero.no-today .showcase.aside .showcase-arrow svg{transform:none}
   }
   @media(max-width:900px){.under-hero{grid-template-columns:minmax(0,1fr)}}
   .explore-plug{background:var(--paper);border:1px solid var(--hair);border-radius:var(--r-lg);
@@ -294,14 +302,6 @@
 
   <section class="section tight">
     <div class="wrap under-hero" id="under-hero">
-      <section class="explore-plug" aria-labelledby="explore-title">
-        <h2 id="explore-title">What would you like to explore today?</h2>
-        <p class="muted">Tap anything below. Some tools need a free account, and a few come with a
-          paid membership — the label on each tile tells you which.</p>
-        <div id="explore-grid" class="skeleton" style="height:230px;margin-top:18px"></div>
-        <small class="fine" id="explore-fine"></small>
-      </section>
-
       <!-- Today on Theraglee: the same four daily cards the dashboard shows,
            for everyone. daily_pick() answers a visitor with the open deck
            (min_level 0) and a member with cards chosen for their topics.
@@ -318,6 +318,15 @@
           <div class="card"><div class="skeleton" style="height:48px"></div></div>
           <div class="card"><div class="skeleton" style="height:48px"></div></div>
         </div>
+        <small class="fine" id="daily-fine"></small>
+      </section>
+
+      <section class="explore-plug" aria-labelledby="explore-title">
+        <h2 id="explore-title">What would you like to explore today?</h2>
+        <p class="muted">Tap anything below. Some tools need a free account, and a few come with a
+          paid membership — the label on each tile tells you which.</p>
+        <div id="explore-grid" class="skeleton" style="height:230px;margin-top:18px"></div>
+        <small class="fine" id="explore-fine"></small>
       </section>
     </div>
   </section>
@@ -509,8 +518,9 @@ document.getElementById('tiers-home').innerHTML =
   tierCards({ prices: await loadPrices(sb), level: a.level });
 
 /* ---- What would you like to explore today? ----
-   The feature showcase (assets/showcase.js), in place of the section's loading box. */
-mountShowcase(a, document.getElementById('explore-grid'), { replace: true, embedded: true });
+   The feature showcase (assets/showcase.js), in place of the section's loading
+   box: the top-to-bottom column (aside), inside the panel's own heading (embedded). */
+mountShowcase(a, document.getElementById('explore-grid'), { replace: true, embedded: true, aside: true });
 
 /* ---- Today on Theraglee ----
    The four daily picks, the way the dashboard's Today tab shows them. Fetched
@@ -531,9 +541,11 @@ mountShowcase(a, document.getElementById('explore-grid'), { replace: true, embed
 
   document.getElementById('daily-date').textContent =
     new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
-  document.getElementById('daily-note').textContent = a.authenticated
-    ? 'Yours are chosen for the topics you care about.'
-    : 'A fresh affirmation, quote, tip and fact every day. Members get ones picked for their topics.';
+  document.getElementById('daily-note').textContent =
+    'A fresh affirmation, quote, tip and fact every day.';
+  document.getElementById('daily-fine').innerHTML = a.authenticated
+    ? 'Yours are picked for the topics you care about. <a href="dashboard.html">Open my dashboard</a>'
+    : 'Members get cards picked for the topics they care about. <a href="signup.html">Create my free account</a>';
 
   const affirm = document.getElementById('home-affirm');
   affirm.hidden = !picks.affirmation;
