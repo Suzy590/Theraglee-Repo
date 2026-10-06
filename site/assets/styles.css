@@ -69,9 +69,10 @@ em.script{font-family:var(--serif);font-style:italic;font-weight:400;color:var(-
 .nav .links a.btn:not(.ghost):not(.lime){color:#fff}
 .burger{display:none;background:none;border:0;cursor:pointer;padding:8px;color:var(--ink)}
 /* "Hello, name" on the landing page when signed in: last on the row, and beside
-   the burger (outside the folded menu) on a phone. */
+   the burger (outside the folded menu) on a phone. It links to the account page. */
 .nav .hello{order:1;font-size:.9rem;color:var(--muted);white-space:nowrap;overflow:hidden;
   text-overflow:ellipsis;max-width:16ch}
+.nav .hello:hover{color:var(--ink)}
 /* Eleven links is a full row: tighten on laptops, then fold into the burger. */
 @media(max-width:1240px){.nav .links{gap:14px}.nav .links a{font-size:.9rem}}
 @media(max-width:1040px){
