@@ -47,8 +47,11 @@ const SHELL = `
       <button class="chip on" data-c="">All topics</button>
       ${TOPICS.map(t => `<button class="chip" data-c="${esc(t)}">${esc(t)}</button>`).join('')}
     </div>
+    <!-- Tier chips: one at a time, and clicking the lit one again shows every tier. -->
     <div class="chips" data-tiers style="margin-top:12px">
-      <button class="chip on" data-l="">Any tier</button>
+      <button class="chip" data-l="free">Free</button>
+      <button class="chip" data-l="basic">Basic</button>
+      <button class="chip" data-l="premium">Premium</button>
       <button class="chip" data-l="unlocked">Available to me</button>
     </div>
     <!-- Member-only views; hidden for signed-out visitors. -->
@@ -97,7 +100,16 @@ export async function mountLibrary(root, a, { type = '', view = '' } = {}) {
   if (error) console.error(error);
   const all = [...discoverRows, ...(rows || []), ...triviaRows];
 
-  let term = '', onlyMine = false, topic = '';
+  // Which tier chip is lit: '' (all), free, basic, premium, or unlocked (what this
+  // member can open). Free covers visitor and Free rows, since both cost nothing.
+  const TIER_MATCH = {
+    '':       () => true,
+    free:     r => r.min_level <= 1,
+    basic:    r => r.min_level === 2,
+    premium:  r => r.min_level >= 3,
+    unlocked: r => r.min_level <= a.level,
+  };
+  let term = '', tier = '', topic = '';
   if (type) $$('[data-types] .chip').forEach(c => c.classList.toggle('on', c.dataset.t === type));
   $('[data-topics]').classList.toggle('hide', type !== 'discover');
   if (view) $(`[data-views] .chip[data-v="${view}"]`)?.classList.add('on');
@@ -107,7 +119,7 @@ export async function mountLibrary(root, a, { type = '', view = '' } = {}) {
     const list = all.filter(r =>
       (!type || r.kind === type) &&
       (!topic || r.category === topic) &&
-      (!onlyMine || r.min_level <= a.level) &&
+      TIER_MATCH[tier](r) &&
       (!view ||
         (view === 'favorite' && isFavorite(lib, r.kind, r.id)) ||
         (view === 'later'    && isLater(lib, r.kind, r.id))    ||
@@ -159,8 +171,11 @@ export async function mountLibrary(root, a, { type = '', view = '' } = {}) {
     c.classList.add('on'); topic = c.dataset.c; render();
   }));
   $$('[data-tiers] .chip').forEach(c => c.addEventListener('click', () => {
-    $$('[data-tiers] .chip').forEach(x=>x.classList.remove('on'));
-    c.classList.add('on'); onlyMine = c.dataset.l === 'unlocked'; render();
+    const was = tier === c.dataset.l;
+    $$('[data-tiers] .chip').forEach(x => x.classList.remove('on'));
+    tier = was ? '' : c.dataset.l;
+    if (!was) c.classList.add('on');
+    render();
   }));
 
   bindLibrary($('[data-results]'), () => render());
