@@ -21,20 +21,20 @@
   .streak{font-size:2.2rem;font-weight:300;letter-spacing:-.03em;line-height:1}
   /* The top of the dashboard sits close under the header. */
   main.section{padding-top:40px}
-  /* The greeting with Theraglee Match Mode in a row to its right, then the
-     tab's cards across the full width underneath. */
+  /* The greeting with Theraglee Match Mode under it, the open tab's white
+     card to its right, then the tab's panels across the full width underneath. */
   .dash-top{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px 28px;align-items:end;margin-bottom:28px}
   .dash-left{display:contents}
-  /* The date line starts level with the top of the Match Mode box. */
+  /* The date line starts level with the top of the tab's card. */
   .dash-hello{grid-column:1;grid-row:1;align-self:start}
   .today-top,.tab-top{grid-column:1 / -1;grid-row:2}
-  /* Every tab: one white card across the top (Today's affirmation, or the
-     tab's intro card), then the tab's own panels in the left two thirds
-     (.tab-body) and the feature showcase in the right third (.showcase-slot,
-     filled by chrome() and moved by showTab() to whichever tab is open). */
+  /* Every tab: its own panels in the left two thirds (.tab-body) and the
+     feature showcase in the right third (.showcase-slot, filled by chrome()
+     and moved by showTab() to whichever tab is open). The tab's white card
+     (Today's affirmation, or the tab's intro card) sits beside the greeting
+     instead, in .dash-intro. */
   .today-top[data-panel].on,.tab-top[data-panel].on{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);
-    grid-template-areas:"intro intro" "body side";gap:14px 24px;align-items:start;min-width:0}
-  #affirm-card,.tab-intro{grid-area:intro}
+    grid-template-areas:"body side";gap:14px 24px;align-items:start;min-width:0}
   .tab-body{grid-area:body;min-width:0;display:flex;flex-direction:column;gap:14px;container-type:inline-size}
   .showcase-slot{grid-area:side}
   .tab-top .zone{padding:22px}
@@ -47,20 +47,21 @@
   .today-top .daily .card{padding:16px 18px;gap:8px}
   .today-top .daily p{font-size:.9rem;line-height:1.5}
   .today-top #daily-quote p{font-size:1rem!important}
-  /* Beside the greeting, one soft outlined box holds what Match Mode does
-     and the line therapists read. */
-  .mm{grid-column:2;grid-row:1;align-self:start;display:flex;align-items:stretch;gap:12px;padding:12px;
-    background:var(--sand);border:1px solid #D9D3BF;border-radius:var(--r-lg)}
-  /* The white and green boxes inside start level with the top of the letters
-     in "Hello, name": past the date line and the greeting's top margin, less a
-     little for the box's own border and padding. */
-  .mm{margin-top:calc(1.68rem + clamp(.2rem,.46vw,.34rem) - 3px)}
-  /* The switch sits under the greeting: the words above it, and ON or OFF
-     just to its right, all left-aligned. */
+  /* Beside the greeting, the open tab's white card: Today's affirmation, or
+     the pill and line that name the tab. Every tab has one, and showTab()
+     turns on the one for the open tab along with the tab's panels. */
+  .dash-intro{grid-column:2;grid-row:1;align-self:stretch;display:flex;min-width:0}
+  /* The card starts level with the top of the letters in "Hello, name": past
+     the date line and the greeting's top margin, less a little for its own
+     border, and runs down to the bottom of the Match Mode row. */
+  .dash-intro{margin-top:calc(1.68rem + clamp(.2rem,.46vw,.34rem) - 3px)}
+  .dash-intro [data-panel].on{display:flex;flex:1 1 auto;flex-direction:column;align-items:flex-start;
+    justify-content:center;min-width:0}
+  /* The switch sits under the greeting: the words above it, ON or OFF just to
+     its right with the line therapists read beyond that, and "How Theraglee
+     Match Mode works" underneath, all left-aligned. */
   .mm-row{display:flex;flex-direction:column;align-items:flex-start;gap:10px;margin-top:18px}
-  .mm-toggle{display:flex;align-items:center;gap:12px}
-  .mm-body{flex:1 1 auto;min-width:0;display:flex;gap:12px;align-items:stretch}
-  .mm-body>*{flex:1 1 0;min-width:0}
+  .mm-toggle{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
   .mm-switch{position:relative;flex:0 0 auto;width:72px;height:36px;border-radius:100px;cursor:pointer;padding:0;
     background:#DCD8C9;border:2px solid #CFCAB8;
     transition:background .5s ease,border-color .5s ease,box-shadow .5s ease}
@@ -76,37 +77,41 @@
     font-weight:700;font-synthesis:weight style}
   .mm-state{font-family:var(--sans);font-weight:600;letter-spacing:.08em;color:var(--muted)}
   .mm-row.on .mm-state{color:var(--green)}
-  /* The consent wording sits left-aligned in a soft card: a short lead, then
-     the details as a list. The words are recorded in
+  /* The consent wording (MATCH_BLURB in assets/match.js) sits under the
+     switch: "How Theraglee Match Mode works", whose list opens over the panels
+     below rather than pushing them down. The words are recorded in
      docs/match-mode-consent.md; change both together. */
-  .mm-desc{margin:0;padding:12px 14px;text-align:left;font-size:.78rem;line-height:1.5;
-    background:var(--paper);border:1px solid var(--hair);border-radius:var(--r);box-shadow:var(--shadow-1)}
-  .mm-desc .mm-lead strong{font-size:.9rem}
-  /* "How Theraglee Match Mode works" opens over the cards below rather than stretching the row. */
-  .mm .mm-info{position:relative}
-  .mm .mm-info ul{position:absolute;z-index:20;top:calc(100% + 6px);left:-14px;width:min(360px,80vw);
-    margin:0;padding:12px 14px 12px 30px;background:var(--paper);border:1px solid var(--hair);
+  .mm-desc{margin:0;text-align:left;font-size:.88rem;line-height:1.5}
+  .mm-desc .mm-info{position:relative;margin-top:0}
+  .mm-desc .mm-info ul{position:absolute;z-index:20;top:calc(100% + 6px);left:0;width:min(400px,86vw);
+    margin:0;padding:12px 14px 12px 30px;font-size:.82rem;background:var(--paper);border:1px solid var(--hair);
     border-radius:var(--r);box-shadow:var(--shadow-2)}
-  #vis-summary{margin:0;padding:10px 14px;text-align:left;font-size:.78rem;line-height:1.5;
-    background:var(--soft);border-left:3px solid var(--lime);border-radius:var(--r-sm)}
-  #vis-summary strong{display:block;margin-bottom:2px;font-size:.72rem;font-weight:600;letter-spacing:.08em;
+  /* Nothing closes while the pointer crosses the gap between the words and the list. */
+  .mm-desc .mm-info ul::before,.mm-see-pop::before{content:"";position:absolute;left:0;right:0;top:-8px;height:8px}
+  /* "What therapists see", to the right of ON: the exact line therapists read
+     opens over the panels below while the pointer is over it, or once clicked
+     (.open). Only there while Match Mode is on. */
+  .mm-see{position:relative;font-size:.88rem}
+  .mm-see[hidden]{display:none}
+  .mm-see-link{font-weight:500;white-space:nowrap}
+  .mm-see-pop{display:none;position:absolute;z-index:20;top:calc(100% + 8px);left:0;width:min(400px,86vw);
+    margin:0;padding:10px 14px;text-align:left;font-size:.82rem;line-height:1.5;color:var(--muted);
+    background:var(--soft);border-left:3px solid var(--lime);border-radius:var(--r-sm);box-shadow:var(--shadow-2)}
+  .mm-see.open .mm-see-pop{display:block}
+  @media(hover:hover){.mm-see:hover .mm-see-pop{display:block}}
+  .mm-see-pop strong{display:block;margin-bottom:2px;font-size:.72rem;font-weight:600;letter-spacing:.08em;
     text-transform:uppercase;color:var(--green)}
-  #vis-summary a{font-weight:500;white-space:nowrap}
-  #vis-summary:empty{display:none}
-  /* Narrower screens: the Match Mode box moves under the greeting, still in a row. */
+  .mm-see-pop a{font-weight:500;white-space:nowrap}
+  /* Narrower screens: the tab's card moves under the greeting. */
   @media(max-width:1080px){
     .dash-top{grid-template-columns:minmax(0,1fr)}
-    .mm{grid-column:1;grid-row:2;margin-top:0}
+    .dash-intro{grid-column:1;grid-row:2;margin-top:0}
     .today-top,.tab-top{grid-row:3}
   }
-  /* One column: the showcase runs sideways between the intro card and the panels. */
+  /* One column: the showcase runs sideways between the tab's card and the panels. */
   @media(max-width:900px){
     .today-top[data-panel].on,.tab-top[data-panel].on{grid-template-columns:minmax(0,1fr);
-      grid-template-areas:"intro" "side" "body"}
-  }
-  /* Phones: its two parts stack. */
-  @media(max-width:720px){
-    .mm,.mm-body{flex-direction:column}
+      grid-template-areas:"side" "body"}
   }
   @media(prefers-reduced-motion:reduce){.mm-switch,.mm-switch i{transition:none}}
   .tabs{display:flex;gap:4px;border-bottom:1px solid var(--hair);margin:0 0 22px;overflow-x:auto}
@@ -195,24 +200,75 @@
             <span class="badge" id="tierbadge"></span>
           </div>
           <h1 style="margin:.1em 0 0" id="greet">Your dashboard</h1>
-          <!-- The Theraglee Match Mode switch, under the greeting; what it does is in the box to the right. -->
-          <div class="mm-row" id="mm-row">
+          <!-- The Theraglee Match Mode switch, under the greeting: ON or OFF beside it,
+               then "What therapists see" (the line therapists read, while it is on),
+               and "How Theraglee Match Mode works" underneath. -->
+          <div class="mm-row" id="match-mode">
             <span class="mm-label" id="mm-label">Theraglee Match Mode is</span>
             <div class="mm-toggle">
               <button class="mm-switch" id="vis" type="button" role="switch" aria-checked="false"
-                aria-labelledby="mm-label" aria-describedby="mm-desc"><i></i></button>
+                aria-labelledby="mm-label" aria-describedby="mm-how-list"><i></i></button>
               <b class="mm-state" id="mm-state" aria-hidden="true">OFF</b>
+              <div class="mm-see" id="mm-see" hidden>
+                <a href="#" class="mm-see-link" id="vis-link" aria-expanded="false"
+                  aria-controls="vis-summary">What therapists see</a>
+                <div class="mm-see-pop" id="vis-summary"></div>
+              </div>
             </div>
+            <!-- Filled from MATCH_BLURB in assets/match.js. -->
+            <div class="mm-desc muted" id="mm-desc"></div>
           </div>
         </div>
 
-        <!-- Today's picks sit under Match Mode, and only on the Today tab: the
-             affirmation across the top, then the daily cards, the mood
-             check-in and the member's progress beside the feature showcase. -->
-        <div class="today-top" data-panel="today">
-          <div class="card" id="affirm-card">
+        <!-- Beside the greeting: the open tab's white card. Today's affirmation,
+             or a pill naming the tab and a short italic line. showTab() turns
+             on the one whose data-panel matches, along with the tab's panels. -->
+        <div class="dash-intro">
+          <div class="card" id="affirm-card" data-panel="today">
             <div class="skeleton" style="height:70px"></div>
           </div>
+          <div class="card tab-intro" data-panel="journal">
+            <span class="badge">Journal</span>
+            <p class="hero-line">Put what is on your mind somewhere safe.</p>
+          </div>
+          <div class="card tab-intro" data-panel="playlists">
+            <span class="badge">Playlists</span>
+            <p class="hero-line">Let music meet you where you are.</p>
+          </div>
+          <div class="card tab-intro" data-panel="goals">
+            <span class="badge">Mental Health Goals</span>
+            <p class="hero-line">One goal in your own words, and small steps toward it.</p>
+          </div>
+          <div class="card tab-intro" data-panel="explore">
+            <span class="badge">Explore Library</span>
+            <p class="hero-line">Everything on Theraglee, gathered in one place.</p>
+          </div>
+          <div class="card tab-intro" data-panel="discover">
+            <span class="badge">Self-Discovery</span>
+            <p class="hero-line">A few quiet minutes to learn more about yourself.</p>
+          </div>
+          <div class="card tab-intro" data-panel="tools">
+            <span class="badge">Tools</span>
+            <p class="hero-line">Pick up something small, and see where it leads.</p>
+          </div>
+          <div class="card tab-intro" data-panel="fun">
+            <span class="badge">Fun</span>
+            <p class="hero-line">A little play goes a long way.</p>
+          </div>
+          <div class="card tab-intro" data-panel="messages">
+            <span class="badge">Messages</span>
+            <p class="hero-line">Hear back from therapists here, not in your email.</p>
+          </div>
+          <div class="card tab-intro" data-panel="nearby">
+            <span class="badge">Nearby help</span>
+            <p class="hero-line">Support near you, for when you would like more than a page.</p>
+          </div>
+        </div>
+
+        <!-- Today's picks, only on the Today tab: the daily cards, the mood
+             check-in and the member's progress beside the feature showcase
+             (the affirmation is in the card beside the greeting). -->
+        <div class="today-top" data-panel="today">
           <div class="tab-body">
             <div class="daily" id="daily">
               <div class="card"><div class="skeleton"></div></div>
@@ -265,13 +321,9 @@
           <div class="showcase-slot"></div>
         </div>
 
-        <!-- Every other tab opens the same way: a card in the affirmation's place,
+        <!-- Every other tab opens the same way: its card beside the greeting,
              then the tab's zones on the left and the feature showcase on the right. -->
         <div class="tab-top" data-panel="journal">
-          <div class="card tab-intro">
-            <span class="badge">Journal</span>
-            <p class="hero-line">Put what is on your mind somewhere safe.</p>
-          </div>
           <div class="tab-body">
             <section class="zone" aria-labelledby="journal-zone-title">
               <div class="zone-head">
@@ -284,10 +336,6 @@
           <div class="showcase-slot"></div>
         </div>
         <div class="tab-top" data-panel="playlists">
-          <div class="card tab-intro">
-            <span class="badge">Playlists</span>
-            <p class="hero-line">Let music meet you where you are.</p>
-          </div>
           <div class="tab-body">
             <section class="zone" aria-labelledby="playlists-zone-title">
               <div class="zone-head">
@@ -303,10 +351,6 @@
              the trail map (assets/goals-ui.js), moved here from goals.html, which forwards.
              The wellness note stays above it on every screen. -->
         <div class="tab-top" data-panel="goals">
-          <div class="card tab-intro">
-            <span class="badge">Mental Health Goals</span>
-            <p class="hero-line">One goal in your own words, and small steps toward it.</p>
-          </div>
           <div class="tab-body">
             <div class="wellness" role="note"><span aria-hidden="true">🌱</span><div>
               <strong>General wellness and self-help only.</strong> Theraglee is not psychotherapy or clinical
@@ -325,10 +369,6 @@
           <div class="showcase-slot"></div>
         </div>
         <div class="tab-top" data-panel="explore">
-          <div class="card tab-intro">
-            <span class="badge">Explore Library</span>
-            <p class="hero-line">Everything on Theraglee, gathered in one place.</p>
-          </div>
           <div class="tab-body">
             <section class="zone" aria-labelledby="explore-zone-title">
               <div class="zone-head">
@@ -341,10 +381,6 @@
           <div class="showcase-slot"></div>
         </div>
         <div class="tab-top" data-panel="discover">
-          <div class="card tab-intro">
-            <span class="badge">Self-Discovery</span>
-            <p class="hero-line">A few quiet minutes to learn more about yourself.</p>
-          </div>
           <div class="tab-body">
             <section class="zone" aria-labelledby="discover-zone-title">
               <div class="zone-head">
@@ -357,10 +393,6 @@
           <div class="showcase-slot"></div>
         </div>
         <div class="tab-top" data-panel="tools">
-          <div class="card tab-intro">
-            <span class="badge">Tools</span>
-            <p class="hero-line">Pick up something small, and see where it leads.</p>
-          </div>
           <div class="tab-body">
             <section class="zone" aria-labelledby="tools-zone-title">
               <div class="zone-head">
@@ -376,10 +408,6 @@
         <!-- Fun: the desktop pet, mental health trivia and mandalas, moved here
              from the Tools tab so the lighter things have a place of their own. -->
         <div class="tab-top" data-panel="fun">
-          <div class="card tab-intro">
-            <span class="badge">Fun</span>
-            <p class="hero-line">A little play goes a long way.</p>
-          </div>
           <div class="tab-body">
             <section class="zone fun-zone" aria-labelledby="fun-zone-title">
               <div class="zone-head">
@@ -392,10 +420,6 @@
           <div class="showcase-slot"></div>
         </div>
         <div class="tab-top" data-panel="messages">
-          <div class="card tab-intro">
-            <span class="badge">Messages</span>
-            <p class="hero-line">Hear back from therapists here, not in your email.</p>
-          </div>
           <div class="tab-body">
             <section class="zone" aria-labelledby="messages-zone-title">
               <div class="zone-head">
@@ -408,10 +432,6 @@
           <div class="showcase-slot"></div>
         </div>
         <div class="tab-top" data-panel="nearby">
-          <div class="card tab-intro">
-            <span class="badge">Nearby help</span>
-            <p class="hero-line">Support near you, for when you would like more than a page.</p>
-          </div>
           <div class="tab-body">
             <section class="zone" aria-labelledby="nearby-zone-title">
               <div class="zone-head">
@@ -422,13 +442,6 @@
             </section>
           </div>
           <div class="showcase-slot"></div>
-        </div>
-      </div>
-      <div class="mm" id="match-mode">
-        <div class="mm-body">
-          <!-- Filled from MATCH_BLURB in assets/match.js. -->
-          <div class="mm-desc muted" id="mm-desc"></div>
-          <p id="vis-summary" class="muted"></p>
         </div>
       </div>
     </div>
@@ -600,22 +613,26 @@ document.getElementById('daily').innerHTML = cards.join('') ||
 if (location.hash.startsWith('#daily-')) scrollToHash();
 
 /* ---- Theraglee Match Mode: let therapists reach out ----
-   The row to the right of the greeting. The morning email is switched on and
+   The row under the greeting. The morning email is switched on and
    off on the account page (account.html#profile). */
-const vis = document.getElementById('vis'), mm = document.getElementById('match-mode');
+const vis = document.getElementById('vis');
 function setVis(on){
-  mm.classList.toggle('on', on);
-  document.getElementById('mm-row').classList.toggle('on', on);
+  document.getElementById('match-mode').classList.toggle('on', on);
   vis.setAttribute('aria-checked', String(on));
   document.getElementById('mm-state').textContent = on ? 'ON' : 'OFF';
 }
 setVis(Boolean(p.visible_to_therapists));
 
-// Under the description: the exact line therapists read, with a way to change it.
+// To the right of ON: "What therapists see", which opens the exact line
+// therapists read (and a way to change it) on hover, or on a click that pins
+// it open until the next. Hidden while Match Mode is off.
+const visSee = document.getElementById('mm-see'), visLink = document.getElementById('vis-link');
 const visSummary = document.getElementById('vis-summary');
 function paintVis(){
+  visSee.hidden = !p.visible_to_therapists;
+  if (!p.visible_to_therapists) { visSee.classList.remove('open'); visLink.setAttribute('aria-expanded', 'false'); }
   visSummary.innerHTML = p.visible_to_therapists
-    ? `<strong>What therapists see:</strong> ${esc(matchSummary(p))}
+    ? `<strong>What therapists see</strong> ${esc(matchSummary(p))}
        · <a href="#" id="vis-edit">Change</a>`
     : '';
   visSummary.querySelector('#vis-edit')?.addEventListener('click', async (e) => {
@@ -624,6 +641,12 @@ function paintVis(){
   });
 }
 paintVis();
+visLink.addEventListener('click', (e) => {
+  e.preventDefault();
+  const open = !visSee.classList.contains('open');
+  visSee.classList.toggle('open', open);
+  visLink.setAttribute('aria-expanded', String(open));
+});
 
 vis.addEventListener('click', async () => {
   if (!p.visible_to_therapists) {

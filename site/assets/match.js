@@ -104,16 +104,14 @@ function listWords(words) {
   return words.slice(0, -1).join(', ') + ' and ' + words[words.length - 1];
 }
 
-/* The short explanation under every Match Mode switch (the dashboard and the
-   account page): a bold lead and one sentence, then a circled "i" with
-   "How Theraglee Match Mode works". The details list opens when the member hovers over it or
-   clicks (or taps) it, and a second click closes it. Styled by .mm-lead and
-   .mm-info in styles.css. docs/match-mode-consent.md records these words;
-   change both together. One per page. */
+/* The explanation under every Match Mode switch (the dashboard and the
+   account page): a circled "i" with "How Theraglee Match Mode works". The
+   details list opens when the member hovers over it or clicks (or taps) it,
+   and a second click closes it. Its first item is the invitation itself,
+   "Let therapists reach out to you", then what therapists see and the
+   safeguards. Styled by .mm-info in styles.css. docs/match-mode-consent.md
+   records these words; change both together. One per page. */
 export const MATCH_BLURB = `
-  <p class="mm-lead"><strong>Let therapists reach out to you.</strong> Verified therapists can see a
-    private, pseudonymous profile and message you in your Theraglee inbox.
-    <a href="match-mode.html">What is Theraglee Match Mode?</a></p>
   <div class="mm-info">
     <button type="button" class="mm-how" aria-expanded="false" aria-controls="mm-how-list">
       <svg class="mm-i" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
@@ -122,6 +120,9 @@ export const MATCH_BLURB = `
         <path d="M10 9v5.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
       </svg>How Theraglee Match Mode works</button>
     <ul id="mm-how-list">
+      <li class="mm-lead"><strong>Let therapists reach out to you.</strong> Verified therapists can see a
+        private, pseudonymous profile and message you in your Theraglee inbox.
+        <a href="match-mode.html">What is Theraglee Match Mode?</a></li>
       <li>What therapists see: Your pseudonym, age range, gender, broad topics you’d like to work
         on with a therapist, whether you’d prefer in-person/telehealth (video)/either, your
         insurance, and the first 3 digits of your ZIP.</li>

@@ -19,17 +19,20 @@ use them.
 
 ## How a tab or page is laid out
 
-1. The top of the dashboard stays the same on every tab: the date and
-   membership pill, "Hello, name" with the Theraglee Match Mode switch under
-   it, and to the right one box holding the "Let therapists reach out to you"
-   card and the "What therapists see" line side by side.
-2. Under that, across the full width, each tab shows one white card with a pill
-   naming the tab and a short italic line (`.tab-intro` in
-   `site/dashboard.html`). Today shows its affirmation and daily cards there
-   instead.
-3. Below that, the tab's content sits in one or more zones in the left two
-   thirds (`.tab-body`), with the feature showcase running down the right
-   third (`.showcase-slot`, filled by `chrome()`; see `site.md`):
+1. The top left of the dashboard stays the same on every tab: the date and
+   membership pill, "Hello, name", and under it the Theraglee Match Mode
+   switch with ON or OFF beside it. While it is on, a "What therapists see"
+   link to the right of ON opens the line therapists read (and a way to change
+   it) on hover or tap, and under the switch a circled "i", "How Theraglee
+   Match Mode works", opens the consent wording the same way.
+2. To the right of the greeting, each tab shows one white card with a pill
+   naming the tab and a short italic line (`.tab-intro`, all of them inside
+   `.dash-intro` in `site/dashboard.html`; `showTab()` turns on the one for
+   the open tab). Today shows its affirmation there instead.
+3. Below that, across the full width, the tab's content sits in one or more
+   zones in the left two thirds (`.tab-body`), with the feature showcase
+   running down the right third (`.showcase-slot`, filled by `chrome()`; see
+   `site.md`):
 
 ```html
 <section class="zone" aria-labelledby="journal-zone-title">
@@ -69,7 +72,8 @@ three-level card and the trail map.)
 ## Adding a new dashboard tab
 
 - Add its button to `#tabs` and its name to `PANELS` in `site/dashboard.html`.
-- Add a `.tab-intro` card for it beside the others.
+- Add a `.tab-intro` card for it inside `.dash-intro`, beside the others,
+  with `data-panel` set to the tab's name.
 - Wrap its content in a `.zone` with a `.zone-head`, as above, inside a
   `.tab-body`, and put an empty `.showcase-slot` after it for the showcase.
 - Put forms, lists and grids inside white cards, not straight on the green.

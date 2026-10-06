@@ -440,12 +440,10 @@ table.data td{padding:12px;border-bottom:1px solid var(--hair);vertical-align:to
 .tiers-note{text-align:center;color:var(--muted);font-size:.92rem;margin:22px auto 0;max-width:60ch}
 
 /* Theraglee Match Mode's explanation (MATCH_BLURB in match.js), on the
-   dashboard and the account page: a bold lead, then a circled "i" with
-   "How Theraglee Match Mode works". The list shows while the pointer is over it, or once
-   clicked (.open). */
-.mm-lead{margin:0}
-.mm-lead strong{display:block;margin-bottom:2px;color:var(--ink)}
-.mm-info{margin-top:10px;padding-top:10px;border-top:1px solid var(--hair)}
+   dashboard and the account page: a circled "i" with "How Theraglee Match
+   Mode works". The list shows while the pointer is over it, or once clicked
+   (.open). Its first item (.mm-lead) is the invitation itself. */
+.mm-info{margin-top:8px}
 .mm-how{display:inline-flex;align-items:center;gap:7px;padding:2px 0;border:0;background:none;
   font:inherit;font-weight:500;color:var(--green);cursor:pointer}
 .mm-how:hover{color:var(--green-deep)}
@@ -456,3 +454,5 @@ table.data td{padding:12px;border-bottom:1px solid var(--hair);vertical-align:to
 @media(hover:hover){.mm-info:hover ul{display:block}}
 .mm-info li{margin:0 0 5px}
 .mm-info li:last-child{margin-bottom:0}
+.mm-info .mm-lead{list-style:none;margin:0 0 8px;padding-bottom:8px;border-bottom:1px solid var(--hair)}
+.mm-info .mm-lead strong{display:block;margin-bottom:2px;color:var(--ink)}
