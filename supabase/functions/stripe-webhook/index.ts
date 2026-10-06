@@ -13,10 +13,11 @@
 // Every event is recorded in stripe_events. A record is only marked processed
 // after its handler succeeds, so a failed delivery is retried by Stripe instead
 // of being swallowed as a duplicate.
-import { admin, loadConfig } from "../_shared/supabase.ts";
+import { admin, deleteAccount, loadConfig } from "../_shared/supabase.ts";
 import { type Stripe, stripeClient } from "../_shared/stripe.ts";
 import {
-  connectStatus, identityStatusFor, isPlanKey, isStaleSubscription, keepsComp, planForPrice, subscriptionPatch,
+  connectStatus, deletionAfterSync, identityStatusFor, isPlanKey, isStaleSubscription, keepsComp, planForPrice,
+  subscriptionPatch,
 } from "../_shared/billing.ts";
 
 const idOf = (x: unknown): string | null =>
@@ -38,7 +39,8 @@ async function syncSubscription(stripe: Stripe, subscriptionId: string) {
   if (!userId) { console.error("no profile for customer", customerId); return; }
 
   const { data: profile } = await admin
-    .from("profiles").select("stripe_subscription_id, subscription_status").eq("id", userId).maybeSingle();
+    .from("profiles").select("stripe_subscription_id, subscription_status, deletion_requested_at")
+    .eq("id", userId).maybeSingle();
   if (isStaleSubscription(profile?.stripe_subscription_id, sub)) {
     console.log("ignoring stale subscription", sub.id, "current is", profile?.stripe_subscription_id);
     return;
@@ -60,6 +62,23 @@ async function syncSubscription(stripe: Stripe, subscriptionId: string) {
   }
   const { error } = await admin.from("profiles").update(patch).eq("id", userId);
   if (error) throw new Error(`profile update failed: ${error.message}`);
+
+  // A member who chose Delete my account keeps the time they paid for; the
+  // account goes when the subscription ends. Turning renewal back on in the
+  // billing portal withdraws the request.
+  const pending = deletionAfterSync(profile?.deletion_requested_at, sub);
+  if (pending === "clear") {
+    await admin.from("profiles").update({ deletion_requested_at: null }).eq("id", userId);
+  } else if (pending === "delete") {
+    if (sub.status !== "canceled") {
+      try { await stripe.subscriptions.cancel(sub.id); } catch (err) { console.warn("cancel on deletion", sub.id, err); }
+    }
+    const failed = await deleteAccount(userId);
+    if (failed) {
+      await alert("deletion_blocked", sub.id, customerId,
+        `Could not delete account ${userId} after its membership ended: ${failed}. Close it by hand.`, null);
+    }
+  }
 }
 
 /* ----------------------------------------------------- session payments */

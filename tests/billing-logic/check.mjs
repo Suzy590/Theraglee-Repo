@@ -6,7 +6,8 @@
 // Exits non-zero on the first failed assertion.
 import assert from "node:assert/strict";
 import {
-  codeFitsRole, connectStatus, hasLiveStripeSub, keepsComp, parseDiscountInput, planChangeError,
+  codeFitsRole, connectStatus, deletionAfterSync, deletionPlan, hasLiveStripeSub, isDeleteWhen, keepsComp,
+  parseDiscountInput, planChangeError,
   priceKeysForAudience, deadlineEnd, foundingOffer, identityStatusFor, isActive, isInterval,
   isStaleSubscription, isValidSessionFee, planForPrice, platformFee, priceKeyFor,
   safeReturnOrigin, subscriptionPatch,
@@ -270,6 +271,41 @@ test("only origins we own are used as return targets", () => {
   assert.equal(safeReturnOrigin("https://theraglee.com.evil.example", allowed), null);
   assert.equal(safeReturnOrigin("not a url", allowed), null);
   assert.equal(safeReturnOrigin(null, allowed), null);
+});
+
+test("Delete my account: a paying member keeps the time they paid for", () => {
+  const end = Date.UTC(2026, 10, 1) / 1000;
+  const live = { id: "sub_1", status: "active", cancel_at_period_end: false, current_period_end: end };
+  assert.deepEqual(deletionPlan(live), { action: "schedule", setCancel: true, endsAt: "2026-11-01T00:00:00.000Z" });
+  // Already set to end (canceled in the billing portal): nothing more to tell Stripe.
+  assert.deepEqual(deletionPlan({ ...live, cancel_at_period_end: true }),
+    { action: "schedule", setCancel: false, endsAt: "2026-11-01T00:00:00.000Z" });
+  // The period end moved onto the item in newer API versions.
+  assert.equal(deletionPlan({ id: "sub_1", status: "trialing", items: { data: [{ current_period_end: end }] } }).endsAt,
+    "2026-11-01T00:00:00.000Z");
+  // The member may give up the rest of the period instead.
+  assert.deepEqual(deletionPlan(live, "now"), { action: "delete_now", cancelStripe: true });
+});
+
+test("Delete my account: with nothing left to pay for, the account goes now", () => {
+  assert.deepEqual(deletionPlan(null), { action: "delete_now", cancelStripe: false });
+  assert.deepEqual(deletionPlan({ id: "sub_1", status: "canceled" }), { action: "delete_now", cancelStripe: false });
+  assert.deepEqual(deletionPlan({ id: "sub_1", status: "incomplete_expired" }), { action: "delete_now", cancelStripe: false });
+  // A subscription Stripe is still retrying must be ended so the card is not charged again.
+  assert.deepEqual(deletionPlan({ id: "sub_1", status: "past_due" }), { action: "delete_now", cancelStripe: true });
+  assert.deepEqual(deletionPlan({ id: "sub_1", status: "unpaid" }, "period_end"), { action: "delete_now", cancelStripe: true });
+  assert.equal(isDeleteWhen("now"), true);
+  assert.equal(isDeleteWhen("period_end"), true);
+  assert.equal(isDeleteWhen("later"), false);
+});
+
+test("the webhook finishes a deletion when the subscription ends, and drops it when renewal is turned back on", () => {
+  const asked = "2026-10-06T12:00:00Z";
+  assert.equal(deletionAfterSync(null, { id: "sub_1", status: "canceled" }), "keep");
+  assert.equal(deletionAfterSync(asked, { id: "sub_1", status: "active", cancel_at_period_end: true }), "keep");
+  assert.equal(deletionAfterSync(asked, { id: "sub_1", status: "canceled" }), "delete");
+  assert.equal(deletionAfterSync(asked, { id: "sub_1", status: "past_due", cancel_at_period_end: true }), "delete");
+  assert.equal(deletionAfterSync(asked, { id: "sub_1", status: "active", cancel_at_period_end: false }), "clear");
 });
 
 console.log(`\n${n} checks passed`);

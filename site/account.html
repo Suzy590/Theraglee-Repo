@@ -32,7 +32,7 @@
 <script type="module">
 import { chrome, sb, requireAuth, access, clearAccess, esc, toast, busy, qs,
          fmtDate, tierName, openPortal, startCheckout, modal, discountCodeBox, wireDiscountCode,
-         contentCounts, counted } from './assets/app.js';
+         contentCounts, counted, callStripeFn } from './assets/app.js';
 import { MEMBER_ISSUES } from './assets/lists.js';
 import { SETS as TRIVIA } from './assets/trivia-sets.js';
 import { matchDetailsModal, matchSummary, matchComplete, MATCH_BLURB } from './assets/match.js';
@@ -78,6 +78,15 @@ function shell(body){
         <p class="faint" style="margin:4px 0 0">${esc(a.profile.email||'')}</p></div>
       <span class="badge">${isTherapist ? 'Therapist' : tierName(a.level)} membership</span>
     </div>
+    ${a.profile.deletion_requested_at ? `
+    <div class="card" style="padding:16px 18px;margin-top:18px">
+      <div class="spread">
+        <div><strong>Your account is set to be deleted${a.profile.current_period_end
+            ? ` on ${fmtDate(a.profile.current_period_end)}` : ' soon'}, when your membership ends.</strong>
+          <p class="muted" style="margin:4px 0 0">Everything works as usual until then, and you will not be charged again.</p></div>
+        <button class="btn ghost" id="keep">Keep my account</button>
+      </div>
+    </div>` : ''}
     <div class="tabs">
       ${TABS.map(([k,l])=>`<button data-tab="${k}" class="${tab===k?'on':''}"${
         k==='inbox' && inboxUnread ? ` aria-label="Inbox, ${inboxUnread} unread"` : ''}>${l}${
@@ -90,6 +99,20 @@ function shell(body){
 // Stripe subscription to manage or discount.
 const COMPED = 'comped';
 const paysStripe = (p) => ['active','trialing'].includes(p.subscription_status);
+
+// One button, in the same words on every tab that offers it. Deleting the
+// account also ends the membership (see wireDelete).
+const DELETE_LABEL = 'Delete my account/Cancel subscription';
+function deleteBox(){
+  const p = a.profile;
+  return `
+    <hr class="hr">
+    <h2>Leave Theraglee</h2>
+    <p class="muted">${paysStripe(p)
+      ? `Deleting your account ends your membership too. You keep ${isTherapist ? 'your listing and ' : ''}full access until ${fmtDate(p.current_period_end)}, the end of the time you already paid for; the account is deleted then.`
+      : 'Deleting your account removes everything in it, for good.'}</p>
+    <button class="btn danger" id="delete">${DELETE_LABEL}</button>`;
+}
 
 function membership(){
   const p = a.profile;
@@ -138,7 +161,8 @@ function membership(){
             ${a.level>=n ? '<span class="badge">Included</span>'
                          : `<span class="badge lock">${tierName(n)}</span>`}
           </div></div>`).join('')}
-    </div>`;
+    </div>
+    ${deleteBox()}`;
 }
 
 function therapistMembership(){
@@ -180,7 +204,8 @@ function therapistMembership(){
             <span style="font-size:.94rem">${esc(l)}</span>
             ${live ? '<span class="badge">Included</span>' : '<span class="badge lock">With membership</span>'}
           </div></div>`).join('')}
-    </div>`;
+    </div>
+    ${deleteBox()}`;
 }
 
 function security(){
@@ -194,8 +219,8 @@ function security(){
       <h2>Your data</h2>
       <p class="muted">Your listing, messages and referral history live on your
         <a href="therapist-dashboard.html">practice dashboard</a>. Closing the account takes the
-        listing down and removes them.</p>
-      <button class="btn danger" id="delete">Close my account</button>
+        listing down and removes them, and ends your membership.</p>
+      <button class="btn danger" id="delete">${DELETE_LABEL}</button>
     </div>`;
 }
 
@@ -285,10 +310,11 @@ function privacy(){
 
       <hr class="hr">
       <h2>Your data</h2>
-      <p class="muted">Download everything this account holds, or close it for good.</p>
+      <p class="muted">Download everything this account holds, or close it for good. Deleting the account
+        ends your membership too.</p>
       <div class="row">
         <button class="btn ghost" id="export">Download my data</button>
-        <button class="btn danger" id="delete">Delete my account</button>
+        <button class="btn danger" id="delete">${DELETE_LABEL}</button>
       </div>
     </div>`;
 }
@@ -327,24 +353,67 @@ function chipVals(id){ return [...document.querySelectorAll(`#${id} .chip.on`)].
 function wireChips(id){ document.querySelectorAll(`#${id} .chip`).forEach(c =>
   c.addEventListener('click', ()=>c.classList.toggle('on'))); }
 
-// The "close my account" dialog, shared by the member Privacy tab and the therapist Sign-in & data tab.
+// The "delete my account" dialog, shared by the Membership tab, the member
+// Privacy tab and the therapist Sign-in & data tab. Deleting the account ends
+// the membership: a paying member keeps access until the end of the period
+// they paid for, and the account is deleted then (the delete-account Edge
+// Function turns off renewal in Stripe and the webhook finishes the job).
+// Anyone else is deleted on the spot.
 function wireDelete(){
   document.getElementById('delete')?.addEventListener('click', () => {
+    const p = a.profile;
+    const paying = paysStripe(p);
+    const ends = fmtDate(p.current_period_end);
+    const gone = isTherapist
+      ? 'your listing, messages and referral history'
+      : 'your journal, quiz results, worksheets, challenges and tracking';
     const back = modal(`<h2>Delete your account?</h2>
-      <p class="muted">${isTherapist
-        ? 'This takes your listing down and removes your messages and referral history permanently. It cannot be undone.'
-        : 'This removes your journal, quiz results, worksheets, challenges and tracking permanently. It cannot be undone.'}</p>
+      ${paying ? `
+      <p class="muted">This ends your ${isTherapist ? 'therapist ' : ''}membership: your card will not be
+        charged again. You keep ${isTherapist ? 'your listing and ' : ''}full access until
+        <strong>${ends}</strong>, the end of the time you already paid for. Then ${gone} are deleted
+        permanently. It cannot be undone.</p>
+      <label class="switch" style="margin-top:14px"><input type="checkbox" id="now">
+        <span class="muted" style="font-size:.94rem">Delete everything now instead of on ${ends}.
+          You give up the rest of the time you paid for.</span></label>`
+      : `<p class="muted">This removes ${gone} permanently, right now. It cannot be undone.</p>`}
       <p class="muted">Type <strong>DELETE</strong> to confirm.</p>
       <input id="confirm" placeholder="DELETE">
       <div class="row" style="justify-content:flex-end;margin-top:18px">
         <button class="btn ghost" id="no">Keep my account</button>
         <button class="btn danger" id="yes">Delete permanently</button></div>`);
     back.querySelector('#no').onclick = () => back.remove();
-    back.querySelector('#yes').onclick = async () => {
+    back.querySelector('#yes').onclick = async (e) => {
       if (back.querySelector('#confirm').value !== 'DELETE') return toast('Type DELETE to confirm.','err');
-      toast('Account deletion needs to be finished by an administrator — we have logged your request.','err');
-      back.remove();
+      const now = !!back.querySelector('#now')?.checked;
+      busy(e.target, true, 'Deleting…');
+      const out = await callStripeFn('delete-account', { when: now ? 'now' : 'period_end' });
+      if (out.deleted) {
+        await sb.auth.signOut();
+        location.href = 'index.html';
+        return;
+      }
+      if (out.scheduled) {
+        back.remove();
+        clearAccess(); a = await access(true); render();
+        toast(`Done. Your membership ends on ${fmtDate(out.ends_at || p.current_period_end)} and your account is deleted then.`,'ok');
+        return;
+      }
+      busy(e.target, false);
+      toast(out.message || 'Could not delete the account. Please try again.','err');
     };
+  });
+}
+
+// "Keep my account" on the notice at the top: withdraws the request and turns
+// renewal back on.
+function wireKeep(){
+  document.getElementById('keep')?.addEventListener('click', async (e) => {
+    busy(e.target, true, 'One moment…');
+    const out = await callStripeFn('delete-account', { action: 'keep' });
+    if (!out.kept) { busy(e.target, false); return toast(out.message || 'Could not undo that. Please try again.','err'); }
+    clearAccess(); a = await access(true); render();
+    toast('Your account stays, and your membership continues.','ok');
   });
 }
 
@@ -355,9 +424,12 @@ async function render(){
     tab = b.dataset.tab; history.replaceState({},'', '#'+tab); render();
   }));
 
+  wireKeep();
+
   if (tab === 'membership') {
     document.getElementById('portal')?.addEventListener('click', e => openPortal(e.target));
     wireDiscountCode();
+    wireDelete();
   }
 
   if (tab === 'security') {

@@ -42,3 +42,8 @@ verify_jwt = false
 # A paying member enters a discount code on their account page.
 [functions.stripe-redeem]
 verify_jwt = false
+
+# A member deletes their own account (and ends their membership); the
+# function validates the caller's session itself.
+[functions.delete-account]
+verify_jwt = false
