@@ -103,6 +103,7 @@ public static class Sim
             if (i % 5000 == 4999) brain.StartZoomies();
             if (i % 7000 == 6999) brain.StartSilly();
             if (i % 9000 == 8999) brain.ToggleChase();
+            if (i % 6700 == 6699) brain.StartCare();      // "Nudge me now", every ~4.7 min
         }
 
         // Walking is clamped to the screen, but "peek round a corner" deliberately
@@ -118,6 +119,10 @@ public static class Sim
         Check(maxY < stage.ScreenMaxY, $"floated above the screen (max y {maxY:F1})");
         Check(maxParticles < 60, $"particles piled up ({maxParticles} at once)");
         Check(stage.Redraws > frames / 8, $"barely repainted ({stage.Redraws} in {frames} frames)");
+        // Self-care goes round every reminder in turn, so in 45 minutes of nudges
+        // each sign must have been held up at least once.
+        foreach (var kind in Enum.GetValues<CareKind>())
+            Check(poses.Any(p => p.Contains(kind.Sign())), $"never held up the \"{kind.Sign()}\" sign");
 
         Console.WriteLine($"  x range      {minX:F0} … {maxX:F0}  (screen 0…{FakeStage.W})");
         Console.WriteLine($"  y range      {minY:F0} … {maxY:F0}  (floor {ground:F0})");
@@ -133,9 +138,16 @@ public static class Sim
         stage.MousePos = new SKPoint(1500, 980);
         brain.MouseDragged();
         brain.MouseUp(1);
-        for (int i = 0; i < 24 * 12; i++) brain.Step(1f / 24f);
-        Check(MathF.Abs(stage.Y - ground) < 1.5f, $"did not land after being dropped (y {stage.Y:F1})");
-        Console.WriteLine($"  dropped from height, landed at y {stage.Y:F1} (floor {ground:F0})");
+        // It has twelve seconds to touch down. Where it is after that is its own
+        // business — a rested pet may well have hopped onto a ledge again.
+        float landedAt = float.NaN;
+        for (int i = 0; i < 24 * 12; i++)
+        {
+            brain.Step(1f / 24f);
+            if (float.IsNaN(landedAt) && MathF.Abs(stage.Y - ground) < 1.5f) landedAt = (i + 1) / 24f;
+        }
+        Check(!float.IsNaN(landedAt), $"did not land after being dropped (y {stage.Y:F1})");
+        Console.WriteLine($"  dropped from height, back on the floor ({ground:F0}) after {landedAt:F1}s");
 
         // Preferences must survive a restart, including Cream, which is index 0.
         brain.Species = Species.Dog;

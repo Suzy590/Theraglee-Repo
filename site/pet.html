@@ -27,6 +27,7 @@
   .steps li::before{content:counter(s);position:absolute;left:0;top:0;width:20px;height:20px;
     border-radius:50%;background:var(--soft);color:var(--green-deep);font-size:.75rem;font-weight:600;
     display:flex;align-items:center;justify-content:center}
+  .dl-note{font-size:.9rem;margin:14px auto 0;max-width:64ch}
   .doing{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-top:18px}
   .doing .card{padding:18px}
   .doing h3{font-size:.98rem;margin:0 0 6px}
@@ -80,7 +81,12 @@ const downloads = () => {
             this once.</li>
       </ol>
     </div>`;
-  return `<div class="dl">${onMac ? mac + win : win + mac}</div>`;
+  const note = `<p class="muted dl-note center">If your browser pauses the download — Chrome says
+      <strong>"Suspicious download blocked"</strong> — that is the browser being careful with a small
+      app it has not seen many times, not a problem with Pip. Click the download in the toolbar, then
+      <strong>Download suspicious file</strong> or <strong>Keep</strong>. Other browsers ask the same
+      with one click.</p>`;
+  return `<div class="dl">${onMac ? mac + win : win + mac}</div>${note}`;
 };
 
 const ABOUT = `

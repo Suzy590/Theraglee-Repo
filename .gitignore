@@ -9,3 +9,13 @@ __pycache__/
 
 # scratch
 .work/
+
+# Pet build output (`pet/README.md` says how to rebuild the downloads)
+pet/windows/**/bin/
+pet/windows/**/obj/
+pet/windows/Pip/out/
+pet/mac/pet
+pet/mac/pet-*
+pet/mac/Pip.app/
+pet/mac/Pip.app.zip
+pet/mac/Pip.iconset/

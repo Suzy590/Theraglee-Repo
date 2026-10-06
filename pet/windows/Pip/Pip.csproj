@@ -7,9 +7,16 @@
     <AssemblyName>Pip</AssemblyName>
     <RootNamespace>Pip</RootNamespace>
     <!-- icon added below --><ApplicationIcon Condition="Exists('Pip.ico')">Pip.ico</ApplicationIcon>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
+    <FileVersion>1.1.0.0</FileVersion>
     <Product>Pip</Product>
     <Company>Theraglee.com</Company>
+    <!-- Filled-in file details look like a finished program to SmartScreen and
+         browser download checks; a blank version block is one of their heuristics. -->
+    <AssemblyTitle>Pip</AssemblyTitle>
+    <Description>Pip, the Theraglee desktop pet. A small companion for the corner of your screen.</Description>
+    <Copyright>Theraglee.com</Copyright>
+    <NeutralLanguage>en-US</NeutralLanguage>
     <!-- Lets the Windows-targeting build run on a non-Windows machine. -->
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
