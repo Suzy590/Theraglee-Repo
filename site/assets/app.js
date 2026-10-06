@@ -505,6 +505,10 @@ function footer() {
         <a href="privacy-promise.html">Our privacy promise</a>
         <a href="${DOORS.therapist.signin}">Therapist sign in</a>
         <a href="therapist-dashboard.html">Practice dashboard</a></div>
+      <div><h4>Legal</h4>
+        <a href="terms.html">Terms of Service</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="privacy.html#consumer-health-data">Consumer health data privacy</a></div>
     </div>
     <div class="legal">
       <strong>Theraglee does not provide medical advice, diagnosis, or treatment.</strong>

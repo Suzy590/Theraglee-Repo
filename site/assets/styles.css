@@ -314,7 +314,7 @@ fieldset{border:0;padding:0;margin:0}
 
 /* footer */
 footer.site{background:var(--paper);border-top:1px solid var(--hair);padding:52px 0 30px;margin-top:70px}
-footer.site .cols{display:grid;gap:30px;grid-template-columns:1.6fr repeat(3,1fr)}
+footer.site .cols{display:grid;gap:30px;grid-template-columns:1.6fr repeat(4,1fr)}
 @media(max-width:820px){footer.site .cols{grid-template-columns:1fr 1fr}}
 footer.site h4{font-size:.8rem;text-transform:uppercase;letter-spacing:.09em;color:var(--faint);
   font-weight:600;margin-bottom:12px}
