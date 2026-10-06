@@ -49,7 +49,7 @@ an inactivity sign-out, is dropped (`site/assets/auth.js`); only a destination
 that finishes something the member asked for, such as buying a plan or starting
 a challenge, is kept. The tab row sits at the very top,
 above the date. Its other tabs are **Journal** (the day's prompt, the entry
-form and earlier entries with search; `journal.html` forwards there), **Mood** (the
+form and earlier entries with search, each one editable in place; `journal.html` forwards there), **Mood** (the
 one-tap mood check-in, a 1 to 10 rating of what may be shaping it, the weather,
 and after seven days the patterns; see [`mood.md`](mood.md)), **Playlists**
 (Premium: pick a mood, then a genre, and get forty songs curated for the pair,

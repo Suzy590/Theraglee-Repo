@@ -30,14 +30,35 @@ function snippet(body, ws){
 
 function entryHtml(e, ws){
   return `
-          <div class="entry">
+          <div class="entry" data-entry="${esc(e.id)}">
             <div class="spread" style="gap:10px;align-items:flex-start">
               <h4>${hl(e.title || 'Untitled', ws)}</h4>
-              <button class="btn sm ghost" data-del="${esc(e.id)}" aria-label="Delete this entry">Delete</button>
+              <div class="row" style="gap:6px;flex-shrink:0">
+                <button class="btn sm ghost" data-edit="${esc(e.id)}" aria-label="Edit this entry">Edit</button>
+                <button class="btn sm ghost" data-del="${esc(e.id)}" aria-label="Delete this entry">Delete</button>
+              </div>
             </div>
             <div class="when">${fmtDate(e.created_at)}</div>
             ${e.prompt_text ? `<div class="faint" style="font-style:italic;margin-top:4px">${hl(e.prompt_text, ws)}</div>` : ''}
             <p>${snippet(e.body, ws)}</p>
+          </div>`;
+}
+
+// The same entry, opened for editing in place. The prompt it was written to
+// stays as it is; only the title and the entry itself change.
+function editHtml(e){
+  return `
+          <div class="entry" data-entry="${esc(e.id)}">
+            <div class="when">${fmtDate(e.created_at)}</div>
+            ${e.prompt_text ? `<div class="faint" style="font-style:italic;margin-top:4px">${esc(e.prompt_text)}</div>` : ''}
+            <div class="field" style="margin-top:10px"><label for="j-et-${esc(e.id)}">Title <span class="faint">(optional)</span></label>
+              <input id="j-et-${esc(e.id)}" type="text" data-edit-title value="${esc(e.title || '')}" placeholder="A word for today"></div>
+            <div class="field"><label for="j-eb-${esc(e.id)}">Your entry</label>
+              <textarea id="j-eb-${esc(e.id)}" data-edit-body style="min-height:160px">${esc(e.body)}</textarea></div>
+            <div class="row" style="gap:6px">
+              <button class="btn sm" data-save="${esc(e.id)}">Save changes</button>
+              <button class="btn sm ghost" data-cancel="${esc(e.id)}">Cancel</button>
+            </div>
           </div>`;
 }
 
@@ -106,10 +127,13 @@ export async function mountJournal(host, a, promptId = null) {
 
     const listEl = $('j-list'), count = $('j-count'), q = $('j-q');
     let timer = null, seq = 0;
+    // The entries drawn right now: the recent ones, or the search hits.
+    let shown = list;
     async function paintList(){
       const ws = words(q.value);
       if (!ws.length) {
         count.textContent = '';
+        shown = list;
         listEl.innerHTML = list.length ? list.map(e => entryHtml(e, [])).join('')
           : '<div class="empty">Nothing yet. Your first entry will show up here.</div>';
         return;
@@ -118,6 +142,7 @@ export async function mountJournal(host, a, promptId = null) {
       count.textContent = 'Searching…';
       const hits = await search(q.value);
       if (mine !== seq) return; // a newer search has started
+      shown = hits;
       count.textContent = hits.length === 100 ? 'Showing the 100 most recent matches.'
         : `${hits.length} ${hits.length === 1 ? 'entry matches' : 'entries match'}.`;
       listEl.innerHTML = hits.length ? hits.map(e => entryHtml(e, ws)).join('')
@@ -125,11 +150,47 @@ export async function mountJournal(host, a, promptId = null) {
     }
     q.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(paintList, 250); });
 
-    // Deleting is permanent, so the member confirms first. The database only
-    // lets a member delete their own rows.
+    const find = (id) => shown.find(x => String(x.id) === id);
+    const box = (id) => listEl.querySelector(`[data-entry="${CSS.escape(id)}"]`);
+
+    // Editing happens in place: the entry turns into a small form, and Save
+    // writes the new title and text back. Deleting is permanent, so the
+    // member confirms first. The database only lets a member change or
+    // delete their own rows.
     listEl.addEventListener('click', async (e) => {
-      const b = e.target.closest('[data-del]');
+      const b = e.target.closest('[data-edit],[data-cancel],[data-save],[data-del]');
       if (!b) return;
+
+      if (b.dataset.edit) {
+        const entry = find(b.dataset.edit);
+        if (!entry) return;
+        box(b.dataset.edit).outerHTML = editHtml(entry);
+        box(b.dataset.edit).querySelector('[data-edit-body]').focus();
+        return;
+      }
+
+      if (b.dataset.cancel) {
+        const entry = find(b.dataset.cancel);
+        if (entry) box(b.dataset.cancel).outerHTML = entryHtml(entry, words(q.value));
+        return;
+      }
+
+      if (b.dataset.save) {
+        const id = b.dataset.save, wrap = box(id);
+        const title = wrap.querySelector('[data-edit-title]').value.trim() || null;
+        const body = wrap.querySelector('[data-edit-body]').value.trim();
+        if (!body) return toast('Write something first.','err');
+        busy(b, true, 'Saving…');
+        const { error } = await sb.from('journal_entries')
+          .update({ title, body, updated_at: new Date().toISOString() })
+          .eq('id', id).eq('user_id', a.profile.id);
+        if (error) { busy(b, false); return toast(error.message,'err'); }
+        for (const x of [list, shown]) { const row = x.find(y => String(y.id) === id); if (row) { row.title = title; row.body = body; } }
+        toast('Changes saved.','ok');
+        wrap.outerHTML = entryHtml(find(id), words(q.value));
+        return;
+      }
+
       if (!confirm('Delete this journal entry? This can’t be undone.')) return;
       busy(b, true, 'Deleting…');
       const { error } = await sb.from('journal_entries').delete()
