@@ -89,6 +89,11 @@ const BETWEEN = 4;         // other features between one Match Mode card and the
 const ADVANCE_MS = 3000;   // how long each card is shown before the strip moves on
 const RESUME_MS  = 9000;   // how long after the visitor last touched it before it moves again
 
+/** The label on a card: who can open the feature. Every card carries one, whoever
+    is looking, so the explore section's "the label on each tile tells you which"
+    holds for a Premium member as much as for a visitor. */
+const tierLabel = (need) => need === 0 ? 'Open to everyone' : tierName(need);
+
 /** Where a card sends someone (see the note at the top). */
 const hrefFor = (href, need, a) =>
   a.level >= need ? href
@@ -138,11 +143,12 @@ export function mountShowcase(a, target, { replace = false, inside = false, embe
         const locked = a.level < need;
         const star = feature === FEATURES[0];
         return `<a class="showcase-card${star ? ' star' : ''}${locked ? ' locked' : ''}"
-            href="${hrefFor(href, need, a)}" aria-label="${name}${locked ? `, ${tierName(need)} membership` : ''}">
+            href="${hrefFor(href, need, a)}"
+            aria-label="${name}, ${need === 0 ? 'open to everyone' : `${tierName(need)} membership`}">
           ${star ? '<span class="showcase-flag"><span class="dot"></span> Featured</span>' : ''}
           <strong class="showcase-name">${name}</strong>
           <span class="showcase-blurb">${blurb}</span>
-          ${locked ? `<span class="badge lock">${tierName(need)}</span>` : ''}
+          <span class="badge ${locked ? 'lock' : 'gray'}">${tierLabel(need)}</span>
         </a>`;
       }).join('')}
     </div>
