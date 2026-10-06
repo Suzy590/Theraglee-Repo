@@ -43,19 +43,19 @@ const SHELL = `
       <button class="chip" data-t="trivia">Trivia</button>
     </div>
     <!-- The discovery tools' eighteen topics; shown while the Self-discovery tools chip is on. -->
-    <div class="chips hide" data-topics style="margin-top:12px">
+    <div class="chips sep hide" data-topics>
       <button class="chip on" data-c="">All topics</button>
       ${TOPICS.map(t => `<button class="chip" data-c="${esc(t)}">${esc(t)}</button>`).join('')}
     </div>
     <!-- Tier chips: one at a time, and clicking the lit one again shows every tier. -->
-    <div class="chips" data-tiers style="margin-top:12px">
+    <div class="chips sep" data-tiers>
+      <button class="chip" data-l="unlocked">Available to me</button>
       <button class="chip" data-l="free">Free</button>
       <button class="chip" data-l="basic">Basic</button>
       <button class="chip" data-l="premium">Premium</button>
-      <button class="chip" data-l="unlocked">Available to me</button>
     </div>
     <!-- Member-only views; hidden for signed-out visitors. -->
-    <div class="chips hide" data-views style="margin-top:12px">
+    <div class="chips sep hide" data-views>
       <button class="chip" data-v="favorite">Favorites</button>
       <button class="chip" data-v="later">Saved for later</button>
       <button class="chip" data-v="started">In progress</button>
