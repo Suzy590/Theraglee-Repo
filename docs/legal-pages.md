@@ -28,7 +28,7 @@ fact; if any of these change, the policy must change in the same pull request.
 | Personal data is not used to train AI or LLMs | Connecticut requires this disclosure either way |
 | Therapists see only a pseudonymous profile (pseudonym, age range, gender or "prefer not to answer", broad topics, session preference, insurance plan and the first three digits of the zip code), and only with opt-in; the member's real name reaches a therapist only in a reply the member sends; a member can block a therapist | `site/assets/match.js`, the `member_discovery` view (no name, exact age or zip column), `outreach_replies.member_name`, `member_blocks`; wording in `docs/match-mode-consent.md` |
 | Calls to tracking numbers are counted, not recorded | `site/admin.html`; if call recording is ever switched on, state two-party consent laws apply |
-| Idle sign-out after 15 minutes | `idleLogoff()` in `site/assets/app.js` |
+| Idle sign-out after 15 minutes, on that device only | `idleLogoff()` in `site/assets/app.js`; the Sign out link ends every session |
 | Account deletion completed within 45 days | The Delete button in `site/account.html` currently only shows a message; an administrator must complete deletions by hand until that is automated. The 45-day promise is the legal deadline in every state |
 | Data export from the account page | `site/account.html` (Privacy tab) |
 | Members must be 18 or older | `site/assets/auth.js` consent line (shown on all four sign-in and sign-up pages); there is no age check beyond that |

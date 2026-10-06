@@ -440,12 +440,14 @@ export async function chrome({ active = '', showcase = true } = {}) {
 
 /* --------------------------------------------------------- auto logoff */
 /** Signs a signed-in user out after a period of inactivity, so a session left
-    open on a shared or unattended screen does not stay open. */
+    open on a shared or unattended screen does not stay open. Only this
+    device's session ends (`scope: 'local'`): an idle tab on a laptop must not
+    sign the member's phone out as well. The Sign out link stays global. */
 export function idleLogoff({ minutes = 15, warnSeconds = 60, login = DOORS.member.signin } = {}) {
   let timer, warnTimer, warned = false;
 
   const signOut = async (why) => {
-    try { await sb.auth.signOut(); } catch {}
+    try { await sb.auth.signOut({ scope: 'local' }); } catch {}
     clearAccess();
     location.href = login + '?next=' +
       encodeURIComponent(location.pathname.split('/').pop() + location.hash) + '&timeout=1';
