@@ -50,13 +50,12 @@
   /* Beside the greeting, the open tab's white card: Today's affirmation, or
      the pill and line that name the tab. Every tab has one, and showTab()
      turns on the one for the open tab along with the tab's panels. */
-  .dash-intro{grid-column:2;grid-row:1;align-self:stretch;display:flex;min-width:0}
+  .dash-intro{grid-column:2;grid-row:1;align-self:start;min-width:0}
   /* The card starts level with the top of the letters in "Hello, name": past
      the date line and the greeting's top margin, less a little for its own
-     border, and runs down to the bottom of the Match Mode row. */
+     border, and is only as tall as its own words. */
   .dash-intro{margin-top:calc(1.68rem + clamp(.2rem,.46vw,.34rem) - 3px)}
-  .dash-intro [data-panel].on{display:flex;flex:1 1 auto;flex-direction:column;align-items:flex-start;
-    justify-content:center;min-width:0}
+  .dash-intro [data-panel].on{display:flex;flex-direction:column;align-items:flex-start;min-width:0}
   /* The switch sits under the greeting: the words above it, ON or OFF just to
      its right with the line therapists read beyond that, and "How Theraglee
      Match Mode works" underneath, all left-aligned. */
