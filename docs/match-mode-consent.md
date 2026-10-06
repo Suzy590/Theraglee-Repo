@@ -93,9 +93,11 @@ have written.
   chose to talk to them.
 - **One tap to block.** A row in `member_blocks` removes the member from that
   therapist's view and stops that therapist writing to them, even after a
-  reply (`member_blocked()` in the outreach insert policy). The member can
-  unblock from the same place, the Messages tab on the dashboard or the Inbox
-  on the account page.
+  reply (`member_blocked()` in the outreach insert policy, and in the
+  therapist's reply policy on `therapist_message_replies`, so a conversation
+  the member started from a profile is covered too). The button is on every
+  thread in the inbox, and the member can unblock from the same place, the
+  Messages tab on the dashboard or the Inbox on the account page.
 
 ## Where the wording appears
 

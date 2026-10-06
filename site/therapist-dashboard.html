@@ -499,7 +499,12 @@ async function messages(){
     const { error } = await sb.from('therapist_message_replies').insert({
       message_id: id, therapist_id: T.id, member_id: m.sender_user_id,
       sender: 'therapist', message: text });
-    if (error) { busy(btn, false); return toast(error.message, 'err'); }
+    if (error) {
+      busy(btn, false);
+      // The database refuses a reply to a member who blocked this therapist.
+      if (error.code === '42501') return toast('This member has ended the conversation.', 'err');
+      return toast(error.message, 'err');
+    }
     // Answering it is reading it.
     await markRead(id);
     busy(btn, false);
