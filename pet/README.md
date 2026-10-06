@@ -39,12 +39,25 @@ machine, no Windows needed:
 ```
 cd pet/windows/Pip
 dotnet publish -c Release -r win-x64 --self-contained true \
-  -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true \
+  -p:PublishSingleFile=true \
   -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none -o out
-zip -9 ../../../site/downloads/Pip-windows.zip out/Pip.exe
+rm -f ../../../site/downloads/Pip-windows.zip
+zip -9 -j ../../../site/downloads/Pip-windows.zip out/Pip.exe
 ```
 
 That produces one self-contained `Pip.exe` — nobody needs to install .NET.
+`-j` keeps `Pip.exe` at the top of the zip rather than inside an `out/` folder.
+
+The single-file bundle is deliberately **not** compressed
+(`EnableCompressionInSingleFile` is left off). A compressed bundle is an
+executable that unpacks itself in memory, which is exactly what antivirus and
+browser download checks treat as a warning sign. The zip compresses the file
+anyway, so the download is the same ~9 MB either way; only the unzipped
+`Pip.exe` is larger (21 MB instead of 14 MB).
+
+Without a Mac or Windows machine to hand, `dotnet-install.sh` from
+<https://dot.net/v1/dotnet-install.sh> puts the SDK anywhere on Linux and the
+publish above works as written.
 
 Then update the sizes quoted on `site/pet.html`, which are shown to members
 before they click.
@@ -60,6 +73,35 @@ what an operating system says about a small program it has not seen before.
 Making the warnings go away entirely means paying for certificates: an Apple
 Developer account (~$99/year) to notarize the Mac build, and a code-signing
 certificate for the Windows one. Worth doing if downloads stall on that step.
+
+## When the browser blocks the download
+
+Chrome sometimes stops the zip itself with **"Suspicious download blocked"**,
+before the operating system ever sees it. That verdict comes from Google Safe
+Browsing, which looks at the file inside the zip and at how often that exact
+file has been downloaded anywhere. An unsigned app that few people have
+fetched yet reads as "uncommon", and every rebuild is a brand-new file that
+starts from zero again. The member can still get it: the download bubble's menu
+offers **Download suspicious file**, and `site/pet.html` says so under the
+download buttons.
+
+What the repo does to keep the warning rare:
+
+- `site/vercel.json` serves `/downloads/` as `application/zip` with
+  `Content-Disposition: attachment`, so no browser sniffs or rewrites it.
+- `Pip.csproj` fills in the file details Windows shows under Properties →
+  Details (product, company, description, version). A blank version block is
+  one of SmartScreen's heuristics.
+- The Windows bundle is not self-compressed (above).
+- The download URLs never change, so what reputation they earn is kept.
+- Rebuild only when the pet actually changed, since each new file starts over.
+
+The only thing that makes the warning go away for good is the code signing
+above: a notarized Mac app and an Authenticode-signed `Pip.exe` are what both
+Safe Browsing and SmartScreen treat as known-good from the first download. If
+the block keeps happening with a signed build, the next step is to register
+`theraglee.com` in Google Search Console and request a review under
+**Security issues**.
 
 ## Checking a change without a Mac or a PC
 
