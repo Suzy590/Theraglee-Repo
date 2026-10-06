@@ -174,6 +174,7 @@
   <div class="wrap">
     <div class="tabs" id="tabs" role="tablist">
       <button data-tab="today" role="tab">Today</button>
+      <button data-tab="messages" role="tab">Messages</button>
       <button data-tab="journal" role="tab">Journal</button>
       <button data-tab="playlists" role="tab">Playlists</button>
       <button data-tab="goals" role="tab">Mental Health Goals</button>
@@ -181,7 +182,6 @@
       <button data-tab="discover" role="tab">Self-Discovery</button>
       <button data-tab="tools" role="tab">Tools</button>
       <button data-tab="fun" role="tab">Fun</button>
-      <button data-tab="messages" role="tab">Messages</button>
       <button data-tab="nearby" role="tab">Nearby help</button>
       <!-- Therapist directory is a page of its own (therapists.html), so this tab is a link. -->
       <a href="therapists.html" role="tab" aria-selected="false">Therapist directory</a>
@@ -472,7 +472,7 @@ document.getElementById('tierbadge').textContent = tierName(a.level) + ' members
    The dashboard opens on Today. The other tabs are reached by their buttons or
    by address (dashboard.html#journal), and the address follows the tab so a
    refresh or a shared link comes back to the same one. */
-const PANELS = ['today', 'journal', 'playlists', 'goals', 'explore', 'discover', 'tools', 'fun', 'messages', 'nearby'];
+const PANELS = ['today', 'messages', 'journal', 'playlists', 'goals', 'explore', 'discover', 'tools', 'fun', 'nearby'];
 let tab = 'today';
 // A hash that names something inside a tab (dashboard.html#match-mode, #daily-quote)
 // opens that tab and scrolls to it. The feature showcase under the header links this way.
