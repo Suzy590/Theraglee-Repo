@@ -522,12 +522,16 @@ name, roomier text and a wider contact column. The admin page (`admin.html`)
 has none either: it is a working screen, and its tables keep the full width.
 
 Each card is the feature's name in large bold type over a one-line
-description, and each is a link:
+description, with a pill at the foot naming who can open it: **Open to
+everyone**, **Free**, **Basic** or **Premium**. The pill is on every card
+whoever is looking (the explore section's copy promises "the label on each
+tile tells you which"); it is gray when the viewer can open the feature and
+amber (`.badge.lock`) when it is above their tier. Each card is a link:
 
 | Viewer | Feature they can open | Feature above their tier |
 |---|---|---|
 | Visitor | Straight to the feature | `signup.html?next=…`, so they land on the feature once the account exists |
-| Signed-in member | Straight to the feature | `pricing.html`, with the tier shown on the card |
+| Signed-in member | Straight to the feature | `pricing.html` |
 
 The strip scrolls (swipe, trackpad, the arrow buttons, or the arrow
 keys once it has focus) and moves on to the next card by itself every few
