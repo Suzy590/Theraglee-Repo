@@ -61,8 +61,9 @@ with the trail map, drawn from `site/assets/goals-ui.js`; `goals.html`
 forwards here; see [`quest-map.md`](quest-map.md)), **Explore
 Library** (the whole library with search and filters, the 360 free discovery
 tools among it with their topic chips, the same browser as `explore.html`,
-drawn from `site/assets/explore-ui.js`; there is no separate Discover tab),
-**Tools** (quick links into the library), **Fun** (the
+drawn from `site/assets/explore-ui.js`, with the three membership tiers under
+it for a member who is not yet Premium; there is no separate Discover or Tools
+tab), **Fun** (the
 desktop pet, mental health trivia and mandalas), **Messages**
 (every conversation with a therapist: replies from therapists the member wrote
 to from a profile, and messages from therapists who reached out through Match
@@ -919,6 +920,20 @@ dashboard and `/admin.html`, which offers:
 `site/privacy.html` and `site/terms.html`, served at `/privacy` and `/terms`.
 How they are kept current, what they assert about the site, and what still
 needs filling in is written up in [`legal-pages.md`](legal-pages.md).
+
+## Your data: the download on the Privacy tab
+
+**Download my data** on `account.html#privacy` saves `theraglee-my-data.html`,
+a readable page that opens in any browser and prints cleanly: the profile in
+words (membership, billing, Match Mode and what therapists see), every journal
+entry, the mood log as a table with the factor names from
+`assets/mood-patterns.js`, quiz results, each worksheet's answers next to its
+question, challenges with the days ticked off, and the Goals & tracking rows
+(quests, milestones, steps done, What helped notes and the older goals) with
+step keys turned back into sentences by `assets/quest-paths.js`. The link under
+the button saves the same rows as `theraglee-my-data.json` for anyone who wants
+a copy a program can read. Both are built in `site/assets/my-data.js`, in the
+browser, from the member's own rows only.
 
 ## Safety
 

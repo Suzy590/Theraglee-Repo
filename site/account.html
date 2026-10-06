@@ -38,6 +38,7 @@ import { SETS as TRIVIA } from './assets/trivia-sets.js';
 import { matchDetailsModal, matchSummary, matchComplete, MATCH_BLURB } from './assets/match.js';
 import { loadPrices, tierCards, PLANS_INTRO, PLANS_NOTE } from './assets/plans.js';
 import { mountInbox, unreadCount } from './assets/inbox.js';
+import { downloadMyData } from './assets/my-data.js';
 await chrome({ active:'account.html' });
 let a = await requireAuth();
 const c = await contentCounts();
@@ -310,12 +311,14 @@ function privacy(){
 
       <hr class="hr">
       <h2>Your data</h2>
-      <p class="muted">Download everything this account holds, or close it for good. Deleting the account
-        ends your membership too.</p>
+      <p class="muted">Download everything this account holds as an easy-to-read page that opens
+        in your browser, or close your account for good. Deleting the account ends your membership too.</p>
       <div class="row">
         <button class="btn ghost" id="export">Download my data</button>
         <button class="btn danger" id="delete">${DELETE_LABEL}</button>
       </div>
+      <p class="faint" style="font-size:.85rem;margin-top:10px">Need a copy a program can read?
+        <a href="#" id="export-json">Download it as a JSON file</a> instead.</p>
     </div>`;
 }
 
@@ -488,31 +491,17 @@ async function render(){
         clearAccess(); a = await access(true); render(); toast('Saved.','ok');
       }
     });
+    // The readable page (assets/my-data.js), or the raw rows for the link under it.
     document.getElementById('export').addEventListener('click', async (e) => {
       busy(e.target, true, 'Gathering…');
-      const uid = a.profile.id;
-      const [j,q,w,c,m,g,qu,qs,qr] = await Promise.all([
-        sb.from('journal_entries').select('*').eq('user_id',uid),
-        sb.from('quiz_attempts').select('*').eq('user_id',uid),
-        sb.from('worksheet_responses').select('*').eq('user_id',uid),
-        sb.from('user_challenges').select('*').eq('user_id',uid),
-        sb.from('mood_logs').select('*').eq('user_id',uid),
-        sb.from('goals').select('*, goal_logs(*)').eq('user_id',uid),
-        sb.from('quests').select('*').eq('user_id',uid),
-        sb.from('quest_steps').select('*').eq('user_id',uid),
-        sb.from('quest_reflections').select('*').eq('user_id',uid),
-      ]);
-      const blob = new Blob([JSON.stringify({
-        exported_at: new Date().toISOString(), profile: a.profile,
-        journal: j.data, quiz_attempts: q.data, worksheets: w.data,
-        challenges: c.data, mood_logs: m.data, goals: g.data,
-        quests: qu.data, quest_steps: qs.data, quest_reflections: qr.data,
-      }, null, 2)], { type:'application/json' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url; link.download = 'theraglee-my-data.json'; link.click();
-      URL.revokeObjectURL(url);
+      try { await downloadMyData(a); }
+      catch (err) { toast(err.message || 'Could not gather your data.', 'err'); }
       busy(e.target, false);
+    });
+    document.getElementById('export-json').addEventListener('click', async (e) => {
+      e.preventDefault();
+      try { await downloadMyData(a, { raw: true }); }
+      catch (err) { toast(err.message || 'Could not gather your data.', 'err'); }
     });
     wireDelete();
   }
