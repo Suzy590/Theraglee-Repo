@@ -187,7 +187,22 @@ export function mountShowcase(a, target, { replace = false, inside = false, embe
     const to = startOf(cards[n]);
     track.scrollTo({ ...(down() ? { top: to } : { left: to }), behavior: reduceMotion ? 'auto' : 'smooth' });
   };
-  const forward = () => atEnd() ? goTo(0) : goTo(current() + 1);
+  // One step is the next card that starts further along the strip. In a
+  // single row or column that is simply the next card; where the stylesheet
+  // lays the strip out in two rows (the landing page), the two cards of a
+  // column share a start, so a step skips to the next column.
+  const x0 = () => startOf(cards[current()]);
+  const forward = () => {
+    if (atEnd()) return goTo(0);
+    const i = cards.findIndex(c => startOf(c) > x0());
+    goTo(i < 0 ? 0 : i);
+  };
+  const back = () => {
+    const x = x0();
+    let i = -1;
+    cards.forEach((c, k) => { if (startOf(c) < x) i = k; });
+    goTo(i < 0 ? cards.length - 1 : i);
+  };
 
   /* ---- moving by itself ----
      Advances one card at a time while the strip is on screen, the tab is
@@ -215,12 +230,12 @@ export function mountShowcase(a, target, { replace = false, inside = false, embe
   sec.addEventListener('mouseleave', () => { held = false; start(); });
 
   sec.querySelectorAll('.showcase-arrow').forEach(b => b.addEventListener('click', () => {
-    pause(); b.dataset.dir === '1' ? forward() : goTo(current() - 1);
+    pause(); b.dataset.dir === '1' ? forward() : back();
   }));
   // The arrow keys move it either way round, whichever way it runs.
   track.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); forward(); }
-    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   { e.preventDefault(); goTo(current() - 1); }
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   { e.preventDefault(); back(); }
   });
 
   document.addEventListener('visibilitychange', () => document.hidden ? stop() : start());

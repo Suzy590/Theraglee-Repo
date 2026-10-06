@@ -126,27 +126,38 @@
   .dot{width:8px;height:8px;border-radius:50%;background:var(--lime-2);animation:halo 2.4s ease-out infinite}
   /* Under the hero: the explore strip in the left two thirds and "Today on
      Theraglee" (the dashboard's daily cards, in the Today look: a soft green
-     zone holding white cards) in the right third. The two stack below 900px.
-     The zone leaves the row if no card comes back. */
+     zone holding white cards) in the right third. The two panels share one
+     padding, radius and shadow, and their headings start on the same line.
+     The strip runs in two rows here, so it fills its panel; the zone leaves
+     the row if no card comes back. The two stack below 900px. */
   .under-hero{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:22px;align-items:stretch}
   .under-hero.no-today{grid-template-columns:minmax(0,1fr)}
+  .under-hero .explore-plug,.under-hero .daily-zone{padding:26px 28px;border-radius:var(--r-lg);box-shadow:var(--shadow-2)}
   .daily-zone{display:flex;flex-direction:column}
   .daily-zone[hidden]{display:none}
-  .daily-zone .zone-head{margin-bottom:16px}
-  .daily-zone .zone-head h2{font-size:1.55rem}
-  .daily-zone .zone-head p{font-size:.92rem}
-  .daily-head .kicker{margin-bottom:8px}
-  .daily-affirm{margin-bottom:14px;padding:18px 20px}
-  .hero-line{font-family:var(--serif);font-style:italic;font-size:1.25rem;
-    line-height:1.3;color:var(--ink);margin:10px 0 0}
-  .daily{display:grid;gap:14px;grid-template-columns:minmax(0,1fr)}
-  .daily .card{display:flex;flex-direction:column;gap:8px;padding:16px 20px}
-  .daily p{margin:0;font-size:.92rem;line-height:1.5}
-  .daily .quote p{font-family:var(--serif);font-style:italic;font-size:1.05rem}
-  /* The explore card is as tall as the zone beside it; the strip sits in the
-     middle of the room that leaves, with the fine print at the foot. */
+  .daily-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 12px;margin:0 0 14px}
+  .daily-head h2,.daily-zone .zone-head h2{margin:0;font-size:1.55rem;line-height:1.2}
+  .daily-head .kicker{margin:0;font-size:.7rem}
+  .daily-head p{flex-basis:100%;margin:2px 0 0;font-size:.92rem}
+  .daily-affirm{margin-bottom:12px;padding:16px 18px}
+  .daily-affirm .badge{font-size:.7rem}
+  .hero-line{font-family:var(--serif);font-style:italic;font-size:1.2rem;
+    line-height:1.3;color:var(--ink);margin:8px 0 0}
+  .daily{display:grid;gap:12px;grid-template-columns:minmax(0,1fr)}
+  .daily .card{display:flex;flex-direction:column;gap:6px;padding:14px 18px}
+  .daily p{margin:0;font-size:.9rem;line-height:1.45}
+  .daily .quote p{font-family:var(--serif);font-style:italic;font-size:1.02rem}
+  .daily .quote .faint{font-size:.82rem}
+  /* The strip sits in the middle of the room its panel has beside the zone,
+     with the fine print at the foot. */
   .under-hero .showcase.embedded{margin-top:auto;margin-bottom:auto;min-width:0}
   .under-hero .explore-plug .fine{margin-top:0}
+  @media(min-width:901px){
+    .under-hero .showcase-track{display:grid;grid-auto-flow:column;grid-template-rows:repeat(2,minmax(0,1fr));
+      grid-auto-columns:max-content;align-items:stretch}
+    .under-hero .showcase-card{width:250px}
+    .under-hero .showcase-card.star{width:340px}
+  }
   @media(max-width:900px){.under-hero{grid-template-columns:minmax(0,1fr)}}
   .explore-plug{background:var(--paper);border:1px solid var(--hair);border-radius:var(--r-lg);
     padding:30px;box-shadow:var(--shadow-2);display:flex;flex-direction:column}
@@ -297,8 +308,8 @@
            Shows loading cards until they arrive; leaves if nothing comes back. -->
       <section class="zone daily-zone" id="today" aria-labelledby="daily-title">
         <div class="zone-head daily-head">
-          <span class="kicker" id="daily-date"></span>
           <h2 id="daily-title">Today on Theraglee</h2>
+          <span class="kicker" id="daily-date"></span>
           <p class="muted" id="daily-note">A fresh affirmation, quote, tip and fact every day.</p>
         </div>
         <div class="card daily-affirm" id="home-affirm"><div class="skeleton" style="height:56px"></div></div>
@@ -522,7 +533,7 @@ mountShowcase(a, document.getElementById('explore-grid'), { replace: true, embed
     new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
   document.getElementById('daily-note').textContent = a.authenticated
     ? 'Yours are chosen for the topics you care about.'
-    : 'A fresh affirmation, quote, tip and fact every day. Members get ones chosen for the topics they care about.';
+    : 'A fresh affirmation, quote, tip and fact every day. Members get ones picked for their topics.';
 
   const affirm = document.getElementById('home-affirm');
   affirm.hidden = !picks.affirmation;
