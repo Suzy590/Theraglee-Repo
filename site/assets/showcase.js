@@ -74,7 +74,7 @@ export const FEATURES = [
   ['Desktop Pet',
    'Meet Pip, a small companion who lives on your screen.',
    'pet.html', 2],
-  ['Goals and Your Trail',
+  ['Mental Health Goals',
    'Set a goal in your own words, pick milestones you would notice, and take small steps each day.',
    'dashboard.html#goals', 3],
   ['Music Playlists by Genre and Mood',
