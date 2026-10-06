@@ -258,6 +258,9 @@ a.tile.star:hover{color:#fff;border-color:var(--lime);box-shadow:0 0 0 4px rgba(
 .badge.lock{background:#FDF4E7;color:var(--warn);border-color:#F0DCC0}
 .badge.live{background:var(--soft);color:var(--green-deep)}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
+/* A second or later row of chips in the same card: a hairline above it keeps
+   the groups (kinds, topics, tiers, member views) apart without a heading. */
+.chips.sep{margin-top:12px;padding-top:12px;border-top:1px solid var(--hair)}
 
 /* ---------- message threads ----------
    A conversation on the member's inbox and the therapist dashboard is a
