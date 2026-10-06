@@ -283,7 +283,9 @@ test("US spelling", () => {
 
 /* ---------------------------------------------------------------- pages */
 test("the tab carries the wellness note and crisis line, and the three levels in order", () => {
-  const goalsTab = dash.slice(dash.indexOf('data-panel="goals"'), dash.indexOf('data-panel="explore"'));
+  // The tab's panel, not its intro card beside the greeting (which also carries data-panel="goals").
+  const goalsTab = dash.slice(dash.indexOf('<div class="tab-top" data-panel="goals">'),
+                              dash.indexOf('<div class="tab-top" data-panel="explore">'));
   assert.match(goalsTab, /class="wellness"/);
   assert.match(goalsTab, /General wellness and self-help only/);
   assert.match(goalsTab, /not psychotherapy or clinical\s+care/);
