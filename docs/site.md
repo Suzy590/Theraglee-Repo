@@ -920,6 +920,20 @@ dashboard and `/admin.html`, which offers:
 How they are kept current, what they assert about the site, and what still
 needs filling in is written up in [`legal-pages.md`](legal-pages.md).
 
+## Your data: the download on the Privacy tab
+
+**Download my data** on `account.html#privacy` saves `theraglee-my-data.html`,
+a readable page that opens in any browser and prints cleanly: the profile in
+words (membership, billing, Match Mode and what therapists see), every journal
+entry, the mood log as a table with the factor names from
+`assets/mood-patterns.js`, quiz results, each worksheet's answers next to its
+question, challenges with the days ticked off, and the Goals & tracking rows
+(quests, milestones, steps done, What helped notes and the older goals) with
+step keys turned back into sentences by `assets/quest-paths.js`. The link under
+the button saves the same rows as `theraglee-my-data.json` for anyone who wants
+a copy a program can read. Both are built in `site/assets/my-data.js`, in the
+browser, from the member's own rows only.
+
 ## Safety
 
 The crisis banner (988) is on every page, and every page carries the
