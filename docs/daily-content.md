@@ -3,7 +3,7 @@
 The dashboard shows one affirmation, quote, tip and fun fact ("Did you know")
 a day, picked by `public.daily_pick_for()` from `public.daily_content`. The
 landing page shows the same four under its hero, in a "Today on Theraglee"
-zone (`site/index.html#today`) in the right third beside the explore strip:
+zone (`site/index.html#today`) in the left two thirds beside the explore column:
 a visitor gets the open deck (`min_level = 0`, since `daily_pick()` sees no
 user), a signed-in member the same personalized pick as their dashboard. The
 zone shows loading cards until they arrive and leaves the row if none do.

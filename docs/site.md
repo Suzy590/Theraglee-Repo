@@ -19,7 +19,7 @@ Moving the domain off HostGator is written up step by step in
 | Hosting | Serves the site. | Vercel project `theraglee-site` |
 | Sunday tool email | One free discovery tool a week to visitors with no account, from the box above the footer. See [`weekly-tool-email.md`](weekly-tool-email.md). | `site/index.html` `#inbox`, `supabase/functions/tool-signup`, `supabase/functions/weekly-tools` |
 | Search landing pages | Real HTML at `/articles/<slug>` for every article, `/tools/...` landing pages and catalogs, plus `sitemap.xml` and `robots.txt`, so the library is indexable. See [`seo.md`](seo.md). | `data/seo-pages.json`, `tools/build_seo_pages.py` |
-| Feature showcase | The column of feature cards beside the content, in the right third of every page but the admin page and the therapist dashboard, sign-in, sign-up and profile pages; on the landing page it is a sideways strip in the explore section instead. See [below](#the-feature-showcase-beside-the-page). | `site/assets/showcase.js`, placed by `chrome()` in `site/assets/app.js`, styles in `site/assets/styles.css` |
+| Feature showcase | The column of feature cards beside the content, in the right third of every page but the admin page and the therapist dashboard, sign-in, sign-up and profile pages; on the landing page it stands in the explore panel beside "Today on Theraglee". See [below](#the-feature-showcase-beside-the-page). | `site/assets/showcase.js`, placed by `chrome()` in `site/assets/app.js`, styles in `site/assets/styles.css` |
 | Domain | `theraglee.com`. | Registered at Network Solutions, served by Vercel |
 
 ## Two front doors: members and therapists
@@ -512,12 +512,11 @@ above the content. The script reads which way the track runs from its CSS, so
 the same cards, arrows and self-advance work either way.
 
 Three pages pass `chrome({ showcase: false })` and go without the column. The
-landing page mounts the strip itself, sideways, inside "What would you like to
-explore today?" under the hero, where the explore tiles used to be, in the
-left two thirds of the row and, on a wide screen, in two rows of cards (a
-step of the strip is then one column); "Today on Theraglee", the dashboard's
-four daily cards for everyone, takes the right third (see
-[`daily-content.md`](daily-content.md)). A
+landing page mounts the column itself (`aside` and `embedded`), inside "What
+would you like to explore today?" under the hero, which takes the right third
+of the row; "Today on Theraglee", the dashboard's four daily cards for everyone,
+takes the left two thirds (see [`daily-content.md`](daily-content.md)). The
+column is never sticky there and fills the panel to the zone's height. A
 therapist's profile (`therapist.html`) has no showcase at all, so the profile
 takes the full width of the page and is drawn a size up: a larger photo and
 name, roomier text and a wider contact column. The admin page (`admin.html`)
