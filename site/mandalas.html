@@ -117,9 +117,10 @@ function applyFills(host, fills) {
 }
 
 const shareToken = qs('share');
-/* The gallery and the locked notice are where the Fun tab lands, so they carry
-   the way back to it; a single mandala and a share link have their own "← All mandalas". */
-if (!shareToken && !qs('slug')) root.insertAdjacentHTML('beforebegin', funCrumb(a));
+/* The way back to the Fun tab, above everything the page draws; a single mandala
+   adds the way back to the gallery on the same line. A share link, which anyone
+   can open, keeps its own "← All mandalas". */
+if (!shareToken) root.insertAdjacentHTML('beforebegin', funCrumb(a, qs('slug') ? [['All mandalas', 'mandalas.html']] : []));
 if (shareToken) {
   await shared(shareToken);                     // a link anyone can open, signed in or not
 } else {
@@ -213,8 +214,7 @@ async function studio(m) {
 
   root.innerHTML = `
     <div class="no-print">
-      <a class="faint" href="mandalas.html">← All mandalas</a>
-      <div class="spread" style="margin-top:12px;margin-bottom:6px">
+      <div class="spread" style="margin-bottom:6px">
         <h1 style="margin:0">${esc(m.title)}</h1>
         ${favButton('mandala', m.id, isFavorite(lib, 'mandala', m.id))}
       </div>

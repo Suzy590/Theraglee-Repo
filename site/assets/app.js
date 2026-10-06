@@ -167,11 +167,16 @@ export function unlockHref(needed, authenticated) {
 
 /** The line at the top of a page the dashboard's Fun tab opens (Pip, trivia,
  *  mandalas): the way back to the dashboard and to that tab, in the style of
- *  the tool pages' "← All tools · Anxiety tools" crumb. A visitor has no
- *  dashboard, so it shows only to someone signed in. */
-export const funCrumb = (a) => a?.authenticated
-  ? `<p class="faint no-print" style="margin:0 0 14px"><a class="faint" href="dashboard.html">&larr; Your dashboard</a> · <a class="faint" href="dashboard.html#fun">Fun</a></p>`
-  : '';
+ *  the tool pages' "← All tools · Anxiety tools" crumb. A page inside one of
+ *  them (a quiz in play, a single mandala) passes its own links as `more`,
+ *  `[label, href]` pairs that follow on the same line. A visitor has no
+ *  dashboard, so they see only those. */
+export function funCrumb(a, more = []) {
+  const links = [...(a?.authenticated ? [['Your dashboard', 'dashboard.html'], ['Fun', 'dashboard.html#fun']] : []), ...more]
+    .map(([label, href]) => `<a class="faint" href="${href}">${esc(label)}</a>`);
+  if (!links.length) return '';
+  return `<p class="faint no-print" style="margin:0 0 14px">&larr; ${links.join(' · ')}</p>`;
+}
 
 /** Renders an inline upgrade prompt into `host` when the tier is too low. */
 export async function lockNotice(host, needed, what = 'This') {

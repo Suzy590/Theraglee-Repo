@@ -78,10 +78,12 @@ const slug = qs('slug');
 const bySlug = new Map(SETS.map(s => [s.slug, s]));
 const set = slug ? bySlug.get(slug) : null;
 const N = QUESTIONS_PER_SET;
-/* The quiz list and the locked notice are where the Fun tab lands, so they
-   carry the way back to it; a quiz in play has its own "← All trivia" line. */
-if (!set) root.insertAdjacentHTML('beforebegin', funCrumb(a));
 const NEEDED = 2;                                // Basic
+/* The way back to the Fun tab, above everything the page draws; a quiz adds the
+   way back to the list and to its topic on the same line. A quiz in play draws
+   it inside its narrow column instead (in play() below), so the title lines up under it. */
+const setCrumb = set ? [['All trivia', 'trivia.html'], [`${set.topic} trivia`, `trivia.html?topic=${encodeURIComponent(set.topic)}`]] : [];
+if (!set || a.level < NEEDED) root.insertAdjacentHTML('beforebegin', funCrumb(a, setCrumb));
 
 document.title = (set ? set.title : 'Mental health trivia') + ' — Theraglee';
 
@@ -270,8 +272,8 @@ function play(s, lib, saveScore, scores, bestBadge) {
 
   root.innerHTML = `
     <div class="wrap narrow" style="padding:0">
-      <p class="faint" style="margin:0"><a class="faint" href="trivia.html">← All trivia</a> · <a class="faint" href="trivia.html?topic=${encodeURIComponent(s.topic)}">${esc(s.topic)} trivia</a></p>
-      <h1 style="margin-top:12px">${esc(s.title)}</h1>
+      ${funCrumb(a, setCrumb)}
+      <h1 style="margin-top:0">${esc(s.title)}</h1>
       <p class="muted">${esc(s.description)}</p>
       <span class="meta faint">${meta(s)}</span>
       <div class="row" id="libbar" style="margin-top:14px">
