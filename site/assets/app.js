@@ -306,9 +306,8 @@ const THERAPIST_NAV = [
   ['Directory',       'therapists.html'],
 ];
 
-// The dashboard's own tab row, repeated on the pages its Tools tab (and its
-// other tabs) lead to, so a member can always get back to any part of the
-// dashboard. Keep it in step with the tab buttons in dashboard.html. A tab
+// The dashboard's own tab row, repeated on the pages its tabs lead to, so a
+// member can always get back to any part of the dashboard. Keep it in step with the tab buttons in dashboard.html. A tab
 // whose second value ends in .html is a page of its own rather than a panel.
 const DASH_TABS = [
   ['Today',           'today'],
@@ -316,7 +315,6 @@ const DASH_TABS = [
   ['Playlists',       'playlists'],
   ['Mental Health Goals', 'goals'],
   ['Explore Library', 'explore'],
-  ['Tools',           'tools'],
   ['Fun',             'fun'],
   ['Messages',        'messages'],
   ['Nearby help',     'nearby'],
@@ -324,8 +322,8 @@ const DASH_TABS = [
 ];
 // The member pages that show that row, and the tab each one sits under.
 const DASH_PAGES = {
-  'discover.html': 'explore', 'explore.html': 'tools', 'challenges.html': 'tools',
-  'checklist.html': 'tools', 'quiz.html': 'tools', 'worksheet.html': 'tools',
+  'discover.html': 'explore', 'explore.html': 'explore', 'challenges.html': 'explore',
+  'checklist.html': 'explore', 'quiz.html': 'explore', 'worksheet.html': 'explore',
   'therapists.html': 'therapists.html', 'therapist.html': 'therapists.html',
   'pet.html': 'fun', 'trivia.html': 'fun', 'mandalas.html': 'fun',
   'articles.html': 'explore', 'article.html': 'explore',

@@ -184,7 +184,6 @@
       <button data-tab="playlists" role="tab">Playlists</button>
       <button data-tab="goals" role="tab">Mental Health Goals</button>
       <button data-tab="explore" role="tab">Explore Library</button>
-      <button data-tab="tools" role="tab">Tools</button>
       <button data-tab="fun" role="tab">Fun</button>
       <button data-tab="nearby" role="tab">Nearby help</button>
       <!-- Therapist directory is a page of its own (therapists.html), so this tab is a link. -->
@@ -241,10 +240,6 @@
           <div class="card tab-intro" data-panel="explore">
             <span class="badge">Explore Library</span>
             <p class="hero-line">Everything on Theraglee, gathered in one place.</p>
-          </div>
-          <div class="card tab-intro" data-panel="tools">
-            <span class="badge">Tools</span>
-            <p class="hero-line">Pick up something small, and see where it leads.</p>
           </div>
           <div class="card tab-intro" data-panel="fun">
             <span class="badge">Fun</span>
@@ -309,7 +304,7 @@
               <div id="library-live"></div>
               <div id="progress-empty" class="empty" style="margin-top:26px;display:none">
                 Nothing in progress yet. Start a challenge, save a favorite, or pick up a tool from the
-                <a href="#tools">Tools</a> tab and it will show up here.
+                <a href="#explore">Explore Library</a> tab and it will show up here.
               </div>
             </section>
           </div>
@@ -372,24 +367,12 @@
               </div>
               <div id="explore-host"></div>
             </section>
-          </div>
-          <div class="showcase-slot"></div>
-        </div>
-        <div class="tab-top" data-panel="tools">
-          <div class="tab-body">
-            <section class="zone" aria-labelledby="tools-zone-title">
-              <div class="zone-head">
-                <h2 id="tools-zone-title">Tools</h2>
-                <p class="muted">Pick up something small.</p>
-              </div>
-              <div class="grid g4" id="quick"></div>
-            </section>
+            <!-- The three membership tiers, for a member who is not yet Premium. -->
             <section class="zone" id="upsell" hidden></section>
           </div>
           <div class="showcase-slot"></div>
         </div>
-        <!-- Fun: the desktop pet, mental health trivia and mandalas, moved here
-             from the Tools tab so the lighter things have a place of their own. -->
+        <!-- Fun: the desktop pet, mental health trivia and mandalas. -->
         <div class="tab-top" data-panel="fun">
           <div class="tab-body">
             <section class="zone fun-zone" aria-labelledby="fun-zone-title">
@@ -467,7 +450,7 @@ document.getElementById('tierbadge').textContent = tierName(a.level) + ' members
    The dashboard opens on Today. The other tabs are reached by their buttons or
    by address (dashboard.html#journal), and the address follows the tab so a
    refresh or a shared link comes back to the same one. */
-const PANELS = ['today', 'messages', 'journal', 'playlists', 'goals', 'explore', 'tools', 'fun', 'nearby'];
+const PANELS = ['today', 'messages', 'journal', 'playlists', 'goals', 'explore', 'fun', 'nearby'];
 let tab = 'today';
 // A hash that names something inside a tab (dashboard.html#match-mode, #daily-quote)
 // opens that tab and scrolls to it. The feature showcase under the header links this way.
@@ -807,22 +790,9 @@ document.getElementById('library-live').addEventListener('click', (e) => {
 });
 await paintLibrary();
 
-/* ---- quick links ---- */
-const quick = [
-  ['Self-discovery tools', 'explore.html?type=discover', 0],
-  ['Journal', 'dashboard.html#journal', 1],
-  ['Checklists', 'explore.html?type=checklist', 1],
-  ['Challenges', 'challenges.html', 1],
-  ['Quizzes', 'explore.html?type=quiz', 2],
-  ['Worksheets', 'explore.html?type=worksheet', 2],
-  ['Music playlists', 'dashboard.html#playlists', 3, false, 'Pick a mood and a genre, get 40 songs'],
-  ['Mental health goals', 'dashboard.html#goals', 3],
-  ['Find a therapist', 'therapists.html', 0, false, 'Search the Theraglee directory for therapists in your area'],
-  ['Help near you', 'dashboard.html#nearby', 0, false, 'Clinics and crisis services on a map, plus national lines'],
-];
-/* The Fun tab: the same kind of tiles, for the lighter things. These used to sit
-   under Tools; they live only here now. Each carries a little picture and a tint
-   (the last two slots), drawn by funTiles() below. */
+/* ---- the Fun tab ---- */
+/* The Fun tab: tiles for the lighter things. Each carries a little picture and
+   a tint (the last two slots), drawn by funTiles() below. */
 const FUN_ART = {
   pet: `<img src="assets/pip.png" width="96" height="82" alt="" loading="lazy">`,
   trivia: `<svg viewBox="0 0 96 82" width="96" height="82" aria-hidden="true">
@@ -850,16 +820,8 @@ const fun = [
   ['Mandalas', 'mandalas.html', 3, false, 'Print one for your pencils, or color it on the screen', 'mandala'],
 ];
 /* A tile flagged `ownGate` opens its page even when locked, because that page makes its
-   own upgrade ask. Every other locked tile goes straight to the plans.
-   The last slot is an optional line under the title; tiles without one just say `Open`. */
-const tiles = (list) => list.map(([label, href, need, ownGate, note]) => {
-  const locked = a.level < need;
-  return `<a class="tile ${locked?'locked':''}" href="${locked && !ownGate ? 'pricing.html' : href}">
-    <h3 style="font-size:.98rem">${esc(label)}</h3>
-    ${locked ? `<span class="badge lock">${tierName(need)}</span>` : `<span class="meta">${esc(note || 'Open')}</span>`}</a>`;
-}).join('');
-/* Fun tiles: the same gate as tiles(), with the picture on top and a tint
-   named by the art key. The note stays, with an "Open" line under it. */
+   own upgrade ask. Every other locked tile goes straight to the plans. The picture
+   on top and the tint are named by the art key; the note sits under the title. */
 const funTiles = (list) => list.map(([label, href, need, ownGate, note, art]) => {
   const locked = a.level < need;
   return `<a class="tile fun-tile ${locked?'locked':''}" data-art="${art}" href="${locked && !ownGate ? 'pricing.html' : href}">
@@ -870,7 +832,6 @@ const funTiles = (list) => list.map(([label, href, need, ownGate, note, art]) =>
       ${locked ? `<span class="badge lock">${tierName(need)}</span>` : `<span class="fun-go">Open <span aria-hidden="true">&rarr;</span></span>`}
     </span></a>`;
 }).join('');
-document.getElementById('quick').innerHTML = tiles(quick);
 document.getElementById('fun-quick').innerHTML = funTiles(fun);
 
 /* ---- upsell: the same three tiers as the landing page (assets/plans.js) ---- */
