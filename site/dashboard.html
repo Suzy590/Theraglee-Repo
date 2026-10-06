@@ -184,7 +184,6 @@
       <button data-tab="playlists" role="tab">Playlists</button>
       <button data-tab="goals" role="tab">Mental Health Goals</button>
       <button data-tab="explore" role="tab">Explore Library</button>
-      <button data-tab="discover" role="tab">Self-Discovery</button>
       <button data-tab="tools" role="tab">Tools</button>
       <button data-tab="fun" role="tab">Fun</button>
       <button data-tab="nearby" role="tab">Nearby help</button>
@@ -242,10 +241,6 @@
           <div class="card tab-intro" data-panel="explore">
             <span class="badge">Explore Library</span>
             <p class="hero-line">Everything on Theraglee, gathered in one place.</p>
-          </div>
-          <div class="card tab-intro" data-panel="discover">
-            <span class="badge">Self-Discovery</span>
-            <p class="hero-line">A few quiet minutes to learn more about yourself.</p>
           </div>
           <div class="card tab-intro" data-panel="tools">
             <span class="badge">Tools</span>
@@ -380,18 +375,6 @@
           </div>
           <div class="showcase-slot"></div>
         </div>
-        <div class="tab-top" data-panel="discover">
-          <div class="tab-body">
-            <section class="zone" aria-labelledby="discover-zone-title">
-              <div class="zone-head">
-                <h2 id="discover-zone-title">Discover more about yourself</h2>
-                <p class="muted">Short, interactive tools for noticing your own patterns. Each one takes just a few minutes. None of them diagnoses or treats any mental health condition. Rather, they aim to help you learn about yourself.</p>
-              </div>
-              <div id="discover-host"></div>
-            </section>
-          </div>
-          <div class="showcase-slot"></div>
-        </div>
         <div class="tab-top" data-panel="tools">
           <div class="tab-body">
             <section class="zone" aria-labelledby="tools-zone-title">
@@ -458,7 +441,6 @@ import { SETS as TRIVIA } from './assets/trivia-sets.js';
 import { matchDetailsModal, matchSummary, matchComplete, MATCH_BLURB } from './assets/match.js';
 import { mountInbox, unreadCount } from './assets/inbox.js';
 import { mountLibrary } from './assets/explore-ui.js';
-import { mountDiscover } from './assets/discover-ui.js';
 import { mountMood } from './assets/mood-ui.js';
 import { mountJournal } from './assets/journal-ui.js';
 import { mountGoals } from './assets/goals-ui.js';
@@ -485,7 +467,7 @@ document.getElementById('tierbadge').textContent = tierName(a.level) + ' members
    The dashboard opens on Today. The other tabs are reached by their buttons or
    by address (dashboard.html#journal), and the address follows the tab so a
    refresh or a shared link comes back to the same one. */
-const PANELS = ['today', 'messages', 'journal', 'playlists', 'goals', 'explore', 'discover', 'tools', 'fun', 'nearby'];
+const PANELS = ['today', 'messages', 'journal', 'playlists', 'goals', 'explore', 'tools', 'fun', 'nearby'];
 let tab = 'today';
 // A hash that names something inside a tab (dashboard.html#match-mode, #daily-quote)
 // opens that tab and scrolls to it. The feature showcase under the header links this way.
@@ -507,8 +489,7 @@ function showTab(next) {
     b.classList.toggle('on', on);
     b.setAttribute('aria-selected', String(on));
   });
-  // The library and the tool browser are heavy, so each is drawn the first
-  // time its tab opens, not before.
+  // The library is heavy, so it is drawn the first time its tab opens, not before.
   if (tab === 'explore' && !mounted.explore) {
     mounted.explore = true;
     mountLibrary(document.getElementById('explore-host'), a);
@@ -538,10 +519,6 @@ function showTab(next) {
     const host = document.getElementById('goals-host');
     if (a.level < 3) lockNotice(host, 3, 'Mental Health Goals');
     else mountGoals(host, { sb, uid: a.profile.id, esc, toast, busy, modal, fmtDate });
-  }
-  if (tab === 'discover' && !mounted.discover) {
-    mounted.discover = true;
-    mountDiscover(document.getElementById('discover-host'));
   }
   // Playlists are Premium: a mood, then a genre, then forty songs.
   if (tab === 'playlists' && !mounted.playlists) {
@@ -832,7 +809,7 @@ await paintLibrary();
 
 /* ---- quick links ---- */
 const quick = [
-  ['Self-discovery tools', 'discover.html', 0],
+  ['Self-discovery tools', 'explore.html?type=discover', 0],
   ['Journal', 'dashboard.html#journal', 1],
   ['Checklists', 'explore.html?type=checklist', 1],
   ['Challenges', 'challenges.html', 1],

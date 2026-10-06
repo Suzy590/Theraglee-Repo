@@ -1,7 +1,7 @@
 /* ==========================================================================
    Theraglee — the Discover browser: search, topic chips and the grid of the
-   360 self-discovery tools. Shared by discover.html and the Discover tab on
-   the member dashboard, so both show the same thing.
+   360 self-discovery tools, drawn on discover.html. The member dashboard's
+   Explore Library tab lists the same tools (assets/explore-ui.js).
    ========================================================================== */
 import { esc } from './app.js';
 import { library, isFavorite, isLater, favButton, statusBadge, bindLibrary,

@@ -316,7 +316,6 @@ const DASH_TABS = [
   ['Playlists',       'playlists'],
   ['Mental Health Goals', 'goals'],
   ['Explore Library', 'explore'],
-  ['Self-Discovery',  'discover'],
   ['Tools',           'tools'],
   ['Fun',             'fun'],
   ['Messages',        'messages'],
@@ -325,8 +324,7 @@ const DASH_TABS = [
 ];
 // The member pages that show that row, and the tab each one sits under.
 const DASH_PAGES = {
-  'discover.html': 'discover',
-  'explore.html': 'tools', 'challenges.html': 'tools',
+  'discover.html': 'explore', 'explore.html': 'tools', 'challenges.html': 'tools',
   'checklist.html': 'tools', 'quiz.html': 'tools', 'worksheet.html': 'tools',
   'therapists.html': 'therapists.html', 'therapist.html': 'therapists.html',
   'pet.html': 'fun', 'trivia.html': 'fun', 'mandalas.html': 'fun',

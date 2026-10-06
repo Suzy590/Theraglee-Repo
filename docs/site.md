@@ -59,10 +59,10 @@ each linking to a search on Apple Music and Spotify; the lists are
 one goal in the member's words, its milestones and today's stepping stones
 with the trail map, drawn from `site/assets/goals-ui.js`; `goals.html`
 forwards here; see [`quest-map.md`](quest-map.md)), **Explore
-Library** (the whole library with search and filters, the same browser as
-`explore.html`, drawn from `site/assets/explore-ui.js`), **Discover** (the 360
-free discovery tools with search and topic chips, the same browser as
-`discover.html`, drawn from `site/assets/discover-ui.js`), **Tools** (quick links into the library), **Fun** (the
+Library** (the whole library with search and filters, the 360 free discovery
+tools among it with their topic chips, the same browser as `explore.html`,
+drawn from `site/assets/explore-ui.js`; there is no separate Discover tab),
+**Tools** (quick links into the library), **Fun** (the
 desktop pet, mental health trivia and mandalas), **Messages**
 (every conversation with a therapist: replies from therapists the member wrote
 to from a profile, and messages from therapists who reached out through Match
