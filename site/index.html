@@ -124,6 +124,18 @@
   .up{animation:fadeUp .8s cubic-bezier(.22,1,.36,1) both}
   @keyframes halo{0%{box-shadow:0 0 0 0 rgba(106,178,30,.55)}70%{box-shadow:0 0 0 7px rgba(106,178,30,0)}100%{box-shadow:0 0 0 0 rgba(106,178,30,0)}}
   .dot{width:8px;height:8px;border-radius:50%;background:var(--lime-2);animation:halo 2.4s ease-out infinite}
+  /* Today on Theraglee: the dashboard's daily cards for everyone, right under
+     the hero, in the Today look (a soft green zone holding white cards). The
+     affirmation takes a wide card; the quote, tip and fact share a row. */
+  .daily-sec{padding-bottom:0}
+  .daily-head .kicker{margin-bottom:8px}
+  .daily-affirm{margin-bottom:16px}
+  .hero-line{font-family:var(--serif);font-style:italic;font-size:clamp(1.25rem,2.4vw,1.7rem);
+    line-height:1.3;color:var(--ink);margin:12px 0 0}
+  .daily{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+  .daily .card{display:flex;flex-direction:column;gap:10px}
+  .daily p{margin:0;font-size:.95rem;line-height:1.5}
+  .daily .quote p{font-family:var(--serif);font-style:italic;font-size:1.1rem}
   .explore-plug{background:var(--paper);border:1px solid var(--hair);border-radius:var(--r-lg);
     padding:30px;box-shadow:var(--shadow-2);display:flex;flex-direction:column}
   .explore-plug h2{margin:0 0 6px;font-size:1.55rem;line-height:1.2}
@@ -253,6 +265,24 @@
       <div class="row up" style="justify-content:center;animation-delay:.58s">
         <a class="btn lg" href="signup.html">Create my free account</a>
         <a class="btn lg ghost" href="discover.html">Try a self-discovery tool</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Today on Theraglee: the same four daily cards the dashboard shows, for
+       everyone. daily_pick() answers a visitor with the open deck (min_level 0)
+       and a member with cards chosen for their topics. Hidden if nothing
+       comes back. -->
+  <section class="section tight daily-sec" id="today" aria-labelledby="daily-title" hidden>
+    <div class="wrap">
+      <div class="zone">
+        <div class="zone-head daily-head">
+          <span class="kicker" id="daily-date"></span>
+          <h2 id="daily-title">Today on Theraglee</h2>
+          <p class="muted" id="daily-note">A fresh affirmation, quote, tip and fact every day.</p>
+        </div>
+        <div class="card daily-affirm" id="home-affirm"></div>
+        <div class="daily" id="home-daily"></div>
       </div>
     </div>
   </section>
@@ -445,7 +475,7 @@
 </main>
 
 <script type="module">
-import { chrome, sb, FN, SUPABASE_KEY, busy, toast } from './assets/app.js';
+import { chrome, sb, FN, SUPABASE_KEY, busy, toast, esc } from './assets/app.js';
 import { loadPrices, tierCards } from './assets/plans.js';
 import { mountShowcase } from './assets/showcase.js';
 // The feature showcase goes in the explore section below, not under the header.
@@ -458,6 +488,44 @@ document.getElementById('tiers-home').innerHTML =
 /* ---- What would you like to explore today? ----
    The feature showcase (assets/showcase.js), in place of the section's loading box. */
 mountShowcase(a, document.getElementById('explore-grid'), { replace: true, embedded: true });
+
+/* ---- Today on Theraglee ----
+   The four daily picks, the way the dashboard's Today tab shows them. Fetched
+   after the page is drawn; the section stays hidden until at least one card
+   is back, so a visitor never sees an empty panel. */
+(async () => {
+  const kinds = ['affirmation', 'quote', 'tip', 'fun_fact'];
+  const picks = Object.fromEntries(await Promise.all(kinds.map(async k => {
+    const { data } = await sb.rpc('daily_pick', { p_kind: k });
+    return [k, data?.[0] || null];
+  })));
+  if (!kinds.some(k => picks[k])) return;
+
+  document.getElementById('daily-date').textContent =
+    new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+  document.getElementById('daily-note').textContent = a.authenticated
+    ? 'Yours are chosen for the topics you care about.'
+    : 'A fresh affirmation, quote, tip and fact every day. Members get ones chosen for the topics they care about.';
+
+  const affirm = document.getElementById('home-affirm');
+  affirm.hidden = !picks.affirmation;
+  if (picks.affirmation) affirm.innerHTML =
+    `<span class="badge">Today's affirmation</span>
+     <p class="hero-line">${esc(picks.affirmation.body)}</p>`;
+
+  const cards = [];
+  if (picks.quote) cards.push(`<div class="card quote up"><span class="kicker">Quote</span>
+    <p>“${esc(picks.quote.body)}”</p>
+    <span class="faint">— ${esc(picks.quote.author || 'Unknown')}</span></div>`);
+  if (picks.tip) cards.push(`<div class="card up" style="animation-delay:.08s"><span class="kicker">Tip</span>
+    <p>${esc(picks.tip.body)}</p></div>`);
+  if (picks.fun_fact) cards.push(`<div class="card up" style="animation-delay:.16s"><span class="kicker">Did you know</span>
+    <p>${esc(picks.fun_fact.body)}</p></div>`);
+  const daily = document.getElementById('home-daily');
+  daily.style.display = cards.length ? '' : 'none';
+  daily.innerHTML = cards.join('');
+  document.getElementById('today').hidden = false;
+})().catch(() => {});
 
 /* ---- Match Mode switch ----
    Flips to ON the first time it scrolls into view, and anyone can tap it to
