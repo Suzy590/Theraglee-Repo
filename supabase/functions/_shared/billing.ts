@@ -189,6 +189,55 @@ export const keepsComp = (
   currentStatus: string | null | undefined, sub: SubscriptionLike,
 ): boolean => currentStatus === COMPED && !isActive(sub.status);
 
+/* ----------------------------------------------------- Account deletion */
+
+/** When the member wants the account gone: once the paid time runs out
+ *  (`period_end`, the default), or straight away (`now`). */
+export type DeleteWhen = "period_end" | "now";
+
+export const isDeleteWhen = (v: unknown): v is DeleteWhen => v === "period_end" || v === "now";
+
+export type DeletionPlan =
+  /** Nothing left to pay for: delete the account now. `cancelStripe` says
+   *  whether a subscription in Stripe still needs ending first. */
+  | { action: "delete_now"; cancelStripe: boolean }
+  /** A live subscription: stop renewal, keep the account until it ends. */
+  | { action: "schedule"; setCancel: boolean; endsAt: string | null };
+
+/** What Delete my account does for this subscription (null when there is none).
+ *  The subscription is the one read from Stripe just now, not the stored copy. */
+export function deletionPlan(sub: SubscriptionLike | null | undefined, when: DeleteWhen = "period_end"): DeletionPlan {
+  if (!sub || !isActive(sub.status)) {
+    // past_due, unpaid, incomplete… still exist in Stripe and must be ended so
+    // no retry charges the card; canceled or expired ones are already over.
+    const over = !sub || sub.status === "canceled" || sub.status === "incomplete_expired";
+    return { action: "delete_now", cancelStripe: !over };
+  }
+  if (when === "now") return { action: "delete_now", cancelStripe: true };
+  const periodEnd = sub.current_period_end ?? sub.items?.data?.[0]?.current_period_end ?? null;
+  return {
+    action: "schedule",
+    setCancel: !sub.cancel_at_period_end,
+    endsAt: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
+  };
+}
+
+/**
+ * After the webhook has synced a subscription, what a pending deletion request
+ * (`deletion_requested_at`) means now:
+ *   delete — the subscription has ended, so the account goes;
+ *   clear  — the member turned renewal back on (in the billing portal), which
+ *            withdraws the request;
+ *   keep   — still waiting for the paid time to run out, or no request.
+ */
+export function deletionAfterSync(
+  requestedAt: string | null | undefined, sub: SubscriptionLike,
+): "delete" | "clear" | "keep" {
+  if (!requestedAt) return "keep";
+  if (!isActive(sub.status)) return "delete";
+  return sub.cancel_at_period_end ? "keep" : "clear";
+}
+
 /* ------------------------------------------------------- Admin changes */
 
 export type MemberPlan = "free" | "basic" | "premium";

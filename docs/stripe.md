@@ -10,7 +10,7 @@ anyone until the last step.
 
 | Stripe product | What it does here | Where |
 |---|---|---|
-| **Billing + Payments** | The Basic, Premium and Therapist memberships. Stripe's hosted Checkout page takes the card, Stripe bills it every month or year, and the member manages or cancels from Stripe's hosted billing portal. | `stripe-checkout`, `stripe-portal`, `stripe-webhook` |
+| **Billing + Payments** | The Basic, Premium and Therapist memberships. Stripe's hosted Checkout page takes the card, Stripe bills it every month or year, and the member manages or cancels from Stripe's hosted billing portal. Deleting the account ends the membership too. | `stripe-checkout`, `stripe-portal`, `stripe-webhook`, `delete-account` |
 | **Tax** | Works out and collects US sales tax on memberships, state by state, once you tell Stripe where you are registered. | `stripe-checkout` (`stripe_tax_enabled` switch) |
 | **Identity** | A therapist photographs their government ID and takes a selfie before their listing can go live, so the person holding the license is the person on the profile. Theraglee never sees the document. | `stripe-identity`, `stripe-webhook`, the live-listing rule in Postgres |
 | **Radar** | Stripe's fraud screening on every card. Runs on its own; rules live in the Dashboard. Early warnings and disputes are written to `billing_alerts`. | `stripe-webhook` |
@@ -31,6 +31,7 @@ supabase/
   migrations/
     20260906230000_stripe_tax_identity_connect.sql
     20260925200000_admin_memberships_discount_codes.sql
+    20261006120000_account_deletion.sql
   functions/
     _shared/
       billing.ts                    the pure decisions (which plan, which tier,
@@ -45,6 +46,8 @@ supabase/
     admin-membership/               admin adds, changes and ends memberships;
                                     makes and applies discount codes
     stripe-redeem/                  a paying member enters a discount code
+    delete-account/                 a member deletes their account; ends the
+                                    membership, keeps the paid time
 site/
   assets/app.js                     startCheckout, openPortal, startIdentity,
                                     connectAction, startSessionPayment
@@ -155,7 +158,8 @@ With the Supabase CLI installed and signed in:
 ```bash
 supabase link --project-ref oekqzuguruyqkafsqhos
 supabase functions deploy stripe-checkout stripe-portal stripe-webhook \
-  stripe-identity stripe-connect stripe-session-checkout
+  stripe-identity stripe-connect stripe-session-checkout \
+  admin-membership stripe-redeem delete-account
 ```
 
 `supabase/config.toml` already carries the per-function settings (JWT checks
@@ -417,3 +421,23 @@ verified or paid-out from the browser.
   incomplete (usually the origin address). Untick the switch until it is.
 - **Signature verification failed** — the webhook secret in Supabase does not
   match the endpoint (sandbox and live have different secrets).
+
+## Deleting an account
+
+**Delete my account/Cancel subscription** sits on the account page's Membership
+tab and under Privacy (members) or Sign-in & data (therapists). The dialog
+says what happens and asks the member to type DELETE. The button calls the
+`delete-account` function, which reads the subscription from Stripe and
+decides with `deletionPlan()` in `_shared/billing.ts`:
+
+| The member | What happens |
+|---|---|
+| Pays through Stripe (active or trialing) | Renewal is turned off (`cancel_at_period_end`) and `profiles.deletion_requested_at` is set. The card is not charged again, the member keeps full access until `current_period_end`, and when Stripe sends `customer.subscription.deleted` the webhook deletes the account (`deletionAfterSync()`). A notice at the top of the account page shows the date, with **Keep my account**, which turns renewal back on and clears the request. Turning renewal back on in the billing portal does the same. The dialog also offers **Delete everything now instead**, which cancels the subscription at once. |
+| Free, complimentary, or lapsed | Deleted on the spot. A subscription still open in Stripe (`past_due`, `unpaid`) is canceled first so no retry charges the card. |
+| A therapist who has taken session payments | Cannot be deleted automatically: `session_payments.therapist_id` keeps those rows for the money records (`on delete restrict`). The member is told to email hello@theraglee.com, `deletion_requested_at` is set, and the webhook writes a `deletion_blocked` row to `billing_alerts` if it hits the same wall. An administrator closes the account by hand. |
+
+Deleting the account deletes the auth user; `profiles`, `therapist_profiles`
+and every table that references them cascade, and the therapist's photos in
+the `therapist-photos` bucket are removed first. The Stripe customer and its
+invoices stay in Stripe: they are tax records.
+

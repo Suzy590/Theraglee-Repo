@@ -12,7 +12,7 @@ export interface Caller {
   profile: {
     id: string; role: string; tier: string; full_name: string | null; email: string | null;
     stripe_customer_id: string | null; stripe_subscription_id: string | null;
-    subscription_status: string | null;
+    subscription_status: string | null; deletion_requested_at: string | null;
   };
 }
 
@@ -28,7 +28,7 @@ export async function callerFrom(req: Request): Promise<Caller | null> {
   if (error || !data?.user) return null;
   const { data: profile } = await admin
     .from("profiles")
-    .select("id, role, tier, full_name, email, stripe_customer_id, stripe_subscription_id, subscription_status")
+    .select("id, role, tier, full_name, email, stripe_customer_id, stripe_subscription_id, subscription_status, deletion_requested_at")
     .eq("id", data.user.id)
     .maybeSingle();
   if (!profile) return null;
@@ -61,4 +61,28 @@ export function allowedOrigins(): string[] {
     ...(Deno.env.get("ALLOWED_ORIGINS") ?? "").split(","),
   ];
   return list.map((s) => s.trim().replace(/\/+$/, "")).filter(Boolean);
+}
+
+/**
+ * Deletes a member's account for good: the auth user, and with it (by
+ * cascade) the profile, the therapist listing and everything they created.
+ * Files they uploaded go first, best effort. Returns an error message, or
+ * null when the account is gone.
+ *
+ * A therapist who has taken session payments cannot be deleted
+ * (session_payments keeps those rows for the money records); the message
+ * says so and an administrator closes the account by hand.
+ */
+export async function deleteAccount(userId: string): Promise<string | null> {
+  for (const [bucket, dirs] of [["therapist-photos", [userId, `${userId}/office`]]] as const) {
+    for (const dir of dirs) {
+      try {
+        const { data } = await admin.storage.from(bucket).list(dir);
+        const files = (data ?? []).filter((f) => f.id).map((f) => `${dir}/${f.name}`);
+        if (files.length) await admin.storage.from(bucket).remove(files);
+      } catch (err) { console.warn("storage cleanup", bucket, dir, err); }
+    }
+  }
+  const { error } = await admin.auth.admin.deleteUser(userId);
+  return error ? error.message : null;
 }
