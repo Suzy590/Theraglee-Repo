@@ -27,6 +27,8 @@ const read = (p) => readFileSync(new URL(p, root), "utf8");
 const sql = read("supabase/migrations/20260927190000_quest_maps.sql");
 const sql2 = read("supabase/migrations/20261003120000_quest_milestones.sql");
 const sql3 = read("supabase/migrations/20261004090000_calm_theme.sql");
+const sql4 = read("supabase/migrations/20261007120000_quest_arrival.sql");
+const css = read("site/assets/goals.css");
 const page = read("site/goals.html");
 const ui = read("site/assets/goals-ui.js");
 const dash = read("site/dashboard.html");
@@ -334,6 +336,43 @@ test("The milestone shows how far it is, at one stepping stone a day", () => {
   assert.match(ui, /const toCamp = cur \? Math\.max\(0, Math\.max\(STEPS_PER_MILESTONE - sinceCheck,\s*Math\.min\(STEPS_PER_MILESTONE - stepDays\.size, STEPS_PER_MILESTONE - sinceStart\)\)\) : 0;/);
   assert.match(ui, /const toGoal = toCamp \+ ahead \* STEPS_PER_MILESTONE;/);
   assert.match(ui, /A guide, not a clock\./, "the member still decides when a camp is reached");
+});
+
+test("The trail in words takes the left third, with a You are here arrow, and the destination asks for a look back", () => {
+  const goalsTab = dash.slice(dash.indexOf('<div class="tab-top" data-panel="goals">'),
+                              dash.indexOf('<div class="tab-top" data-panel="explore">'));
+  // The wellness note runs across the top, the guide sits left and the trail right; on a phone the trail comes first.
+  assert.match(dash, /\.tab-top\[data-panel="goals"\]\.on\{grid-template-columns:minmax\(0,1fr\) minmax\(0,2fr\);grid-template-areas:"note note" "guide body"\}/);
+  assert.match(dash, /\.tab-top\[data-panel="goals"\]\.on\{grid-template-areas:"note" "body" "guide"\}/);
+  assert.ok(goalsTab.indexOf('class="wellness"') < goalsTab.indexOf('class="zone trail-guide"'), "the wellness note stays above everything");
+  assert.match(goalsTab, /id="goals-guide-body"/);
+  assert.match(goalsTab, /Change is often a process, so that is how Theraglee Goals are designed/);
+  assert.match(dash, /guide: document\.getElementById\('goals-guide-body'\)/, "mountGoals fills the guide");
+  // What the guide spells out, in the user's order: the goal, then every milestone with its stones and the reminder to jot down what helped.
+  assert.match(ui, /Change is often a process, so that is how Theraglee Goals are designed/);
+  const order = ["Current goal · your ultimate destination on your trail", "Your current milestone", "Your next milestone",
+    "Small stepping stones toward this milestone (to be repeated until", "Take a moment to jot down (under <strong>What helped today?</strong>)"];
+  for (const line of order) assert.ok(ui.includes(line), `guide says: ${line}`);
+  assert.match(ui, /class="you-are-here"><i aria-hidden="true">➜<\/i> You are here/);
+  assert.match(css, /\.guide-ms\.here\{/); assert.match(css, /\.you-are-here\{/);
+  // The look back: the member's word, not a score, and the answer keys match the migration.
+  assert.match(ui, /do you feel closer to “\$\{esc\(goal\)\}” than you were then\?/);
+  const keys = [...sql4.match(/arrived_closer in \(([^)]*)\)/)[1].matchAll(/'([a-z]+)'/g)].map(m => m[1]);
+  assert.deepEqual(keys, ["yes", "some", "no"]);
+  for (const k of keys) {
+    assert.match(ui, new RegExp(`data-arrive="${k}"`), `a button for ${k}`);
+    assert.match(ui, new RegExp(`\\b${k}:\\s+\\{ said: \\(g\\) =>`), `LOOKBACK says what ${k} means`);
+  }
+  assert.match(sql4, /arrived_note\s+text check \(char_length\(arrived_note\) <= 1000\)/);
+  assert.match(ui, /maxlength="1000" placeholder="A few words on what is different now, if you like"/);
+  // Not there yet: the trail again, with changes, or another goal. Nothing is taken away.
+  for (const offer of ["Walk this trail again", "Change the milestones and go again", "Reword this goal and go again", "Work on a different goal", "Set a new goal", "Add a milestone"])
+    assert.ok(ui.includes(offer), `offers: ${offer}`);
+  assert.match(ui, /async function walkAgain\(q, ms, edit = null\)/);
+  assert.match(ui, /update\(\{ active: false \}\)\.eq\('id', q\.id\)/, "the finished trail stays for the record");
+  assert.match(ui, /Nothing here goes away, whatever you answer\./);
+  const lookback = ui.slice(ui.indexOf("const LOOKBACK"), ui.indexOf("async function walkAgain"));
+  assert.ok(!/score|streak|fail|behind|missed/i.test(lookback), "the look back never scores or scolds");
 });
 
 test("The Today tab and the morning email prompt for today's stepping stones", () => {

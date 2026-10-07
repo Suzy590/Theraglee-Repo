@@ -9,6 +9,13 @@
      TODAY'S STEPPING STONES  a few small actions toward that milestone; any
                             one of them done today is today's step
 
+   Beside them, in the left third of the tab, the same trail in words
+   (`ctx.guide`): what a goal, a milestone and a stepping stone are, the
+   member's own in order with a "You are here" arrow, for anyone who finds a
+   list clearer than the picture. Once every milestone is reached the page
+   asks for a look back (closer to the goal than when you set out?) and
+   offers the trail again, with changes, or a new goal.
+
    `mountGoals(host, ctx)` draws everything into `host`. `ctx` carries the
    Supabase client and the page helpers, so a preview can hand in a fake
    client. docs/quest-map.md is the guide.
@@ -24,7 +31,7 @@ const daysBetween = (a, b) => Math.round((new Date(b + 'T12:00') - new Date(a + 
 const ownKey = (ms, i) => `own_${String(ms.id).replace(/-/g, '').slice(0, 8)}_${i}`;
 
 export async function mountGoals(host, ctx) {
-  const { sb, uid, esc, toast, busy, modal, fmtDate } = ctx;
+  const { sb, uid, esc, toast, busy, modal, fmtDate, guide = null } = ctx;
   let flash = false;                      // the hiker hops after a step is marked
 
   /* ------------------------------------------------------------ data */
@@ -72,6 +79,7 @@ export async function mountGoals(host, ctx) {
   /* ------------------------------------------------------------ main */
   async function main() {
     const d = await load();
+    drawGuide(d);
     if (!d.quest) return setup({ fresh: true });
     if (!d.milestones.length) return setup({ quest: d.quest });
     const { quest: q, milestones: ms, ci, cur, stepDays } = d;
@@ -99,6 +107,8 @@ export async function mountGoals(host, ctx) {
     const inDays = (n) => n === 0 ? 'Today' : `About ${n} day${n === 1 ? '' : 's'}`;
     const scene = SCENES.find(x => x.key === q.scene) || SCENES[0];
     const loggedToday = new Set(d.logs.filter(l => l.logged_on === t).map(l => l.goal_id));
+    const goal = q.intention || theme.label;
+    const arrived = done && q.arrived_closer ? LOOKBACK[q.arrived_closer] : null;
 
     host.innerHTML = `
       <div class="card pad-lg levels ${flash ? 'stepped' : ''}">
@@ -122,10 +132,22 @@ export async function mountGoals(host, ctx) {
         </section>
 
         ${done ? `<section class="level milestone reached-all">
-          <span class="kicker"><i class="ico">🚩</i> Every milestone reached</span>
-          <h3>You did what you set out to do.</h3>
-          <p class="muted">Keep the trail going with a new milestone, or set a new goal. Either way, nothing here goes away.</p>
-          <div class="row"><button class="btn" data-do="milestones">Add a milestone</button><button class="btn ghost" data-do="restart">Set a new goal</button></div>
+          <span class="kicker"><i class="ico">⛰</i> You reached your destination</span>
+          <h3>Every camp on this trail is reached.</h3>
+          ${arrived ? `<div class="lookback-answer">
+              <p class="muted" style="margin:0 0 4px">Looking back on ${fmtDate(q.arrived_on + 'T12:00')}, you said you feel ${arrived.said(esc(goal))}.</p>
+              ${q.arrived_note ? `<p style="margin:0 0 4px"><em>${esc(q.arrived_note)}</em></p>` : ''}
+              <a href="#" data-do="lookback" class="faint">Change your answer</a></div>
+            <p class="muted">${arrived.next}</p>
+            <div class="row">${arrived.offers.map(([what, label], i) => `<button class="btn ${i ? 'ghost' : ''}" data-do="${what}">${label}</button>`).join('')}</div>`
+          : `<div class="checkin lookback">
+              <strong>Looking back to the day you set out: do you feel closer to “${esc(goal)}” than you were then?</strong>
+              <p class="faint" style="margin:4px 0 8px">You decide, not a counter. Any answer is a fine answer; it only shapes what the page offers next.</p>
+              <textarea id="arrival-note" rows="3" maxlength="1000" placeholder="A few words on what is different now, if you like"></textarea>
+              <div class="row" style="margin-top:10px"><button class="btn sm" data-arrive="yes">Yes, closer</button>
+                <button class="btn sm ghost" data-arrive="some">Some of the way</button>
+                <button class="btn sm ghost" data-arrive="no">Not really</button></div></div>
+            <p class="faint" style="margin:12px 0 0">Nothing here goes away, whatever you answer.</p>`}
         </section>` : `<section class="level milestone">
           <span class="kicker"><i class="ico">🚩</i> Working on now <span class="faint" style="text-transform:none;letter-spacing:0;font-weight:400">· milestone ${ci + 1} of ${ms.length}</span></span>
           <h3>${esc(cur.title)}</h3>
@@ -214,7 +236,24 @@ export async function mountGoals(host, ctx) {
          data: () => dataModal(),
          restart: () => setup({ fresh: true, restart: true }),
          own: () => cur && addOwnStep(cur),
+         lookback: async () => {
+           const { error } = await sb.from('quests').update({ arrived_on: null, arrived_closer: null, arrived_note: null }).eq('id', q.id);
+           if (error) return toast(error.message, 'err');
+           main();
+         },
+         again: () => walkAgain(q, ms),
+         'again-milestones': () => walkAgain(q, ms, 'milestones'),
+         'again-goal': () => walkAgain(q, ms, 'goal'),
       })[b.dataset.do]?.();
+    });
+    // The look back, once every camp is reached. The member's word, not a score.
+    host.querySelectorAll('[data-arrive]').forEach(b => b.onclick = async () => {
+      const note = ($('#arrival-note')?.value || '').trim().slice(0, 1000) || null;
+      busy(b, true, 'Saving…');
+      const { error } = await sb.from('quests').update({ arrived_on: t, arrived_closer: b.dataset.arrive, arrived_note: note }).eq('id', q.id);
+      if (error) { busy(b, false); return toast(error.message, 'err'); }
+      toast(b.dataset.arrive === 'yes' ? 'Noted. Well walked.' : 'Noted. Change is often a process, and the trail is still here.', 'ok');
+      main();
     });
 
     const markDone = async (key, note = null) => {
@@ -314,6 +353,87 @@ export async function mountGoals(host, ctx) {
       if (error) return toast(error.message, 'err');
       toast('Saved. Today counts on your trail.', 'ok'); main();
     };
+  }
+
+  /* ------------------------------------------------------------ guide */
+  /* The left third of the tab: the same trail in words, in order, for anyone
+     who finds a list clearer than a picture. Drawn again whenever the trail is. */
+  const GUIDE_INTRO = `<p>Change is often a process, so that is how Theraglee Goals are designed. You pick an overall goal
+    (your ultimate destination), then take small steps (stepping stones) each day that support the change you want to see,
+    reaching milestones (the camps along your trail) along the way.</p>`;
+  const HERE = '<span class="you-are-here"><i aria-hidden="true">➜</i> You are here</span>';
+  function drawGuide(d) {
+    if (!guide) return;
+    if (!d.quest || !d.milestones.length) {
+      guide.innerHTML = `${GUIDE_INTRO}<p class="faint" style="margin:0">${d.quest
+        ? 'Finish choosing your milestones and this column spells out where you are on the trail.'
+        : 'Set a goal and this column spells out where you are on the trail.'}</p>`;
+      return;
+    }
+    const { quest: q, milestones: ms, ci } = d;
+    const goal = q.intention || themeOf(q).label;
+    const done = ci >= ms.length;
+    const block = (m, i) => {
+      const state = m.reached_on ? 'reached' : i === ci ? 'here' : 'ahead';
+      const stones = stonesOf(m);
+      const last = i === ms.length - 1;
+      const label = state === 'reached' ? `Reached ${fmtDate(m.reached_on + 'T12:00')}`
+        : state === 'here' ? 'Your current milestone' : i === ci + 1 ? 'Your next milestone' : 'A later milestone';
+      return `<div class="guide-ms ${state}">
+        ${state === 'here' ? HERE : ''}
+        <span class="kicker">${label} · camp ${i + 1} of ${ms.length}</span>
+        <h3>${esc(m.title)}</h3>
+        ${state === 'reached'
+          ? `<p class="jot">The stepping stones that got you here: ${stones.map(s => esc(s.text.replace(/\.$/, ''))).join('; ') || 'none picked'}.</p>`
+          : `<p class="jot">Small stepping stones toward this milestone (to be repeated until ${last ? 'you reach your destination' : 'your next milestone'}):</p>
+        <ul>${stones.map(s => `<li>${esc(s.text)}</li>`).join('') || '<li>None picked yet. Choose a few on the trail.</li>'}</ul>
+        <p class="jot">Take a moment to jot down (under <strong>What helped today?</strong>) the things that helped keep you focused on each stepping stone.</p>`}
+      </div>`;
+    };
+    guide.innerHTML = `${GUIDE_INTRO}
+      <span class="kicker" style="margin:14px 0 2px">Current goal · your ultimate destination on your trail</span>
+      <p class="guide-goal">“${esc(goal)}”</p>
+      ${ms.map(block).join('')}
+      ${done ? `<div class="guide-ms here">${HERE}<span class="kicker">Your destination</span><h3>${esc(goal)}</h3>
+        <p class="jot">${q.arrived_closer
+          ? 'You have looked back on this trail. What comes next, the same trail again, changed camps or a new goal, is offered on the trail itself.'
+          : 'Every camp on this trail is reached. Take a moment on the trail to look back at the day you set out.'}</p></div>` : ''}`;
+  }
+
+  /* What the page says and offers after the look back, by the member's answer. */
+  const LOOKBACK = {
+    yes:  { said: (g) => `<strong>closer to</strong> “${g}” than when you set out`,
+            next: 'Change like this tends to hold when it keeps a small place in the day. Keep this goal going with a new camp, walk the same trail again, or set out for somewhere new.',
+            offers: [['milestones', 'Add a milestone'], ['again', 'Walk this trail again'], ['restart', 'Set a new goal']] },
+    some: { said: (g) => `<strong>some of the way</strong> toward “${g}”, further along than when you set out`,
+            next: 'Change is often a process, and part of the way is real distance. Walk the same trail again, change the camps so they fit your days better and go again, or work on a different goal.',
+            offers: [['again', 'Walk this trail again'], ['again-milestones', 'Change the milestones and go again'], ['restart', 'Work on a different goal']] },
+    no:   { said: (g) => `<strong>about where you started</strong> with “${g}”`,
+            next: 'That is useful to know, and it is not a verdict on you. A trail can be walked again with camps that fit your days better, the goal itself can be reworded, or a different goal can take its place.',
+            offers: [['again-milestones', 'Change the milestones and go again'], ['again-goal', 'Reword this goal and go again'], ['restart', 'Work on a different goal']] },
+  };
+
+  /* The same goal and camps, fresh: a new quest row (the finished one stays for
+     the record, with its look back) and copies of its milestones with nothing
+     reached yet. Days on the trail carry over, because they are counted across
+     every quest. With `edit`, the milestones or the goal open for changes first. */
+  async function walkAgain(q, ms, edit = null) {
+    const { error: e1 } = await sb.from('quests').update({ active: false }).eq('id', q.id);
+    if (e1) return toast(e1.message, 'err');
+    const row = { user_id: uid, value_key: q.value_key, intention: q.intention, categories: q.categories, minutes: q.minutes, scene: q.scene, helper: true };
+    const ins = await sb.from('quests').insert(row).select('id').maybeSingle();
+    if (ins.error) { await sb.from('quests').update({ active: true }).eq('id', q.id); return toast(ins.error.message, 'err'); }
+    let qid = ins.data?.id;
+    if (!qid) ({ data: { id: qid } = {} } = await sb.from('quests').select('id').eq('user_id', uid).eq('active', true).maybeSingle());
+    const copies = ms.map((m, i) => ({ quest_id: qid, user_id: uid, title: m.title, position: i, actions: m.actions || [], own_steps: m.own_steps || [] }));
+    const { error: e2 } = await sb.from('quest_milestones').insert(copies);
+    if (e2) return toast(e2.message, 'err');
+    toast('The same trail, fresh. One small step at a time.', 'ok');
+    if (!edit) return main();
+    const d = await load();
+    drawGuide(d);
+    if (edit === 'milestones') editMilestones(d.quest, d.milestones);
+    else setup({ quest: d.quest, milestones: d.milestones, step: 0 });
   }
 
   /* ------------------------------------------------------------ setup */

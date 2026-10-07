@@ -37,12 +37,16 @@
     grid-template-areas:"body side";gap:14px 24px;align-items:start;min-width:0}
   .tab-body{grid-area:body;min-width:0;display:flex;flex-direction:column;gap:14px;container-type:inline-size}
   .showcase-slot{grid-area:side}
-  /* The Mental Health Goals tab has no showcase: its trail and map take the full width. */
-  .tab-top[data-panel="goals"].on{grid-template-columns:minmax(0,1fr);grid-template-areas:"body"}
+  /* The Mental Health Goals tab has no showcase. Instead, the wellness note runs
+     across the top, the trail in words (.trail-guide, filled by assets/goals-ui.js)
+     takes the left third, and the trail and map the right two thirds. */
+  .tab-top[data-panel="goals"].on{grid-template-columns:minmax(0,1fr) minmax(0,2fr);grid-template-areas:"note note" "guide body"}
+  .tab-top[data-panel="goals"] .wellness{grid-area:note}
+  .tab-top[data-panel="goals"] .trail-guide{grid-area:guide}
   .tab-top .zone{padding:22px}
   .tab-body .zone + .zone{margin-top:0}
-  /* The Mental Health Goals tab's wellness note (assets/goals.css) sits in the column's own gap. */
-  .tab-body .wellness{margin:0}
+  /* The Mental Health Goals tab's wellness note (assets/goals.css) sits in the grid's own gap. */
+  .tab-top .wellness{margin:0}
   #affirm-card,.tab-intro{padding:18px 20px}
   #affirm-card .hero-line,.tab-intro .hero-line{font-size:clamp(1.2rem,2.3vw,1.55rem);margin-top:10px!important}
   .today-top .daily{gap:14px;grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
@@ -117,6 +121,8 @@
   @media(max-width:900px){
     .today-top[data-panel].on,.tab-top[data-panel].on{grid-template-columns:minmax(0,1fr);
       grid-template-areas:"side" "body"}
+    /* On a phone the trail comes first and its written guide follows it. */
+    .tab-top[data-panel="goals"].on{grid-template-areas:"note" "body" "guide"}
   }
   @media(prefers-reduced-motion:reduce){.mm-switch,.mm-switch i{transition:none}}
   /* The tab bar is a soft green track of pills, like the zone and badge pills
@@ -356,15 +362,31 @@
         <!-- Mental Health Goals: the Premium goal, milestones and stepping stones with
              the trail map (assets/goals-ui.js), moved here from goals.html, which forwards.
              The wellness note stays above it on every screen. This tab has no
-             .showcase-slot, so the feature showcase stays out of it and the trail
-             takes the full width; showTab() leaves the strip where it was. -->
+             .showcase-slot, so the feature showcase stays out of it; showTab()
+             leaves the strip where it was. In its place, the left third is the
+             trail in words (.trail-guide): what the goal, milestones and stepping
+             stones are, the member's own in order, and a "You are here" arrow on
+             the milestone being worked on, for anyone who finds a list clearer
+             than the picture. mountGoals() fills #goals-guide-body. -->
         <div class="tab-top" data-panel="goals">
+          <div class="wellness" role="note"><span aria-hidden="true">🌱</span><div>
+            <strong>General wellness and self-help only.</strong> Theraglee is not psychotherapy or clinical
+            care, and it is not a substitute for help from a licensed professional.
+            <a href="therapists.html">Find a therapist</a> · <a href="#nearby">Help near you</a> ·
+            In crisis, call or text <a href="tel:988">988</a>, or call 911.</div></div>
+          <aside class="zone trail-guide" aria-labelledby="goals-guide-title">
+            <div class="zone-head">
+              <h2 id="goals-guide-title">Where you are</h2>
+              <p class="muted">The same trail in words, for anyone who finds a list clearer than a picture.</p>
+            </div>
+            <div class="card trail-guide-card" id="goals-guide-body">
+              <p>Change is often a process, so that is how Theraglee Goals are designed. You pick an overall goal
+                (your ultimate destination), then take small steps (stepping stones) each day that support the change
+                you want to see, reaching milestones (the camps along your trail) along the way.</p>
+              <p class="faint" style="margin:0">Set a goal and this column spells out where you are on the trail.</p>
+            </div>
+          </aside>
           <div class="tab-body">
-            <div class="wellness" role="note"><span aria-hidden="true">🌱</span><div>
-              <strong>General wellness and self-help only.</strong> Theraglee is not psychotherapy or clinical
-              care, and it is not a substitute for help from a licensed professional.
-              <a href="therapists.html">Find a therapist</a> · <a href="#nearby">Help near you</a> ·
-              In crisis, call or text <a href="tel:988">988</a>, or call 911.</div></div>
             <section class="zone" aria-labelledby="goals-zone-title">
               <div class="zone-head">
                 <h2 id="goals-zone-title">Your trail</h2>
@@ -520,7 +542,7 @@ function showTab(next) {
     mounted.goals = true;
     const host = document.getElementById('goals-host');
     if (a.level < 3) lockNotice(host, 3, 'Mental Health Goals');
-    else mountGoals(host, { sb, uid: a.profile.id, esc, toast, busy, modal, fmtDate });
+    else mountGoals(host, { sb, uid: a.profile.id, esc, toast, busy, modal, fmtDate, guide: document.getElementById('goals-guide-body') });
   }
   // Playlists are Premium: a mood, then a genre, then forty songs.
   if (tab === 'playlists' && !mounted.playlists) {
