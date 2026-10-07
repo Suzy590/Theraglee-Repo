@@ -130,7 +130,7 @@ export async function mountGoals(host, ctx) {
           <span class="kicker"><i class="ico">🚩</i> Working on now <span class="faint" style="text-transform:none;letter-spacing:0;font-weight:400">· milestone ${ci + 1} of ${ms.length}</span></span>
           <h3>${esc(cur.title)}</h3>
           <div class="row" style="gap:14px">${pebbles(stepsN)}
-            <span class="faint">${stepDays.size} step${stepDays.size === 1 ? '' : 's'} so far · ${steppedToday ? "today's step is done" : 'no step yet today'} · each day with a stepping stone adds one</span></div>
+            <span class="faint">${stepDays.size} step${stepDays.size === 1 ? '' : 's'} so far · ${steppedToday ? "today's step is done" : 'no step yet today'} · each day with a stepping stone adds one step</span></div>
           <div class="trail-eta" role="group" aria-label="How far, at one stepping stone a day">
             <div class="eta"><b>${inDays(toCamp)}</b><span>${toCamp === 0 ? 'this camp is ready to be reached' : 'to this camp'}</span></div>
             <div class="eta"><b>${inDays(toGoal)}</b><span>to your destination${ahead ? ` · ${ahead} more camp${ahead === 1 ? '' : 's'} after this one` : ' · the last camp before it'}</span></div>
