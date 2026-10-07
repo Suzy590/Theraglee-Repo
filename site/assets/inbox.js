@@ -9,7 +9,12 @@
    - A therapist who reached out through Theraglee Match Mode
      (therapist_outreach), with the member's replies (outreach_replies). A
      reply carries the member's real name to that one therapist
-     (outreach_replies.member_name). One tap blocks a therapist (member_blocks).
+     (outreach_replies.member_name).
+
+   Either kind of thread has a Block this therapist button, one tap, and an
+   Unblock button once blocked (member_blocks). A blocked therapist can no
+   longer see the member in Match Mode or write to them anywhere, and the
+   thread keeps what was already said.
 
    Each conversation is one collapsed .thread (a <details>): closed, it is a
    header with the therapist's name, a status pill, the date and first line
@@ -129,13 +134,20 @@ export async function mountInbox(host, a, { where = 'on your dashboard', heading
     const th = t.therapist;
     const answered = t.items.some(i => i.from === 'therapist');
     const theirTurn = t.items.at(-1).from === 'you';
+    const isBlocked = blocked.has(t.tid);
     return shell(key, t,
-      theirTurn ? '<span class="badge gray">Waiting for their reply</span>' : '<span class="badge">They replied</span>', `
-      <p class="faint">You wrote to them from their profile. Their replies come here, not to your email.</p>
+      isBlocked ? '<span class="badge lock">Blocked</span>'
+        : theirTurn ? '<span class="badge gray">Waiting for their reply</span>' : '<span class="badge">They replied</span>', `
+      <p class="faint">${isBlocked
+        ? 'You blocked this therapist. They cannot write to you until you unblock them.'
+        : 'You wrote to them from their profile. Their replies come here, not to your email.'}</p>
       <div class="stack" style="margin-top:12px">${t.items.map(turn).join('')}</div>
       <div class="row" style="margin-top:12px">
         ${th.slug?`<a class="btn sm ghost" href="therapist.html?slug=${esc(th.slug)}">View their profile</a>`:''}
-        <button class="btn sm" data-writeback="${esc(key)}">${answered ? 'Write back' : 'Add to your message'}</button>
+        ${isBlocked
+          ? `<button class="btn sm ghost" data-unblock="${esc(t.tid)}">Unblock</button>`
+          : `<button class="btn sm" data-writeback="${esc(key)}">${answered ? 'Write back' : 'Add to your message'}</button>
+             <button class="btn sm ghost" data-block="${esc(t.tid)}">Block this therapist</button>`}
       </div>
       <form class="writeback" data-form="${esc(key)}" hidden style="margin-top:16px">
         <div class="field"><label for="wb-${esc(t.msg.id)}">Your message *</label>
@@ -189,8 +201,8 @@ export async function mountInbox(host, a, { where = 'on your dashboard', heading
       you here, but only if you allowed it by turning on <strong>Theraglee Match
       Mode</strong> ${where}: they see your pseudonymous profile, not your name, and if you reply,
       your reply carries your real name to that one therapist, so they know who they will be
-      booking with. Block any therapist with one tap and they can no longer see or message
-      you.</p>
+      booking with. Block any therapist with one tap, on any conversation, and they can no
+      longer see or message you; unblock from the same place.</p>
     ${list.length
       ? list.map(([key, t]) => t.kind === 'asked' ? askedCard(key, t) : matchCard(key, t)).join('')
       : '<div class="empty" style="margin-top:18px">No messages.</div>'}`;
@@ -235,13 +247,16 @@ export async function mountInbox(host, a, { where = 'on your dashboard', heading
   };
   host.querySelectorAll('[data-reply]').forEach(b => b.onclick = () => show(b.dataset.reply, b));
   host.querySelectorAll('[data-writeback]').forEach(b => b.onclick = () => show(b.dataset.writeback, b));
-  // One tap blocks: the therapist stops seeing this member and can no longer write to them.
+  // One tap blocks: the therapist stops seeing this member and can no longer
+  // write to them, in Match Mode or on a conversation the member started.
+  // The same therapist can be on more than one thread, so a block that is
+  // already there (the primary key says so) counts as done.
   host.querySelectorAll('[data-block]').forEach(b => b.onclick = async () => {
     busy(b, true, 'Blocking…');
     const { error } = await sb.from('member_blocks')
       .insert({ member_id: me, therapist_id: b.dataset.block });
     busy(b, false);
-    if (error) return toast(error.message, 'err');
+    if (error && error.code !== '23505') return toast(error.message, 'err');
     toast('Blocked. This therapist can no longer see or message you.', 'ok'); again();
   });
   host.querySelectorAll('[data-unblock]').forEach(b => b.onclick = async () => {
