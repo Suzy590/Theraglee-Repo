@@ -10,6 +10,19 @@ from three levels, top to bottom, and one picture beside them:
 | **Working on now** | One of three to five milestones the member chose: things they could notice in real life ("The phone charges outside the bedroom most nights"), never numbers. Reached when the member says so. | Camps along the path, a tent and a numbered flag each; a green check flag once reached, a glow on the current one, fog on the ones ahead |
 | **Today's stepping stones** | A few small actions from the library (`ACTIONS` in `quest-paths.js`), or ones the member wrote, that serve the current milestone. Any one of them done today is today's step. Small on purpose, and the page says so. | The hiker, who moves a little toward the next camp for every day a stone is done (seven steps is the suggested distance) |
 
+Beside the three levels, in the **left third of the tab**, the same trail is
+written out in words (**Where you are**, `.trail-guide` in `site/dashboard.html`,
+filled by `drawGuide()` in `goals-ui.js`): why Theraglee Goals are built as a
+process (a destination, camps along the trail, small stepping stones each day),
+the current goal, then every milestone in order with its stepping stones, "to
+be repeated until your next milestone", and a reminder to jot down what helped
+under **What helped today?**. The milestone being worked on carries a
+**You are here** arrow; reached ones are folded to a line. It is the picture
+for people who read lists rather than maps, and it redraws whenever the trail
+does. The wellness note runs across the top of both columns; on a phone the
+trail comes first and the guide follows it. Before a goal is set it shows the
+explanation alone.
+
 Under the stones, **Tonight: what helped today?** is one line that opens into
 the optional daily note. Everything else (rewording the goal, changing
 milestones or stones, what grows along the trail, earlier notes, the member's
@@ -85,6 +98,20 @@ reopens the picker for the current one at any time.
   celebration; reaching the last one is the goal). *Getting there* sets
   `checked_on` and asks again in a week. *Not yet, let me adjust it* opens
   the milestone editor. The member decides; no counter does.
+- **Reaching the destination.** When the last milestone is reached, the
+  milestone level becomes a **look back**: "Looking back to the day you set
+  out: do you feel closer to your goal than you were then?", with a box for a
+  few words. *Yes, closer*, *Some of the way* or *Not really* is written to
+  `quests.arrived_closer` (with `arrived_on` and the optional `arrived_note`);
+  the member's word, never a score, and it can be changed. Then the page offers
+  what fits: after *yes*, a new milestone, the same trail again, or a new
+  goal; after *some*, the same trail again, **change the milestones and go
+  again**, or a different goal; after *not really*, changed milestones, a
+  reworded goal, or a different goal. **Walk this trail again** (`walkAgain()`)
+  closes the finished quest (it stays for the record, with its look back) and
+  opens a new one with the same words and fresh copies of the milestones,
+  nothing reached yet; days on the trail carry over because they are counted
+  across every quest. Nothing is ever taken away.
 - A **What helped** note (`quest_reflections`) and a log on one of the old
   SMART goals (`goals`, shown as "Your own steps, from before" with the same
   pebble) count as days on the trail (flowers, lanterns) but not as steps
@@ -136,7 +163,7 @@ are reached. A day's flower never moves once planted (`dayFraction`).
 
 | Table | What |
 |---|---|
-| `quests` | The goal: `intention` (the sentence, up to 240 characters), `value_key` (the theme), `minutes`, `scene`; one active at a time |
+| `quests` | The goal: `intention` (the sentence, up to 240 characters), `value_key` (the theme), `minutes`, `scene`; one active at a time. Once every milestone is reached, the look back: `arrived_on`, `arrived_closer` (`yes`, `some`, `no`) and `arrived_note` |
 | `quest_milestones` | The milestones in order: `title`, `position`, `actions` (library keys), `own_steps` (the member's words), `reached_on`, `checked_on` |
 | `quest_steps` | One row per stone done on a day, with `milestone_id` and the note for a writing action |
 | `quest_reflections` | One What helped note per day |
@@ -146,7 +173,8 @@ are reached. A day's flower never moves once planted (`dayFraction`).
 `20260928010000_quest_step_notes.sql` adds notes on steps, and
 `20261003120000_quest_milestones.sql` adds the milestones table, the
 `milestone_id` on steps, the longer goal sentence, and lets a step key carry
-digits (a step the member wrote is `own_<milestone>_<n>`). Every row is
+digits (a step the member wrote is `own_<milestone>_<n>`), and
+`20261007120000_quest_arrival.sql` adds the look-back columns on `quests`. Every row is
 readable and deletable only by its owner; adding or changing needs Premium.
 No therapist, admin screen or other member has a policy on these tables.
 **Download everything** and the two delete buttons live under Change → Your
@@ -170,7 +198,8 @@ to an AI service.
 ## Data contract
 
 `VALUES`, `CATEGORIES`, `MINUTES` and `SCENES` keys in `quest-paths.js` must
-match the checks in the first migration. Never change or remove an `ACTIONS`
+match the checks in the first migration, and the look back's three answers
+(`data-arrive` in `goals-ui.js`) the check on `quests.arrived_closer`. Never change or remove an `ACTIONS`
 key once shipped, because `quest_steps` rows point at it; retire one with
 `retired: true`. Milestone titles in `MILESTONES` are suggestions copied into
 the member's rows, so they can be reworded freely.
@@ -184,8 +213,9 @@ real actions, that a dozen goals in plain words find the right theme and
 relevant stones with a stated reason, that the map draws cleanly for every
 theme, scene, milestone count and day count and only ever gains things, that
 nothing a member reads uses clinical or streak words, US spelling, and that
-the page keeps the wellness note, the three levels in order, and the weekly
-question.
+the page keeps the wellness note, the three levels in order, the weekly
+question, the trail in words with its You are here arrow in the left third,
+and the look back at the destination.
 
 ## Writing rules
 

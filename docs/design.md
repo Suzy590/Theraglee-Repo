@@ -32,8 +32,9 @@ use them.
 3. Below that, across the full width, the tab's content sits in one or more
    zones in the left two thirds (`.tab-body`), with the feature showcase
    running down the right third (`.showcase-slot`, filled by `chrome()`; see
-   `site.md`). Mental Health Goals is the one tab without a slot: its trail
-   and map take the full width.
+   `site.md`). Mental Health Goals is the one tab without a slot: there the
+   wellness note runs across the top, the trail in words (**Where you are**)
+   takes the left third, and the trail and map the right two thirds.
 
 ```html
 <section class="zone" aria-labelledby="journal-zone-title">

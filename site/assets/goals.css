@@ -183,3 +183,38 @@
 .trail-eta .eta b{font-size:1.2rem;font-weight:600;color:var(--green-deep);line-height:1.2}
 .trail-eta .eta span{font-size:.82rem;color:var(--muted)}
 .trail-eta p{flex-basis:100%;margin:0;font-size:.78rem}
+
+/* ---- the trail in words (the left third of the tab) ----
+   The same goal, camps and stones as the card and the map, written out in
+   order for anyone who finds a list clearer than a picture. The milestone
+   being worked on carries the "You are here" arrow. */
+.trail-guide-card{font-size:.95rem;line-height:1.55}
+.trail-guide-card p{margin:0 0 12px}
+.trail-guide-card .kicker{display:block}
+.guide-goal{font-family:var(--serif);font-style:italic;font-weight:400;font-size:1.3rem;line-height:1.25;color:var(--ink);margin:2px 0 16px !important}
+.guide-ms{position:relative;padding:12px 14px 12px 16px;margin:0 0 10px;border-left:3px solid var(--hair);
+  border-radius:0 var(--r-sm) var(--r-sm) 0;background:var(--cream)}
+.guide-ms.here{border-left-color:var(--lime-2);background:var(--soft)}
+.guide-ms.reached{border-left-color:var(--green);color:var(--muted)}
+.guide-ms.reached h3{color:var(--muted);font-weight:500}
+.guide-ms .kicker{margin-bottom:2px}
+.guide-ms h3{margin:0 0 8px;font-size:1.02rem;font-weight:600;line-height:1.3}
+.guide-ms ul{margin:6px 0 10px;padding-left:18px}
+.guide-ms li{margin:0 0 5px}
+.guide-ms p{margin:0}
+.guide-ms .jot{font-size:.86rem;color:var(--muted)}
+.guide-ms .jot + ul{margin-top:6px}
+.guide-ms ul + .jot{margin-top:2px}
+.you-are-here{display:inline-flex;align-items:center;gap:6px;margin:0 0 8px;padding:3px 10px 3px 8px;border-radius:var(--r-pill);
+  background:var(--lime);color:var(--ink);font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.you-are-here i{font-style:normal;font-size:.95rem;line-height:1}
+.guide-ms.here .you-are-here i{animation:guide-point 1.6s ease-in-out infinite}
+@keyframes guide-point{0%,100%{transform:translateX(0)}50%{transform:translateX(3px)}}
+@media(prefers-reduced-motion:reduce){.guide-ms.here .you-are-here i{animation:none}}
+
+/* The look back, once every camp is reached: the member says whether they
+   feel closer to the goal than when they set out, and the page offers the
+   trail again, with changes, or a new goal. */
+.lookback textarea{width:100%;min-height:70px;margin-top:4px}
+.lookback-answer{margin:6px 0 12px;padding:12px 14px;border-radius:var(--r-sm);background:var(--sand);border:1px solid var(--hair)}
+.lookback-answer em{font-family:var(--serif);font-size:1.05rem}

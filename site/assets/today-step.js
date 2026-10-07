@@ -65,7 +65,7 @@ export async function mountTodayStep(host, { sb, uid, level, esc, toast }) {
       host.innerHTML = `<div class="card trail-today">
         <div class="today-status done" role="status"><b aria-hidden="true">✓</b>
           <div><strong>You reached every camp on this trail.</strong>
-            <span>“${esc(goal)}” is yours. Add a milestone or set a new goal whenever you are ready.</span></div></div>
+            <span>“${esc(goal)}” is yours. On the Goals tab, look back at where you set out from, then keep this trail going or set out for a new one.</span></div></div>
         <div class="row" style="margin-top:12px"><a class="btn sm" href="dashboard.html#goals">Open your trail</a></div></div>`;
       return;
     }
