@@ -37,6 +37,8 @@
     grid-template-areas:"body side";gap:14px 24px;align-items:start;min-width:0}
   .tab-body{grid-area:body;min-width:0;display:flex;flex-direction:column;gap:14px;container-type:inline-size}
   .showcase-slot{grid-area:side}
+  /* The Mental Health Goals tab has no showcase: its trail and map take the full width. */
+  .tab-top[data-panel="goals"].on{grid-template-columns:minmax(0,1fr);grid-template-areas:"body"}
   .tab-top .zone{padding:22px}
   .tab-body .zone + .zone{margin-top:0}
   /* The Mental Health Goals tab's wellness note (assets/goals.css) sits in the column's own gap. */
@@ -353,7 +355,9 @@
         </div>
         <!-- Mental Health Goals: the Premium goal, milestones and stepping stones with
              the trail map (assets/goals-ui.js), moved here from goals.html, which forwards.
-             The wellness note stays above it on every screen. -->
+             The wellness note stays above it on every screen. This tab has no
+             .showcase-slot, so the feature showcase stays out of it and the trail
+             takes the full width; showTab() leaves the strip where it was. -->
         <div class="tab-top" data-panel="goals">
           <div class="tab-body">
             <div class="wellness" role="note"><span aria-hidden="true">🌱</span><div>
@@ -370,7 +374,6 @@
               <div id="goals-host" class="stack"><div class="card"><div class="skeleton" style="height:160px"></div></div></div>
             </section>
           </div>
-          <div class="showcase-slot"></div>
         </div>
         <div class="tab-top" data-panel="explore">
           <div class="tab-body">
@@ -477,7 +480,9 @@ function showTab(next) {
   const moodLink = next === 'mood' || next.startsWith('mood-');
   tab = PANELS.includes(next) ? next : moodLink ? 'today' : panelOf(next) || 'today';
   document.querySelectorAll('[data-panel]').forEach(el => el.classList.toggle('on', el.dataset.panel === tab));
-  // The feature showcase is one column, so it follows the open tab into that tab's slot.
+  // The feature showcase is one column, so it follows the open tab into that tab's
+  // slot. A tab without a slot (Mental Health Goals) leaves it where it was, hidden
+  // with the tab that holds it.
   const strip = document.querySelector('.showcase');
   const slot = document.querySelector(`[data-panel="${tab}"] .showcase-slot`);
   if (strip && slot && strip.parentElement !== slot) slot.append(strip);

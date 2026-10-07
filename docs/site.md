@@ -498,8 +498,10 @@ scrolls. `chrome()` in `site/assets/app.js` mounts it from
 `therapist-signup.html`) and places it one of two ways (`placeShowcase()`):
 
 - A page with a `.showcase-slot` gets the column inside it. The dashboard has
-  one in every tab, beside the tab's panels, and `showTab()` moves the column
-  into whichever tab is open. `articles.html`
+  one in every tab but Mental Health Goals, beside the tab's panels, and
+  `showTab()` moves the column into whichever tab is open (the Goals tab has
+  no slot, so its trail and map take the full width and the column stays
+  hidden with the tab that last held it). `articles.html`
   and `therapists.html` have one under their search box. The slot and the
   content beside it share a `.beside-showcase` grid.
 - Any other page gets it beside everything in `<main>`: `chrome()` gathers the
