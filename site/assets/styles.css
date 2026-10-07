@@ -250,6 +250,7 @@ a.tile.star:hover{color:#fff;border-color:var(--lime);box-shadow:0 0 0 4px rgba(
 .zone-head{margin:0 0 20px}
 .zone-head h2,.zone .zone-head h2{margin:0;font-size:clamp(1.5rem,2.8vw,2.2rem)}
 .zone-head p{margin:4px 0 0;max-width:62ch}
+.zone-head .kicker{margin:0 0 6px}
 /* Headings further down a zone sit a size below the zone's own. */
 .zone h2{font-size:1.35rem}
 .zone .notice:not(.warn):not(.err){background:var(--paper)}
