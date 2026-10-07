@@ -100,7 +100,7 @@ export function mountPlaylists(host) {
     if (!mood) {
       host.innerHTML = `${steps()}
         <h2 style="margin-top:0">First, how are you feeling?</h2>
-        <p class="muted" style="max-width:56ch;margin-top:-6px">Pick where you are right now, not where you think you
+        <p class="muted" style="max-width:56ch;margin-top:-6px">Pick <b>where you are right now</b>, not where you think you
           should be. Then a genre, and you get forty songs curated for the two together, ready to play right here.</p>
         <div class="pl-pick" style="margin-top:20px">${MOODS.map(m => `
           <button type="button" data-mood="${m.key}"><h3>${esc(m.name)}</h3><p>${esc(m.blurb)}</p>
