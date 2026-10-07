@@ -33,8 +33,8 @@ export const TAGS = new Set([
 // library tile, so it is short and plain. Add one here before using it.
 export const CATEGORIES = new Set([
   'Anger', 'Anxiety', 'Body', 'Boundaries', 'Burnout', 'Caregiving', 'Communication',
-  'Confidence', 'Connection', 'Focus', 'Food', 'Grief', 'Grounding', 'Habits', 'Health',
-  'Home', 'Loneliness', 'Milestones', 'Mindfulness', 'Money', 'Mornings', 'Motivation',
+  'Confidence', 'Connection', 'Decisions', 'Focus', 'Food', 'Grief', 'Grounding', 'Habits',
+  'Health', 'Home', 'Loneliness', 'Milestones', 'Mindfulness', 'Money', 'Mornings', 'Motivation',
   'Parenting', 'Relationships', 'Rest', 'Self-Care', 'Self-Compassion', 'Sleep',
   'Social Anxiety', 'Stress', 'Study', 'Therapy', 'Transitions', 'Wellbeing', 'Work', 'Worry',
 ]);
