@@ -15,9 +15,6 @@ verify_jwt = false
 [functions.stripe-webhook]
 verify_jwt = false
 
-[functions.stripe-identity]
-verify_jwt = false
-
 [functions.stripe-connect]
 verify_jwt = false
 

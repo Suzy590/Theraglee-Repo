@@ -12,7 +12,6 @@ anyone until the last step.
 |---|---|---|
 | **Billing + Payments** | The Basic, Premium and Therapist memberships. Stripe's hosted Checkout page takes the card, Stripe bills it every month or year, and the member manages or cancels from Stripe's hosted billing portal. Deleting the account ends the membership too. | `stripe-checkout`, `stripe-portal`, `stripe-webhook`, `delete-account` |
 | **Tax** | Works out and collects US sales tax on memberships, state by state, once you tell Stripe where you are registered. | `stripe-checkout` (`stripe_tax_enabled` switch) |
-| **Identity** | A therapist photographs their government ID and takes a selfie before their listing can go live, so the person holding the license is the person on the profile. Theraglee never sees the document. | `stripe-identity`, `stripe-webhook`, the live-listing rule in Postgres |
 | **Radar** | Stripe's fraud screening on every card. Runs on its own; rules live in the Dashboard. Early warnings and disputes are written to `billing_alerts`. | `stripe-webhook` |
 | **Connect** | A client pays a verified therapist for a session from the therapist's profile. Theraglee keeps a percentage and Stripe pays the rest into the therapist's own bank account. | `stripe-connect`, `stripe-session-checkout`, `stripe-webhook` |
 
@@ -32,6 +31,7 @@ supabase/
     20260906230000_stripe_tax_identity_connect.sql
     20260925200000_admin_memberships_discount_codes.sql
     20261006120000_account_deletion.sql
+    20261007120000_drop_identity_check.sql
   functions/
     _shared/
       billing.ts                    the pure decisions (which plan, which tier,
@@ -40,7 +40,6 @@ supabase/
     stripe-checkout/                member or therapist buys a membership
     stripe-portal/                  manage / cancel a membership
     stripe-webhook/                 Stripe tells us what happened; we update Postgres
-    stripe-identity/                therapist ID check
     stripe-connect/                 therapist payout account
     stripe-session-checkout/        client pays a therapist
     admin-membership/               admin adds, changes and ends memberships;
@@ -49,8 +48,8 @@ supabase/
     delete-account/                 a member deletes their account; ends the
                                     membership, keeps the paid time
 site/
-  assets/app.js                     startCheckout, openPortal, startIdentity,
-                                    connectAction, startSessionPayment
+  assets/app.js                     startCheckout, openPortal, connectAction,
+                                    startSessionPayment
   pricing.html, account.html        member side
   therapist-dashboard.html          therapist side (Membership tab)
   therapist.html                    "Pay for a session" button
@@ -123,7 +122,7 @@ these gaps, all fixed in this change:
 ## Switching it on
 
 Do these in order. Each step is a few minutes. Steps 1–6 get memberships
-working; 7–10 add Tax, Radar, Identity and Connect.
+working; 7–9 add Tax, Radar and Connect.
 
 ### 0. Pick the right Stripe account
 
@@ -149,16 +148,17 @@ assistant to apply it for you.)
 
 ### 2. Deploy the six functions
 
-> **Done on 2026-09-06.** All six functions are deployed (checkout, portal and
-> webhook as version 2; identity, connect and session-checkout as version 1).
-> Repeat this whenever the code in `supabase/functions/` changes.
+> **Done on 2026-09-06.** The functions are deployed. Repeat this whenever the
+> code in `supabase/functions/` changes. (`stripe-identity` was removed on
+> 2026-10-07: delete it from the Supabase Dashboard → Edge Functions if it is
+> still listed there, and apply `20261007120000_drop_identity_check.sql`.)
 
 With the Supabase CLI installed and signed in:
 
 ```bash
 supabase link --project-ref oekqzuguruyqkafsqhos
 supabase functions deploy stripe-checkout stripe-portal stripe-webhook \
-  stripe-identity stripe-connect stripe-session-checkout \
+  stripe-connect stripe-session-checkout \
   admin-membership stripe-redeem delete-account
 ```
 
@@ -240,10 +240,6 @@ customer.subscription.resumed
 invoice.paid
 invoice.payment_failed
 invoice.payment_action_required
-identity.verification_session.verified
-identity.verification_session.requires_input
-identity.verification_session.processing
-identity.verification_session.canceled
 charge.refunded
 charge.dispute.created
 radar.early_fraud_warning.created
@@ -294,18 +290,7 @@ Disputes and early-fraud warnings appear in the `billing_alerts` table; a
 refund issued within a day of an early-fraud warning usually prevents the
 dispute.
 
-### 9. Stripe Identity
-
-1. Dashboard → **Identity → Get started** and complete the short application.
-   Identity is priced per check (about $1.50, plus the selfie).
-2. Once approved, therapists see **Verify my identity** on their Membership
-   tab. The result is stored on their profile and shows in the admin queue.
-3. When you want the check to be mandatory: `/admin.html` → tick **Require the
-   Stripe Identity check before a listing goes live** → Save. From then on a
-   listing cannot go live without a passed check (listings already live without
-   one come down until it passes), and the therapist dashboard says so.
-
-### 10. Stripe Connect (session payments)
+### 9. Stripe Connect (session payments)
 
 1. Dashboard → **Connect → Get started**: complete the platform profile and the
    branding for the onboarding form (name, color, icon).
@@ -314,8 +299,8 @@ dispute.
    therapists take session payments**, Save.
 
 A verified therapist then sees **Set up payouts** on their Membership tab.
-Stripe collects their bank details and identity (this is separate from Step 9,
-and required by law for anyone receiving payouts). Once Stripe reports the
+Stripe collects their bank details and identity (required by law for anyone
+receiving payouts; Theraglee itself runs no identity check). Once Stripe reports the
 account as ready, the therapist sets a session price and ticks *Show "Pay for a
 session" on my profile*; the button appears on their public page.
 
@@ -376,7 +361,6 @@ All in `app_config`, all editable from `/admin.html`:
 |---|---|---|
 | `stripe_enabled` | Nobody but an admin can start a checkout. | Memberships and session payments can be bought. |
 | `stripe_tax_enabled` | No tax collected. | Checkout collects a billing address and adds tax. |
-| `identity_required` | ID check is optional. | A listing cannot go live without a passed ID check. |
 | `connect_enabled` | No payouts setup, no "Pay for a session". | Therapists can onboard and take payments. |
 | `platform_fee_percent`, `platform_fee_min_cents` | | Theraglee's share of a session payment. |
 | `founding_enabled` | The founding-member rate is neither shown nor sold. | The offer shows on the therapist pages and checkout sells it, until `founding_deadline` passes or `founding_spots` are taken. |
@@ -387,7 +371,6 @@ All in `app_config`, all editable from `/admin.html`:
 | Table / column | Written by | Meaning |
 |---|---|---|
 | `profiles.tier`, `subscription_status`, `current_period_end`, `cancel_at_period_end`, `stripe_customer_id`, `stripe_subscription_id` | webhook | The membership, as Stripe last reported it |
-| `therapist_profiles.identity_status`, `identity_session_id`, `identity_verified_at`, `identity_last_error` | webhook, `stripe-identity` | ID check state: `unverified`, `pending`, `verified`, `requires_input`, `canceled` |
 | `therapist_profiles.stripe_account_id`, `stripe_account_status`, `charges_enabled`, `payouts_enabled` | webhook, `stripe-connect` | Payout account: `none`, `onboarding`, `enabled`, `restricted` |
 | `therapist_profiles.accepts_payments`, `session_fee_cents` | the therapist | Their choice to take payments, and the price ($5–$1,000) |
 | `session_payments` | `stripe-session-checkout`, webhook | One row per session payment: `pending`, `paid`, `refunded`, `partially_refunded`, `disputed` |

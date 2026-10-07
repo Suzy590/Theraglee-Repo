@@ -93,7 +93,7 @@
 
 <script type="module">
 import { chrome, sb, selectAll, requireAuth, access, clearAccess, esc, toast, busy, fmtDate,
-         modal, openPortal, startCheckout, startIdentity, connectAction, callStripeFn,
+         modal, openPortal, startCheckout, connectAction, callStripeFn,
          discountCodeBox, wireDiscountCode,
          FN, qs } from './assets/app.js';
 import { matchSummary, takesInsurance, genderLabel, rangeLabel, sessionLabel } from './assets/match.js';
@@ -193,12 +193,11 @@ function bindTabs(){
 // but there is no Stripe subscription to manage or discount.
 const isPaid = (p) => ['active','trialing','comped'].includes(p?.subscription_status);
 
-// Back from Stripe (membership checkout, the ID check, or payouts setup):
-// bring what we know up to date before drawing anything.
+// Back from Stripe (membership checkout or payouts setup): bring what we know
+// up to date before drawing anything.
 const justPaid = qs('checkout') === 'success';
-if (qs('checkout') || qs('identity') || qs('connect')) {
+if (qs('checkout') || qs('connect')) {
   if (justPaid) toast('Payment received — welcome aboard.', 'ok');
-  if (qs('identity')) await callStripeFn('stripe-identity', { action: 'status' });
   if (qs('connect') === 'return') await callStripeFn('stripe-connect', { action: 'status' });
   if (qs('connect') === 'refresh') {
     // The onboarding link expired or was reused; Stripe asks us to make a new one.
@@ -212,8 +211,8 @@ if (qs('checkout') || qs('identity') || qs('connect')) {
     await new Promise(r => setTimeout(r, 2000));
     clearAccess(); a = await access(true); T = a.therapist || T;
   }
-  // After paying, the next step is the profile; after the ID check or the
-  // payouts setup, back to Membership.
+  // After paying, the next step is the profile; after the payouts setup, back
+  // to Membership.
   tab = justPaid && !T ? 'profile' : 'membership';
   history.replaceState({}, '', 'therapist-dashboard.html#' + tab);
 }
@@ -1229,7 +1228,7 @@ async function membership(){
       : Promise.resolve({ data: [] }),
     sb.from('therapist_resource_catalog').select('*'),
     sb.from('app_config').select('key,value')
-      .in('key', ['identity_required','connect_enabled','platform_fee_percent',
+      .in('key', ['connect_enabled','platform_fee_percent',
                   'display_therapist_monthly','display_therapist_yearly','founding_enabled',
                   'price_therapist_founding','display_therapist_founding','founding_spots',
                   'founding_deadline']),
@@ -1241,9 +1240,6 @@ async function membership(){
   const offer = foundingOffer(cfg);
   const founding = (offer.open || (p.role === 'admin' && offer.priceId)) && offer.rate;
 
-  const idStatus = T?.identity_status || 'unverified';
-  const idLabel = { unverified:'Not started', pending:'Being checked', verified:'Verified',
-                    requires_input:'Needs another try', canceled:'Canceled' }[idStatus] || idStatus;
   const acct = T?.stripe_account_status || 'none';
   const acctLabel = { none:'Not set up', onboarding:'Setup not finished',
                       enabled:'Ready for payouts', restricted:'Needs attention' }[acct] || acct;
@@ -1337,25 +1333,6 @@ async function membership(){
     </div>
 
     ${T ? `
-    <h3 style="margin-top:32px">Identity check</h3>
-    <div class="card">
-      <div class="spread">
-        <div><strong>${esc(idLabel)}</strong><br>
-          <span class="muted">${
-            idStatus==='verified'
-              ? `Confirmed${T.identity_verified_at ? ' on ' + fmtDate(T.identity_verified_at) : ''} with a government ID and a selfie, through Stripe Identity.`
-            : idStatus==='pending'
-              ? 'Stripe is checking your document. This usually takes a few minutes.'
-            : idStatus==='requires_input'
-              ? esc(T.identity_last_error || 'The last attempt could not be confirmed. You can try again.')
-            : 'A quick photo of your government ID and a selfie, handled by Stripe. Theraglee never sees the document itself.'}</span></div>
-        ${idStatus!=='verified' && idStatus!=='pending'
-          ? `<button class="btn ghost" id="idv">${idStatus==='requires_input'?'Try again':'Verify my identity'}</button>` : ''}
-      </div>
-    </div>
-    ${cfg.identity_required==='true'
-      ? `<p class="faint" style="margin-top:10px">A listing goes live only after this check passes.</p>` : ''}
-
     ${connectOn ? `
     <h3 style="margin-top:32px">Get paid through Theraglee</h3>
     <div class="card">
@@ -1406,8 +1383,7 @@ async function membership(){
 
     <div class="notice" style="margin-top:24px">
       A listing goes live on its own, and stays in the directory, while the license is verified
-      and current <em>and</em> the membership is active${cfg.identity_required==='true'
-        ? ' <em>and</em> the identity check has passed' : ''}. If any of those lapses, the
+      and current <em>and</em> the membership is active. If either of those lapses, the
       profile comes down automatically, and it comes back when they are in place again.
     </div>` : ''}`);
 
@@ -1416,7 +1392,6 @@ async function membership(){
   document.getElementById('sub-founding')?.addEventListener('click', e => startCheckout('therapist','founding',e.target));
   document.getElementById('sub')?.addEventListener('click', e => startCheckout('therapist','monthly',e.target));
   document.getElementById('sub-yearly')?.addEventListener('click', e => startCheckout('therapist','yearly',e.target));
-  document.getElementById('idv')?.addEventListener('click', e => startIdentity(e.target));
   document.getElementById('connect')?.addEventListener('click', e => connectAction('onboard', e.target));
   document.getElementById('payouts')?.addEventListener('click', e => connectAction('dashboard', e.target));
   document.getElementById('feeform')?.addEventListener('submit', async (e) => {

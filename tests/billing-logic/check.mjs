@@ -8,7 +8,7 @@ import assert from "node:assert/strict";
 import {
   codeFitsRole, connectStatus, deletionAfterSync, deletionPlan, hasLiveStripeSub, isDeleteWhen, keepsComp,
   parseDiscountInput, planChangeError,
-  priceKeysForAudience, deadlineEnd, foundingOffer, identityStatusFor, isActive, isInterval,
+  priceKeysForAudience, deadlineEnd, foundingOffer, isActive, isInterval,
   isStaleSubscription, isValidSessionFee, planForPrice, platformFee, priceKeyFor,
   safeReturnOrigin, subscriptionPatch,
 } from "../../supabase/functions/_shared/billing.ts";
@@ -253,14 +253,6 @@ test("session fee bounds", () => {
   assert.equal(isValidSessionFee(499), false);
   assert.equal(isValidSessionFee(12.5), false);
   assert.equal(isValidSessionFee(null), false);
-});
-
-test("identity statuses map onto the stored column", () => {
-  assert.equal(identityStatusFor("verified"), "verified");
-  assert.equal(identityStatusFor("requires_input"), "requires_input");
-  assert.equal(identityStatusFor("processing"), "pending");
-  assert.equal(identityStatusFor("canceled"), "canceled");
-  assert.equal(identityStatusFor(undefined), "pending");
 });
 
 test("only origins we own are used as return targets", () => {

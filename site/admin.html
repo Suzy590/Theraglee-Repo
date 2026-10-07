@@ -476,8 +476,7 @@ async function verify(){
               · <a href="${esc(lookupUrl(t))}" target="_blank" rel="noopener">Open the board lookup ↗</a></p>
           </div>
           <span class="badge ${t.verification==='verified'?'':'gray'}">
-            ${esc(t.verification)}${t.identity_status && t.identity_status!=='unverified'
-              ? ' · ID ' + esc(t.identity_status.replace('_',' ')) : ''}${t.published?' · live':''}</span>
+            ${esc(t.verification)}${t.published?' · live':''}</span>
         </div>
         ${t.bio?`<p class="muted" style="font-size:.92rem;margin-top:10px">${esc(String(t.bio).slice(0,240))}</p>`:''}
         <p class="faint" style="margin:8px 0">Private contact: ${esc(t.contact_email||'—')}
@@ -664,8 +663,6 @@ async function billing(){
         'Turn on once the keys are set in Supabase and the price IDs are filled in. Admins can test checkout before this is on.')}
       ${toggle('stripe_tax_enabled','Collect sales tax with Stripe Tax',
         'Turn on after Stripe Tax is set up in the Dashboard (origin address, registrations, and a tax code on each product). Checkout fails if this is on before that.')}
-      ${toggle('identity_required','Require the Stripe Identity check before a listing goes live',
-        'Turn on after Stripe Identity is activated on the account. Therapists see the check on their Membership tab either way.')}
       ${toggle('connect_enabled','Let therapists take session payments (Stripe Connect)',
         'Turn on after the Connect platform profile is complete and the Connect webhook is pointed at stripe-webhook.')}
     </div>

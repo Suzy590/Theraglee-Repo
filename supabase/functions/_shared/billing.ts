@@ -387,21 +387,6 @@ export const SESSION_FEE_MAX_CENTS = 100_000;  // $1,000
 export const isValidSessionFee = (cents: unknown): cents is number =>
   Number.isInteger(cents) && (cents as number) >= SESSION_FEE_MIN_CENTS && (cents as number) <= SESSION_FEE_MAX_CENTS;
 
-/* ---------------------------------------------------------- Identity */
-
-export type IdentityStatus = "unverified" | "pending" | "verified" | "requires_input" | "canceled";
-
-/** Maps a Stripe VerificationSession status onto the column we store. */
-export function identityStatusFor(sessionStatus: string | null | undefined): IdentityStatus {
-  switch (sessionStatus) {
-    case "verified": return "verified";
-    case "requires_input": return "requires_input";
-    case "canceled": return "canceled";
-    case "processing": return "pending";
-    default: return "pending";
-  }
-}
-
 /* ---------------------------------------------------------- Redirects */
 
 /**
