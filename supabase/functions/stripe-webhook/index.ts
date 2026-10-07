@@ -6,7 +6,7 @@
 //
 // Two endpoints in the Stripe Dashboard can point at this one function:
 //   - the account endpoint (STRIPE_WEBHOOK_SECRET): subscriptions, invoices,
-//     checkout, identity, disputes, Radar;
+//     checkout, disputes, Radar;
 //   - the Connect endpoint (STRIPE_CONNECT_WEBHOOK_SECRET, "listen to events on
 //     connected accounts"): account.updated for therapists' payout accounts.
 //
@@ -16,7 +16,7 @@
 import { admin, deleteAccount, loadConfig } from "../_shared/supabase.ts";
 import { type Stripe, stripeClient } from "../_shared/stripe.ts";
 import {
-  connectStatus, deletionAfterSync, identityStatusFor, isPlanKey, isStaleSubscription, keepsComp, planForPrice,
+  connectStatus, deletionAfterSync, isPlanKey, isStaleSubscription, keepsComp, planForPrice,
   subscriptionPatch,
 } from "../_shared/billing.ts";
 
@@ -134,24 +134,6 @@ async function alert(kind: string, stripeId: string, customerId: string | null, 
   await admin.from("billing_alerts").insert({ kind, stripe_id: stripeId, customer_id: customerId, user_id: userId, summary, raw });
 }
 
-/* ------------------------------------------------------------- identity */
-
-async function identityUpdated(vs: Stripe.Identity.VerificationSession) {
-  const status = identityStatusFor(vs.status);
-  const patch: Record<string, unknown> = {
-    identity_status: status,
-    identity_session_id: vs.id,
-    identity_last_error: vs.last_error?.reason ?? null,
-    ...(status === "verified" ? { identity_verified_at: new Date().toISOString() } : {}),
-  };
-  const therapistId = vs.metadata?.therapist_id;
-  const q = therapistId
-    ? admin.from("therapist_profiles").update(patch).eq("id", therapistId)
-    : admin.from("therapist_profiles").update(patch).eq("identity_session_id", vs.id);
-  const { error } = await q;
-  if (error) throw new Error(`identity update failed: ${error.message}`);
-}
-
 /* -------------------------------------------------------------- connect */
 
 async function accountUpdated(acct: Stripe.Account) {
@@ -222,13 +204,6 @@ Deno.serve(async (req) => {
         if (subId) await syncSubscription(stripe, subId);
         break;
       }
-
-      case "identity.verification_session.verified":
-      case "identity.verification_session.requires_input":
-      case "identity.verification_session.processing":
-      case "identity.verification_session.canceled":
-        await identityUpdated(obj as Stripe.Identity.VerificationSession);
-        break;
 
       case "account.updated":
         await accountUpdated(obj as Stripe.Account);

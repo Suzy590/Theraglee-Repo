@@ -15,7 +15,7 @@ Moving the domain off HostGator is written up step by step in
 |---|---|---|
 | Front end | Every page you see. Plain HTML/CSS/JavaScript — no build tools needed. | `site/` |
 | Database + logins | Members, therapists, all content, all progress. | Supabase project `oekqzuguruyqkafsqhos` |
-| Payments | Stripe: Checkout, billing portal, Tax, Identity, Radar, Connect. See [`stripe.md`](stripe.md). | `supabase/functions/`, deployed as Supabase Edge Functions |
+| Payments | Stripe: Checkout, billing portal, Tax, Radar, Connect. See [`stripe.md`](stripe.md). | `supabase/functions/`, deployed as Supabase Edge Functions |
 | Hosting | Serves the site. | Vercel project `theraglee-site` |
 | Sunday tool email | One free discovery tool a week to visitors with no account, from the box above the footer. See [`weekly-tool-email.md`](weekly-tool-email.md). | `site/index.html` `#inbox`, `supabase/functions/tool-signup`, `supabase/functions/weekly-tools` |
 | Search landing pages | Real HTML at `/articles/<slug>` for every article, `/tools/...` landing pages and catalogs, plus `sitemap.xml` and `robots.txt`, so the library is indexable. See [`seo.md`](seo.md). | `data/seo-pages.json`, `tools/build_seo_pages.py` |
@@ -141,11 +141,11 @@ license verification *and* an active subscription. A new therapist goes through
 it in order: create the account, start the membership (the dashboard shows only
 that step until it is active), fill in the profile, and the listing goes live
 on its own the moment the license is verified. Nobody presses Publish:
-`therapist_profiles.published` is derived by the database from those three
-facts (license verified, membership active, and the identity check when
-`identity_required` is on) and kept in step by triggers on `therapist_profiles`,
-`profiles.subscription_status` and `app_config`
-(`supabase/migrations/20261004120000_listing_live_on_verification.sql`). The
+`therapist_profiles.published` is derived by the database from those two
+facts (license verified, membership active) and kept in step by triggers on
+`therapist_profiles` and `profiles.subscription_status`
+(`supabase/migrations/20261004120000_listing_live_on_verification.sql`, then
+`20261007120000_drop_identity_check.sql`). The
 practice dashboard opens on a **Home** tab, which is the member requests: the
 Match Mode members waiting to hear from a therapist, each a short pseudonymous
 profile with a button to reach out, and the conversations with the ones who
@@ -918,9 +918,9 @@ made an administrator automatically. The header then carries **Practice** and
 **Admin** links, so the account can open the member dashboard, the practice
 dashboard and `/admin.html`, which offers:
 
-- the therapist license verification queue (with each therapist's ID-check state)
+- the therapist license verification queue
 - Stripe price IDs, the platform fee, and the on/off switches for payments,
-  sales tax, the identity requirement and session payments
+  sales tax and session payments
 - content counts
 
 ## Privacy Policy and Terms of Service

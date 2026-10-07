@@ -35,7 +35,7 @@ tools/
   build_documents.py   Renders data/ into documents/
 supabase/
   functions/           The Stripe Edge Functions (checkout, portal, webhook,
-                       identity, connect, session payments) — see docs/stripe.md
+                       connect, session payments) — see docs/stripe.md
   migrations/          Schema changes that go with them
 documents/
   index.html           Browsable library of all 736 documents
@@ -163,8 +163,8 @@ verifies the records against live DNS.
 
 ### Payments
 
-Memberships, sales tax, therapist identity checks, fraud screening and session
-payments all run on Stripe, through the Edge Functions in `supabase/functions/`.
+Memberships, sales tax, fraud screening and session payments all run on
+Stripe, through the Edge Functions in `supabase/functions/`.
 [`docs/stripe.md`](docs/stripe.md) explains how the pieces fit and walks
 through switching each one on. The pure decision logic is covered by
 `tests/billing-logic/check.mjs`.
