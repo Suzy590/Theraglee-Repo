@@ -180,7 +180,7 @@ takes the count down. It includes:
   drawn, and `therapist_stats()` counts them by `first_seen_at`
   (`supabase/migrations/20261005120000_match_sightings.sql`)
 - the names and topics of members who opted in to being contacted (any registered member can)
-- a clinician library of 2800 resources (worksheets, CBT, ACT, DBT, couples, kids, games), with five more of every kind and five on each of eighteen topics added every day, all adjuncts to the therapist's own judgment rather than protocols — see [`therapist-resources.md`](therapist-resources.md)
+- a clinician library of 2925 resources (worksheets, CBT, ACT, DBT, couples, kids, games), with five more of every kind and five on each of eighteen topics added every day, all adjuncts to the therapist's own judgment rather than protocols — see [`therapist-resources.md`](therapist-resources.md)
 
 If either the license or the membership lapses, the listing comes down on its own
 and the library and member list close, while the therapist keeps their own inbox
