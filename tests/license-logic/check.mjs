@@ -32,10 +32,10 @@ test("boardFor picks the psychology board only for psychologists in split states
 });
 
 test("namesAgree tolerates middle names, suffixes and case", () => {
-  assert.equal(namesAgree("Susan Canchola", "CANCHOLA, SUSAN M"), true);
+  assert.equal(namesAgree("Maria Delgado", "DELGADO, MARIA M"), true);
   assert.equal(namesAgree("Mary Galligan", "Mary L Galligan"), true);
-  assert.equal(namesAgree("Susan Canchola", "Robert Smith"), false);
-  assert.equal(namesAgree("Susan Canchola", ""), false);
+  assert.equal(namesAgree("Maria Delgado", "Robert Smith"), false);
+  assert.equal(namesAgree("Maria Delgado", ""), false);
 });
 
 /* ------------------------------------------------------------ adapters */
