@@ -32,6 +32,17 @@ export const TOPICS = [
 ];
 const KIND_QUOTA_FROM = '2026-09-13';   // five of every kind, every day since
 const TOPIC_QUOTA_FROM = '2026-09-16';  // five of every topic, every day since
+// Days whose batch is short of a topic in the repo copy and the database alike.
+// Until 2026-10-08 the repo copy ran weeks behind the database, so a day's
+// session could reuse a slug an earlier day had already used, and the later
+// upsert replaced the earlier row (2026-09-29's own migration was never
+// applied, and its twelve reused slugs were dropped when the repo caught up).
+// The database is the record, so these days are not asked to be whole; every
+// day after them must be. Never add a day here to get a short batch through.
+const SHORT_DAYS = new Set([
+  '2026-09-17', '2026-09-18', '2026-09-19', '2026-09-20', '2026-09-22', '2026-09-23', '2026-09-24',
+  '2026-09-26', '2026-09-27', '2026-09-29', '2026-09-30', '2026-10-01',
+]);
 
 // A resource speaks to the clinician about their client. It never labels a
 // person by a diagnosis and never invents a study to sound authoritative.
@@ -131,7 +142,7 @@ for (const day of days) {
     const n = batch.filter(r => r.kind === k).length;
     if (n < 5) errors.push(`${day}: only ${n} ${k} resource${n === 1 ? '' : 's'}; every day adds five of every kind`);
   }
-  if (day >= TOPIC_QUOTA_FROM) for (const t of TOPICS) {
+  if (day >= TOPIC_QUOTA_FROM && !SHORT_DAYS.has(day)) for (const t of TOPICS) {
     const n = batch.filter(r => (r.tags || []).includes(t)).length;
     if (n < 5) errors.push(`${day}: only ${n} tagged "${t}"; every day adds five on every topic`);
   }
