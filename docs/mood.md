@@ -77,6 +77,9 @@ weather type, add it to both, in a new migration.
   result is `weatherLink` and sits on the chart as a **Weather** row beside the
   nine factors, with the same *modest* / *moderate* / *strong* labels. Eta has
   no direction, so the bar is never the "opposite" color.
+- A one-line key under the chart heading says what the colors mean: a green
+  bar is a factor that rises with the mood, a tan one a factor that moves
+  against it, and a longer bar is a closer link.
 - When the weather's link is 0.3 or more, one sentence says so, names the kind
   of weather with the best average mood and the one with the lowest, and notes
   that the weather is not the member's to change but knowing the harder days

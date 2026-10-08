@@ -157,7 +157,9 @@ export async function mountMood(host, profile) {
         ${res.days < 14 ? 'With this few days, treat these as early hints.' : ''}</p>
       <ul class="mood-findings">${res.statements.map(s => `<li>${esc(s)}</li>`).join('')}</ul>
       ${rated.length ? `
-        <h4 style="margin:22px 0 10px">How closely each factor, and the weather, moves with your mood</h4>
+        <h4 style="margin:22px 0 4px">How closely each factor, and the weather, moves with your mood</h4>
+        <p class="link-key faint"><span><i class="swatch"></i>Green: a better day for it tended to be a better mood too.</span>
+          <span><i class="swatch neg"></i>Tan: a better day for it tended to be a lower mood. Longer bars mean a closer link.</span></p>
         <div class="links">${rated.map(f => `
           <div class="link-row">
             <span>${esc(f.label)}</span>
