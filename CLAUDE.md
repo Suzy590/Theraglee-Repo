@@ -95,10 +95,12 @@ edit a function in the Supabase Dashboard, or the next deploy will overwrite it.
 ## Tracking numbers forward through Twilio
 
 A verified therapist's profile shows a Theraglee number
-(`therapist_profiles.proxy_phone`) bought by hand in the Twilio Console. The
-`twilio-voice` Edge Function forwards its calls to the therapist's real number
-and keeps each one in `therapist_calls`, the caller masked to four digits. The
-decisions live in `supabase/functions/_shared/twilio.ts`;
+(`therapist_profiles.proxy_phone`). The `twilio-numbers` Edge Function buys it
+from Twilio the moment the listing goes live (a trigger asks, with the shared
+key in `app_secrets.twilio_hook_key`) and releases it on an administrator's
+click; the `twilio-voice` Edge Function forwards its calls to the therapist's
+real number and keeps each one in `therapist_calls`, the caller masked to four
+digits. The decisions live in `supabase/functions/_shared/twilio.ts`;
 `node tests/twilio-voice/check.mjs` guards them. `docs/phone-numbers.md` is
 the guide.
 

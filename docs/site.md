@@ -167,7 +167,8 @@ takes the count down. It includes:
 
 - a verified, searchable listing
 - a Theraglee tracking phone number, so the therapist's own line stays private
-  (a Twilio number forwarded by the `twilio-voice` Edge Function; see
+  (a Twilio number bought by the `twilio-numbers` Edge Function when the
+  listing goes live and forwarded by `twilio-voice`; see
   [`phone-numbers.md`](phone-numbers.md))
 - a contact form whose messages land in the therapist's Theraglee inbox, answered
   from there into the member's Theraglee inbox, so no email address is exposed in

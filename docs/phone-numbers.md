@@ -28,7 +28,8 @@ A number nobody owns, or a listing with no contact number on file, hears an
 apology and the call ends. Nothing is stored for it.
 
 The decisions (matching numbers, the TwiML, the row, Twilio's request
-signature) are in `supabase/functions/_shared/twilio.ts` and tested by:
+signature, which numbers to ask for and how a purchase is worded) are in
+`supabase/functions/_shared/twilio.ts` and tested by:
 
 ```bash
 node tests/twilio-voice/check.mjs
@@ -47,48 +48,74 @@ never stored, only its last four digits.
 1. **Twilio account.** A paid (upgraded) account at twilio.com. A trial account
    can only call numbers you have verified by hand, so it will not forward to
    therapists.
-2. **The secret.** Twilio Console → **Account info** (on the home page) →
-   *Auth Token*. In the Supabase Dashboard → **Edge Functions → Secrets**, add
-   `TWILIO_AUTH_TOKEN` with that value. Never paste the token anywhere else.
-3. **Deploy the function** with the Supabase CLI:
+2. **The secrets.** Twilio Console → **Account info** (on the home page) shows
+   the *Account SID* and the *Auth Token*. In the Supabase Dashboard →
+   **Edge Functions → Secrets**, add `TWILIO_ACCOUNT_SID` and
+   `TWILIO_AUTH_TOKEN` with those values. Never paste the token anywhere else.
+3. **Deploy the functions** with the Supabase CLI:
 
    ```bash
    supabase link --project-ref oekqzuguruyqkafsqhos
-   supabase functions deploy twilio-voice
+   supabase functions deploy twilio-voice twilio-numbers
    ```
 
-   `supabase/config.toml` already carries its `verify_jwt = false`.
-4. **Apply the migrations** `20261008170000_therapist_calls.sql` and
-   `20261008180000_therapist_calls_answered.sql` (SQL Editor, or
+   `supabase/config.toml` already carries their `verify_jwt = false`.
+4. **Apply the migrations** `20261008170000_therapist_calls.sql`,
+   `20261008180000_therapist_calls_answered.sql` and
+   `20261008200000_twilio_auto_numbers.sql` (SQL Editor, or
    `supabase db push`).
 
-## Giving a therapist a number
+## Numbers are issued on their own
 
-1. Twilio Console → **Phone Numbers → Manage → Buy a number**. Country United
-   States, capability **Voice**, ideally an area code near the therapist. Buy
-   it (about $1.15 a month).
-2. Open the number → **Configure** → *Voice Configuration* → **A call comes
-   in**: choose *Webhook*, paste
+The moment a listing goes live (license verified and the membership active, so
+`published` turns true) and it has no number yet, a trigger on
+`therapist_profiles` asks the `twilio-numbers` Edge Function
+(`supabase/functions/twilio-numbers`) to buy one, with the shared key in
+`app_secrets.twilio_hook_key`, the same way the license check is asked for.
+The function:
 
-   ```
-   https://oekqzuguruyqkafsqhos.supabase.co/functions/v1/twilio-voice
-   ```
+1. searches Twilio for a voice number in the therapist's own area code (from
+   their `contact_phone`), then anywhere in their first licensed state, then
+   anywhere in the US;
+2. buys the first one offered, with its **A call comes in** webhook already
+   pointed at `twilio-voice` and the therapist's name as its label in the
+   Twilio Console;
+3. saves it on the listing: `proxy_phone` (shown as `(805) 010-0199`),
+   `proxy_phone_provider = 'twilio'`, `proxy_phone_sid` (Twilio's id for it,
+   needed to release it) and `proxy_phone_assigned_at`.
 
-   and set the method to **HTTP POST**. Save. Leave the other voice fields
-   empty; the function sets its own status callback.
-3. `/admin.html` → **Tracking numbers** → **Assign** beside the therapist, and
-   paste the number. Any spelling works (`(805) 010-0199`, `8050100199`,
-   `+18050100199`); the function matches on the last ten digits. The
-   therapist's **Forwards to** column must show a number, or callers hear the
-   apology.
-4. Call it once from your own phone. The therapist's phone should ring, and a
-   minute later the call appears on their dashboard's Referrals tab.
+If the purchase fails (no secrets yet, Twilio has nothing to offer, the card
+is declined) the listing simply stays without a number, the reason is in the
+function's logs, and **Issue** on the admin page tries again. A listing that
+goes down keeps its number, so a lapse and renewal does not change what the
+profile showed.
 
-Each call costs Twilio's inbound rate plus its outbound rate for the forwarded
-leg, a few cents a minute in all.
+## From the admin page
 
-## Taking a number back
+`/admin.html` → **Tracking numbers** lists every verified therapist with
+their forwarding number, their Theraglee number and where it came from:
 
-Clear it in `/admin.html` (Assign → empty → Save) and release the number in
-the Twilio Console so it stops billing. Calls already recorded stay on the
-therapist's dashboard.
+- **Issue** buys a number now, for a listing that went live before this was
+  switched on or whose automatic purchase failed. Only a verified listing
+  gets one, and a listing that already has one is left alone.
+- **Release** gives a Twilio number back (it stops billing) and clears it from
+  the listing. Calls already recorded stay on the therapist's dashboard. A
+  number that was pasted in by hand is simply cleared.
+- **Paste by hand** keeps the old way for a number from somewhere other than
+  Theraglee's Twilio account. It is shown as typed; calls to it forward only if
+  its own provider forwards them. To make such a number ring through this
+  function, set its voice webhook (in whatever console owns it) to
+
+  ```
+  https://oekqzuguruyqkafsqhos.supabase.co/functions/v1/twilio-voice
+  ```
+
+  with method **HTTP POST**.
+
+The therapist's **Forwards to** column must show a number, or callers hear the
+apology. After issuing a number, call it once from your own phone: the
+therapist's phone should ring, and a minute later the call appears on their
+dashboard's Referrals tab.
+
+Each number costs about $1.15 a month, and each call Twilio's inbound rate
+plus its outbound rate for the forwarded leg, a few cents a minute in all.

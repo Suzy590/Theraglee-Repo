@@ -49,3 +49,9 @@ verify_jwt = false
 # forwarded call ends; the function checks Twilio's request signature itself.
 [functions.twilio-voice]
 verify_jwt = false
+
+# Issues and releases Theraglee tracking numbers through Twilio; called by
+# Postgres (pg_net) with a shared key when a listing goes live, and by an
+# administrator with their session. The function checks both itself.
+[functions.twilio-numbers]
+verify_jwt = false
