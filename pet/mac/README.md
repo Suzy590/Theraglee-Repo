@@ -74,9 +74,14 @@ that was the point.
 
 ## Self-care mode
 
-Right-click → **Self-care mode**. Every 25 minutes or so, when Pip isn't in the
-middle of something, it will nudge you. The nudges take turns, always in this
-order:
+Self-care mode is **on from the first launch**. Right-click → **Self-care
+mode** turns it off, or back on. The moment it's on, Pip nudges you (as soon as
+it isn't in the middle of something), and after that it nudges again every
+**15 to 35 minutes**, the gap drawn fresh each time so the reminders never
+settle into a rhythm you learn to tune out. The reminder itself is picked at
+random, from a shuffled deck of all nine: every one comes up once before any
+comes back, and a new round never opens with the one that closed the last.
+The nine:
 
 - **Water** — walks over to wherever your cursor is, holds up a miniature glass
   and a sign reading **"Drink water"**
@@ -98,7 +103,11 @@ one, add a case there with its sign text; if it should have a pose of its own,
 add it to the `careSign` look in both builds too.
 
 The setting is remembered. *Nudge me now* triggers one immediately if you'd
-rather not wait.
+rather not wait, and pushes the next automatic one out by a fresh gap.
+
+Builds before version 1.2 had the mode off by default and wrote that "off" to
+the preferences on every save, so a stored off from then is dropped once on
+first launch and the mode comes on; switch it off after that and it stays off.
 
 ## Sharing Pip
 

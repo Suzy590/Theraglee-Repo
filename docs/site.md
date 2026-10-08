@@ -167,6 +167,8 @@ takes the count down. It includes:
 
 - a verified, searchable listing
 - a Theraglee tracking phone number, so the therapist's own line stays private
+  (a Twilio number forwarded by the `twilio-voice` Edge Function; see
+  [`phone-numbers.md`](phone-numbers.md))
 - a contact form whose messages land in the therapist's Theraglee inbox, answered
   from there into the member's Theraglee inbox, so no email address is exposed in
   either direction (see **Messages from a profile** below)
@@ -178,7 +180,16 @@ takes the count down. It includes:
   moment, nothing else), `note_match_sightings()` adds the missing rows from
   `member_discovery` whenever the dashboard opens or its Home tab is
   drawn, and `therapist_stats()` counts them by `first_seen_at`
-  (`supabase/migrations/20261005120000_match_sightings.sql`)
+  (`supabase/migrations/20261005120000_match_sightings.sql`). The calls
+  figure counts taps on the tracking number (`call` rows in
+  `therapist_events`); connected calls, once call forwarding is switched on,
+  land in `therapist_calls` (one row per call, with its length and whether it
+  was answered, the caller kept masked; written only by the Edge Function
+  that receives the telephony provider's status callback, keyed on the
+  provider's call id so a repeated callback never counts twice) and show as
+  `verified_calls`, counting the answered ones
+  (`supabase/migrations/20261008170000_therapist_calls.sql` and
+  `20261008180000_therapist_calls_answered.sql`)
 - the names and topics of members who opted in to being contacted (any registered member can)
 - a clinician library of 2925 resources (worksheets, CBT, ACT, DBT, couples, kids, games), with five more of every kind and five on each of eighteen topics added every day, all adjuncts to the therapist's own judgment rather than protocols — see [`therapist-resources.md`](therapist-resources.md)
 

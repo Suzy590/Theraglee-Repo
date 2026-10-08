@@ -556,11 +556,12 @@ async function numbers(){
       on their profile instead of their own line. Calls to it forward to their real number, and
       every call is counted on their dashboard.</p>
 
-    <div class="notice warn" style="margin:18px 0">
-      <strong>Not yet automatic.</strong> Buying and forwarding real numbers needs a telephony
-      account — Twilio is the usual choice, at roughly $1 a month per number plus a cent or so
-      a minute. Until that is connected you can paste in a forwarding number by hand here, and
-      the site will display and count it exactly the same way.
+    <div class="notice" style="margin:18px 0">
+      <strong>Buying is by hand, forwarding is automatic.</strong> Buy a voice number in the
+      Twilio Console (about $1 a month plus a few cents a minute), point its
+      <em>A call comes in</em> webhook at the <code>twilio-voice</code> function, then paste the
+      number here. Calls to it ring the therapist's real number, and every answered call is
+      counted on their dashboard. <code>docs/phone-numbers.md</code> has the steps.
     </div>
 
     ${verified.length ? `<div class="scroll-x"><table class="data">

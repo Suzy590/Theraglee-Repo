@@ -71,6 +71,14 @@ node tools/discover_tools_sql.mjs
 
 `docs/weekly-tool-email.md` is the guide.
 
+## The desktop pet download is built on a Mac, by `build.sh`
+
+`site/downloads/Pip-mac.zip` is what members download from `/pet`. It is
+always the output of `pet/mac/build.sh` (which targets macOS 12, builds a
+universal binary, and zips with `ditto` so the execute bit survives), never a
+hand-compiled `pet.swift` zipped some other way. `node tests/pet-mac-zip/check.mjs`
+guards this; `pet/README.md` is the guide.
+
 ## `site/` is deployed verbatim
 
 A push to the default branch deploys `site/` via Vercel, and every file in it is
@@ -83,6 +91,16 @@ in `supabase/migrations/`. Change them here, run
 `node tests/billing-logic/check.mjs`, and deploy with the Supabase CLI — never
 edit a function in the Supabase Dashboard, or the next deploy will overwrite it.
 `docs/stripe.md` is the guide.
+
+## Tracking numbers forward through Twilio
+
+A verified therapist's profile shows a Theraglee number
+(`therapist_profiles.proxy_phone`) bought by hand in the Twilio Console. The
+`twilio-voice` Edge Function forwards its calls to the therapist's real number
+and keeps each one in `therapist_calls`, the caller masked to four digits. The
+decisions live in `supabase/functions/_shared/twilio.ts`;
+`node tests/twilio-voice/check.mjs` guards them. `docs/phone-numbers.md` is
+the guide.
 
 ## Checklists grow by two a day
 

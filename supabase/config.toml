@@ -44,3 +44,8 @@ verify_jwt = false
 # function validates the caller's session itself.
 [functions.delete-account]
 verify_jwt = false
+
+# Called by Twilio when a Theraglee tracking number rings and when the
+# forwarded call ends; the function checks Twilio's request signature itself.
+[functions.twilio-voice]
+verify_jwt = false

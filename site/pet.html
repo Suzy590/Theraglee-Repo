@@ -49,7 +49,7 @@ const root = document.getElementById('root');
 const ART = `<div class="pet-art"><img src="assets/pip.png" width="261" height="222"
   alt="Pip, a small round green cat with closed happy eyes and a curled tail"></div>`;
 
-const MAC = { file:'downloads/Pip-mac.zip', size:'568 KB', needs:'macOS 12 or later' };
+const MAC = { file:'downloads/Pip-mac.zip', size:'563 KB', needs:'macOS 12 or later' };
 const WIN = { file:'downloads/Pip-windows.zip', size:'8.9 MB', needs:'Windows 10 or 11, 64-bit' };
 
 const onMac = /Mac|iPhone|iPad/.test(navigator.platform || '') ||
@@ -103,9 +103,10 @@ const ABOUT = `
       <p class="muted">Click to pet it. Drag it around and let go. Double-click for zoomies —
         a sprint, a somersault and a silent "Theragleeeeee!!!"</p></div>
     <div class="card"><h3>Self-care nudges</h3>
-      <p class="muted">Switch on self-care mode and every 25 minutes or so Pip holds up a small
-        sign: drink water, stretch, rest your eyes, take a breath, roll your shoulders, sit up
-        tall, unclench your jaw, step outside, have a snack. Off by default.</p></div>
+      <p class="muted">Pip holds up a small sign as soon as it arrives, then again every 15 to 35
+        minutes, in a random order: drink water, stretch, rest your eyes, take a breath, roll your
+        shoulders, sit up tall, unclench your jaw, step outside, have a snack. On by default;
+        right-click Pip to turn self-care mode off.</p></div>
     <div class="card"><h3>Quiet by design</h3>
       <p class="muted">Never steals focus from what you are typing, makes no sound at all,
         and sits out of the way in the corner.</p></div>

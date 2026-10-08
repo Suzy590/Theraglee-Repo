@@ -52,8 +52,8 @@ cat > Pip.app/Contents/Info.plist <<'PLIST'
     <key>CFBundleIdentifier</key>      <string>local.desktoppet.pip</string>
     <key>CFBundleIconFile</key>        <string>Pip</string>
     <key>CFBundlePackageType</key>     <string>APPL</string>
-    <key>CFBundleShortVersionString</key><string>1.1</string>
-    <key>CFBundleVersion</key>         <string>2</string>
+    <key>CFBundleShortVersionString</key><string>1.2</string>
+    <key>CFBundleVersion</key>         <string>3</string>
     <key>LSMinimumSystemVersion</key>  <string>12.0</string>
     <key>LSUIElement</key>             <true/>
     <key>NSHighResolutionCapable</key> <true/>
@@ -66,5 +66,15 @@ rm -rf Pip.iconset
 echo "==> packaging for the website"
 rm -f Pip.app.zip
 ditto -c -k --keepParent Pip.app Pip.app.zip
+
+# The same check that guards the shipped copy: the program is executable, is
+# signed, and runs on the macOS the bundle promises. A Pip.app that fails it
+# greets members with "The application "Pip" can't be opened".
+if command -v node >/dev/null; then
+  node ../../tests/pet-mac-zip/check.mjs Pip.app.zip
+else
+  echo "!!  node is not installed, so Pip.app.zip was not checked;"
+  echo "!!  run: node tests/pet-mac-zip/check.mjs pet/mac/Pip.app.zip"
+fi
 
 echo "==> done. double-click Pip.app  (Pip.app.zip is the one to upload)"
