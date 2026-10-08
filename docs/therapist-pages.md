@@ -42,7 +42,7 @@ printed fallback here so the two agree before the page's script runs.
 ## Things to keep true
 
 - **Match Mode copy must match the build.** What a therapist sees is the
-  `member_discovery` view: pseudonym, age range, gender, topics, session
+  `member_discovery` view: pseudonym, age range, gender, topics, who the sessions are for, session
   preference, insurance and the first three digits of the zip code; never a
   name, exact location, email or anything the member wrote. Switching Match
   Mode off removes the member from the view at once. `match-mode-consent.md`

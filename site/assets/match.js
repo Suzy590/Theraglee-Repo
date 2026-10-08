@@ -7,7 +7,7 @@
    member chooses to send (outreach_replies.member_name). */
 
 import { sb, esc, modal, busy, toast } from './app.js';
-import { INSURANCES } from './lists.js';
+import { INSURANCES, SPECIALTIES } from './lists.js';
 
 export const AGE_RANGES = ['18-24', '25-34', '35-44', '45-54', '55-64', '65+'];
 
@@ -36,10 +36,25 @@ const SESSION_LINE = {
   both:       'open to in-person or video',
 };
 
-/* The broad topics a member picks for Match Mode (profiles.match_topics). The
-   database accepts only these; see 20260925060000_match_mode_pseudonym_topics.sql. */
-export const MATCH_TOPICS = ['Anxiety', 'Panic', 'Depression', 'Stress', 'Life transition',
-  'Grief/loss', 'Relationship issues', 'Family issues', 'Trauma', 'Personal growth', 'Other'];
+/* The topics a member picks for Match Mode (profiles.match_topics): up to three
+   from the same specialties list therapists pick from, so a member's topic and
+   a therapist's specialty are the same word and the two can be matched
+   (match_fits() in 20261008150000_match_mode_matching.sql). */
+export const MATCH_TOPICS = SPECIALTIES;
+export const MATCH_TOPICS_MAX = 3;
+
+/* Who the sessions are for (profiles.match_session_for); the database accepts
+   only these keys. A therapist's "Who you see" chips (Individuals, Couples,
+   Families in lists.js) are matched against them. */
+export const SESSION_FOR = [
+  ['individual', 'Just me'],
+  ['couple',     'My partner and me'],
+  ['family',     'My family'],
+];
+const SESSION_FOR_LINE = { individual: 'therapy for myself', couple: 'couples therapy', family: 'family therapy' };
+/* What a therapist's member card says under "For". */
+export const sessionForLabel = (k) =>
+  ({ individual: 'An individual', couple: 'A couple', family: 'A family' })[k] || 'Not shared';
 
 /* How the member plans to pay (profiles.match_insurance): a plan from the same
    list therapists pick the plans they accept from, or one of these two. */
@@ -75,10 +90,11 @@ export const areaOf = (zip) => (/^\d{5}/.test(zip || '') ? zip.slice(0, 3) + 'xx
 /* True once the member has answered everything the window asks for. */
 export const matchComplete = (p) =>
   Boolean(p?.match_pseudonym && p?.match_age_range && p?.match_delivery
-    && p?.match_gender && (p?.match_topics || []).length && p?.match_insurance && areaOf(p?.zip));
+    && p?.match_gender && (p?.match_topics || []).length && p?.match_session_for
+    && p?.match_insurance && areaOf(p?.zip));
 
-/* "Quiet Harbor 27 · 35–44 · female · seeks help with anxiety and stress · seeking video sessions ·
-   has Aetna insurance · in the 902xx area"
+/* "Quiet Harbor 27 · 35–44 · female · seeks help with anxiety and stress · couples therapy ·
+   seeking video sessions · has Aetna insurance · in the 902xx area"
    Accepts a member's own profile (match_* fields plus zip) or a member_discovery row.
    A member who switched Match Mode on before match_topics existed still shows issues. */
 export function matchSummary(m, { withArea = true } = {}) {
@@ -91,6 +107,7 @@ export function matchSummary(m, { withArea = true } = {}) {
     range ? rangeLabel(range) : 'Theraglee member',
     GENDER_LINE[m.match_gender ?? m.gender] || '',
     topics.length ? 'seeks help with ' + listWords(topics) : 'topics not chosen yet',
+    SESSION_FOR_LINE[m.match_session_for ?? m.session_for] || '',
     sessionLabel(m.match_delivery ?? m.delivery),
     insuranceLabel(m.match_insurance ?? m.insurance),
     withArea && area ? 'in the ' + area + ' area' : '',
@@ -124,8 +141,9 @@ export const MATCH_BLURB = `
         private, pseudonymous profile and message you in your Theraglee inbox.
         <a href="match-mode.html">What is Theraglee Match Mode?</a></li>
       <li>What therapists see: Your pseudonym, age range, gender, broad topics you’d like to work
-        on with a therapist, whether you’d prefer in-person/telehealth (video)/either, your
-        insurance, and the first 3 digits of your ZIP.</li>
+        on with a therapist, whether the sessions are for you, a couple or your family, whether
+        you’d prefer in-person/telehealth (video)/either, your insurance, and the first 3 digits
+        of your ZIP.</li>
       <li>If you indicate that you are open to telehealth (video) sessions, therapists anywhere in
         your state can reach out to you.</li>
       <li>Your real name is shared only if you reply.</li>
@@ -177,9 +195,17 @@ export function matchDetailsModal(p, { editing = false } = {}) {
       <div class="field"><label>Your gender</label>
         ${chips('mm-gender', GENDERS, g => p.match_gender === g, true)}</div>
 
-      <div class="field"><label>What would you like to work on in therapy?</label>
-        ${chips('mm-issues', MATCH_TOPICS.map(t => [t, t]), t => (p.match_topics || []).includes(t))}
-        <div class="help">Pick one or more.</div></div>
+      <div class="field"><label for="mm-topic1">What would you like to work on in therapy?</label>
+        <div class="grid g3" id="mm-issues">${[0, 1, 2].map(i => `
+          <select id="mm-topic${i + 1}" aria-label="Topic ${i + 1}${i ? ' (optional)' : ''}">
+            <option value="">${i ? 'Another topic (optional)' : 'Choose a topic'}</option>
+            ${MATCH_TOPICS.map(t => `<option value="${esc(t)}" ${(p.match_topics || [])[i] === t ? 'selected' : ''}>${esc(t)}</option>`).join('')}
+          </select>`).join('')}</div>
+        <div class="help">Pick up to ${MATCH_TOPICS_MAX}. These are the same specialties therapists
+          list, so you are matched with therapists who work on them.</div></div>
+
+      <div class="field"><label>Who are the sessions for?</label>
+        ${chips('mm-for', SESSION_FOR, k => p.match_session_for === k, true)}</div>
 
       <div class="field"><label>How would you like to meet?</label>
         ${chips('mm-delivery', SESSION_PREFS, k => p.match_delivery === k, true)}
@@ -214,7 +240,8 @@ export function matchDetailsModal(p, { editing = false } = {}) {
       match_pseudonym: $('#mm-name').value.trim().replace(/\s+/g, ' ') || null,
       match_age_range: one('mm-age'),
       match_gender:    one('mm-gender'),
-      match_topics:    [...back.querySelectorAll('#mm-issues .chip.on')].map(c => c.dataset.v),
+      match_topics:    [...new Set([...back.querySelectorAll('#mm-issues select')].map(s => s.value).filter(Boolean))],
+      match_session_for: one('mm-for'),
       match_delivery:  one('mm-delivery'),
       match_insurance: $('#mm-ins').value || null,
       zip:             $('#mm-zip').value.trim() || null,
@@ -223,7 +250,7 @@ export function matchDetailsModal(p, { editing = false } = {}) {
       $('#mm-preview').innerHTML = `<strong>Therapists will read:</strong> ${esc(matchSummary(read()))}`;
     };
     preview();
-    // Age range, gender and how to meet take one answer; topics take any number.
+    // Age range, gender, who it's for and how to meet take one answer each.
     back.querySelectorAll('.chips .chip').forEach(c => c.addEventListener('click', () => {
       const group = c.parentElement;
       if (group.hasAttribute('data-single')) group.querySelectorAll('.chip').forEach(x => {
@@ -234,7 +261,7 @@ export function matchDetailsModal(p, { editing = false } = {}) {
       preview();
     }));
     $('#mm-suggest').onclick = () => { $('#mm-name').value = suggestPseudonym(); preview(); };
-    back.querySelectorAll('input, select').forEach(el => el.addEventListener('input', preview));
+    back.querySelectorAll('input, select').forEach(el => { el.addEventListener('input', preview); el.addEventListener('change', preview); });
 
     // Closing the window by clicking outside it or pressing Escape counts as "not now".
     const watch = new MutationObserver(() => { if (!document.body.contains(back)) { watch.disconnect(); done(null); } });
@@ -248,6 +275,7 @@ export function matchDetailsModal(p, { editing = false } = {}) {
       if (!v.match_age_range)  return toast('Please choose your age range. Theraglee is for adults 18 and over.', 'err');
       if (!v.match_gender)     return toast('Please choose your gender, or "Prefer not to answer".', 'err');
       if (!v.match_topics.length) return toast('Pick at least one topic so therapists know how to help.', 'err');
+      if (!v.match_session_for) return toast('Let therapists know whether the sessions are for you, a couple or your family.', 'err');
       if (!v.match_delivery)   return toast('Let therapists know whether you prefer in-person, video, or either.', 'err');
       if (!v.match_insurance)  return toast('Let therapists know your insurance, or that you will pay out of pocket.', 'err');
       if (!v.zip || !/^\d{5}(-\d{4})?$/.test(v.zip)) return toast('Please enter your 5-digit zip code.', 'err');
