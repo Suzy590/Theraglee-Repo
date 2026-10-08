@@ -307,12 +307,12 @@ const THERAPIST_NAV = [
 // whose second value ends in .html is a page of its own rather than a panel.
 const DASH_TABS = [
   ['Today',           'today'],
+  ['Messages',        'messages'],
   ['Journal',         'journal'],
   ['Playlists',       'playlists'],
   ['Mental Health Goals', 'goals'],
   ['Explore Library', 'explore'],
   ['Fun',             'fun'],
-  ['Messages',        'messages'],
   ['Nearby help',     'nearby'],
   ['Therapist directory', 'therapists.html'],
 ];
