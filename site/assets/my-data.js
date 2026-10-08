@@ -8,7 +8,7 @@
    ========================================================================== */
 import { sb, esc, tierName } from './app.js';
 import { matchSummary } from './match.js';
-import { MOODS, FACTORS, WEATHER } from './mood-patterns.js';
+import { MOODS, FACTORS, WEATHER, WEATHER_FEEL } from './mood-patterns.js';
 import { VALUES, CATEGORIES, action } from './quest-paths.js';
 
 const EMAIL_KINDS = { article: 'Article', affirmation: 'Affirmation', quote: 'Quote',
@@ -121,10 +121,10 @@ function moodHtml(d) {
   const mood = (v) => { const m = MOODS.find(x => x[0] === v); return m ? `${m[1]} ${m[2]}` : (v ?? ''); };
   const weather = (k) => { const w = WEATHER.find(x => x[0] === k); return w ? `${w[1]} ${w[2]}` : (k || ''); };
   const body = d.mood_logs.length ? table(
-    ['Day', 'Mood', 'Weather', ...FACTORS.map(f => f[1])],
+    ['Day', 'Mood', 'Weather', WEATHER_FEEL[1], ...FACTORS.map(f => f[1])],
     d.mood_logs.map(r => `<tr><td class="nw">${dateShort(r.logged_on)}</td><td>${esc(mood(r.mood))}</td><td>${esc(weather(r.weather))}</td>${
-      FACTORS.map(f => `<td>${r[f[0]] ?? ''}</td>`).join('')}</tr>`).join(''),
-  ) + '<p class="note">Each factor is how it felt that day, 1 (terrible) to 10 (fantastic). A blank means you did not rate it.</p>'
+      [WEATHER_FEEL, ...FACTORS].map(f => `<td>${r[f[0]] ?? ''}</td>`).join('')}</tr>`).join(''),
+  ) + '<p class="note">Each factor, and how the weather affected you, is how it felt that day, 1 (terrible) to 10 (fantastic). A blank means you did not rate it.</p>'
     : empty('No mood check-ins yet.');
   return section('Mood log', d.mood_logs.length ? `${n(d.mood_logs.length, 'day')} checked in.` : '', body);
 }

@@ -1,7 +1,8 @@
 /* ==========================================================================
    Theraglee — the mood check-in on the member dashboard's Today tab.
    One tap for the day's mood (saved straight away), then a one-tap 1 to 10
-   rating for each factor that may be shaping it, and the weather. Those are
+   rating for each factor that may be shaping it, the weather, and a 1 to 10
+   rating of how the weather affected them. Those are
    sent together with Submit, which works only once all of them are answered.
    A submitted day is final until the next day; the database enforces this
    (20260925130000_mood_submit_once_a_day.sql). Once
@@ -10,17 +11,30 @@
    factors and the analysis live in mood-patterns.js; docs/mood.md is the guide.
    ========================================================================== */
 import { sb, esc, toast } from './app.js';
-import { MOODS, FACTORS, WEATHER, MIN_DAYS, WEATHER_DAYS, analyze, strength } from './mood-patterns.js';
+import { MOODS, FACTORS, WEATHER, WEATHER_FEEL, MIN_DAYS, WEATHER_DAYS, analyze, strength } from './mood-patterns.js';
 
-const COLS = ['logged_on', 'mood', 'weather', 'submitted_at', ...FACTORS.map(f => f[0])].join(',');
-/* Everything Submit needs: the nine factors and the weather. */
-const NEEDED = [...FACTORS.map(f => f[0]), 'weather'];
+/* Everything rated 1 to 10: the nine factors, and below the weather picker,
+   how the weather affected the member. */
+const RATED = [...FACTORS, WEATHER_FEEL];
+const COLS = ['logged_on', 'mood', 'weather', 'submitted_at', ...RATED.map(f => f[0])].join(',');
+/* Everything Submit needs: the nine factors, the weather, and how it felt. */
+const NEEDED = [...RATED.map(f => f[0]), 'weather'];
 
 /* The member's own calendar day, so "tomorrow" starts at their midnight. */
 const todayKey = () => {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 };
+
+/* One 1 to 10 rating row: a factor, or how the weather affected the member. */
+const factorHtml = ([key, label, hint]) => `
+        <div class="factor" data-factor="${key}">
+          <div class="factor-head"><strong>${esc(label)}</strong><span class="faint">${esc(hint)}</span></div>
+          <div class="scale" role="group" aria-label="${esc(label)}, 1 to 10">${
+            Array.from({ length: 10 }, (_, i) =>
+              `<button type="button" data-v="${i + 1}" aria-label="${i + 1}">${i + 1}</button>`).join('')}</div>
+          <div class="scale-ends faint"><span>Terrible</span><span>Fantastic</span></div>
+        </div>`;
 
 /* Pages whose Mood tab already redraws itself when the day changes. */
 const watched = new WeakSet();
@@ -64,19 +78,13 @@ export async function mountMood(host, profile) {
       <h3>What might be shaping mood?</h3>
       <p class="faint" style="margin-top:-4px">How does each of these feel <strong>today</strong>?
         1 is terrible, 10 is fantastic. One tap each, then press Submit at the bottom.</p>
-      <div class="factor-list">${FACTORS.map(([key, label, hint]) => `
-        <div class="factor" data-factor="${key}">
-          <div class="factor-head"><strong>${esc(label)}</strong><span class="faint">${esc(hint)}</span></div>
-          <div class="scale" role="group" aria-label="${esc(label)}, 1 to 10">${
-            Array.from({ length: 10 }, (_, i) =>
-              `<button type="button" data-v="${i + 1}" aria-label="${i + 1}">${i + 1}</button>`).join('')}</div>
-          <div class="scale-ends faint"><span>Terrible</span><span>Fantastic</span></div>
-        </div>`).join('')}
+      <div class="factor-list">${FACTORS.map(factorHtml).join('')}
         <div class="factor">
           <div class="factor-head"><strong>Weather</strong><span class="faint">What was it like outside today?</span></div>
           <div class="weather" role="group" aria-label="Weather">${WEATHER.map(([k, e, l]) =>
             `<button type="button" data-w="${k}" title="${l}" aria-label="${l}">${e}<span>${l}</span></button>`).join('')}</div>
         </div>
+        ${factorHtml(WEATHER_FEEL)}
       </div>
       <div class="submit-row">
         <button type="button" class="btn" data-submit disabled>Submit</button>
@@ -103,7 +111,7 @@ export async function mountMood(host, profile) {
     // start; Submit waits for the face at the top as well as every answer.
     $('.factor-list').style.display = locked ? 'none' : '';
     if (locked) for (const k of NEEDED) delete draft[k];
-    for (const [key] of FACTORS) {
+    for (const [key] of RATED) {
       host.querySelectorAll(`[data-factor="${key}"] button`).forEach(b => {
         b.classList.toggle('on', Number(b.dataset.v) === draft[key]);
         b.disabled = locked;
@@ -146,9 +154,9 @@ export async function mountMood(host, profile) {
     // The nine factors and the weather on one chart, strongest link first.
     // The weather's r is eta, which has no direction, so its bar is never
     // the "opposite" color.
-    const rated = [...res.factors, res.weatherLink].filter(f => f.r !== null)
+    const rated = [...res.factors, res.weatherFeel, res.weatherLink].filter(f => f.r !== null)
       .sort((a, b) => Math.abs(b.r) - Math.abs(a.r));
-    const waiting = res.factors.filter(f => f.r === null);
+    const waiting = [...res.factors, res.weatherFeel].filter(f => f.r === null);
     const weatherWaiting = res.weatherLink.r === null;
     $('#mood-patterns').innerHTML = `
       <h3>Your mood patterns</h3>
@@ -158,6 +166,7 @@ export async function mountMood(host, profile) {
       <ul class="mood-findings">${res.statements.map(s => `<li>${esc(s)}</li>`).join('')}</ul>
       ${rated.length ? `
         <h4 style="margin:22px 0 4px">How closely each factor, and the weather, moves with your mood</h4>
+        <p class="faint" style="margin:0 0 6px">"Weather" is the kind of weather; "How the weather affected you" is your own rating of it.</p>
         <p class="link-key faint"><span><i class="swatch"></i>Green: a better day for it tended to be a better mood too.</span>
           <span><i class="swatch neg"></i>Tan: a better day for it tended to be a lower mood. Longer bars mean a closer link.</span></p>
         <div class="links">${rated.map(f => `
@@ -169,7 +178,7 @@ export async function mountMood(host, profile) {
       ${waiting.length || weatherWaiting ? `<p class="faint" style="margin:14px 0 0">
         ${waiting.length ? `Not enough varied ratings yet for:
           ${waiting.map(f => esc(f.label)).join(', ')}. Each one needs ${MIN_DAYS} days rated, and not all the same number.` : ''}
-        ${weatherWaiting ? `The weather needs ${MIN_DAYS} days across two or more kinds of weather, each seen on
+        ${weatherWaiting ? `The kind of weather needs ${MIN_DAYS} days across two or more kinds, each seen on
           ${WEATHER_DAYS} or more days.` : ''}</p>` : ''}
       ${disclaimer}`;
   }

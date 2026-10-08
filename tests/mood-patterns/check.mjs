@@ -7,7 +7,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import {
-  analyze, pearson, eta, strength, FACTORS, WEATHER, MIN_DAYS, WEATHER_DAYS,
+  analyze, pearson, eta, strength, FACTORS, WEATHER, WEATHER_FEEL, MIN_DAYS, WEATHER_DAYS,
 } from "../../site/assets/mood-patterns.js";
 
 let n = 0;
@@ -114,8 +114,11 @@ test("the weather joins the chart once seven days span two or more kinds seen tw
   assert.ok(w.r !== null && w.r >= 0.7, `a strong link, got ${w.r}`);
   assert.deepEqual(w.types.map(t => t.key), ["sunny", "cloudy", "rainy"], "best average mood first");
   assert.ok(w.types.every(t => t.moods === undefined), "the raw moods stay out of the result");
-  assert.ok(res.statements.some(s => s.startsWith("Your mood moves with the weather (a strong link). "
+  assert.ok(res.statements.some(s => s.startsWith("Your mood moves with the kind of weather (a strong link). "
     + "It has averaged 4.7 out of 5 on sunny days (3 of them) and 1.7 on rainy days (3).")));
+  assert.ok(res.statements.some(s => s.startsWith("The weather is not yours to change")));
+  assert.equal(res.weatherFeel.r, null, "no weather rating given, so none to chart");
+  assert.ok(res.weatherLink.types.every(t => t.feel === null));
   assert.ok(!res.statements.some(s => s.startsWith("On sunny days") || s.startsWith("On rainy days")),
     "the kinds named in the weather sentence are not repeated");
   assert.ok(!res.statements.some(s => s.includes("weather may be a good place to focus")),
@@ -150,7 +153,61 @@ test("weather that does not move with the mood gets a little-or-no-link bar and 
   assert.ok(res.weatherLink.r !== null && res.weatherLink.r < 0.3, `got ${res.weatherLink.r}`);
   assert.equal(strength(res.weatherLink.r), "little");
   assert.deepEqual(res.weather, []);
-  assert.ok(!res.statements.some(s => s.includes("moves with the weather")));
+  assert.ok(!res.statements.some(s => s.includes("moves with the kind of weather")));
+  assert.ok(!res.statements.some(s => s.startsWith("The weather is not yours to change")));
+});
+
+test("how the weather affected the member is analyzed like a factor and reported with the weather", () => {
+  // The rating tracks the mood exactly and runs lowest on the rainy days,
+  // which are also the lowest-mood days.
+  const rows = [
+    { mood: 5, weather: "sunny", weather_feel: 10 }, { mood: 4, weather: "sunny", weather_feel: 8 },
+    { mood: 5, weather: "sunny", weather_feel: 10 }, { mood: 2, weather: "rainy", weather_feel: 4 },
+    { mood: 1, weather: "rainy", weather_feel: 2 }, { mood: 2, weather: "rainy", weather_feel: 4 },
+    { mood: 3, weather: "cloudy", weather_feel: 6 }, { mood: 3, weather: "cloudy", weather_feel: 6 },
+  ].map((r, i) => ({ ...r, logged_on: day(i) }));
+  const res = analyze(rows);
+  const f = res.weatherFeel;
+  assert.equal(f.key, "weather_feel");
+  assert.equal(f.label, "How the weather affected you");
+  assert.equal(f.n, 8);
+  assert.equal(f.r.toFixed(6), "1.000000");
+  assert.ok(!res.factors.some(x => x.key === "weather_feel"), "not one of the nine factors");
+  assert.ok(!res.findings.some(x => x.key === "weather_feel"), "not among the findings");
+  assert.equal(res.focus, null, "never the place to focus");
+  assert.deepEqual(res.weatherLink.types.map(t => [t.key, t.feel]), [["sunny", 28 / 3], ["cloudy", 6], ["rainy", 10 / 3]]);
+  const i = res.statements.findIndex(s => s === "On days the weather felt better to you, your mood tended to be better too (a strong link).");
+  const j = res.statements.findIndex(s => s.startsWith("Your mood moves with the kind of weather"));
+  assert.ok(i >= 0 && j > i, "how it felt comes first, then the kind of weather");
+  assert.ok(res.statements[j].endsWith("Those are also the days you rated the weather lowest for how it affected you (3.3 out of 10 on average)."));
+  assert.ok(!res.statements.some(s => s.includes("more closely than the kind of weather")));
+  assert.equal(res.statements.filter(s => s.startsWith("The weather is not yours to change")).length, 1);
+});
+
+test("when how the weather felt is linked but the kind is not, the result says so", () => {
+  // Every kind of weather has the same spread of moods, but the rating
+  // follows the mood.
+  const rows = [
+    { mood: 1, weather: "sunny", weather_feel: 2 }, { mood: 5, weather: "sunny", weather_feel: 9 },
+    { mood: 1, weather: "rainy", weather_feel: 2 }, { mood: 5, weather: "rainy", weather_feel: 9 },
+    { mood: 1, weather: "cloudy", weather_feel: 3 }, { mood: 5, weather: "cloudy", weather_feel: 8 },
+    { mood: 3, weather: "windy", weather_feel: 5 }, { mood: 3, weather: "windy", weather_feel: 6 },
+  ].map((r, i) => ({ ...r, logged_on: day(i) }));
+  const res = analyze(rows);
+  assert.ok(res.weatherFeel.r >= 0.7);
+  assert.ok(res.weatherLink.r !== null && res.weatherLink.r < 0.3, `got ${res.weatherLink.r}`);
+  assert.ok(res.statements.some(s => s.startsWith("How the weather feels to you moves with your mood more closely than the kind of weather does")));
+  assert.ok(!res.statements.some(s => s.startsWith("Your mood moves with the kind of weather")));
+});
+
+test("a weather rating that moves against the mood is said to, and needs seven days", () => {
+  const moods = [1, 2, 3, 4, 5, 2, 4, 3];
+  const against = analyze(moods.map((m, i) => ({ logged_on: day(i), mood: m, weather_feel: 11 - m * 2 })));
+  assert.ok(against.weatherFeel.r <= -0.7);
+  assert.ok(against.statements.some(s => s.startsWith("On days the weather felt better to you, your mood tended to be lower")));
+  const six = analyze(moods.map((m, i) => ({ logged_on: day(i), mood: m, weather_feel: i < 6 ? m : null })));
+  assert.equal(six.weatherFeel.n, 6);
+  assert.equal(six.weatherFeel.r, null);
 });
 
 test("nothing standing out still says so", () => {
@@ -161,19 +218,24 @@ test("nothing standing out still says so", () => {
   assert.equal(res.weatherLink.r, null, "no weather picked, so nothing to chart");
 });
 
-test("nine factors and seven to ten weather choices, matching the migration", () => {
+test("nine factors, the weather rating, and seven to ten weather choices, matching the migrations", () => {
   const sql = readFileSync(new URL("../../supabase/migrations/20260925120000_mood_factors.sql", import.meta.url), "utf8");
+  const feel = readFileSync(new URL("../../supabase/migrations/20261008190000_mood_weather_feel.sql", import.meta.url), "utf8");
   assert.equal(FACTORS.length, 9);
   assert.ok(WEATHER.length >= 7 && WEATHER.length <= 10);
   for (const [key] of FACTORS) assert.match(sql, new RegExp(`add column if not exists ${key}\\s+smallint check \\(${key}\\s+between 1 and 10\\)`));
+  assert.equal(WEATHER_FEEL.length, FACTORS[0].length, "the same shape as a factor row");
+  assert.match(feel, new RegExp(`add column if not exists ${WEATHER_FEEL[0]}\\s+smallint check \\(${WEATHER_FEEL[0]}\\s+between 1 and 10\\)`));
   const list = sql.match(/weather in \(([^)]*)\)/)[1].match(/'([a-z_]+)'/g).map(s => s.slice(1, -1));
   assert.deepEqual(list, WEATHER.map(w => w[0]));
 });
 
 test("a submitted day is locked in the database, the note aside", () => {
-  const sql = readFileSync(new URL("../../supabase/migrations/20260925130000_mood_submit_once_a_day.sql", import.meta.url), "utf8");
+  // The latest copy of the lock function is the one that holds.
+  const sql = readFileSync(new URL("../../supabase/migrations/20261008190000_mood_weather_feel.sql", import.meta.url), "utf8");
+  assert.match(sql, /create or replace function public\.mood_logs_lock_submitted\(\)/);
   const locked = [...sql.matchAll(/new\.(\w+)\s+is distinct from old\.\1/g)].map(m => m[1]);
-  for (const k of ["mood", "weather", "submitted_at", "logged_on", ...FACTORS.map(f => f[0])]) {
+  for (const k of ["mood", "weather", WEATHER_FEEL[0], "submitted_at", "logged_on", ...FACTORS.map(f => f[0])]) {
     assert.ok(locked.includes(k), `the lock must cover ${k}`);
   }
   assert.ok(!locked.includes("notes"), "the note stays editable");

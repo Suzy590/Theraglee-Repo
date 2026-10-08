@@ -15,8 +15,9 @@ writes the signed-in account's own `mood_logs` rows. It does three things:
    1 is terrible and 10 is fantastic: sleep, home life stress, school/work
    stress, nutrition, hunger in this moment, loneliness, overall thoughts,
    level of physical activity and social interaction. Then the weather, from
-   ten emoji. These taps are only marked on screen. A **Submit** button at the
-   bottom stays grayed out until a face is tapped and all ten are answered; pressing it saves them
+   ten emoji, and below it how the weather affected them that day, on the same
+   1 to 10 scale (`mood_logs.weather_feel`). These taps are only marked on screen. A **Submit** button at the
+   bottom stays grayed out until a face is tapped and all eleven are answered; pressing it saves them
    together and shows "All done for today". The face tap itself saves straight
    away, so a day with only a face still counts as a day logged.
 3. **Your mood patterns.** Until there are 7 days with a mood (in a row or not)
@@ -40,7 +41,8 @@ day's mood, factors, weather, date or `submitted_at`, from any page. The
 `notes` column stays editable.
 
 Every rating runs the same way, so a higher number is always the better day:
-10 for stress means no stress, 10 for loneliness means connected.
+10 for stress means no stress, 10 for loneliness means connected, 10 for the
+weather means it felt fantastic to the member.
 
 ## Where it lives
 
@@ -49,7 +51,7 @@ Every rating runs the same way, so a higher number is always the better day:
 | The tab | `site/assets/mood-ui.js`, mounted by `site/dashboard.html` when its Today tab first opens |
 | Styles | `site/assets/mood.css`, linked from `site/dashboard.html` |
 | Factors, weather, and the analysis | `site/assets/mood-patterns.js` (no imports) |
-| Columns | `supabase/migrations/20260925120000_mood_factors.sql` adds `sleep`, `home_stress`, `work_stress`, `nutrition`, `hunger`, `loneliness`, `thoughts`, `activity`, `social` (1 to 10) and `weather` to `mood_logs` |
+| Columns | `supabase/migrations/20260925120000_mood_factors.sql` adds `sleep`, `home_stress`, `work_stress`, `nutrition`, `hunger`, `loneliness`, `thoughts`, `activity`, `social` (1 to 10) and `weather` to `mood_logs`; `20261008190000_mood_weather_feel.sql` adds `weather_feel` (1 to 10) and extends the submitted-day lock to it |
 | Test | `node tests/mood-patterns/check.mjs` |
 
 The weather keys are a data contract: the migration's `check` lists them, and
@@ -80,13 +82,32 @@ weather type, add it to both, in a new migration.
 - A one-line key under the chart heading says what the colors mean: a green
   bar is a factor that rises with the mood, a tan one a factor that moves
   against it, and a longer bar is a closer link.
-- When the weather's link is 0.3 or more, one sentence says so, names the kind
-  of weather with the best average mood and the one with the lowest, and notes
-  that the weather is not the member's to change but knowing the harder days
-  helps them plan for those. Any other weather type with 2 or more days is
-  mentioned on its own when its average mood is at least 0.5 (on the 1 to 5
-  scale) away from the member's usual.
-- The weather is never offered as the place to focus: only a rated factor is.
+- **How the weather affected you** (`WEATHER_FEEL`, column `weather_feel`) is
+  a 1 to 10 rating, so it is analyzed exactly like a factor: Pearson's r
+  against the mood once it has 7 rated days that are not all the same. It is
+  returned as `weatherFeel`, kept out of `factors`, `findings` and `focus`, and
+  charted as its own row, "How the weather affected you". A line under the
+  chart heading says that "Weather" is the kind of weather and this row is
+  the member's own rating of it.
+- The weather sentences come after the factor findings, in this order:
+  1. When the rating's |r| is 0.3 or more: "On days the weather felt better to
+     you, your mood tended to be better too (a … link)", or the lower-mood
+     wording when r is negative.
+  2. When the kind of weather's eta is 0.3 or more: "Your mood moves with the
+     kind of weather (a … link)", naming the kind with the best average mood
+     and the one with the lowest. Each kind carries the average `weather_feel`
+     on its days (`types[].feel`); when the lowest-mood kind is also the kind
+     the member rated lowest, the sentence says so with that average.
+  3. When the rating is linked but the kind of weather has a figure below 0.3:
+     a sentence that the member's experience of the weather, more than the
+     forecast, may be what matters.
+  4. Whenever either is linked, once: the weather is not the member's to
+     change, but knowing the harder days helps them plan for those.
+  Any other weather type with 2 or more days is then mentioned on its own
+  when its average mood is at least 0.5 (on the 1 to 5 scale) away from the
+  member's usual.
+- Neither the weather nor the weather rating is ever offered as the place to
+  focus: only one of the nine factors is.
 - Under 14 days the tab calls the findings early hints.
 - The summary is worked out again from the member's saved check-ins (up to
   the last 365 days) every time the tab opens and after every tap or Submit,

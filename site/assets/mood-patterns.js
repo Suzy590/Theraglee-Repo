@@ -41,6 +41,14 @@ export const FACTORS = [
    'your social interaction felt better', 'social interaction'],
 ];
 
+/* How the weather affected the member that day, rated below the weather
+   picker on the same 1 (terrible) to 10 (fantastic) scale as the factors, in
+   the same shape as a FACTORS row. It is analyzed like a factor (Pearson's r
+   against the mood) but reported with the weather, and it is never the place
+   to focus: the weather is not the member's to change. */
+export const WEATHER_FEEL = ['weather_feel', 'How the weather affected you',
+  '10 = the weather felt fantastic to you', 'the weather felt better to you', 'the weather'];
+
 /* [key, emoji, label]. The keys are a data contract: mood_logs.weather checks them. */
 export const WEATHER = [
   ['sunny', '☀️', 'Sunny'], ['partly_cloudy', '⛅', 'Partly cloudy'], ['cloudy', '☁️', 'Cloudy'],
@@ -107,12 +115,15 @@ const one = (x) => (Math.round(x * 10) / 10).toFixed(1);
    - findings: the factors whose |r| is at least LINK, strongest first.
    - focus: of the factors that rise with mood, the one rated lowest on
      average, which is where a change may matter most. Null if none.
+   - weatherFeel: the WEATHER_FEEL rating in the same shape as a factor, with
+     r against the mood. Never among the factors, findings or focus.
    - weather: weather types with WEATHER_DAYS or more days whose average mood
      is at least WEATHER_GAP from the member's usual.
    - weatherLink: the weather as a whole, with how many days picked a weather
      type seen on WEATHER_DAYS or more days (n), how many such types (kinds),
      eta as r (null until there are MIN_DAYS such days across two or more
-     types), and the types sorted from the best average mood to the lowest.
+     types), and the types sorted from the best average mood to the lowest,
+     each with the average WEATHER_FEEL rating on its days (feel, or null).
    - statements: plain sentences for the member, in the order to show them. */
 export function analyze(rows) {
   const logged = (rows || []).filter(r => Number.isFinite(r?.mood));
@@ -120,13 +131,15 @@ export function analyze(rows) {
   const ready = days >= MIN_DAYS;
   const usual = days ? mean(logged.map(r => r.mood)) : null;
 
-  const factors = FACTORS.map(([key, label, , phrase, noun]) => {
+  const rate = ([key, label, , phrase, noun]) => {
     const rated = logged.filter(r => Number.isFinite(r[key]));
     const n = rated.length;
     const avg = n ? mean(rated.map(r => r[key])) : null;
     const r = n >= MIN_DAYS ? pearson(rated.map(x => x[key]), rated.map(x => x.mood)) : null;
     return { key, label, phrase, noun, n, avg, r };
-  });
+  };
+  const factors = FACTORS.map(rate);
+  const weatherFeel = rate(WEATHER_FEEL);
 
   const findings = ready
     ? factors.filter(f => f.r !== null && Math.abs(f.r) >= LINK)
@@ -141,8 +154,11 @@ export function analyze(rows) {
   // Every weather type seen on WEATHER_DAYS or more days, with its moods. A
   // type seen once says nothing about the weather, so it is left out.
   const kinds = WEATHER.map(([key, emoji, label]) => {
-    const moods = logged.filter(r => r.weather === key).map(r => r.mood);
-    return { key, emoji, label, n: moods.length, avg: moods.length ? mean(moods) : null, moods };
+    const days = logged.filter(r => r.weather === key);
+    const moods = days.map(r => r.mood);
+    const feels = days.map(r => r[WEATHER_FEEL[0]]).filter(Number.isFinite);
+    return { key, emoji, label, n: moods.length, avg: moods.length ? mean(moods) : null,
+      feel: feels.length ? mean(feels) : null, moods };
   }).filter(w => w.n >= WEATHER_DAYS).sort((a, b) => b.avg - a.avg);
   const weatherDays = kinds.reduce((s, w) => s + w.n, 0);
   const weatherLink = {
@@ -166,16 +182,37 @@ export function analyze(rows) {
         ? `On days ${f.phrase}, your mood tended to be better too (a ${strength(f.r)} link).`
         : `On days ${f.phrase}, your mood tended to be lower (a ${strength(f.r)} link). That is less common, and worth noticing.`);
     }
-    // The weather as a whole, when it moves with the mood: the kinds of day
-    // that run best and hardest. Then any other kind that stands apart.
+    // The weather: first how it felt to the member, when that moves with
+    // the mood; then the kind of weather, with the kinds of day that run
+    // best and hardest; then any other kind that stands apart.
+    const feelLinked = weatherFeel.r !== null && Math.abs(weatherFeel.r) >= LINK;
+    const kindLinked = weatherLink.r !== null && weatherLink.r >= LINK;
+    if (feelLinked) {
+      statements.push(weatherFeel.r > 0
+        ? `On days the weather felt better to you, your mood tended to be better too (a ${strength(weatherFeel.r)} link).`
+        : `On days the weather felt better to you, your mood tended to be lower (a ${strength(weatherFeel.r)} link). That is less common, and worth noticing.`);
+    }
     const named = new Set();
-    if (weatherLink.r !== null && weatherLink.r >= LINK) {
+    if (kindLinked) {
       const hi = weatherLink.types[0], lo = weatherLink.types[weatherLink.types.length - 1];
       named.add(hi.key); named.add(lo.key);
-      statements.push(`Your mood moves with the weather (a ${strength(weatherLink.r)} link). `
+      // The kind the member rates lowest for how it felt, when that is the
+      // kind their mood runs lowest on too.
+      const feltWorst = weatherLink.types.filter(t => t.feel !== null)
+        .reduce((w, t) => (w === null || t.feel < w.feel ? t : w), null);
+      const agree = feltWorst && feltWorst.key === lo.key && weatherLink.types.filter(t => t.feel !== null).length >= 2;
+      statements.push(`Your mood moves with the kind of weather (a ${strength(weatherLink.r)} link). `
         + `It has averaged ${one(hi.avg)} out of 5 on ${hi.label.toLowerCase()} days (${hi.n} of them) `
-        + `and ${one(lo.avg)} on ${lo.label.toLowerCase()} days (${lo.n}). The weather is not yours to change, `
-        + 'but knowing which days tend to run harder can help you plan something kind for them.');
+        + `and ${one(lo.avg)} on ${lo.label.toLowerCase()} days (${lo.n}).`
+        + (agree ? ` Those are also the days you rated the weather lowest for how it affected you (${one(lo.feel)} out of 10 on average).` : ''));
+    }
+    if (feelLinked || kindLinked) {
+      if (feelLinked && weatherLink.r !== null && !kindLinked) {
+        statements.push('How the weather feels to you moves with your mood more closely than the kind of weather does, '
+          + 'so it may be your experience of a day\'s weather, more than the forecast, that matters.');
+      }
+      statements.push('The weather is not yours to change, but knowing which days tend to run harder '
+        + 'can help you plan something kind for them.');
     }
     for (const w of weather) {
       if (named.has(w.key)) continue;
@@ -192,5 +229,5 @@ export function analyze(rows) {
     }
   }
 
-  return { days, ready, usual, factors, findings, focus, weather, weatherLink, statements };
+  return { days, ready, usual, factors, findings, focus, weatherFeel, weather, weatherLink, statements };
 }
