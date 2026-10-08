@@ -14,7 +14,7 @@ export const SPECIALTIES = [
   'Emotional Disturbance','Emotional Regulation','Family Conflict','First Responders',
   'Gambling','Gay','Geriatric and Seniors','Grief','Hoarding','Impulse Control Disorders',
   'Infertility','Infidelity','Intellectual Disability','Internet Addiction','Lesbian','LGBTQ+',
-  'Life Coaching','Life Transitions','Marital and Premarital','Medical Detox',
+  'Life Transitions','Marital and Premarital','Medical Detox',
   'Medication Management',"Men's Issues",'Menopause','Mood Disorders','Narcissistic Abuse',
   'Narcissistic Personality (NPD)','Neurodivergence','Obesity','Obsessive-Compulsive (OCD)',
   'Oppositional Defiance (ODD)','Panic Attacks','Parenting','Peer Relationships',
