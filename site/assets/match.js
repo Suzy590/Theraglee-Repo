@@ -195,14 +195,18 @@ export function matchDetailsModal(p, { editing = false } = {}) {
       <div class="field"><label>Your gender</label>
         ${chips('mm-gender', GENDERS, g => p.match_gender === g, true)}</div>
 
-      <div class="field"><label for="mm-topic1">What would you like to work on in therapy?</label>
+      <div class="field"><label for="mm-topic1">What would you like to work on in therapy?
+          <span class="muted" style="font-weight:400">(pick up to ${MATCH_TOPICS_MAX})</span></label>
+        <div class="help" style="margin:-4px 0 8px">Choose one topic, or two or three. Each box is one
+          topic.</div>
         <div class="grid g3" id="mm-issues">${[0, 1, 2].map(i => `
-          <select id="mm-topic${i + 1}" aria-label="Topic ${i + 1}${i ? ' (optional)' : ''}">
-            <option value="">${i ? 'Another topic (optional)' : 'Choose a topic'}</option>
+          <div><label for="mm-topic${i + 1}" class="faint" style="font-weight:400;font-size:.88rem">Topic ${i + 1}${i ? ' (optional)' : ''}</label>
+          <select id="mm-topic${i + 1}">
+            <option value="">${i ? 'Add another topic' : 'Choose a topic'}</option>
             ${MATCH_TOPICS.map(t => `<option value="${esc(t)}" ${(p.match_topics || [])[i] === t ? 'selected' : ''}>${esc(t)}</option>`).join('')}
-          </select>`).join('')}</div>
-        <div class="help">Pick up to ${MATCH_TOPICS_MAX}. These are the same specialties therapists
-          list, so you are matched with therapists who work on them.</div></div>
+          </select></div>`).join('')}</div>
+        <div class="help">These are the same specialties therapists list, so you are matched with
+          therapists who work on them.</div></div>
 
       <div class="field"><label>Who are the sessions for?</label>
         ${chips('mm-for', SESSION_FOR, k => p.match_session_for === k, true)}</div>
