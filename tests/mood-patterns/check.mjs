@@ -7,7 +7,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import {
-  analyze, pearson, strength, FACTORS, WEATHER, MIN_DAYS,
+  analyze, pearson, eta, strength, FACTORS, WEATHER, MIN_DAYS, WEATHER_DAYS,
 } from "../../site/assets/mood-patterns.js";
 
 let n = 0;
@@ -18,6 +18,15 @@ test("pearson is 1, -1, or null when a side never changes", () => {
   assert.equal(pearson([1, 2, 3], [2, 4, 6]).toFixed(6), "1.000000");
   assert.equal(pearson([1, 2, 3], [6, 4, 2]).toFixed(6), "-1.000000");
   assert.equal(pearson([5, 5, 5], [1, 2, 3]), null);
+});
+
+test("eta is 1 when the groups explain every change, 0 when they explain none, null otherwise", () => {
+  assert.equal(eta([[2, 2, 2], [4, 4, 4]]).toFixed(6), "1.000000");
+  assert.equal(eta([[1, 5], [1, 5], [3, 3]]).toFixed(6), "0.000000");
+  assert.equal(eta([[1, 2, 3]]), null, "one group says nothing");
+  assert.equal(eta([[3, 3], [3, 3]]), null, "a mood that never changes says nothing");
+  // Two of four points' worth of spread sits between the groups: eta = sqrt(1/2).
+  assert.equal(eta([[1, 3], [3, 5]]).toFixed(4), Math.SQRT1_2.toFixed(4));
 });
 
 test("strength labels", () => {
@@ -88,11 +97,68 @@ test("weather is mentioned only when it stands apart from the usual mood", () =>
   assert.ok(res.statements.some(s => s.startsWith("On rainy days (3 of them), your mood averaged 1.7 out of 5")));
 });
 
+test("the weather joins the chart once seven days span two or more kinds seen twice", () => {
+  // Sunny days run high, rainy days low, so the weather moves with the mood.
+  const rows = [
+    { mood: 5, weather: "sunny" }, { mood: 4, weather: "sunny" }, { mood: 5, weather: "sunny" },
+    { mood: 2, weather: "rainy" }, { mood: 1, weather: "rainy" }, { mood: 2, weather: "rainy" },
+    { mood: 3, weather: "cloudy" }, { mood: 3, weather: "cloudy" },
+    { mood: 5, weather: "snowy" }, // one day: left out of the weather analysis
+    { mood: 3 },                   // no weather picked: left out too
+  ].map((r, i) => ({ ...r, logged_on: day(i) }));
+  const res = analyze(rows);
+  const w = res.weatherLink;
+  assert.equal(w.label, "Weather");
+  assert.equal(w.n, 8, "days whose weather was seen on two or more days");
+  assert.equal(w.kinds, 3);
+  assert.ok(w.r !== null && w.r >= 0.7, `a strong link, got ${w.r}`);
+  assert.deepEqual(w.types.map(t => t.key), ["sunny", "cloudy", "rainy"], "best average mood first");
+  assert.ok(w.types.every(t => t.moods === undefined), "the raw moods stay out of the result");
+  assert.ok(res.statements.some(s => s.startsWith("Your mood moves with the weather (a strong link). "
+    + "It has averaged 4.7 out of 5 on sunny days (3 of them) and 1.7 on rainy days (3).")));
+  assert.ok(!res.statements.some(s => s.startsWith("On sunny days") || s.startsWith("On rainy days")),
+    "the kinds named in the weather sentence are not repeated");
+  assert.ok(!res.statements.some(s => s.includes("weather may be a good place to focus")),
+    "the weather is never the focus");
+});
+
+test("the weather waits for seven days seen on two or more kinds", () => {
+  const six = [
+    { mood: 5, weather: "sunny" }, { mood: 5, weather: "sunny" }, { mood: 5, weather: "sunny" },
+    { mood: 1, weather: "rainy" }, { mood: 1, weather: "rainy" }, { mood: 1, weather: "rainy" },
+    { mood: 3, weather: "cloudy" }, { mood: 3, weather: "foggy" },
+  ].map((r, i) => ({ ...r, logged_on: day(i) }));
+  assert.equal(analyze(six).weatherLink.n, 6);
+  assert.equal(analyze(six).weatherLink.r, null, "six days are not enough");
+  const oneKind = Array.from({ length: 8 }, (_, i) => ({ logged_on: day(i), mood: (i % 5) + 1, weather: "sunny" }));
+  assert.equal(analyze(oneKind).weatherLink.kinds, 1);
+  assert.equal(analyze(oneKind).weatherLink.r, null, "one kind of weather says nothing");
+  // Seen on only one day each: no kind reaches WEATHER_DAYS.
+  const singles = WEATHER.slice(0, 8).map(([k], i) => ({ logged_on: day(i), mood: (i % 5) + 1, weather: k }));
+  assert.equal(analyze(singles).weatherLink.n, 0);
+  assert.equal(analyze(singles).weatherLink.r, null);
+  assert.equal(WEATHER_DAYS, 2);
+});
+
+test("weather that does not move with the mood gets a little-or-no-link bar and no sentence", () => {
+  const rows = [
+    { mood: 2, weather: "sunny" }, { mood: 4, weather: "sunny" }, { mood: 3, weather: "sunny" },
+    { mood: 2, weather: "rainy" }, { mood: 4, weather: "rainy" }, { mood: 3, weather: "rainy" },
+    { mood: 3, weather: "cloudy" }, { mood: 3, weather: "cloudy" },
+  ].map((r, i) => ({ ...r, logged_on: day(i) }));
+  const res = analyze(rows);
+  assert.ok(res.weatherLink.r !== null && res.weatherLink.r < 0.3, `got ${res.weatherLink.r}`);
+  assert.equal(strength(res.weatherLink.r), "little");
+  assert.deepEqual(res.weather, []);
+  assert.ok(!res.statements.some(s => s.includes("moves with the weather")));
+});
+
 test("nothing standing out still says so", () => {
   const rows = Array.from({ length: 8 }, (_, i) => ({ logged_on: day(i), mood: 3 }));
   const res = analyze(rows);
   assert.equal(res.statements.length, 1);
-  assert.match(res.statements[0], /No single factor stands out yet/);
+  assert.match(res.statements[0], /No single factor, and not the weather, stands out yet/);
+  assert.equal(res.weatherLink.r, null, "no weather picked, so nothing to chart");
 });
 
 test("nine factors and seven to ten weather choices, matching the migration", () => {
