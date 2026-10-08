@@ -609,7 +609,8 @@ async function numbers(){
     <h2>Tracking numbers</h2>
     <p class="muted" style="max-width:64ch">Each verified therapist gets a Theraglee number shown
       on their profile instead of their own line. Calls to it forward to their real number, and
-      every answered call is counted on their dashboard.</p>
+      every answered call is counted on their dashboard. Only a listing whose membership is
+      active is live, so only those get a number.</p>
 
     <div class="notice" style="margin:18px 0">
       <strong>Automatic.</strong> A Twilio voice number is bought the moment a listing goes live
@@ -622,7 +623,9 @@ async function numbers(){
     ${verified.length ? `<div class="scroll-x"><table class="data">
       <thead><tr><th>Therapist</th><th>Forwards to</th><th>Theraglee number</th><th></th></tr></thead>
       <tbody>${verified.map(t=>`<tr>
-        <td><strong>${esc(t.first_name)} ${esc(t.last_name)}</strong><br>
+        <td><strong>${esc(t.first_name)} ${esc(t.last_name)}</strong>
+          ${t.published ? '<span class="badge live">membership active</span>'
+                        : '<span class="badge gray">membership inactive</span>'}<br>
           <span class="faint">${esc((t.license_states||[]).join(', '))}</span></td>
         <td class="faint">${esc(t.contact_phone||'no number on file')}</td>
         <td>${t.proxy_phone
@@ -631,7 +634,8 @@ async function numbers(){
           : '<span class="faint">not issued</span>'}</td>
         <td style="white-space:nowrap">${t.proxy_phone
           ? `<button class="btn sm ghost" data-release="${t.id}">Release</button>`
-          : `<button class="btn sm" data-issue="${t.id}">Issue</button>
+          : `<button class="btn sm" data-issue="${t.id}" ${t.published ? '' :
+               'disabled title="The membership is not active, so the listing is not live and gets no number."'}>Issue</button>
              <button class="btn sm ghost" data-paste="${t.id}">Paste by hand</button>`}</td>
       </tr>`).join('')}</tbody></table></div>`
       : '<p class="muted">No verified therapists yet.</p>'}`);

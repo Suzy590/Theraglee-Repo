@@ -11,7 +11,8 @@
 //   issue    Buys a voice number near the therapist (their own area code, then
 //            their first licensed state, then anywhere in the US), points its
 //            "A call comes in" webhook at the twilio-voice function, and saves
-//            it on the listing. Does nothing when the listing already has one.
+//            it on the listing. Only a live listing (verified, membership
+//            active) gets one; a listing that already has one is left alone.
 //   release  Gives a Twilio number back and clears it from the listing. A
 //            number pasted in by hand is simply cleared.
 //
@@ -76,13 +77,13 @@ function twilio() {
 
 type Listing = {
   id: string; first_name: string | null; last_name: string | null; contact_phone: string | null;
-  license_states: string[] | null; verification: string; proxy_phone: string | null;
+  license_states: string[] | null; verification: string; published: boolean; proxy_phone: string | null;
   proxy_phone_provider: string | null; proxy_phone_sid: string | null;
 };
 
 async function listing(id: string): Promise<Listing | null> {
   const { data } = await admin.from("therapist_profiles")
-    .select("id, first_name, last_name, contact_phone, license_states, verification, proxy_phone, proxy_phone_provider, proxy_phone_sid")
+    .select("id, first_name, last_name, contact_phone, license_states, verification, published, proxy_phone, proxy_phone_provider, proxy_phone_sid")
     .eq("id", id).maybeSingle();
   return data as Listing | null;
 }
@@ -91,6 +92,11 @@ async function issue(t: Listing) {
   if (t.proxy_phone) return json({ ok: true, phone: t.proxy_phone, already: true });
   if (t.verification !== "verified") {
     return json({ error: "not_verified", message: "Only a verified listing gets a number." }, 409);
+  }
+  // `published` is verified plus an active membership: a listing nobody can
+  // see would only cost its number's monthly fee.
+  if (!t.published) {
+    return json({ error: "not_live", message: "The membership is not active, so the listing is not live and gets no number." }, 409);
   }
   const tw = twilio();
   if (!tw) return json({ error: "not_configured", message: "TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN are not set." }, 503);

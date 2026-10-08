@@ -96,8 +96,11 @@ profile showed.
 their forwarding number, their Theraglee number and where it came from:
 
 - **Issue** buys a number now, for a listing that went live before this was
-  switched on or whose automatic purchase failed. Only a verified listing
-  gets one, and a listing that already has one is left alone.
+  switched on or whose automatic purchase failed. Only a live listing gets one
+  (verified, with the membership active: the badge beside the name says
+  which), and a listing that already has one is left alone. The button is
+  disabled for a listing whose membership is inactive, and the function
+  refuses too.
 - **Release** gives a Twilio number back (it stops billing) and clears it from
   the listing. Calls already recorded stay on the therapist's dashboard. A
   number that was pasted in by hand is simply cleared.
