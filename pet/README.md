@@ -8,7 +8,7 @@ There are two builds of the same pet, and they behave identically:
 
 | | Source | Runs on | Download size |
 |---|---|---|---|
-| **Mac** | [`mac/`](mac) — Swift + AppKit, one file | macOS 12+ | 568 KB |
+| **Mac** | [`mac/`](mac) — Swift + AppKit, one file | macOS 12+ | 563 KB |
 | **Windows** | [`windows/`](windows) — C# + SkiaSharp + Win32 | Windows 10/11, 64-bit | 8.9 MB |
 
 The Mac build came first. The Windows build is a port of it, not a
@@ -31,7 +31,17 @@ cp Pip.app.zip ../../site/downloads/Pip-mac.zip
 
 `build.sh` compiles for Apple Silicon *and* Intel and welds the two into one
 universal binary, so a single `Pip.app` runs on every Mac from the last decade.
-It prints `lipo -info` so you can see both slices went in.
+It prints `lipo -info` so you can see both slices went in, and it ends by
+running the check below on the zip it made.
+
+Always ship what `build.sh` produces. Compiling `pet.swift` by hand and zipping
+`Pip.app` with another tool is how a download ends up greeting members with
+**"The application "Pip" can't be opened"** (see below). After copying the zip
+into `site/downloads/`, check it:
+
+```
+node tests/pet-mac-zip/check.mjs
+```
 
 **Windows.** From anywhere with the .NET 8 SDK — including a Mac or Linux
 machine, no Windows needed:
@@ -61,6 +71,28 @@ publish above works as written.
 
 Then update the sizes quoted on `site/pet.html`, which are shown to members
 before they click.
+
+## "The application "Pip" can't be opened"
+
+Finder shows this one line, with no reason, when the bundle itself is fine but
+the program inside it cannot be started. `node tests/pet-mac-zip/check.mjs`
+tells the causes apart, and `build.sh` avoids all three:
+
+- **The program is not marked executable.** `Pip.app/Contents/MacOS/Pip` has
+  to carry the Unix execute bit, and a zip only keeps it when it was made by a
+  tool that records Unix permissions (`ditto`, as in `build.sh`, or `zip -r`).
+  A zip made by Finder's *Compress*, a browser, or a Windows or Python zipper
+  drops it, and the app silently refuses to open on every Mac.
+- **The program was built for a newer macOS than the bundle promises.**
+  `swiftc` run without a `-target` compiles for the macOS of the Mac it runs
+  on, so a build on macOS 26 only opens on macOS 26, even though `Info.plist`
+  says 12. `build.sh` passes `-target arm64-apple-macos12` and
+  `-target x86_64-apple-macos12`.
+- **There is no Intel slice.** An Apple Silicon-only binary will not open on
+  an Intel Mac. `build.sh` builds both and welds them with `lipo`.
+
+The fix for all three is the same: on a Mac, run `pet/mac/build.sh`, copy
+`Pip.app.zip` to `site/downloads/Pip-mac.zip`, run the check, and commit.
 
 ## Neither build is signed
 

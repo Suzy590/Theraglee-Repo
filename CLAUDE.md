@@ -71,6 +71,14 @@ node tools/discover_tools_sql.mjs
 
 `docs/weekly-tool-email.md` is the guide.
 
+## The desktop pet download is built on a Mac, by `build.sh`
+
+`site/downloads/Pip-mac.zip` is what members download from `/pet`. It is
+always the output of `pet/mac/build.sh` (which targets macOS 12, builds a
+universal binary, and zips with `ditto` so the execute bit survives), never a
+hand-compiled `pet.swift` zipped some other way. `node tests/pet-mac-zip/check.mjs`
+guards this; `pet/README.md` is the guide.
+
 ## `site/` is deployed verbatim
 
 A push to the default branch deploys `site/` via Vercel, and every file in it is
