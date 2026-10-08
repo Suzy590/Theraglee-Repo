@@ -49,12 +49,16 @@ public sealed class Brain
     public bool StayPut;
     public bool ChaseCursor;
 
-    bool selfCareOn;
+    // On by default. Switching it on (or launching with it on) nudges right
+    // away; after that each gap is drawn at random from CareGapMin..CareGapMax,
+    // so the reminders never settle into a rhythm you can tune out.
+    bool selfCareOn = true;
     public bool SelfCareOn
     {
         get => selfCareOn;
-        set { selfCareOn = value; careTimer = CareInterval; Persist(); }
+        set { selfCareOn = value; careTimer = CareFirstDelay; Persist(); }
     }
+    public CareKind CurrentCare => careKind;
 
     float t, stateTime, stateLen = 3, facing = 1, walkPhase;
     PetState state = PetState.Idle;
@@ -70,9 +74,10 @@ public sealed class Brain
     PetState pendingCare = PetState.CareWater;
     float hopFromY, hopToY, peekX, peekHomeX;
     float toyScreenX, toyY, toyTimer;
-    float careTimer = 1500;
-    const float CareInterval = 1500;          // ~25 minutes
-    int careIndex;                            // which CareKind comes next
+    float careTimer = CareFirstDelay;
+    const float CareFirstDelay = 1.5f;        // a beat, so Pip is on screen first
+    const float CareGapMin = 900, CareGapMax = 2100;   // 15 to 35 minutes
+    readonly List<CareKind> careDeck = new(); // this round's remaining reminders
     CareKind careKind = CareKind.Eyes;        // the one on the sign right now
     SKPoint lastMouse;
     float mouseActive;
@@ -118,7 +123,17 @@ public sealed class Brain
             // from it or the user's pick gets silently overridden.
             if (prefs.GetInt("pip.palette") is int stored && stored >= 0 && stored < Palette.All.Length)
                 paletteIndex = stored;
-            selfCareOn = prefs.GetBool("pip.selfcare") ?? false;
+            // Earlier builds wrote pip.selfcare on every save with a default of
+            // off, so a stored false from then is almost always "never looked
+            // at the menu", not a choice. Ignore it once and record the new
+            // default; a member who then turns it off stays off.
+            bool firstRunOfV3 = (prefs.GetInt("pip.prefsVersion") ?? 0) < 3;
+            if (!firstRunOfV3 && prefs.GetBool("pip.selfcare") is bool care) selfCareOn = care;
+            if (firstRunOfV3)
+            {
+                prefs.SetBool("pip.selfcare", selfCareOn);
+                prefs.SetInt("pip.prefsVersion", 3);
+            }
         }
         finally { loadingPrefs = false; }
     }
@@ -313,13 +328,15 @@ public sealed class Brain
             if (shoutAge > ShoutLife) shoutText = null;
         }
 
-        // self-care nudges, only when it wouldn't interrupt something
+        // self-care nudges, only when it wouldn't interrupt something. The
+        // timer is left at zero while Pip is busy, so the nudge comes the
+        // moment it is free rather than a whole gap later; StartCare() sets
+        // the next gap.
         if (selfCareOn)
         {
             careTimer -= dt;
             if (careTimer <= 0)
             {
-                careTimer = CareInterval;
                 switch (state)
                 {
                     case PetState.Idle:
@@ -409,12 +426,23 @@ public sealed class Brain
     }
 
     /// A self-care nudge: bring water over, model a stretch, or hold up one of
-    /// the other reminders. They take turns, in CareKind order.
+    /// the other reminders. The order is random, but drawn from a shuffled deck
+    /// of all nine, so every reminder comes up once before any comes back, and
+    /// a new round never opens with the one that closed the last. Also pushes
+    /// the next automatic nudge out by a fresh random gap, so "Nudge me now"
+    /// doesn't make the next one arrive early.
     public void StartCare()
     {
-        var kinds = Enum.GetValues<CareKind>();
-        careKind = kinds[careIndex % kinds.Length];
-        careIndex = (careIndex + 1) % kinds.Length;
+        careTimer = Rand(CareGapMin, CareGapMax);
+        if (careDeck.Count == 0)
+        {
+            var kinds = Enum.GetValues<CareKind>();
+            rng.Shuffle(kinds);
+            if (kinds[0] == careKind && kinds.Length > 1) (kinds[0], kinds[^1]) = (kinds[^1], kinds[0]);
+            careDeck.AddRange(kinds);
+        }
+        careKind = careDeck[0];
+        careDeck.RemoveAt(0);
         switch (careKind)
         {
             case CareKind.Water:
