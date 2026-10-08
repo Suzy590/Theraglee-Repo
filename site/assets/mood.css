@@ -35,6 +35,12 @@
   font-size:.9rem}
 .link-row .bar{margin:0}
 .link-row .bar.neg i{background:#E3C9A8}
+/* The color key under the chart heading: green bars rise with the mood, tan
+   ones move against it. */
+.link-key{display:flex;flex-wrap:wrap;gap:4px 18px;margin:0 0 12px;font-size:.84rem}
+.link-key span{display:inline-flex;align-items:center;gap:6px}
+.link-key .swatch{display:inline-block;width:18px;height:8px;border-radius:var(--r-pill);background:var(--lime)}
+.link-key .swatch.neg{background:#E3C9A8}
 @media (max-width:560px){.link-row{grid-template-columns:1fr 1fr}.link-row .bar{grid-column:1/-1;order:3}}
 .mood-note{margin:22px 0 0;padding:12px 14px;border-radius:var(--r-sm);background:var(--sand);
   font-size:.86rem;color:var(--muted)}
