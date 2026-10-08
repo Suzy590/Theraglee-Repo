@@ -7,7 +7,7 @@ from three levels, top to bottom, and one picture beside them:
 | Level | What it is | On the map |
 |---|---|---|
 | **Your goal** | One sentence in the member's own words ("Evenings that feel like mine again"). The destination. It does not change day to day. | The far hills, with a drawing for the goal's theme: a lit cabin, a lighthouse, a campfire, a sunrise, a peak with a flag, a bench under a tree, an easel, a lookout tower |
-| **Working on now** | One of three to five milestones the member chose: things they could notice in real life ("The phone charges outside the bedroom most nights"), never numbers. Reached when the member says so. | Camps along the path, a tent and a numbered flag each; a green check flag once reached, a glow on the current one, fog on the ones ahead |
+| **Working on now** | One of three to five milestones the member chose: things they could notice in real life ("The phone charges outside the bedroom most nights"), never numbers. Reached when the member says so. | Camps along the path, a tent and a numbered flag each; a green check flag once reached, a glow on the current one, the ones ahead a little faded |
 | **Today's stepping stones** | A few small actions from the library (`ACTIONS` in `quest-paths.js`), or ones the member wrote, that serve the current milestone. Any one of them done today is today's step. Small on purpose, and the page says so. | The hiker, who moves a little toward the next camp for every day a stone is done (seven steps is the suggested distance) |
 
 Beside the three levels, in the **left third of the tab**, the same trail is
