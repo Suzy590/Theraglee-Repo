@@ -61,11 +61,14 @@ view of the member; deleting the account does.
 ## How the answers are loaded
 
 Every page reads the signed-in member's profile from `my_access()`
-(`20260928190000_match_mode_insurance_and_reload.sql`). It must return every
+(latest copy: `20261008120000_my_access_match_gender.sql`). It must return every
 `match_*` column above; if one is left out, the "What therapists see" line (on
 the dashboard, the link beside ON that opens it on hover or tap) forgets it at
 each sign-in and the window opens blank for it, even though the answer is
-saved. Add any new Match Mode column there too.
+saved. Add any new Match Mode column there too, and when another migration
+rewrites `my_access()` for some other column, start from the latest copy so no
+`match_*` column is dropped (that is how `match_gender` went missing between
+2026-10-06 and 2026-10-08).
 
 ## What therapists never see
 
