@@ -64,10 +64,11 @@
   .dash-intro [data-panel].on{display:flex;flex-direction:column;align-items:flex-start;min-width:0;
     width:fit-content;max-width:100%}
   /* The switch sits under the greeting: the words above it, ON or OFF just to
-     its right with the line therapists read beyond that, and "How Theraglee
-     Match Mode works" underneath, all left-aligned. */
+     its right, and underneath a row with the line therapists read and "How
+     Theraglee Match Mode works" to its right, all left-aligned. */
   .mm-row{display:flex;flex-direction:column;align-items:flex-start;gap:10px;margin-top:18px}
   .mm-toggle{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .mm-under{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
   .mm-switch{position:relative;flex:0 0 auto;width:72px;height:36px;border-radius:100px;cursor:pointer;padding:0;
     background:#DCD8C9;border:2px solid #CFCAB8;
     transition:background .5s ease,border-color .5s ease,box-shadow .5s ease}
@@ -84,9 +85,10 @@
   .mm-state{font-family:var(--sans);font-weight:600;letter-spacing:.08em;color:var(--muted)}
   .mm-row.on .mm-state{color:var(--green)}
   /* The consent wording (MATCH_BLURB in assets/match.js) sits under the
-     switch: "How Theraglee Match Mode works", whose list opens over the panels
-     below rather than pushing them down. The words are recorded in
-     docs/match-mode-consent.md; change both together. */
+     switch, to the right of "What therapists see": "How Theraglee Match Mode
+     works", whose list opens over the panels below rather than pushing them
+     down. The words are recorded in docs/match-mode-consent.md; change both
+     together. */
   .mm-desc{margin:0;text-align:left;font-size:.88rem;line-height:1.5}
   .mm-desc .mm-info{position:relative;margin-top:0}
   .mm-desc .mm-info ul{position:absolute;z-index:20;top:calc(100% + 6px);left:0;width:min(400px,86vw);
@@ -94,7 +96,7 @@
     border-radius:var(--r);box-shadow:var(--shadow-2)}
   /* Nothing closes while the pointer crosses the gap between the words and the list. */
   .mm-desc .mm-info ul::before,.mm-see-pop::before{content:"";position:absolute;left:0;right:0;top:-8px;height:8px}
-  /* "What therapists see", to the right of ON: the exact line therapists read
+  /* "What therapists see", under the switch: the exact line therapists read
      opens over the panels below while the pointer is over it, or once clicked
      (.open). Only there while Match Mode is on. */
   .mm-see{position:relative;font-size:.88rem}
@@ -221,22 +223,24 @@
           </div>
           <h1 style="margin:.1em 0 0" id="greet">Your dashboard</h1>
           <!-- The Theraglee Match Mode switch, under the greeting: ON or OFF beside it,
-               then "What therapists see" (the line therapists read, while it is on),
-               and "How Theraglee Match Mode works" underneath. -->
+               then a row underneath with "What therapists see" (the line therapists
+               read, while it is on) and "How Theraglee Match Mode works" to its right. -->
           <div class="mm-row" id="match-mode">
             <span class="mm-label" id="mm-label">Theraglee Match Mode is</span>
             <div class="mm-toggle">
               <button class="mm-switch" id="vis" type="button" role="switch" aria-checked="false"
                 aria-labelledby="mm-label" aria-describedby="mm-how-list"><i></i></button>
               <b class="mm-state" id="mm-state" aria-hidden="true">OFF</b>
+            </div>
+            <div class="mm-under">
               <div class="mm-see" id="mm-see" hidden>
                 <a href="#" class="mm-see-link" id="vis-link" aria-expanded="false"
                   aria-controls="vis-summary">What therapists see</a>
                 <div class="mm-see-pop" id="vis-summary"></div>
               </div>
+              <!-- Filled from MATCH_BLURB in assets/match.js. -->
+              <div class="mm-desc muted" id="mm-desc"></div>
             </div>
-            <!-- Filled from MATCH_BLURB in assets/match.js. -->
-            <div class="mm-desc muted" id="mm-desc"></div>
           </div>
         </div>
 
@@ -625,7 +629,7 @@ function setVis(on){
 }
 setVis(Boolean(p.visible_to_therapists));
 
-// To the right of ON: "What therapists see", which opens the exact line
+// Under the switch: "What therapists see", which opens the exact line
 // therapists read (and a way to change it) on hover, or on a click that pins
 // it open until the next. Hidden while Match Mode is off.
 const visSee = document.getElementById('mm-see'), visLink = document.getElementById('vis-link');
