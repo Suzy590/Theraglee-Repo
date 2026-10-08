@@ -88,7 +88,7 @@ update public.profiles
                       when 'Grief/loss'          then 'Grief'
                       when 'Relationship issues' then 'Relationship Issues'
                       when 'Family issues'       then 'Family Conflict'
-                      when 'Trauma'              then 'Trauma and PTSD'
+                      when 'Trauma'              then 'PTSD/C-PTSD and Trauma'
                       when 'Personal growth'     then null
                       when 'Other'               then null
                       else topic

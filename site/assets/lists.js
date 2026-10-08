@@ -19,11 +19,11 @@ export const SPECIALTIES = [
   'Narcissistic Personality (NPD)','Neurodivergence','Obesity','Obsessive-Compulsive (OCD)',
   'Oppositional Defiance (ODD)','Panic Attacks','Parenting','Peer Relationships',
   'Personality Disorders','Phobias','Polyamory & ENM','Pregnancy, Prenatal, Postpartum',
-  'Premenstrual Dysphoric Disorder (PMDD)','Psychosis','Racial Identity','Relationship Issues',
+  'Premenstrual Dysphoric Disorder (PMDD)','Psychosis','PTSD/C-PTSD and Trauma','Racial Identity','Relationship Issues',
   'School Issues','Self Esteem','Self-Harming','Sex Therapy','Sex-Positive & Kink Friendly',
   'Sexual Abuse','Sexual Addiction','Sleep or Insomnia','Social Anxiety','Spirituality',
   'Sports Performance','Stress','Substance Use','Suicidal Ideation','Teen Violence',
-  'Testing and Evaluation','Thinking Disorders','Transgender','Trauma and PTSD',
+  'Testing and Evaluation','Thinking Disorders','Transgender',
   'Traumatic Brain Injury (TBI)','Veterans','Video Game Addiction','Weight Loss',
   "Women's Issues",'Workplace Issues',
 ];
