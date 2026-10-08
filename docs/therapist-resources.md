@@ -87,6 +87,16 @@ the owner says to stop. Each day's session:
 If a day is missed the next day does not double up; the library simply gets
 its five per kind and five per topic that day.
 
+Since 2026-10-08 the session also merges its own pull request (step 8 above
+opens it and merges it once its checks are green), applies the day's migration
+before any git step and never undoes that because a push failed, and starts by
+pulling into the JSON any database row the JSON lacks, so a failed push on one
+day is caught up by the next. Before that date the drafts waited for the owner
+and the repo copy ran weeks behind the database, so a day's session could
+reuse a slug an earlier day had used and the later upsert replaced the earlier
+row; the days left short by that are listed in `SHORT_DAYS` in the check and
+are the only days it does not hold to five per topic.
+
 ## Writing a resource
 
 The check enforces the shape; this is the intent behind it. Look at the
