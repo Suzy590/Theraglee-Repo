@@ -92,6 +92,16 @@ in `supabase/migrations/`. Change them here, run
 edit a function in the Supabase Dashboard, or the next deploy will overwrite it.
 `docs/stripe.md` is the guide.
 
+## Tracking numbers forward through Twilio
+
+A verified therapist's profile shows a Theraglee number
+(`therapist_profiles.proxy_phone`) bought by hand in the Twilio Console. The
+`twilio-voice` Edge Function forwards its calls to the therapist's real number
+and keeps each one in `therapist_calls`, the caller masked to four digits. The
+decisions live in `supabase/functions/_shared/twilio.ts`;
+`node tests/twilio-voice/check.mjs` guards them. `docs/phone-numbers.md` is
+the guide.
+
 ## Checklists grow by two a day
 
 Every checklist carries a description — one or two sentences on what that
