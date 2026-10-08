@@ -318,7 +318,8 @@ therapist is the merchant of record.
 ## Admin membership tools
 
 The **Memberships** tab of `/admin.html` has a **Manage** button on every
-member and therapist, and an **Add a member or therapist** button. The
+member and therapist, a **Discontinue** button on every active membership,
+and an **Add a member or therapist** button. The
 **Discount codes** tab makes and ends codes. All of it goes through the
 `admin-membership` function, which refuses anyone who is not an admin.
 
@@ -328,7 +329,8 @@ member and therapist, and an **Add a member or therapist** button. The
   no Stripe subscription, no charge. `sub_active()` counts `comped` as active,
   so access works exactly as if they paid. If they later buy a plan at
   checkout, the paid subscription replaces the comp.
-- **End membership.** A Stripe subscription is canceled in Stripe, either now
+- **Discontinue membership.** From the row's **Discontinue** button or the
+  same section of **Manage**. A Stripe subscription is canceled in Stripe, either now
   (no refund) or at the end of the paid period, which can be undone until
   then. A complimentary one ends at once. A therapist's listing comes down.
 - **Add.** Sends a Supabase invitation email to a new member or therapist,

@@ -162,6 +162,8 @@ async function members(){
       : '<div class="empty">Nobody matches.</div>';
     document.querySelectorAll('[data-manage]').forEach(b => b.onclick = () =>
       manage(all.find(p => p.id === b.dataset.manage), byUser[b.dataset.manage]));
+    document.querySelectorAll('[data-discontinue]').forEach(b => b.onclick = () =>
+      discontinue(all.find(p => p.id === b.dataset.discontinue), byUser[b.dataset.discontinue]));
   };
 
   render(`
@@ -172,7 +174,8 @@ async function members(){
     <p class="muted" style="max-width:64ch">Everyone with an account, split into the two kinds of
       membership: <strong>members</strong>, who use the site for themselves, and
       <strong>therapists</strong>, who pay for a practice listing. Use <strong>Manage</strong> on a
-      row to change someone's plan, end their membership, or apply a discount code.</p>
+      row to change someone's plan or apply a discount code, and <strong>Discontinue</strong> to end
+      an active membership.</p>
 
     <div class="grid g4" style="margin-top:18px">
       ${stat(memberRows.length, 'members')}
@@ -207,8 +210,59 @@ async function members(){
   draw();
 }
 
+// Every row gets Manage; a row with a live membership also gets Discontinue,
+// so ending one is a click away without opening the full Manage window.
 const manageBtn = (p) => p.role === 'admin' ? ''
-  : `<button class="btn sm ghost" data-manage="${p.id}">Manage</button>`;
+  : `<span class="row" style="gap:6px;flex-wrap:nowrap;justify-content:flex-end">
+      <button class="btn sm ghost" data-manage="${p.id}">Manage</button>
+      ${isLive(p) ? `<button class="btn sm danger" data-discontinue="${p.id}">Discontinue</button>` : ''}
+    </span>`;
+
+/** The Discontinue window: the one job of ending a membership, with the same
+ *  choices as the Manage window's End section. */
+function discontinue(p, listing){
+  const therapist = p.role === 'therapist';
+  const stripe = paysStripe(p);
+  const comped = p.subscription_status === 'comped';
+  const name = listing ? `${listing.first_name||''} ${listing.last_name||''}`.trim() : '';
+  const now = therapist ? 'Therapist membership' : planName(p.tier);
+  const back = modal(`
+    <h2 style="margin-bottom:4px">Discontinue membership</h2>
+    <p class="faint" style="margin:0 0 14px">${esc(name || p.full_name || p.email || 'Account')} · ${esc(p.email||'')}</p>
+    <p style="margin:0 0 18px">Now: <strong>${esc(now)}</strong> ${statusBadge(p)}
+      <span class="faint">${esc(renews(p))}</span></p>
+    ${stripe ? `
+      <p class="muted" style="font-size:.9rem;margin:0 0 14px">They pay through Stripe. Ending at the end of the
+        period lets them keep what they paid for and stops the next charge. Ending now takes access away at
+        once and does not refund the current period.${therapist ? ' Either way their listing comes down.' : ''}</p>
+      <div class="row">
+        ${p.cancel_at_period_end
+          ? `<button class="btn sm ghost" id="dresume">Keep it going (undo the scheduled end)</button>`
+          : `<button class="btn sm" id="dendlater">End when the current period is over</button>`}
+        <button class="btn sm danger" id="dendnow">End now</button>
+      </div>`
+    : comped ? `
+      <p class="muted" style="font-size:.9rem;margin:0 0 14px">This membership is complimentary, so there is nothing
+        to refund. It ends at once${therapist ? ' and their listing comes down' : ' and they go back to the Free plan'}.</p>
+      <button class="btn sm danger" id="dendnow">End complimentary membership</button>`
+    : '<p class="faint" style="margin:0">There is no active membership to end.</p>'}
+    <div class="row" style="justify-content:flex-end;margin-top:22px">
+      <button class="btn ghost" id="dclose">Close</button></div>`);
+
+  const done = (msg) => { back.remove(); toast(msg, 'ok'); members(); };
+  back.querySelector('#dclose').onclick = () => back.remove();
+  back.querySelector('#dendnow')?.addEventListener('click', async (e) => {
+    if (!confirm('End this membership now? Access stops straight away.')) return;
+    if (await adminCall('end', { user_id: p.id, when: 'now' }, e.target, 'Ending…')) done('Membership discontinued.');
+  });
+  back.querySelector('#dendlater')?.addEventListener('click', async (e) => {
+    if (await adminCall('end', { user_id: p.id, when: 'period_end' }, e.target, 'Scheduling…'))
+      done('It will end when the current period is over.');
+  });
+  back.querySelector('#dresume')?.addEventListener('click', async (e) => {
+    if (await adminCall('resume', { user_id: p.id }, e.target, 'Saving…')) done('The membership will keep renewing.');
+  });
+}
 
 /** The Manage window for one account: change plan, end, resume, discount. */
 async function manage(p, listing){
@@ -243,7 +297,7 @@ async function manage(p, listing){
       <button class="btn sm" id="mchange">${stripe ? 'Switch plan' : 'Give this plan free'}</button>
     </div>
 
-    <h3 style="margin:22px 0 6px">End membership</h3>
+    <h3 style="margin:22px 0 6px">Discontinue membership</h3>
     ${stripe ? `
       <p class="muted" style="font-size:.9rem;margin:0 0 10px">Stops their Stripe subscription. Ending now
         takes access away at once and does not refund the current period.${therapist ? ' Their listing comes down.' : ''}</p>
