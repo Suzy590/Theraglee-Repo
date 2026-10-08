@@ -133,8 +133,8 @@ guards this. `docs/playlists.md` is the guide.
 
 ## Mood factors are a data contract
 
-The Mood tab on the dashboard stores its nine 1 to 10 factors and the weather in
-`mood_logs`. The weather keys in `site/assets/mood-patterns.js` must match the
+The Mood tab on the dashboard stores its nine 1 to 10 factors, the weather, and
+a 1 to 10 rating of how the weather affected the member in `mood_logs`. The weather keys in `site/assets/mood-patterns.js` must match the
 check in the migration; `node tests/mood-patterns/check.mjs` guards this.
 `docs/mood.md` is the guide.
 
