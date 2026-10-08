@@ -691,7 +691,7 @@ enum WalkGoal { case none, desk, ledge, care }
 
 /// What a self-care nudge asks for. Water and stretch each have a routine of
 /// their own; the rest are a sign held up, with a small pose to match. Nudges
-/// go round this list in order, so water comes back every ninth time.
+/// come in a random order, a full round of all nine before any repeats.
 enum CareKind: CaseIterable {
     case water, stretch, eyes, breathe, shoulders, posture, jaw, outside, snack
 
@@ -776,11 +776,15 @@ final class PetView: NSView {
     private var toyY: CGFloat = 0
     private var toyTimer: CGFloat = 0
     var chaseCursor = false
-    var selfCareOn = false { didSet { careTimer = careInterval; persist() } }
-    private var careTimer: CGFloat = 1500
-    private let careInterval: CGFloat = 1500      // ~25 minutes
-    private var careIndex = 0                     // which CareKind comes next
-    private var careKind: CareKind = .eyes        // the one on the sign right now
+    // On by default. Switching it on (or launching with it on) nudges right
+    // away; after that each gap is drawn at random from careGap, so the
+    // reminders never settle into a rhythm you can tune out.
+    var selfCareOn = true { didSet { careTimer = careFirstDelay; persist() } }
+    private var careTimer: CGFloat = 1.5
+    private let careFirstDelay: CGFloat = 1.5                 // a beat, so Pip is on screen first
+    private let careGap: ClosedRange<CGFloat> = 900...2100    // 15 to 35 minutes
+    private var careDeck: [CareKind] = []                     // this round's remaining reminders
+    private var careKind: CareKind = .eyes                    // the one on the sign right now
     private var lastMouse = NSPoint.zero
     private var mouseActive: CGFloat = 0
 
@@ -830,6 +834,14 @@ final class PetView: NSView {
             if d.object(forKey: "pip.palette") as? Int == 0 { d.removeObject(forKey: "pip.palette") }
             d.set(2, forKey: "pip.prefsVersion")
         }
+        // v2 wrote pip.selfcare on every save too, and its default was off — so
+        // a stored false is almost always "never looked at the menu", not a
+        // choice. Drop it once so self-care mode comes on; a member who then
+        // turns it off stays off, because that write happens at version 3.
+        if d.integer(forKey: "pip.prefsVersion") < 3 {
+            if d.object(forKey: "pip.selfcare") as? Bool == false { d.removeObject(forKey: "pip.selfcare") }
+            d.set(3, forKey: "pip.prefsVersion")
+        }
 
         if let raw = d.string(forKey: "pip.species"), let sp = Species(rawValue: raw) { species = sp }
         // `object(forKey:)`, not `integer(forKey:)` — a real choice of Cream is 0,
@@ -839,7 +851,9 @@ final class PetView: NSView {
            stored >= 0, stored < palettes.count {
             paletteIndex = stored
         }
-        selfCareOn = d.bool(forKey: "pip.selfcare")
+        // `object(forKey:)` again: bool(forKey:) reads "absent" as false, which
+        // would turn the default off for everyone who never touched the menu.
+        if let stored = d.object(forKey: "pip.selfcare") as? Bool { selfCareOn = stored }
     }
 
     // ── ground reference for the screen we're currently on ──
@@ -997,11 +1011,13 @@ final class PetView: NSView {
             if shoutAge > shoutLife { shoutText = nil }
         }
 
-        // self-care nudges, only when it wouldn't interrupt something
+        // self-care nudges, only when it wouldn't interrupt something. The
+        // timer is left at zero while Pip is busy, so the nudge comes the
+        // moment it is free rather than a whole gap later; startCare() sets
+        // the next gap.
         if selfCareOn {
             careTimer -= dt
             if careTimer <= 0 {
-                careTimer = careInterval
                 switch state {
                 case .idle, .walking, .sitting, .sleeping: startCare()
                 default: break                 // try again on the next tick
@@ -1091,11 +1107,18 @@ final class PetView: NSView {
     }
 
     /// A self-care nudge: bring water over, model a stretch, or hold up one of
-    /// the other reminders. They take turns, in CareKind order.
+    /// the other reminders. The order is random, but drawn from a shuffled deck
+    /// of all nine, so every reminder comes up once before any comes back, and
+    /// a new round never opens with the one that closed the last. Also pushes
+    /// the next automatic nudge out by a fresh random gap, so "Nudge me now"
+    /// doesn't make the next one arrive early.
     func startCare() {
-        let kinds = CareKind.allCases
-        careKind = kinds[careIndex % kinds.count]
-        careIndex = (careIndex + 1) % kinds.count
+        careTimer = .random(in: careGap)
+        if careDeck.isEmpty {
+            careDeck = CareKind.allCases.shuffled()
+            if careDeck.first == careKind, careDeck.count > 1 { careDeck.swapAt(0, careDeck.count - 1) }
+        }
+        careKind = careDeck.removeFirst()
         switch careKind {
         case .water:
             pendingCare = .careWater

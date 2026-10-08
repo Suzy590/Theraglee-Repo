@@ -119,8 +119,9 @@ public static class Sim
         Check(maxY < stage.ScreenMaxY, $"floated above the screen (max y {maxY:F1})");
         Check(maxParticles < 60, $"particles piled up ({maxParticles} at once)");
         Check(stage.Redraws > frames / 8, $"barely repainted ({stage.Redraws} in {frames} frames)");
-        // Self-care goes round every reminder in turn, so in 45 minutes of nudges
-        // each sign must have been held up at least once.
+        // Self-care is a shuffled deck of every reminder, so in 45 minutes of
+        // nudges (nine "Nudge me now" plus the automatic ones) each sign must
+        // have been held up at least once.
         foreach (var kind in Enum.GetValues<CareKind>())
             Check(poses.Any(p => p.Contains(kind.Sign())), $"never held up the \"{kind.Sign()}\" sign");
 
@@ -158,6 +159,51 @@ public static class Sim
         Check(again.PaletteIndex == 0, "a deliberate choice of Cream was lost on reload");
         Console.WriteLine($"  reload kept: {again.Species}, palette {again.PaletteIndex} " +
                           $"({Palette.All[again.PaletteIndex].Name})");
+
+        // Self-care mode is on out of the box, and a stored "off" from the days
+        // when it was off by default is dropped once; a later deliberate off stays.
+        var box = new MemPrefs();
+        var fresh = new Brain(new FakeStage(), box);
+        fresh.LoadPrefs();
+        Check(fresh.SelfCareOn, "self-care mode is not on by default");
+        var legacy = new MemPrefs();
+        legacy.SetBool("pip.selfcare", false);
+        var upgraded = new Brain(new FakeStage(), legacy);
+        upgraded.LoadPrefs();
+        Check(upgraded.SelfCareOn, "a pre-v3 stored off was not dropped");
+        upgraded.SelfCareOn = false;
+        var later = new Brain(new FakeStage(), legacy);
+        later.LoadPrefs();
+        Check(!later.SelfCareOn, "a deliberate off did not survive a reload");
+
+        // With it on, the first nudge comes within seconds of launch, not after
+        // the first gap — and lands even if a nudge first has to wait for Pip
+        // to finish something.
+        var quick = new FakeStage();
+        quick.X = FakeStage.W / 2 - Draw.Canvas / 2; quick.Y = ground;
+        quick.MousePos = new SKPoint(quick.X + Draw.Canvas / 2, quick.Y);   // water needs no walk
+        var eager = new Brain(quick, new MemPrefs());
+        eager.LoadPrefs();
+        float firstNudge = float.NaN;
+        for (int i = 0; i < 24 * 60 && float.IsNaN(firstNudge); i++)
+        {
+            eager.Step(1f / 24f);
+            var l = eager.CurrentLook();
+            if (l.Sign != null || (l.Props & Props.Glass) != 0 || l.StretchAmt > 0) firstNudge = (i + 1) / 24f;
+        }
+        Check(!float.IsNaN(firstNudge), "no self-care nudge in the first minute with the mode on");
+        Console.WriteLine($"  first nudge  {firstNudge:F1}s after launch");
+
+        // The reminders are shuffled, never repeat within a round of nine, and
+        // never open a round with the one that closed the last.
+        var deck = new Brain(new FakeStage(), new MemPrefs());
+        var seen = new List<CareKind>();
+        for (int i = 0; i < 27; i++) { deck.StartCare(); seen.Add(deck.CurrentCare); }
+        for (int r = 0; r < 3; r++)
+            Check(seen.Skip(r * 9).Take(9).Distinct().Count() == 9, $"round {r + 1} repeated a reminder");
+        for (int i = 9; i < 27; i += 9)
+            Check(seen[i] != seen[i - 1], "a round opened with the reminder that closed the last");
+        Console.WriteLine($"  nudge order  {string.Join(", ", seen.Take(9))}");
 
         Console.WriteLine(failures == 0 ? "  all simulation checks passed" : $"  {failures} FAILED");
         return failures;

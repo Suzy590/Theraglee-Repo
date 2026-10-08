@@ -21,7 +21,7 @@ public enum Props { None = 0, Desk = 1, Book = 2, Glass = 4 }
 
 /// What a self-care nudge asks for. Water and stretch each have a routine of
 /// their own; the rest are a sign held up, with a small pose to match. Nudges
-/// go round this list in order, so water comes back every ninth time.
+/// come in a random order, a full round of all nine before any repeats.
 public enum CareKind { Water, Stretch, Eyes, Breathe, Shoulders, Posture, Jaw, Outside, Snack }
 
 public static class CareKindExt
