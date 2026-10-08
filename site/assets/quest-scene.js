@@ -8,7 +8,7 @@
                      energy, a peak with a flag for time outdoors …)
      the milestones  camps along the path, a tent and a flag each; reached
                      ones fly a green flag, the one being worked on glows,
-                     the ones ahead wait in soft fog
+                     the ones ahead sit a little faded
      the steps       the hiker, who moves a little toward the next camp for
                      every day a stepping stone is done
 
@@ -41,13 +41,13 @@ const DAY = {
   skyTop: '#D3E9F6', skyBottom: '#F4F8EC', far: '#D9E7CB', mid: '#BFDA9A', ground: '#E3F0C6', ground2: '#D3E8AC',
   path: '#EBE1C8', pathEdge: '#D6C9A4', walked: '#6AB21E', ahead: '#B9B19A',
   tree: ['#3A9A48', '#187C1A', '#0E5A10'], trunk: '#7A5A3A', water: '#8FCBE3', waterLight: '#C7E7F3',
-  stone: '#CFCBBE', sun: '#F6C453', label: '#16241C', pill: '#FFFFFF', fog: '#FFFFFF', tent: '#F7F3EA', tentShade: '#E3DCC9',
+  stone: '#CFCBBE', sun: '#F6C453', label: '#16241C', pill: '#FFFFFF', tent: '#F7F3EA', tentShade: '#E3DCC9',
 };
 const DUSK = {
   skyTop: '#22394B', skyBottom: '#F0B288', far: '#5E7E6E', mid: '#4A7152', ground: '#5F8C4B', ground2: '#527D3F',
   path: '#CBB88F', pathEdge: '#AE9A6C', walked: '#8DC61D', ahead: '#8D9B86',
   tree: ['#2C6B3A', '#1E5229', '#153E1E'], trunk: '#4A3524', water: '#6FAAC8', waterLight: '#9CCBE0',
-  stone: '#B8B3A6', sun: null, label: '#16241C', pill: '#FFFFFF', fog: '#DDE6DD', tent: '#EFE8D6', tentShade: '#CFC5AD',
+  stone: '#B8B3A6', sun: null, label: '#16241C', pill: '#FFFFFF', tent: '#EFE8D6', tentShade: '#CFC5AD',
 };
 /* Petal colors: none of them green, so a flower never melts into the grass. */
 const PETALS = ['#F29E8E', '#F6C453', '#B9A3E3', '#F7F3EA', '#E98FB5', '#F28C3B'];
@@ -347,10 +347,9 @@ export function trailMap({ goal = {}, milestones = [], current = 0, stepFrac = 0
         <rect x="${r1(lx - wide / 2)}" y="${r1(ly - 14)}" width="${r1(wide)}" height="34" rx="11" fill="${pal.pill}" opacity=".96"/>
         <text x="${r1(lx)}" y="${r1(ly - 2)}" text-anchor="middle" font-family="Outfit, sans-serif" font-size="9.5" font-weight="700" letter-spacing=".08em" fill="#187C1A">WORKING ON NOW</text>
         <text x="${r1(lx)}" y="${r1(ly + 14)}" text-anchor="middle" font-family="Outfit, sans-serif" font-size="12.5" font-weight="500" fill="${pal.label}">${esc(title)}</text></g>` : '';
-    const fog = state === 'ahead' ? `<ellipse cx="${r1(p.x)}" cy="${r1(p.y - 10 * k)}" rx="${r1(70 * k)}" ry="${r1(34 * k)}" fill="${pal.fog}" opacity=".5"/>` : '';
     const glow = state === 'current' ? `<circle cx="${r1(p.x)}" cy="${r1(p.y - 8 * k)}" r="${r1(54 * k)}" fill="url(#tm-glow)"/>` : '';
     return { y: p.y, g: `<g data-ms="${i}" role="button" tabindex="0" style="cursor:pointer" aria-label="Milestone ${i + 1}, ${esc(m.title)}: ${state === 'reached' ? 'reached' : state === 'current' ? 'working on now' : 'ahead'}">
-      ${glow}<g opacity="${state === 'ahead' ? .6 : 1}">${camp(p.x, p.y, k, pal, state, i + 1)}</g>${fog}${label}</g>` };
+      ${glow}<g opacity="${state === 'ahead' ? .6 : 1}">${camp(p.x, p.y, k, pal, state, i + 1)}</g>${label}</g>` };
   });
 
   // The destination.
