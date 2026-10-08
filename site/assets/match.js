@@ -195,18 +195,20 @@ export function matchDetailsModal(p, { editing = false } = {}) {
       <div class="field"><label>Your gender</label>
         ${chips('mm-gender', GENDERS, g => p.match_gender === g, true)}</div>
 
-      <div class="field"><label for="mm-topic1">What would you like to work on in therapy?
+      <div class="field"><label id="mm-topics-label">What would you like to work on in therapy?
           <span class="muted" style="font-weight:400">(pick up to ${MATCH_TOPICS_MAX})</span></label>
-        <div class="help" style="margin:-4px 0 8px">Choose one topic, or two or three. Each box is one
-          topic.</div>
-        <div class="grid g3" id="mm-issues">${[0, 1, 2].map(i => `
-          <div><label for="mm-topic${i + 1}" class="faint" style="font-weight:400;font-size:.88rem">Topic ${i + 1}${i ? ' (optional)' : ''}</label>
-          <select id="mm-topic${i + 1}">
-            <option value="">${i ? 'Add another topic' : 'Choose a topic'}</option>
-            ${MATCH_TOPICS.map(t => `<option value="${esc(t)}" ${(p.match_topics || [])[i] === t ? 'selected' : ''}>${esc(t)}</option>`).join('')}
-          </select></div>`).join('')}</div>
-        <div class="help">These are the same specialties therapists list, so you are matched with
-          therapists who work on them.</div></div>
+        <div class="pick" id="mm-issues">
+          <button type="button" class="pick-btn" id="mm-topics-btn" aria-expanded="false"
+            aria-controls="mm-topics-menu" aria-labelledby="mm-topics-label mm-topics-text">
+            <span class="pick-text" id="mm-topics-text"></span>
+            <span class="pick-caret" aria-hidden="true"></span></button>
+          <div class="pick-menu" id="mm-topics-menu" role="group" aria-labelledby="mm-topics-label" hidden>
+            ${MATCH_TOPICS.map(t => `<label class="pick-opt"><input type="checkbox" value="${esc(t)}"
+              ${(p.match_topics || []).includes(t) ? 'checked' : ''}> ${esc(t)}</label>`).join('')}
+          </div>
+        </div>
+        <div class="help">Tick up to ${MATCH_TOPICS_MAX}. These are the same specialties therapists
+          list, so you are matched with therapists who work on them.</div></div>
 
       <div class="field"><label>Who are the sessions for?</label>
         ${chips('mm-for', SESSION_FOR, k => p.match_session_for === k, true)}</div>
@@ -244,7 +246,7 @@ export function matchDetailsModal(p, { editing = false } = {}) {
       match_pseudonym: $('#mm-name').value.trim().replace(/\s+/g, ' ') || null,
       match_age_range: one('mm-age'),
       match_gender:    one('mm-gender'),
-      match_topics:    [...new Set([...back.querySelectorAll('#mm-issues select')].map(s => s.value).filter(Boolean))],
+      match_topics:    [...back.querySelectorAll('#mm-issues input:checked')].map(c => c.value),
       match_session_for: one('mm-for'),
       match_delivery:  one('mm-delivery'),
       match_insurance: $('#mm-ins').value || null,
@@ -265,6 +267,32 @@ export function matchDetailsModal(p, { editing = false } = {}) {
       preview();
     }));
     $('#mm-suggest').onclick = () => { $('#mm-name').value = suggestPseudonym(); preview(); };
+
+    // The topics drop-down: one list with a checkbox beside every topic. The
+    // button reads what is ticked; once three are, the rest switch off.
+    const pick = $('#mm-issues'), pickBtn = $('#mm-topics-btn'), pickMenu = $('#mm-topics-menu');
+    const pickBoxes = [...pickMenu.querySelectorAll('input')];
+    const paintPick = () => {
+      const on = pickBoxes.filter(b => b.checked).map(b => b.value);
+      const full = on.length >= MATCH_TOPICS_MAX;
+      pickBoxes.forEach(b => {
+        b.disabled = full && !b.checked;
+        b.closest('.pick-opt').classList.toggle('off', b.disabled);
+      });
+      $('#mm-topics-text').textContent = on.length
+        ? `${on.join(', ')} (${on.length} of ${MATCH_TOPICS_MAX})`
+        : `Choose up to ${MATCH_TOPICS_MAX} topics`;
+      $('#mm-topics-text').classList.toggle('empty', !on.length);
+    };
+    const openPick = (open) => {
+      pickMenu.hidden = !open;
+      pick.classList.toggle('open', open);
+      pickBtn.setAttribute('aria-expanded', String(open));
+    };
+    pickBtn.onclick = () => openPick(pickMenu.hidden);
+    pickBoxes.forEach(b => b.addEventListener('change', () => { paintPick(); preview(); }));
+    back.addEventListener('click', (e) => { if (!pick.contains(e.target)) openPick(false); });
+    paintPick();
     back.querySelectorAll('input, select').forEach(el => { el.addEventListener('input', preview); el.addEventListener('change', preview); });
 
     // Closing the window by clicking outside it or pressing Escape counts as "not now".
