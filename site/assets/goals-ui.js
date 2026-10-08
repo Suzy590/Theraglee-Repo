@@ -359,7 +359,7 @@ export async function mountGoals(host, ctx) {
   /* The left third of the tab: the same trail in words, in order, for anyone
      who finds a list clearer than a picture. Drawn again whenever the trail is. */
   const GUIDE_INTRO = `<p>Change is often a process, so that is how Theraglee Goals are designed. You pick an overall goal
-    (your ultimate destination), then take small steps (stepping stones) each day that support the change you want to see,
+    (the ultimate destination on your trail), then take small steps (stepping stones) each day that support the change you want to see,
     reaching milestones (the camps along your trail) along the way.</p>`;
   const HERE = '<span class="you-are-here"><i aria-hidden="true">➜</i> You are here</span>';
   function drawGuide(d) {
