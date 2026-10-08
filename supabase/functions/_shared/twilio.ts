@@ -150,3 +150,58 @@ export async function signatureMatches(
   }
   return false;
 }
+
+/* ------------------------------------------------- buying a number */
+// The twilio-numbers function issues a Theraglee number the moment a listing
+// goes live (and on an administrator's click), and releases it on request.
+// These are the pure parts: which numbers to ask Twilio for, how to word the
+// purchase, and how the number is shown.
+
+/** The three-digit area code of a US number, or null. */
+export function areaCodeOf(s: unknown): string | null {
+  const d = last10(s);
+  return d.length === 10 ? d.slice(0, 3) : null;
+}
+
+/** "+18050100199" shown as "(805) 010-0199"; a number that is not a US one is left alone. */
+export function formatUs(s: unknown): string {
+  if (!toE164(s)) return String(s ?? "");
+  const d = last10(s);
+  return `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}`;
+}
+
+const US_STATE = /^[A-Z]{2}$/;
+
+/**
+ * The searches to try, in order, for a listing: the therapist's own area code,
+ * then anywhere in their first licensed state, then any US local number.
+ * Each is the query string for Twilio's AvailablePhoneNumbers/US/Local.
+ */
+export function numberSearches(t: { contact_phone?: string | null; license_states?: string[] | null }): string[] {
+  const out: string[] = [];
+  const base = "VoiceEnabled=true&PageSize=5";
+  const area = areaCodeOf(t.contact_phone);
+  if (area) out.push(`AreaCode=${area}&${base}`);
+  const state = (t.license_states ?? []).map((s) => String(s).trim().toUpperCase()).find((s) => US_STATE.test(s));
+  if (state) out.push(`InRegion=${state}&${base}`);
+  out.push(base);
+  return out;
+}
+
+/** The form Twilio's IncomingPhoneNumbers takes to buy `number` and point it at `voiceUrl`. */
+export function purchaseForm(number: string, voiceUrl: string, friendlyName: string): URLSearchParams {
+  return new URLSearchParams({
+    PhoneNumber: number,
+    VoiceUrl: voiceUrl,
+    VoiceMethod: "POST",
+    FriendlyName: friendlyName.slice(0, 64),
+  });
+}
+
+/** What the number is called in the Twilio Console. */
+export const friendlyNameFor = (t: { first_name?: string | null; last_name?: string | null }): string =>
+  `Theraglee: ${[t.first_name, t.last_name].filter(Boolean).join(" ").trim() || "therapist"}`;
+
+/** Basic auth for Twilio's REST API. */
+export const twilioAuthHeader = (accountSid: string, token: string): string =>
+  "Basic " + btoa(`${accountSid}:${token}`);

@@ -549,19 +549,20 @@ async function numbers(){
   render('<div class="skeleton" style="height:150px"></div>');
   const { data: rows } = await sb.rpc('admin_pending_therapists');
   const verified = (rows||[]).filter(t => t.verification === 'verified');
+  const providerLabel = t => t.proxy_phone_provider === 'twilio' ? 'Twilio' : 'pasted by hand';
 
   render(`
     <h2>Tracking numbers</h2>
     <p class="muted" style="max-width:64ch">Each verified therapist gets a Theraglee number shown
       on their profile instead of their own line. Calls to it forward to their real number, and
-      every call is counted on their dashboard.</p>
+      every answered call is counted on their dashboard.</p>
 
     <div class="notice" style="margin:18px 0">
-      <strong>Buying is by hand, forwarding is automatic.</strong> Buy a voice number in the
-      Twilio Console (about $1 a month plus a few cents a minute), point its
-      <em>A call comes in</em> webhook at the <code>twilio-voice</code> function, then paste the
-      number here. Calls to it ring the therapist's real number, and every answered call is
-      counted on their dashboard. <code>docs/phone-numbers.md</code> has the steps.
+      <strong>Automatic.</strong> A Twilio voice number is bought the moment a listing goes live
+      (about $1 a month plus a few cents a minute) and forwards on its own. Use <em>Issue</em> for
+      a listing that went live before this was switched on, <em>Release</em> to give a number back
+      and stop its billing, or <em>Paste by hand</em> for a number from somewhere else.
+      <code>docs/phone-numbers.md</code> has the details.
     </div>
 
     ${verified.length ? `<div class="scroll-x"><table class="data">
@@ -571,32 +572,52 @@ async function numbers(){
           <span class="faint">${esc((t.license_states||[]).join(', '))}</span></td>
         <td class="faint">${esc(t.contact_phone||'no number on file')}</td>
         <td>${t.proxy_phone
-          ? `<code>${esc(t.proxy_phone)}</code>`
+          ? `<code>${esc(t.proxy_phone)}</code><br><span class="faint">${providerLabel(t)}${
+              t.proxy_phone_assigned_at ? ', ' + fmtDate(t.proxy_phone_assigned_at) : ''}</span>`
           : '<span class="faint">not issued</span>'}</td>
-        <td><button class="btn sm ghost" data-num="${t.id}"
-          data-cur="${esc(t.proxy_phone||'')}">${t.proxy_phone?'Change':'Assign'}</button></td>
+        <td style="white-space:nowrap">${t.proxy_phone
+          ? `<button class="btn sm ghost" data-release="${t.id}">Release</button>`
+          : `<button class="btn sm" data-issue="${t.id}">Issue</button>
+             <button class="btn sm ghost" data-paste="${t.id}">Paste by hand</button>`}</td>
       </tr>`).join('')}</tbody></table></div>`
-    : '<div class="empty">No verified listings yet.</div>'}`);
+      : '<p class="muted">No verified therapists yet.</p>'}`);
 
-  document.querySelectorAll('[data-num]').forEach(btn => btn.onclick = () => {
+  document.querySelectorAll('[data-issue]').forEach(btn => btn.onclick = async (e) => {
+    busy(e.target, true, 'Buying…');
+    const out = await callStripeFn('twilio-numbers', { action: 'issue', therapist_id: btn.dataset.issue });
+    busy(e.target, false);
+    if (out.error) return toast(out.message || out.error, 'err');
+    toast(out.already ? 'That listing already has a number.' : `Issued ${out.phone}.`, 'ok'); numbers();
+  });
+  document.querySelectorAll('[data-release]').forEach(btn => btn.onclick = async (e) => {
+    if (!confirm('Release this number? Callers will no longer reach the therapist through it, and a Twilio number stops billing.')) return;
+    busy(e.target, true, 'Releasing…');
+    const out = await callStripeFn('twilio-numbers', { action: 'release', therapist_id: btn.dataset.release });
+    busy(e.target, false);
+    if (out.error) return toast(out.message || out.error, 'err');
+    toast('Number released.', 'ok'); numbers();
+  });
+  document.querySelectorAll('[data-paste]').forEach(btn => btn.onclick = () => {
     const back = modal(`
-      <h2>Assign a Theraglee number</h2>
-      <p class="muted" style="font-size:.92rem">This is what visitors see on the profile. Calls
-        to it should forward to the therapist's real number.</p>
+      <h2>Paste a number by hand</h2>
+      <p class="muted" style="font-size:.92rem">For a number from somewhere other than Theraglee's
+        Twilio account. It is shown on the profile as typed; calls to it forward only if its own
+        provider is set up to forward them.</p>
       <div class="field"><label for="np">Number to display</label>
-        <input id="np" placeholder="(555) 010-0199" value="${esc(btn.dataset.cur)}"></div>
+        <input id="np" placeholder="(555) 010-0199"></div>
       <div class="row" style="justify-content:flex-end">
         <button class="btn ghost" id="cancel">Cancel</button>
         <button class="btn" id="save">Save</button></div>`);
     back.querySelector('#cancel').onclick = () => back.remove();
     back.querySelector('#save').onclick = async (e) => {
       const v = back.querySelector('#np').value.trim();
+      if (!v) return toast('Type a number first.', 'err');
       busy(e.target, true, 'Saving…');
       const { error } = await sb.from('therapist_profiles').update({
-        proxy_phone: v || null,
-        proxy_phone_provider: v ? 'manual' : null,
-        proxy_phone_assigned_at: v ? new Date().toISOString() : null,
-      }).eq('id', btn.dataset.num);
+        proxy_phone: v,
+        proxy_phone_provider: 'manual',
+        proxy_phone_assigned_at: new Date().toISOString(),
+      }).eq('id', btn.dataset.paste);
       busy(e.target, false);
       if (error) return toast(error.message,'err');
       back.remove(); toast('Number saved.','ok'); numbers();

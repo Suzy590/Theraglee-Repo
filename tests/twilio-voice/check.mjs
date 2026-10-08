@@ -6,8 +6,9 @@
 // Exits non-zero on the first failed assertion.
 import assert from "node:assert/strict";
 import {
-  callRow, emptyTwiml, forwardTwiml, isUuid, last10, maskCaller, NO_ANSWER, sameNumber,
-  sayTwiml, signatureMatches, therapistForNumber, toE164, twilioSignature,
+  areaCodeOf, callRow, emptyTwiml, formatUs, forwardTwiml, friendlyNameFor, isUuid, last10,
+  maskCaller, NO_ANSWER, numberSearches, purchaseForm, sameNumber, sayTwiml, signatureMatches,
+  therapistForNumber, toE164, twilioAuthHeader, twilioSignature,
 } from "../../supabase/functions/_shared/twilio.ts";
 
 let n = 0;
@@ -97,6 +98,42 @@ await test("Twilio's signature is recomputed the way Twilio documents it", async
   assert.equal(await signatureMatches("wrong", [url], params, "0/KCTR6DLpKmkAf8muzZqo1nDgQ="), false);
   assert.equal(await signatureMatches("12345", [url], params, null), false, "no header, no entry");
   assert.equal(await signatureMatches("12345", [url], params, ""), false);
+});
+
+await test("a number is bought near the therapist, then in their state, then anywhere", () => {
+  assert.deepEqual(numberSearches({ contact_phone: "(805) 746-6567", license_states: ["CA", "NV"] }), [
+    "AreaCode=805&VoiceEnabled=true&PageSize=5",
+    "InRegion=CA&VoiceEnabled=true&PageSize=5",
+    "VoiceEnabled=true&PageSize=5",
+  ]);
+  assert.deepEqual(numberSearches({ contact_phone: null, license_states: ["ca"] }),
+    ["InRegion=CA&VoiceEnabled=true&PageSize=5", "VoiceEnabled=true&PageSize=5"]);
+  assert.deepEqual(numberSearches({ contact_phone: "555", license_states: [] }), ["VoiceEnabled=true&PageSize=5"]);
+  assert.deepEqual(numberSearches({ license_states: ["California"] }), ["VoiceEnabled=true&PageSize=5"],
+    "only a two-letter state code is sent to Twilio");
+  assert.equal(areaCodeOf("+18057466567"), "805");
+  assert.equal(areaCodeOf("7466567"), null);
+});
+
+await test("the purchase points the number at the voice function and labels it", () => {
+  const form = purchaseForm("+18050100199", "https://x.supabase.co/functions/v1/twilio-voice", "Theraglee: Susan Canchola");
+  assert.equal(form.get("PhoneNumber"), "+18050100199");
+  assert.equal(form.get("VoiceUrl"), "https://x.supabase.co/functions/v1/twilio-voice");
+  assert.equal(form.get("VoiceMethod"), "POST");
+  assert.equal(form.get("FriendlyName"), "Theraglee: Susan Canchola");
+  assert.equal(purchaseForm("+1", "u", "x".repeat(80)).get("FriendlyName").length, 64, "Twilio caps the label");
+  assert.equal(friendlyNameFor({ first_name: "Susan", last_name: "Canchola" }), "Theraglee: Susan Canchola");
+  assert.equal(friendlyNameFor({ first_name: null, last_name: null }), "Theraglee: therapist");
+});
+
+await test("a bought number is shown the way the admin page expects", () => {
+  assert.equal(formatUs("+18050100199"), "(805) 010-0199");
+  assert.equal(formatUs("8050100199"), "(805) 010-0199");
+  assert.equal(formatUs("+442071234567"), "+442071234567", "a non-US number is left alone");
+});
+
+await test("Twilio's REST API is called with basic auth", () => {
+  assert.equal(twilioAuthHeader("ACxyz", "tok"), "Basic " + Buffer.from("ACxyz:tok").toString("base64"));
 });
 
 console.log(`\n${n} checks passed`);
