@@ -1309,7 +1309,7 @@ async function membership(){
         ${p.current_period_end ? `<div><strong>${p.cancel_at_period_end?'Ends':'Renews'}</strong><br>
           <span class="muted">${fmtDate(p.current_period_end)}</span></div>` : ''}
         <div class="row">
-          ${paid ? (paysStripe ? `<button class="btn ghost" id="portal">Manage membership</button>` : '')
+          ${paid ? (paysStripe ? `<button class="btn ghost" id="portal">Cancel/Manage membership</button>` : '')
                  : `${founding ? `<button class="btn" id="sub-founding">Founding member · $${esc(offer.rate)}/month</button>` : ''}
                     <button class="btn ${founding ? 'ghost' : ''}" id="sub">${founding ? 'Regular monthly' : 'Start monthly'}${
                       cfg.display_therapist_monthly ? ' · $' + esc(cfg.display_therapist_monthly) + '/month' : ''}</button>
