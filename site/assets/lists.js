@@ -126,7 +126,7 @@ export const STATES = [
 
 /* Issues a member can list on their own profile, for opt-in therapist discovery. */
 export const MEMBER_ISSUES = [
-  'Anxiety','Depression','ADHD','OCD','PTSD / trauma','Grief','Stress and burnout',
+  'Anxiety','Depression','ADHD','OCD','PTSD/C-PTSD and Trauma','Grief','Stress and burnout',
   'Relationship issues','Sleep problems','Self-esteem','Substance use','Disordered eating',
   'Life transitions','Anger','Loneliness',
 ];
