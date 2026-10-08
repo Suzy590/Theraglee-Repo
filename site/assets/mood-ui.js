@@ -6,11 +6,11 @@
    A submitted day is final until the next day; the database enforces this
    (20260925130000_mood_submit_once_a_day.sql). Once
    there are seven days of entries (in a row or not), "Your mood patterns"
-   says which factors move with the mood. The factors and the analysis live in
-   mood-patterns.js; docs/mood.md is the guide.
+   says which factors, and whether the weather, move with the mood. The
+   factors and the analysis live in mood-patterns.js; docs/mood.md is the guide.
    ========================================================================== */
 import { sb, esc, toast } from './app.js';
-import { MOODS, FACTORS, WEATHER, MIN_DAYS, analyze, strength } from './mood-patterns.js';
+import { MOODS, FACTORS, WEATHER, MIN_DAYS, WEATHER_DAYS, analyze, strength } from './mood-patterns.js';
 
 const COLS = ['logged_on', 'mood', 'weather', 'submitted_at', ...FACTORS.map(f => f[0])].join(',');
 /* Everything Submit needs: the nine factors and the weather. */
@@ -143,9 +143,13 @@ export async function mountMood(host, profile) {
         ${disclaimer}`;
       return;
     }
-    const rated = res.factors.filter(f => f.r !== null)
+    // The nine factors and the weather on one chart, strongest link first.
+    // The weather's r is eta, which has no direction, so its bar is never
+    // the "opposite" color.
+    const rated = [...res.factors, res.weatherLink].filter(f => f.r !== null)
       .sort((a, b) => Math.abs(b.r) - Math.abs(a.r));
     const waiting = res.factors.filter(f => f.r === null);
+    const weatherWaiting = res.weatherLink.r === null;
     $('#mood-patterns').innerHTML = `
       <h3>Your mood patterns</h3>
       <p class="faint" style="margin-top:-4px">Based on ${res.days} days of check-ins, and updated
@@ -153,15 +157,18 @@ export async function mountMood(host, profile) {
         ${res.days < 14 ? 'With this few days, treat these as early hints.' : ''}</p>
       <ul class="mood-findings">${res.statements.map(s => `<li>${esc(s)}</li>`).join('')}</ul>
       ${rated.length ? `
-        <h4 style="margin:22px 0 10px">How closely each factor moves with your mood</h4>
+        <h4 style="margin:22px 0 10px">How closely each factor, and the weather, moves with your mood</h4>
         <div class="links">${rated.map(f => `
           <div class="link-row">
             <span>${esc(f.label)}</span>
             <div class="bar ${f.r < 0 ? 'neg' : ''}"><i style="width:${Math.round(Math.abs(f.r) * 100)}%"></i></div>
             <span class="faint">${strength(f.r) === 'little' ? 'little or no link' : strength(f.r) + (f.r < 0 ? ', opposite' : '')}</span>
           </div>`).join('')}</div>` : ''}
-      ${waiting.length ? `<p class="faint" style="margin:14px 0 0">Not enough varied ratings yet for:
-        ${waiting.map(f => esc(f.label)).join(', ')}. Each one needs ${MIN_DAYS} days rated, and not all the same number.</p>` : ''}
+      ${waiting.length || weatherWaiting ? `<p class="faint" style="margin:14px 0 0">
+        ${waiting.length ? `Not enough varied ratings yet for:
+          ${waiting.map(f => esc(f.label)).join(', ')}. Each one needs ${MIN_DAYS} days rated, and not all the same number.` : ''}
+        ${weatherWaiting ? `The weather needs ${MIN_DAYS} days across two or more kinds of weather, each seen on
+          ${WEATHER_DAYS} or more days.` : ''}</p>` : ''}
       ${disclaimer}`;
   }
 

@@ -21,7 +21,7 @@ writes the signed-in account's own `mood_logs` rows. It does three things:
    away, so a day with only a face still counts as a day logged.
 3. **Your mood patterns.** Until there are 7 days with a mood (in a row or not)
    the tab says how many days are logged and how many are left. From day 7 it
-   says which factors move with the mood.
+   says which factors, and whether the weather, move with the mood.
 
 ## One submitted check-in a day
 
@@ -68,8 +68,22 @@ weather type, add it to both, in a new migration.
 - Of the factors that rise with mood, the one with the lowest average rating is
   named as a place to focus: it moves with the mood and has the most room to
   improve.
-- A weather type with 2 or more days is mentioned when its average mood is at
-  least 0.5 (on the 1 to 5 scale) away from the member's usual.
+- The weather is a category, not a 1 to 10 rating, so Pearson's r does not
+  apply to it. `eta()` computes the correlation ratio instead: how much of the
+  day-to-day variation in mood sits between kinds of weather rather than within
+  them, 0 to 1, on the same scale as |r|. It counts only kinds of weather seen
+  on 2 or more days (a kind seen once would explain its own day perfectly and
+  inflate the figure), and needs 7 such days across two or more kinds. The
+  result is `weatherLink` and sits on the chart as a **Weather** row beside the
+  nine factors, with the same *modest* / *moderate* / *strong* labels. Eta has
+  no direction, so the bar is never the "opposite" color.
+- When the weather's link is 0.3 or more, one sentence says so, names the kind
+  of weather with the best average mood and the one with the lowest, and notes
+  that the weather is not the member's to change but knowing the harder days
+  helps them plan for those. Any other weather type with 2 or more days is
+  mentioned on its own when its average mood is at least 0.5 (on the 1 to 5
+  scale) away from the member's usual.
+- The weather is never offered as the place to focus: only a rated factor is.
 - Under 14 days the tab calls the findings early hints.
 - The summary is worked out again from the member's saved check-ins (up to
   the last 365 days) every time the tab opens and after every tap or Submit,

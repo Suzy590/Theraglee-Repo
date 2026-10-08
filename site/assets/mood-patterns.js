@@ -1,9 +1,9 @@
 /* ==========================================================================
    Theraglee — what may be shaping a member's mood.
    The factors a member rates after tapping the day's emoji, the weather they
-   can pick, and analyze(), which looks across their days for the factors that
-   move with their mood. No imports, so tests/mood-patterns/check.mjs can run
-   it under plain Node. The Mood tab (mood-ui.js) draws from it; the columns
+   can pick, and analyze(), which looks across their days for the factors, and
+   the kinds of weather, that move with their mood. No imports, so
+   tests/mood-patterns/check.mjs can run it under plain Node. The Mood tab (mood-ui.js) draws from it; the columns
    are in supabase/migrations/20260925120000_mood_factors.sql and
    docs/mood.md is the guide.
    ========================================================================== */
@@ -51,10 +51,13 @@ export const WEATHER = [
 /* A link needs at least this much correlation (Pearson's r, either way) to be
    worth telling the member about. */
 export const LINK = 0.3;
-/* A weather type needs this many days, and a gap from the member's usual mood
-   of at least this much (on the 1 to 5 scale), to be mentioned. */
+/* A weather type needs this many days to count in the weather analysis, and
+   a gap from the member's usual mood of at least this much (on the 1 to 5
+   scale) to be mentioned on its own. */
 export const WEATHER_DAYS = 2;
 export const WEATHER_GAP = 0.5;
+/* The label the weather carries on the chart beside the nine factors. */
+export const WEATHER_LABEL = 'Weather';
 
 const mean = (xs) => xs.reduce((s, x) => s + x, 0) / xs.length;
 
@@ -69,6 +72,24 @@ export function pearson(xs, ys) {
   }
   if (!sxx || !syy) return null;
   return sxy / Math.sqrt(sxx * syy);
+}
+
+/* The correlation ratio (eta): how much of the day-to-day variation in mood
+   sits between groups rather than within them, 0 (none) to 1 (all of it).
+   The weather is a category, not a 1 to 10 rating, so Pearson's r does not
+   apply to it; eta is its counterpart, on the same scale as |r|, so the
+   weather can sit on the same chart as the factors. Takes the moods grouped
+   by weather type. Null with fewer than two groups, or when the mood never
+   changes. */
+export function eta(groups) {
+  const all = groups.flat();
+  if (groups.length < 2 || all.length < 2) return null;
+  const grand = mean(all);
+  let between = 0, total = 0;
+  for (const g of groups) between += g.length * (mean(g) - grand) ** 2;
+  for (const x of all) total += (x - grand) ** 2;
+  if (!total) return null;
+  return Math.sqrt(Math.min(1, between / total));
 }
 
 export const strength = (r) => {
@@ -88,6 +109,10 @@ const one = (x) => (Math.round(x * 10) / 10).toFixed(1);
      average, which is where a change may matter most. Null if none.
    - weather: weather types with WEATHER_DAYS or more days whose average mood
      is at least WEATHER_GAP from the member's usual.
+   - weatherLink: the weather as a whole, with how many days picked a weather
+     type seen on WEATHER_DAYS or more days (n), how many such types (kinds),
+     eta as r (null until there are MIN_DAYS such days across two or more
+     types), and the types sorted from the best average mood to the lowest.
    - statements: plain sentences for the member, in the order to show them. */
 export function analyze(rows) {
   const logged = (rows || []).filter(r => Number.isFinite(r?.mood));
@@ -113,13 +138,23 @@ export function analyze(rows) {
     ? rising.reduce((lo, f) => (f.avg < lo.avg ? f : lo))
     : null;
 
+  // Every weather type seen on WEATHER_DAYS or more days, with its moods. A
+  // type seen once says nothing about the weather, so it is left out.
+  const kinds = WEATHER.map(([key, emoji, label]) => {
+    const moods = logged.filter(r => r.weather === key).map(r => r.mood);
+    return { key, emoji, label, n: moods.length, avg: moods.length ? mean(moods) : null, moods };
+  }).filter(w => w.n >= WEATHER_DAYS).sort((a, b) => b.avg - a.avg);
+  const weatherDays = kinds.reduce((s, w) => s + w.n, 0);
+  const weatherLink = {
+    key: 'weather', label: WEATHER_LABEL, n: weatherDays, kinds: kinds.length,
+    r: weatherDays >= MIN_DAYS ? eta(kinds.map(w => w.moods)) : null,
+    types: kinds.map(({ moods, ...w }) => w),
+  };
+
   const weather = [];
   if (ready) {
-    for (const [key, emoji, label] of WEATHER) {
-      const moods = logged.filter(r => r.weather === key).map(r => r.mood);
-      if (moods.length < WEATHER_DAYS) continue;
-      const avg = mean(moods);
-      if (Math.abs(avg - usual) >= WEATHER_GAP) weather.push({ key, emoji, label, n: moods.length, avg });
+    for (const w of weatherLink.types) {
+      if (Math.abs(w.avg - usual) >= WEATHER_GAP) weather.push(w);
     }
     weather.sort((a, b) => Math.abs(b.avg - usual) - Math.abs(a.avg - usual));
   }
@@ -131,7 +166,19 @@ export function analyze(rows) {
         ? `On days ${f.phrase}, your mood tended to be better too (a ${strength(f.r)} link).`
         : `On days ${f.phrase}, your mood tended to be lower (a ${strength(f.r)} link). That is less common, and worth noticing.`);
     }
+    // The weather as a whole, when it moves with the mood: the kinds of day
+    // that run best and hardest. Then any other kind that stands apart.
+    const named = new Set();
+    if (weatherLink.r !== null && weatherLink.r >= LINK) {
+      const hi = weatherLink.types[0], lo = weatherLink.types[weatherLink.types.length - 1];
+      named.add(hi.key); named.add(lo.key);
+      statements.push(`Your mood moves with the weather (a ${strength(weatherLink.r)} link). `
+        + `It has averaged ${one(hi.avg)} out of 5 on ${hi.label.toLowerCase()} days (${hi.n} of them) `
+        + `and ${one(lo.avg)} on ${lo.label.toLowerCase()} days (${lo.n}). The weather is not yours to change, `
+        + 'but knowing which days tend to run harder can help you plan something kind for them.');
+    }
     for (const w of weather) {
+      if (named.has(w.key)) continue;
       statements.push(`On ${w.label.toLowerCase()} days (${w.n} of them), your mood averaged ${one(w.avg)} out of 5, `
         + `compared with ${one(usual)} across all your days.`);
     }
@@ -140,10 +187,10 @@ export function analyze(rows) {
         + `your mood, so ${focus.noun} may be a good place to focus if you want to advocate for a change in your life.`);
     }
     if (!statements.length) {
-      statements.push('No single factor stands out yet. That is useful to know too. '
+      statements.push('No single factor, and not the weather, stands out yet. That is useful to know too. '
         + 'Keep rating the factors each day, and patterns tend to get clearer as the days add up.');
     }
   }
 
-  return { days, ready, usual, factors, findings, focus, weather, statements };
+  return { days, ready, usual, factors, findings, focus, weather, weatherLink, statements };
 }
