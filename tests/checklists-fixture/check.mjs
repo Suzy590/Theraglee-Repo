@@ -35,8 +35,9 @@ export const CATEGORIES = new Set([
   'Anger', 'Anxiety', 'Body', 'Boundaries', 'Burnout', 'Caregiving', 'Communication',
   'Confidence', 'Connection', 'Decisions', 'Family', 'Focus', 'Food', 'Grief', 'Grounding',
   'Habits', 'Health', 'Home', 'Loneliness', 'Milestones', 'Mindfulness', 'Money', 'Mornings',
-  'Motivation', 'Parenting', 'Relationships', 'Rest', 'Self-Care', 'Self-Compassion', 'Sleep',
-  'Social Anxiety', 'Stress', 'Study', 'Therapy', 'Transitions', 'Wellbeing', 'Work', 'Worry',
+  'Motivation', 'Parenting', 'Relationships', 'Rest', 'Self-Care', 'Self-Compassion', 'Setbacks',
+  'Sleep', 'Social Anxiety', 'Stress', 'Study', 'Therapy', 'Transitions', 'Wellbeing', 'Work',
+  'Worry',
 ]);
 
 const CADENCE = new Set(['daily', 'weekly', 'as needed']);
