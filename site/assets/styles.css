@@ -60,7 +60,7 @@ em.script{font-family:var(--serif);font-style:italic;font-weight:400;color:var(-
 /* The dashboard's tab row, repeated under the header on the member pages it leads to. */
 .dash-tabs{padding-top:18px}
 /* A soft green track of pills, the open tab the white one; the same look as
-   .tabs in dashboard.html, so keep the two in step. */
+   .tabs in dashboard.html and in therapist-dashboard.html, so keep the three in step. */
 .dash-tabs-row{display:flex;gap:4px;width:fit-content;max-width:100%;padding:5px;
   background:var(--soft);border:1px solid rgba(24,124,26,.08);border-radius:var(--r-pill);
   overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
