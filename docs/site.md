@@ -192,7 +192,7 @@ takes the count down. It includes:
   (`supabase/migrations/20261008170000_therapist_calls.sql` and
   `20261008180000_therapist_calls_answered.sql`)
 - the names and topics of members who opted in to being contacted (any registered member can)
-- a clinician library of 2925 resources (worksheets, CBT, ACT, DBT, couples, kids, games), with five more of every kind and five on each of eighteen topics added every day, all adjuncts to the therapist's own judgment rather than protocols — see [`therapist-resources.md`](therapist-resources.md)
+- a clinician library of 3050 resources (worksheets, CBT, ACT, DBT, couples, kids, games), with five more of every kind and five on each of eighteen topics added every day, all adjuncts to the therapist's own judgment rather than protocols — see [`therapist-resources.md`](therapist-resources.md)
 
 If either the license or the membership lapses, the listing comes down on its own
 and the library and member list close, while the therapist keeps their own inbox
