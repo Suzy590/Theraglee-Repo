@@ -124,9 +124,9 @@ export const STATES = [
   ['WA','Washington'],['WV','West Virginia'],['WI','Wisconsin'],['WY','Wyoming'],
 ];
 
-/* Issues a member can list on their own profile, for opt-in therapist discovery. */
-export const MEMBER_ISSUES = [
-  'Anxiety','Depression','ADHD','OCD','PTSD/C-PTSD and Trauma','Grief','Stress and burnout',
-  'Relationship issues','Sleep problems','Self-esteem','Substance use','Disordered eating',
-  'Life transitions','Anger','Loneliness',
-];
+/* What a member says they are working on, on the account page. The same
+   specialties list therapists pick from and Match Mode offers (MATCH_TOPICS in
+   match.js), so the chips a member sees there and the topics Match Mode asks for
+   are one list. It shapes the daily content the member sees; therapists never
+   see it. */
+export const MEMBER_ISSUES = SPECIALTIES;
