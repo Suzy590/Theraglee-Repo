@@ -231,8 +231,11 @@ async function goStripe(name, body, btn, label, fallback) {
 
 export async function startCheckout(plan, interval, btn) {
   const a = await access();
+  // A visitor who is not signed in is sent to create a free account first
+  // (the page offers sign-in for members who already have one), and comes
+  // back to the pricing page afterwards.
   if (!a.authenticated) {
-    location.href = `${DOORS.member.signin}?next=${encodeURIComponent('pricing.html')}&plan=${plan}`;
+    location.href = `${DOORS.member.signup}?next=${encodeURIComponent('pricing.html')}&plan=${plan}`;
     return;
   }
   // A member who already subscribes is sent to the billing portal to switch

@@ -26,7 +26,7 @@
     </div>
 
     <p class="center muted" style="margin-top:22px">
-      Already have an account? <a href="login.html">Sign in</a>
+      Already have an account? <a href="login.html" id="signin-link">Sign in</a>
     </p>
     <p class="center faint" style="margin-top:8px">
       Free forever: a progress dashboard, favorites, journal prompts, checklists,
@@ -41,6 +41,12 @@
 <script type="module">
 import { chrome } from './assets/app.js';
 import { authPage } from './assets/auth.js';
+// Someone sent here to finish something (buying a plan) who already has an
+// account should still land back there after signing in.
+{
+  const q = new URLSearchParams(location.search);
+  if (q.get('next')) document.getElementById('signin-link').href = 'login.html?' + q;
+}
 await chrome();
 await authPage({ audience: 'member', mode: 'signup' });
 </script>
