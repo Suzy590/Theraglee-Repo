@@ -60,6 +60,16 @@ export async function authPage({ audience, mode, next: nextGiven }) {
       Favorites, save for later and your dashboard are part of the free membership.
       No card, no cost, and you will be sent straight back to where you were.`, '');
   }
+  // Sent here from a plan button on the pricing page: say plainly that the
+  // free account is step one and the card comes next, so nobody stops here
+  // thinking they already have the plan.
+  const planWanted = up && audience === 'member'
+    ? ({ basic: 'Basic', premium: 'Premium' })[qs('plan')] ?? null : null;
+  if (planWanted) {
+    alertBox(`<strong>Two quick steps to ${planWanted}.</strong><br>
+      Create your free account here first. Then you go straight to the secure checkout
+      page to pay for ${planWanted} — nothing is charged until you enter a card there.`, '');
+  }
   if (qs('timeout') && !up) {
     alertBox(`<strong>You were signed out after a period of inactivity.</strong><br>
       That keeps ${audience === 'therapist' ? 'client' : 'your'} information off an
@@ -102,7 +112,9 @@ export async function authPage({ audience, mode, next: nextGiven }) {
       <a href="#" id="forgot">Forgot your password?</a></p>` : ''}`;
 
   const resetTo = location.origin + '/' + (audience === 'therapist' ? 'therapist-dashboard.html' : 'account.html');
-  const confirmTo = location.origin + '/' + door.home;
+  // The confirmation email's link lands wherever the sign-up was headed (the
+  // pricing page, for someone buying a plan), else on the dashboard.
+  const confirmTo = location.origin + '/' + (next || door.home);
 
   const sendReset = async (email) => {
     if (!email) return alertBox('Type your email above first.');
@@ -150,7 +162,8 @@ export async function authPage({ audience, mode, next: nextGiven }) {
         return alertBox(
           `<strong>Check your email.</strong><br>
            We have sent a confirmation link to ${esc(email)}. It can take a minute, and it
-           sometimes lands in spam. <a href="#" id="resend">Send it again</a>.`, 'warn');
+           sometimes lands in spam. <a href="#" id="resend">Send it again</a>.${planWanted
+             ? `<br>Once you confirm, we take you straight to checkout for ${planWanted}.` : ''}`, 'warn');
       }
       clearAccess();
       location.href = next || door.home;
