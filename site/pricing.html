@@ -211,6 +211,22 @@ if (a.profile?.role === 'therapist') {
     Your own membership is managed on your <a href="therapist-dashboard.html#membership">practice dashboard</a>.</div>`;
 }
 if (qs('checkout')==='cancelled') toast('Checkout canceled — nothing was charged.');
+
+// Someone who clicked a plan while signed out comes back here with ?plan=
+// (and ?interval=) once their account exists, and goes straight on to
+// checkout. The address is cleaned first so Back from Stripe does not reopen it.
+{
+  const want = qs('plan'), iv = qs('interval');
+  if (['basic','premium'].includes(want) && a.authenticated && a.profile?.role !== 'therapist') {
+    history.replaceState(null, '', 'pricing.html');
+    if (['monthly','yearly'].includes(iv) && iv !== cycle) {
+      cycle = iv;
+      document.querySelectorAll('#cycle button').forEach(x=>x.classList.toggle('on', x.dataset.i===iv));
+      render();
+    }
+    document.querySelector(`[data-plan="${want}"]`)?.click();
+  }
+}
 </script>
 </body>
 </html>
