@@ -143,6 +143,15 @@ export async function access(force = false) {
   const { data, error } = await sb.rpc('my_access');
   if (error) { console.error(error); _access = { level: 0, authenticated: false }; }
   else _access = data || { level: 0, authenticated: false };
+  // A sign-in token with no profile behind it belongs to an account that no
+  // longer exists (deleted from the Supabase dashboard while this browser
+  // still held its session). Every account gets a profile the moment it is
+  // created, so treat the token as stale: drop it and count the visitor as
+  // signed out, rather than letting half the site think they are signed in.
+  if (_access.authenticated && !_access.profile) {
+    try { await sb.auth.signOut({ scope: 'local' }); } catch {}
+    _access = { level: 0, authenticated: false };
+  }
   return _access;
 }
 export const clearAccess = () => { _access = null; };
