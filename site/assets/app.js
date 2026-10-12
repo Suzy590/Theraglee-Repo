@@ -137,10 +137,29 @@ export const fmtDate = (d) =>
   new Date(d).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
 
 /* ------------------------------------------------------------- access */
-let _access = null;
+let _access = null, _pending = null;
+// How long the "who is this?" question may take before the page stops waiting
+// and treats the visitor as signed out. Without a limit, a connection that
+// drops on the way to the server leaves every page waiting forever, with no
+// header, no footer and no sign-in form.
+const ACCESS_TIMEOUT = 8000;
 export async function access(force = false) {
   if (_access && !force) return _access;
-  const { data, error } = await sb.rpc('my_access');
+  // The header and the page body ask at the same time; one request serves both.
+  if (_pending && !force) return _pending;
+  _pending = lookupAccess();
+  try { return await _pending; } finally { _pending = null; }
+}
+async function lookupAccess() {
+  let answer;
+  try {
+    answer = await Promise.race([
+      sb.rpc('my_access'),
+      new Promise((resolve) => setTimeout(() =>
+        resolve({ data: null, error: new Error('my_access: no answer in ' + ACCESS_TIMEOUT + 'ms') }), ACCESS_TIMEOUT)),
+    ]);
+  } catch (e) { answer = { data: null, error: e }; }
+  const { data, error } = answer;
   if (error) { console.error(error); _access = { level: 0, authenticated: false }; }
   else _access = data || { level: 0, authenticated: false };
   // A sign-in token with no profile behind it belongs to an account that no
