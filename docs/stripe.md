@@ -262,6 +262,11 @@ radar.early_fraud_warning.created
 
 Copy its *Signing secret* into `STRIPE_WEBHOOK_SECRET`.
 
+The live account endpoint is `we_1UPYEZCq38pvaVwyN4CYRSDy` (created
+2026-10-12, API version `2025-02-24.acacia`, the version in
+`supabase/functions/_shared/stripe.ts`). Its signing secret is under
+**Developers → Webhooks → the endpoint → Reveal** if it ever needs re-entering.
+
 **Endpoint 2 — connected accounts** (Connect only). Same URL, but choose
 *Listen to events on Connected accounts*, and select `account.updated`. Copy its
 signing secret into `STRIPE_CONNECT_WEBHOOK_SECRET`.
@@ -320,7 +325,7 @@ DNS is hosted at Vercel.
 | Record | Name | Value |
 |---|---|---|
 | CNAME | `pay` | `hosted-checkout.stripecdn.com` (added 2026-10-12) |
-| TXT | as shown in the Dashboard | the verification string the Dashboard shows |
+| TXT | `_acme-challenge.pay` | the verification string the Dashboard shows (added 2026-10-12) |
 
 Stripe Dashboard → **Settings → Payments → Checkout and Payment Links →
 Custom domains → Add domain**, enter `pay.theraglee.com`, then copy the TXT
