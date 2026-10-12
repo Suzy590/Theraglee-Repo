@@ -246,7 +246,7 @@ export async function startCheckout(plan, interval, btn) {
   // the moment they are back, rather than leaving the purchase half done.
   if (!a.authenticated) {
     const back = `pricing.html?plan=${plan}&interval=${interval}`;
-    location.href = `${DOORS.member.signup}?next=${encodeURIComponent(back)}&plan=${plan}`;
+    location.href = `${DOORS.member.signup}?next=${encodeURIComponent(back)}&plan=${plan}&interval=${interval}`;
     return;
   }
   // A member who already subscribes is sent to the billing portal to switch
