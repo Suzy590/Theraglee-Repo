@@ -51,10 +51,6 @@ export async function authPage({ audience, mode, next: nextGiven }) {
     setTimeout(() => location.replace(theirs.home), 3500);
   };
 
-  // Already signed in? Straight through.
-  const a0 = await access();
-  if (a0.authenticated) { go(a0); return; }
-
   if (qs('why') === 'save' && up && audience === 'member') {
     alertBox(`<strong>Create a free account to keep that tool.</strong><br>
       Favorites, save for later and your dashboard are part of the free membership.
@@ -70,6 +66,10 @@ export async function authPage({ audience, mode, next: nextGiven }) {
       unattended screen. ${memberSignin ? 'Sign in to start again from Today.' : 'Sign in to pick up where you were.'}`, 'warn');
   }
 
+  // The form is drawn before anything is asked of the server, so it is there
+  // even when the server cannot be reached: a member once saw only the gray
+  // placeholder because the "already signed in?" check below never answered
+  // on their phone. That check now runs after the form is up.
   host.innerHTML = `
     <form id="form" class="stack" novalidate>
       ${up && audience === 'therapist' ? `<div class="field">
@@ -111,6 +111,14 @@ export async function authPage({ audience, mode, next: nextGiven }) {
   // pricing page, for someone buying a plan), else on the dashboard.
   const confirmTo = location.origin + '/' + (next || door.home);
 
+  // A request that never answers (a dropped connection, a blocked service)
+  // becomes a plain message after a while instead of a button that spins forever.
+  const SLOW = 20000;
+  const unreachable = { message:
+    'We could not reach the sign-in service. Check your connection, then try again.' };
+  const within = (promise) => Promise.race([promise,
+    new Promise((resolve) => setTimeout(() => resolve({ data: {}, error: unreachable }), SLOW))]);
+
   const sendReset = async (email) => {
     if (!email) return alertBox('Type your email above first.');
     const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: resetTo });
@@ -133,10 +141,10 @@ export async function authPage({ audience, mode, next: nextGiven }) {
     busy(btn, true, up ? 'Creating…' : 'Signing in…');
 
     if (up) {
-      const { data, error } = await sb.auth.signUp({
+      const { data, error } = await within(sb.auth.signUp({
         email, password,
         options: { data: { full_name, role: audience }, emailRedirectTo: confirmTo },
-      });
+      }));
       busy(btn, false);
       if (error) return alertBox(error.message);
 
@@ -163,7 +171,7 @@ export async function authPage({ audience, mode, next: nextGiven }) {
       clearAccess();
       location.href = next || door.home;
     } else {
-      const { error } = await sb.auth.signInWithPassword({ email, password });
+      const { error } = await within(sb.auth.signInWithPassword({ email, password }));
       if (error) {
         busy(btn, false);
         const m = error.message || '';
@@ -207,4 +215,11 @@ export async function authPage({ audience, mode, next: nextGiven }) {
     if (!email) return alertBox('Type your email above first, then click again.');
     sendReset(email);
   });
+
+  // Already signed in? Straight through. Asked last, once the form is on the
+  // page, so a slow or unreachable server never leaves the page blank; and a
+  // check that fails counts as signed out, which keeps the form in place.
+  let a0;
+  try { a0 = await access(); } catch (e) { console.error(e); return; }
+  if (a0.authenticated) go(a0);
 }

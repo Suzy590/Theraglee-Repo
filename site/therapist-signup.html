@@ -63,11 +63,23 @@
   </div>
 </main>
 
+<script>
+// If the scripts below never load (a dropped or blocked connection), say so
+// after a while instead of leaving the gray placeholder where the form should be.
+setTimeout(function () {
+  var box = document.getElementById('auth');
+  if (!box || !box.querySelector('.skeleton')) return;
+  box.innerHTML = '<div class="notice err"><strong>The sign-up form did not load.</strong><br>' +
+    'Check your connection, then reload this page. If it keeps happening, try another browser.</div>';
+}, 12000);
+</script>
 <script type="module">
 import { chrome, sb, esc, qs } from './assets/app.js';
 import { authPage } from './assets/auth.js';
 import { foundingOffer } from './assets/plans.js';
-await chrome();
+// The header's own lookup runs alongside the form rather than ahead of it,
+// so a slow answer never holds the form back.
+const header = chrome();
 
 // Opened from a "Become a founding member" button (?plan=founding): show the
 // founding rate up top, remember the choice, and send the new account to the
@@ -110,6 +122,7 @@ if (qs('plan') === 'founding') {
 }
 
 await authPage({ audience: 'therapist', mode: 'signup', next });
+await header;
 </script>
 </body>
 </html>
