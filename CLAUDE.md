@@ -119,7 +119,9 @@ A challenge is a theme ("Fostering Gratitude") with 365 daily to-dos, one for
 every day of a year; the member picks how many days it runs (7 to 365). Never
 name one for a number of days, and never mention streaks. The repo copy
 is `data/challenges.json`; check it with `node tests/challenges-fixture/check.mjs`,
-generate the SQL with `python3 tools/challenges_sql.py`, and follow
+generate the SQL with `python3 tools/challenges_sql.py`, load it in re-runnable
+pieces and check the database against the repo with
+`python3 tools/challenges_sync.py`, and follow
 `docs/challenges.md` for the daily routine and the writing rules.
 
 ## Articles are free, and five arrive every day

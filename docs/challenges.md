@@ -49,6 +49,8 @@ it, regenerate `documents/`.
 node tests/challenges-fixture/check.mjs                 # data checks
 python3 tools/challenges_sql.py --since 2026-09-25      # SQL for a day's two (an upsert on slug)
 python3 tools/challenges_sql.py slug-a slug-b           # or by slug
+python3 tools/challenges_sync.py check                  # one query: which themes differ in the database
+python3 tools/challenges_sync.py batches --out DIR --since 2026-09-25   # re-runnable load files
 python3 tools/build_documents.py                        # the print-ready copies in documents/
 ```
 
@@ -61,6 +63,33 @@ secret is set. The template half is an upsert on `slug`, so applying it twice is
 harmless and an edited theme keeps its id, along with every member's runs and
 ticks. The to-do half deletes and re-inserts that theme's `challenge_days`, so
 a member's day 12 always shows the current wording of to-do 12.
+
+### Loading through the Supabase MCP, and surviving a restart
+
+A day's migration is too large for one `execute_sql` call, so the routine loads
+it in pieces with `tools/challenges_sync.py batches`. That writes
+`00_templates.sql` (the template upsert) and `01.sql`, `02.sql`, ... of about
+120 to-dos each. Every to-do file is an upsert on the `(template_id, day)`
+unique key, so any file can be run again without an error, and none of them
+deletes anything. The files are rebuilt from `data/challenges.json`, so they do
+not depend on a scratch folder outliving the container.
+
+That makes a load cut off by a container restart easy to finish: rebuild the
+files, run `00_templates.sql`, then run every to-do file again. Rows that had
+already landed are rewritten with the same text.
+
+`tools/challenges_sync.py check` prints one query that compares every theme in
+the repo with the database by count and by an md5 of the to-dos in day order.
+It returns a row only for a theme that is missing or differs. The routine runs
+it at the start of each day and repairs whatever it lists before writing the
+day's two, so a load that a restart stopped, and nobody resumed, is put right
+the next day at the latest. It runs it again at the end, where it must return
+no rows.
+
+The GitHub workflow is the other way to make the load independent of the
+session. Once the `SUPABASE_DB_URL` secret is set, every push of a day's branch
+applies the migration from GitHub's own machines, and a restart here cannot
+stop it.
 
 `published_at` says when a theme joined the library: `2026-09-24T17:00:00+00:00`
 for the first twenty, and the day's date at 17:00:00+00:00 for everything since.
@@ -80,6 +109,10 @@ the printable documents in step.
 
 Each day's session:
 
+0. Runs the query from `tools/challenges_sync.py check`. For any theme it
+   lists, it rebuilds that theme's files with
+   `tools/challenges_sync.py batches --out DIR <slug>...` and runs them all,
+   then checks again. This finishes any earlier load a restart cut off.
 1. Reads this file, `CLAUDE.md`, and the title, description, theme and tags of
    every challenge already in `data/challenges.json`, so the day's two are
    genuinely new and match the voice. Also reads `CATEGORIES` and `TAGS` in
@@ -87,10 +120,11 @@ Each day's session:
 2. Writes two new themes and appends them to `data/challenges.json` with
    today's date at 17:00:00+00:00.
 3. Runs `node tests/challenges-fixture/check.mjs` and fixes anything it flags.
-4. Generates the day's migration with `tools/challenges_sql.py --since <today>`
-   and applies it to the database.
-5. Confirms with a query that both slugs are in `challenge_templates` with
-   365 `challenge_days` rows each.
+4. Generates the day's migration with `tools/challenges_sql.py --since <today>`,
+   then loads the day's two with the files from
+   `tools/challenges_sync.py batches --since <today>`.
+5. Runs the query from `tools/challenges_sync.py check`, which must return no
+   rows for the whole library.
 6. Runs `python3 tools/build_documents.py` and bumps the challenge counts in
    `README.md` and `docs/site.md`.
 7. Commits to its own `claude/...` branch, pushes, opens a pull request titled
