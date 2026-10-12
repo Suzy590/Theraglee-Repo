@@ -126,11 +126,17 @@ working; 7–9 add Tax, Radar and Connect.
 
 ### 0. Pick the right Stripe account
 
-The Stripe account connected to the assistant during this work is named
-**AssignRemind**, and it is a live account. If Theraglee should bill under its
-own name, create a separate Stripe account for Theraglee (or rename this one)
-before going further — the business name, statement descriptor and support
-email on the account are what members see on their card statements.
+Theraglee bills from its own live Stripe account, **Theraglee**
+(`acct_1UCo4FCq38pvaVwy`); everything in this guide was applied there on
+2026-10-12. The **Theraglee sandbox** (`acct_1UCo4OCu7zPnDbem`) holds the
+earlier test products, two test subscriptions and a test webhook, none of
+which involve real money; the site no longer points at it. The AssignRemind
+account and its sandbox are a separate business and have nothing of
+Theraglee's in them. An object's ID shows which account made it: the ten
+characters after the `1XXXXX` prefix (`Cq38pvaVwy` is live Theraglee,
+`Cu7zPnDbem` its sandbox). The business name, statement descriptor and
+support email on the live account are what members see on their card
+statements.
 
 Whichever account you use, do everything below in a **sandbox** first
 (Dashboard → the account switcher → *Sandboxes*). A sandbox has its own keys
