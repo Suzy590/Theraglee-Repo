@@ -38,7 +38,7 @@ supabase/
                        connect, session payments) — see docs/stripe.md
   migrations/          Schema changes that go with them
 documents/
-  index.html           Browsable library of all 772 documents
+  index.html           Browsable library of all 777 documents
   CONTENT-HEALTH.md    Source-data defects found while building
   challenges/ articles/ checklists/ journal-prompts/ quizzes/ worksheets/
 ```
@@ -107,7 +107,7 @@ chromium --headless --no-pdf-header-footer \
 
 | File | Source table | Rows |
 |---|---|---|
-| `articles.json` | `articles` | 167 (five more every day — see `docs/articles.md`) |
+| `articles.json` | `articles` | 172 (five more every day — see `docs/articles.md`) |
 | `checklists.json` | `checklists` | 44 (two more every day — see `docs/checklists.md`) |
 | `challenges.json` | `challenge_templates` + `challenge_days` | 52 themes (365 daily to-dos each, 18,980 in all; two more themes every day — see `docs/challenges.md`) |
 | `worksheets.json` | `worksheets` | 186 |
@@ -116,7 +116,7 @@ chromium --headless --no-pdf-header-footer \
 | `therapist-resources.json` | `therapist_resources` (the clinician library on the therapist dashboard; not rendered into `documents/`) | 3175 (five more of every kind and five on each of eighteen topics every day — see `docs/therapist-resources.md`) |
 
 The 372 journal prompts are grouped into 11 themed collections at build time
-(keyword rules live in `THEMES` in the generator), which is why 772 documents come
+(keyword rules live in `THEMES` in the generator), which is why 777 documents come
 out of 1,128 source rows (the journal prompt rows collapse into 11 collections).
 
 `quizzes.txt` is a compact pipe-delimited format rather than JSON — `Q|` a quiz,
