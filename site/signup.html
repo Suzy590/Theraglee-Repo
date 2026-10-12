@@ -11,24 +11,48 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
 <link rel="stylesheet" href="assets/styles.css">
+<style>
+  /* The plan banner, shown when the page opens from a plan button (?plan=basic
+     or ?plan=premium): the same shape as the therapist founding banner. */
+  .plan-note{background:var(--green-deep);color:#fff;border-radius:var(--r);padding:18px 20px;
+    margin-bottom:22px;box-shadow:var(--shadow-1)}
+  .plan-note .kicker{display:inline-block;padding:3px 11px;border-radius:var(--r-pill);background:var(--lime);
+    color:var(--ink);font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+  .plan-note .rate{display:flex;align-items:baseline;gap:8px;margin:10px 0 6px}
+  .plan-note .rate b{font-size:2rem;font-weight:300;letter-spacing:-.03em;line-height:1;color:var(--lime)}
+  .plan-note .rate small{color:rgba(255,255,255,.8)}
+  .plan-note p{margin:0;font-size:.93rem;color:rgba(255,255,255,.9);line-height:1.5}
+</style>
 </head>
 <body>
 <main class="section">
   <div class="wrap" style="max-width:470px">
     <div class="center" style="margin-bottom:26px">
-      <h1 style="font-size:2rem">Create your free account</h1>
-      <p class="muted">No card, no cost. Takes about twenty seconds.</p>
+      <span class="badge" id="plan-badge" hidden></span>
+      <h1 id="title" style="font-size:2rem">Create your free account</h1>
+      <p class="muted" id="lede">No card, no cost. Takes about twenty seconds.</p>
     </div>
+
+    <div id="plan-banner" hidden></div>
 
     <div class="card pad-lg">
       <div id="alert"></div>
       <div id="auth"><div class="skeleton" style="height:220px"></div></div>
     </div>
 
+    <div class="card" id="next-steps" hidden style="margin-top:22px">
+      <h3 style="margin-bottom:10px">What happens next</h3>
+      <ol class="muted" style="margin:0;padding-left:20px;font-size:.93rem;line-height:1.6">
+        <li>Create your account (about twenty seconds).</li>
+        <li id="next-step-2">Pay on the secure checkout page.</li>
+        <li id="next-step-3">Your membership starts the moment the payment goes through.</li>
+      </ol>
+    </div>
+
     <p class="center muted" style="margin-top:22px">
       Already have an account? <a href="login.html" id="signin-link">Sign in</a>
     </p>
-    <p class="center faint" style="margin-top:8px">
+    <p class="center faint" style="margin-top:8px" id="free-line">
       Free forever: a progress dashboard, favorites, journal prompts, checklists,
       themed daily challenges, articles in your inbox, and Theraglee Match Mode.
     </p>
@@ -39,8 +63,9 @@
 </main>
 
 <script type="module">
-import { chrome } from './assets/app.js';
+import { chrome, sb, esc, qs } from './assets/app.js';
 import { authPage } from './assets/auth.js';
+import { loadPrices } from './assets/plans.js';
 // Someone sent here to finish something (buying a plan) who already has an
 // account should still land back there after signing in.
 {
@@ -48,6 +73,49 @@ import { authPage } from './assets/auth.js';
   if (q.get('next')) document.getElementById('signin-link').href = 'login.html?' + q;
 }
 await chrome();
+
+// Opened from a plan button on the pricing page (?plan=basic or ?plan=premium,
+// with ?interval=): the page is about that plan, not a free account. The
+// heading, the price and the steps all name it, so nobody wonders whether
+// they landed on the wrong page. The account itself is still free; the
+// checkout that follows is where the plan is paid for.
+const PLAN_NAMES = { basic: 'Basic', premium: 'Premium' };
+const plan = PLAN_NAMES[qs('plan')] ? qs('plan') : null;
+if (plan) {
+  const name = PLAN_NAMES[plan];
+  const interval = qs('interval') === 'yearly' ? 'yearly' : 'monthly';
+  const otherInterval = interval === 'monthly' ? 'yearly' : 'monthly';
+  const per = { monthly: 'month', yearly: 'year' };
+  const prices = await loadPrices(sb);
+  const amount = prices[`${plan}_${interval}`];
+  const other = prices[`${plan}_${otherInterval}`];
+
+  document.title = `Start your ${name} membership — Theraglee`;
+  const badge = document.getElementById('plan-badge');
+  badge.hidden = false;
+  badge.textContent = `${name} membership`;
+  document.getElementById('title').textContent = `Start your ${name} membership`;
+  document.getElementById('lede').textContent =
+    `$${amount}/${per[interval]}` + (other ? ` (or $${other}/${per[otherInterval]})` : '') + '. Cancel any time.';
+
+  const banner = document.getElementById('plan-banner');
+  banner.hidden = false;
+  banner.innerHTML = `<div class="plan-note" role="note">
+    <span class="kicker">Step 1 of 2</span>
+    <div class="rate"><b>$${esc(amount)}</b><small>/${per[interval]} for ${esc(name)}</small></div>
+    <p>Create your account below. Then you go straight to Stripe's secure checkout page to
+      pay for ${esc(name)}. Nothing is charged until you enter a card there.</p></div>`;
+
+  document.getElementById('next-steps').hidden = false;
+  document.getElementById('next-step-2').textContent =
+    `Pay for ${name} on the secure checkout page: $${amount}/${per[interval]}.`;
+  document.getElementById('next-step-3').textContent =
+    `Your ${name} membership starts the moment the payment goes through.`;
+  document.getElementById('free-line').textContent =
+    `Not ready to pay? Create the account anyway. The free membership is yours to keep, ` +
+    `and you can go ${name} any time from the pricing page.`;
+}
+
 await authPage({ audience: 'member', mode: 'signup' });
 </script>
 </body>
