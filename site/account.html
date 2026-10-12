@@ -12,9 +12,10 @@
 <link rel="stylesheet" href="assets/styles.css">
 <style>
   .tabs{display:flex;gap:4px;border-bottom:1px solid var(--hair);margin:24px 0 28px;overflow-x:auto}
-  .tabs button{border:0;background:none;font:inherit;font-size:.95rem;padding:12px 18px;cursor:pointer;
-    color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap}
+  .tabs button,.tabs a{border:0;background:none;font:inherit;font-size:.95rem;padding:12px 18px;cursor:pointer;
+    color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap;text-decoration:none}
   .tabs button.on{color:var(--green);border-bottom-color:var(--green);font-weight:500}
+  .tabs a:hover{color:var(--ink)}
   /* The unread count on the Inbox tab, the same pill the dashboards use. */
   .tabs .dot{display:inline-block;min-width:18px;padding:0 5px;height:18px;line-height:18px;
     border-radius:9px;background:var(--green);color:#fff;font-size:.7rem;margin-left:6px;
@@ -89,6 +90,7 @@ function shell(body){
       </div>
     </div>` : ''}
     <div class="tabs">
+      <a href="${isTherapist ? 'therapist-dashboard.html' : 'dashboard.html'}">Dashboard</a>
       ${TABS.map(([k,l])=>`<button data-tab="${k}" class="${tab===k?'on':''}"${
         k==='inbox' && inboxUnread ? ` aria-label="Inbox, ${inboxUnread} unread"` : ''}>${l}${
         k==='inbox' && inboxUnread ? `<span class="dot" aria-hidden="true">${inboxUnread}</span>` : ''}</button>`).join('')}
