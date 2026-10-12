@@ -196,6 +196,21 @@ Each price has an ID starting `price_`. Paste the six IDs into
 `/admin.html` → **Stripe setup**, and check the shown prices in the same screen
 match. Save.
 
+#### The live IDs
+
+Created on the live account on 2026-10-12. The same IDs are in `app_config`
+(`/admin.html` → **Stripe setup**); if they ever differ, the admin screen wins.
+
+| Plan | Product | Monthly | Yearly |
+|---|---|---|---|
+| Basic, $9 / $90 | `prod_VQOrDDQiXi99j0` | `price_1UPY4RCq38pvaVwyNoOTQfoc` | `price_1UPY4TCq38pvaVwyLwynUTCJ` |
+| Premium, $19 / $190 | `prod_VQOsBs4DYJ1UvY` | `price_1UPY4VCq38pvaVwyzbuehXPR` | `price_1UPY4XCq38pvaVwyurLs5hHu` |
+| Therapist, $29 / $290 | `prod_VQOsiNk5pHIru6` | `price_1UPY4aCq38pvaVwyEBjPoHmI` | `price_1UPY4cCq38pvaVwyD0sfDpp3` |
+
+The founding-member rate, $20 a month, is `price_1UPY4dCq38pvaVwyu0i9KSuO` on
+the Therapist product. Every price is tax-exclusive, so Stripe Tax adds tax on
+top rather than carving it out of the amount.
+
 #### The founding-member offer (optional)
 
 A discounted *monthly* therapist rate for the first therapists who join, sold
@@ -256,6 +271,13 @@ signing secret into `STRIPE_CONNECT_WEBHOOK_SECRET`.
 Stripe Dashboard → **Settings → Billing → Customer portal**: allow customers to
 update payment methods, cancel (at the end of the period), and switch between
 the three membership products. Save.
+
+The live portal configuration is `bpc_1UPXvpCq38pvaVwy205zxAKL` ("Theraglee
+members", the default): name, email and address edits; invoice history; card
+changes; cancel at the end of the period with a reason; and switches between
+the monthly and yearly prices of the three products above. The founding price
+is deliberately not a switch target, so a founding member who changes plan
+moves to a regular price.
 
 Now, signed in as the admin, go to `/pricing.html` and buy a plan with a test
 card (`4242 4242 4242 4242`, any future date, any CVC). Admins can check out
