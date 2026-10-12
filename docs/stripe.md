@@ -310,6 +310,26 @@ Stripe rejects an image over 512 KB; the two PNGs above (and their
 `-transparent` twins) are already under it. The colors can be set through
 the Stripe connection, but images only upload through the Dashboard.
 
+### 6c. The checkout domain
+
+Checkout and the customer portal can live at **pay.theraglee.com** instead of
+`checkout.stripe.com` and `billing.stripe.com`. Stripe charges a monthly fee
+for it, has no API for it, and needs two DNS records on theraglee.com, whose
+DNS is hosted at Vercel.
+
+| Record | Name | Value |
+|---|---|---|
+| CNAME | `pay` | `hosted-checkout.stripecdn.com` (added 2026-10-12) |
+| TXT | as shown in the Dashboard | the verification string the Dashboard shows |
+
+Stripe Dashboard → **Settings → Payments → Checkout and Payment Links →
+Custom domains → Add domain**, enter `pay.theraglee.com`, then copy the TXT
+record it shows into Vercel DNS. Stripe emails when the domain is ready;
+switch it on from the same page. Nothing in the code changes: checkout
+redirects to the `url` Stripe returns, and Stripe fills in the custom domain
+once it is live. The root already carries a `CAA` record allowing
+`letsencrypt.org`, which Stripe uses for the certificate.
+
 ### 7. Stripe Tax
 
 1. Dashboard → **Tax → Get started**: confirm the origin address and pick the
