@@ -266,6 +266,28 @@ date and a **Manage billing** button.
 When that works: `/admin.html` → **Stripe setup** → tick **Accept payments** →
 Save. Memberships are live.
 
+### 6b. Branding
+
+Stripe Dashboard → **Settings → Business → Branding** is what makes checkout,
+receipts and the portal read as Theraglee rather than Stripe. The values are
+lifted from `site/assets/styles.css`:
+
+| Setting | Value | Why |
+| --- | --- | --- |
+| Icon | `brand/assets/stripe-icon.png` | the sunburst mark, 512×512 |
+| Logo | `brand/assets/stripe-logo.png` | the wordmark, 1600 px wide |
+| Prefer logo over icon | on | the wordmark says "Theraglee"; the mark alone does not |
+| Brand color | `#187C1A` | `--green`; email headers and the portal |
+| Accent color | `#0E5A10` | `--green-deep`; buttons and links on receipts and the portal |
+| Checkout background | `#FBF9F2` | `--cream`, the site's page color |
+| Checkout button | `#187C1A` | `--green`, the site's `.btn` |
+| Checkout border style | Round | the site's pill buttons |
+| Checkout font | Montserrat | the closest Stripe offers to Outfit |
+
+Stripe rejects an image over 512 KB; the two PNGs above (and their
+`-transparent` twins) are already under it. The colors can be set through
+the Stripe connection, but images only upload through the Dashboard.
+
 ### 7. Stripe Tax
 
 1. Dashboard → **Tax → Get started**: confirm the origin address and pick the
