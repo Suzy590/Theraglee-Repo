@@ -205,6 +205,9 @@ em.script{font-family:var(--serif);font-style:italic;font-weight:400;color:var(-
   transition:transform .28s cubic-bezier(.22,1,.36,1),box-shadow .28s ease,background-color .2s ease,opacity .2s}
 .btn:hover{background:var(--green-deep);color:#fff;transform:translateY(-2px);box-shadow:var(--shadow-1)}
 .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+/* A button whose job is done (the account is created): gray, and it stays so. */
+.btn.done,.btn.done:disabled{background:var(--sand);color:var(--muted);border-color:var(--hair);
+  opacity:1;box-shadow:none;transform:none;cursor:not-allowed}
 .btn.ghost{background:transparent;color:var(--ink);border-color:var(--hair)}
 .btn.ghost:hover{background:var(--paper);color:var(--ink);border-color:var(--faint)}
 .btn.lime{background:var(--lime);color:var(--ink)}

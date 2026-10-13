@@ -49,8 +49,17 @@ export async function authPage({ audience, mode, next: nextGiven }) {
     ? null : asked;
   const host = $('#auth');
 
-  const alertBox = (msg, kind = 'err') => $('#alert').innerHTML =
-    `<div class="notice ${kind}" style="margin-bottom:18px">${msg}</div>`;
+  // Messages before the form is used go above it (#alert, in the page); what
+  // happens after the button is pressed is said right under the button
+  // (#form-alert, drawn below), where the member is looking.
+  const alertBox = (msg, kind = 'err', spot = '#alert') => {
+    $('#alert').innerHTML = '';
+    const after = $('#form-alert');
+    if (after) after.innerHTML = '';
+    $(spot).innerHTML = `<div class="notice ${kind}" style="margin:${spot === '#alert' ? '0 0 18px' : '18px 0 0'}">${msg}</div>`;
+    if (spot !== '#alert') $(spot).scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  };
+  const say = (msg, kind = 'err') => alertBox(msg, kind, '#form-alert');
 
   // Where an account goes once it is signed in. The wrong door still works,
   // but it says so and sends the account to its own dashboard.
@@ -120,6 +129,7 @@ export async function authPage({ audience, mode, next: nextGiven }) {
       <button class="btn lg block" id="submit" type="submit">${
         !up ? 'Sign in' : audience === 'therapist' ? 'Create therapist account'
         : planWanted ? `Create account and continue to ${planWanted} checkout` : 'Create account'}</button>
+      <div id="form-alert"></div>
       <p class="faint center" style="margin:0">By continuing, you agree to the
         <a href="terms.html">Terms of Service</a> and <a href="privacy.html">Privacy Policy</a>,
         and confirm that you are 18 or older and in the United States.</p>
@@ -133,9 +143,9 @@ export async function authPage({ audience, mode, next: nextGiven }) {
   const confirmTo = location.origin + '/' + (next || door.home);
 
   const sendReset = async (email) => {
-    if (!email) return alertBox('Type your email above first.');
+    if (!email) return say('Type your email above first.');
     const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: resetTo });
-    alertBox(error ? error.message
+    say(error ? error.message
       : `Reset link sent to ${esc(email)}. It can take a minute.`, error ? 'err' : 'warn');
   };
 
@@ -172,13 +182,12 @@ export async function authPage({ audience, mode, next: nextGiven }) {
     const full_name = up ? $('#name').value.trim() : '';
     $('#alert').innerHTML = '';
 
-    if (!email || !password) return alertBox('Please fill in your email and password.');
+    if (!email || !password) return say('Please fill in your email and password.');
     if (up && password.length < 8)
-      return alertBox('Please choose a password of at least 8 characters.');
-    if (up && !password2) return alertBox('Please type your password again in the second box.');
+      return say('Please choose a password of at least 8 characters.');
+    if (up && !password2) return say('Please type your password again in the second box.');
     if (up && password !== password2) {
-      alertBox('Those passwords do not match. Please type the same password in both boxes.');
-      $('#alert').scrollIntoView({ block: 'center', behavior: 'smooth' });
+      say('Those passwords do not match. Please type the same password in both boxes.');
       $('#password2').focus({ preventScroll: true });
       return;
     }
@@ -192,7 +201,7 @@ export async function authPage({ audience, mode, next: nextGiven }) {
         options: { data: { full_name, role: audience }, emailRedirectTo: confirmTo },
       });
       busy(btn, false);
-      if (error) return alertBox(error.message);
+      if (error) return say(error.message);
 
       // Supabase will not say outright that an address is taken, to stop people
       // fishing for who has an account. It signals it by returning a user with no
@@ -200,7 +209,7 @@ export async function authPage({ audience, mode, next: nextGiven }) {
       // to wait for a message that is never coming.
       if (data.user && (data.user.identities?.length ?? 0) === 0) {
         const signin = `${door.signin}?email=${encodeURIComponent(email)}${next ? '&next=' + encodeURIComponent(next) : ''}`;
-        return alertBox(
+        return say(
           `<strong>You already have an account with ${esc(email)}.</strong><br>
            <a href="${signin}">Sign in instead</a> — or
            <a href="#" id="send-reset">send yourself a reset link</a>
@@ -208,10 +217,20 @@ export async function authPage({ audience, mode, next: nextGiven }) {
       }
 
       if (!data.session) {
-        return alertBox(
-          `<strong>Check your email.</strong><br>
+        // The account exists now, so the button has done its job: it goes
+        // gray and stays that way. The message under it says what is next.
+        btn.disabled = true;
+        btn.classList.add('done');
+        btn.textContent = 'Account created';
+        // iCloud Mail (@me.com, @icloud.com, @mac.com) files this message
+        // under Junk more often than other providers do, so say so.
+        const icloud = /@(me|icloud|mac)\.com$/i.test(email);
+        return say(
+          `<strong>Please check your email.</strong><br>
            We have sent a confirmation link to ${esc(email)}. It can take a minute, and it
-           sometimes lands in spam. <a href="#" id="resend">Send it again</a>.${planWanted
+           sometimes lands in your spam or junk folder${icloud
+             ? ' (iCloud Mail often files it under Junk, so look there first)' : ''}.
+           <a href="#" id="resend">Send it again</a>.${planWanted
              ? `<br>Once you confirm, we take you straight to checkout for ${planWanted}.` : ''}`, 'warn');
       }
       clearAccess();
@@ -222,17 +241,17 @@ export async function authPage({ audience, mode, next: nextGiven }) {
         busy(btn, false);
         const m = error.message || '';
         if (/email not confirmed/i.test(m)) {
-          return alertBox(
+          return say(
             `<strong>This account still needs confirming.</strong><br>
              Check your email for the link we sent to ${esc(email)}, or
              <a href="#" id="resend">send it again</a>.`, 'warn');
         }
         if (/invalid login credentials/i.test(m)) {
-          return alertBox(
+          return say(
             `<strong>That email and password do not match.</strong><br>
              Try again, or <a href="#" id="send-reset">send yourself a reset link</a>.`);
         }
-        return alertBox(m);
+        return say(m);
       }
       clearAccess();
       const a = await access(true);
@@ -241,8 +260,8 @@ export async function authPage({ audience, mode, next: nextGiven }) {
     }
   });
 
-  // Actions offered inside the message box above.
-  $('#alert').addEventListener('click', async (e) => {
+  // Actions offered inside either message box.
+  for (const box of [$('#alert'), $('#form-alert')]) box.addEventListener('click', async (e) => {
     const email = $('#email')?.value.trim();
     if (e.target.id === 'send-reset') { e.preventDefault(); sendReset(email); }
     if (e.target.id === 'resend') {
@@ -250,15 +269,15 @@ export async function authPage({ audience, mode, next: nextGiven }) {
       const { error } = await sb.auth.resend({
         type: 'signup', email, options: { emailRedirectTo: confirmTo },
       });
-      alertBox(error ? error.message
-        : `Sent again to ${esc(email)}. Check your spam folder too.`, error ? 'err' : 'warn');
+      say(error ? error.message
+        : `Sent again to ${esc(email)}. Check your spam or junk folder too.`, error ? 'err' : 'warn');
     }
   });
 
   $('#forgot')?.addEventListener('click', (e) => {
     e.preventDefault();
     const email = $('#email').value.trim();
-    if (!email) return alertBox('Type your email above first, then click again.');
+    if (!email) return say('Type your email above first, then click again.');
     sendReset(email);
   });
 }
