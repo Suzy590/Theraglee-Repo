@@ -320,6 +320,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--lime-2);
 textarea{min-height:110px;resize:vertical;line-height:1.55}
 .field{margin-bottom:16px}
 .help{font-size:.8rem;color:var(--faint);margin-top:5px}
+.help.ok{color:var(--green);font-weight:500}
 /* A password box with an eye at its right edge: press to see what was typed,
    press again to hide it. The button sits inside the box's padding. */
 .pw{position:relative}
