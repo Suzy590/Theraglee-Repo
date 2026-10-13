@@ -11,6 +11,23 @@ const safeNext = (n) => (n && /^[A-Za-z0-9_-]+\.html(?:[?#].*)?$/.test(n)) ? n :
 
 const homeName = (aud) => aud === 'therapist' ? 'practice dashboard' : 'dashboard';
 
+// A password box with an eye button at its right edge that reveals what was
+// typed. Both icons are drawn here; the `.on` class on the button picks the
+// crossed-out one (styles.css).
+const EYE_OPEN = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+  stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>`;
+const EYE_SHUT = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+  stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>
+  <path d="M4 4l16 16"/></svg>`;
+const pwField = (id, autocomplete, placeholder) => `<div class="pw">
+  <input id="${id}" type="password" autocomplete="${autocomplete}" required minlength="8"
+         placeholder="${placeholder}">
+  <button type="button" class="pw-eye" aria-label="Show password" aria-pressed="false"
+          title="Show password"><span class="eye-open">${EYE_OPEN}</span><span class="eye-shut">${EYE_SHUT}</span></button>
+</div>`;
+
 /**
  * Draws the form into `#auth` and wires it up.
  *   audience  'member' | 'therapist'   which door this page is
@@ -88,10 +105,14 @@ export async function authPage({ audience, mode, next: nextGiven }) {
       </div>
       <div class="field">
         <label for="password">Password</label>
-        <input id="password" type="password" autocomplete="${up ? 'new-password' : 'current-password'}"
-               required minlength="8" placeholder="At least 8 characters">
+        ${pwField('password', up ? 'new-password' : 'current-password', 'At least 8 characters')}
         ${up ? '<div class="help">At least 8 characters.</div>' : ''}
       </div>
+      ${up ? `<div class="field">
+        <label for="password2">Confirm password</label>
+        ${pwField('password2', 'new-password', 'Type it again')}
+        <div class="help">Type the same password again so we know it is what you meant.</div>
+      </div>` : ''}
       ${up && audience === 'therapist' ? `<div class="help" style="margin:-6px 0 4px">
         Therapist accounts list a practice in the directory. Next you start your membership
         and fill in your profile; your license is verified against your state licensing board,
@@ -118,16 +139,38 @@ export async function authPage({ audience, mode, next: nextGiven }) {
       : `Reset link sent to ${esc(email)}. It can take a minute.`, error ? 'err' : 'warn');
   };
 
+  // The eye beside a password box shows the password in plain text while it
+  // is pressed, and hides it again on the next press.
+  $('#form').addEventListener('click', (e) => {
+    const eye = e.target.closest('.pw-eye');
+    if (!eye) return;
+    const input = eye.parentElement.querySelector('input');
+    const show = input.type === 'password';
+    input.type = show ? 'text' : 'password';
+    eye.setAttribute('aria-pressed', show ? 'true' : 'false');
+    eye.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+    eye.title = show ? 'Hide password' : 'Show password';
+    eye.classList.toggle('on', show);
+  });
+
   $('#form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = $('#email').value.trim();
     const password = $('#password').value;
+    const password2 = up ? $('#password2').value : password;
     const full_name = up ? $('#name').value.trim() : '';
     $('#alert').innerHTML = '';
 
     if (!email || !password) return alertBox('Please fill in your email and password.');
     if (up && password.length < 8)
       return alertBox('Please choose a password of at least 8 characters.');
+    if (up && !password2) return alertBox('Please type your password again in the second box.');
+    if (up && password !== password2) {
+      alertBox('Those passwords do not match. Please type the same password in both boxes.');
+      $('#alert').scrollIntoView({ block: 'center', behavior: 'smooth' });
+      $('#password2').focus({ preventScroll: true });
+      return;
+    }
 
     const btn = $('#submit');
     busy(btn, true, up ? 'Creating…' : 'Signing in…');

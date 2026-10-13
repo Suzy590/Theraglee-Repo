@@ -320,6 +320,18 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--lime-2);
 textarea{min-height:110px;resize:vertical;line-height:1.55}
 .field{margin-bottom:16px}
 .help{font-size:.8rem;color:var(--faint);margin-top:5px}
+/* A password box with an eye at its right edge: press to see what was typed,
+   press again to hide it. The button sits inside the box's padding. */
+.pw{position:relative}
+.pw input{padding-right:48px}
+.pw-eye{position:absolute;top:50%;right:6px;transform:translateY(-50%);width:36px;height:36px;
+  display:grid;place-items:center;padding:0;border:0;border-radius:8px;background:none;
+  color:var(--muted);cursor:pointer;transition:color .18s,background .18s}
+.pw-eye:hover{color:var(--ink);background:var(--soft)}
+.pw-eye:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(141,198,29,.3);color:var(--ink)}
+.pw-eye svg{display:block}
+.pw-eye .eye-shut,.pw-eye.on .eye-open{display:none}
+.pw-eye.on .eye-shut{display:block}
 fieldset{border:0;padding:0;margin:0}
 
 /* A drop-down that takes several answers: a select-shaped button, and under
