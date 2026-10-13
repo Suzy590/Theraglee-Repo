@@ -106,7 +106,7 @@ export async function authPage({ audience, mode, next: nextGiven }) {
       <div class="field">
         <label for="password">Password</label>
         ${pwField('password', up ? 'new-password' : 'current-password', 'At least 8 characters')}
-        ${up ? '<div class="help">At least 8 characters.</div>' : ''}
+        ${up ? '<div class="help" id="pw-hint" aria-live="polite">At least 8 characters.</div>' : ''}
       </div>
       ${up ? `<div class="field">
         <label for="password2">Confirm password</label>
@@ -152,6 +152,17 @@ export async function authPage({ audience, mode, next: nextGiven }) {
     eye.title = show ? 'Hide password' : 'Show password';
     eye.classList.toggle('on', show);
   });
+
+  // The hint under a new password turns green, with a check, once the
+  // password is long enough, so nobody has to count.
+  if (up) {
+    const hint = $('#pw-hint');
+    $('#password').addEventListener('input', (e) => {
+      const ok = e.target.value.length >= 8;
+      hint.classList.toggle('ok', ok);
+      hint.textContent = ok ? '\u2713 At least 8 characters.' : 'At least 8 characters.';
+    });
+  }
 
   $('#form').addEventListener('submit', async (e) => {
     e.preventDefault();
