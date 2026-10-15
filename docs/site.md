@@ -932,6 +932,14 @@ made an administrator automatically. The header then carries **Practice** and
 **Admin** links, so the account can open the member dashboard, the practice
 dashboard and `/admin.html`, which offers:
 
+- memberships: everyone with an account, and a live count of the members who
+  have Theraglee Match Mode switched on (`profiles.visible_to_therapists` with
+  `role = 'member'`, the same test as `member_opted_in()`). The count is taken
+  again whenever Supabase Realtime reports a change to a profile
+  (`20261015170000_profiles_realtime.sql` adds `profiles` to the
+  `supabase_realtime` publication; row-level security decides what the
+  listener hears), every 30 seconds as a fallback, and when the tab comes
+  back into view. The status filter can also show just those members.
 - the therapist license verification queue
 - Stripe price IDs, the platform fee, and the on/off switches for payments,
   sales tax and session payments
