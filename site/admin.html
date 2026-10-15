@@ -51,6 +51,7 @@ const TABS = [['members','Memberships'],['verify','License verification'],['numb
               ['codes','Discount codes'],['billing','Stripe setup'],['content','Content']];
 
 function render(body){
+  stopMatchWatch();
   root.innerHTML = `<div class="spread">
       <h1 style="margin:0">Admin</h1>
       <div class="row">
@@ -105,7 +106,7 @@ let mView = 'members', mQuery = '', mStatus = 'all';
 async function members(){
   render('<div class="skeleton" style="height:150px"></div>');
   const [{ data: people, error }, { data: listings }] = await Promise.all([
-    sb.from('profiles').select('id,email,full_name,role,tier,stripe_subscription_id,subscription_status,current_period_end,cancel_at_period_end,created_at')
+    sb.from('profiles').select('id,email,full_name,role,tier,stripe_subscription_id,subscription_status,current_period_end,cancel_at_period_end,created_at,visible_to_therapists')
       .order('created_at', { ascending: false }),
     sb.rpc('admin_pending_therapists'),
   ]);
@@ -123,6 +124,7 @@ async function members(){
     const rows = (mView === 'members' ? memberRows : therapistRows).filter(p => {
       if (mStatus === 'paying' && !isLive(p)) return false;
       if (mStatus === 'none' && isLive(p)) return false;
+      if (mStatus === 'match' && !matchOn(p)) return false;
       if (!mQuery) return true;
       const t = byUser[p.id];
       const hay = [p.full_name, p.email, t && `${t.first_name} ${t.last_name}`].join(' ').toLowerCase();
@@ -134,7 +136,7 @@ async function members(){
       <tbody>${rows.map(p => `<tr>
         <td><strong>${esc(p.full_name || '—')}</strong>${p.role === 'admin' ? ' <span class="badge gray">admin</span>' : ''}<br>
           <span class="faint">${esc(p.email || '')}</span></td>
-        <td>${planName(p.tier)}</td>
+        <td>${planName(p.tier)}${matchOn(p) ? ' <span class="badge live">Match Mode on</span>' : ''}</td>
         <td>${statusBadge(p)}</td>
         <td class="faint">${renews(p)}</td>
         <td class="faint">${fmtDate(p.created_at)}</td>
@@ -184,6 +186,15 @@ async function members(){
       ${stat(therapistRows.filter(isLive).length, 'active therapist memberships')}
     </div>
 
+    <div class="card" style="margin-top:14px;display:flex;align-items:center;gap:18px;flex-wrap:wrap">
+      <div style="font-size:1.8rem;font-weight:300;color:var(--green);min-width:2ch" id="matchcount">${memberRows.filter(matchOn).length}</div>
+      <div>
+        <div>members with <strong>Theraglee Match Mode</strong> switched on
+          <span class="badge gray" id="matchlive" title="Updates by itself as members switch it on or off">live</span></div>
+        <div class="faint" id="matchnote">Counted just now.</div>
+      </div>
+    </div>
+
     <div class="tabs" style="margin:28px 0 0">
       <button data-mview="members" class="${mView==='members'?'on':''}">Members (${memberRows.length})</button>
       <button data-mview="therapists" class="${mView==='therapists'?'on':''}">Therapists (${therapistRows.length})</button>
@@ -194,6 +205,7 @@ async function members(){
         <option value="all">All statuses</option>
         <option value="paying">Active (paid, trial or complimentary)</option>
         <option value="none">No active membership</option>
+        <option value="match">Theraglee Match Mode on</option>
       </select>
     </div>
     <div id="mlist"></div>`);
@@ -208,6 +220,55 @@ async function members(){
   document.getElementById('mq').oninput = (e) => { mQuery = e.target.value.trim(); draw(); };
   document.getElementById('ms').onchange = (e) => { mStatus = e.target.value; draw(); };
   draw();
+  watchMatchMode();
+}
+
+// Theraglee Match Mode, counted live. A member counts when
+// profiles.visible_to_therapists is set and their role is member, the same
+// test as the database's member_opted_in() (an admin's own switch does nothing
+// for therapists, so it is not counted). The number is counted again whenever
+// Realtime reports a change to any profile (20261015170000_profiles_realtime.sql
+// streams the table; the "admin reads all profiles" policy is what lets this
+// listener hear every row), every 30 seconds in case a change slipped by, and
+// when the browser tab comes back into view. The change itself is not read;
+// the count is simply taken afresh.
+const matchOn = (p) => p.role === 'member' && !!p.visible_to_therapists;
+let matchWatch = null;
+function stopMatchWatch(){
+  if (!matchWatch) return;
+  clearInterval(matchWatch.timer);
+  document.removeEventListener('visibilitychange', matchWatch.onShow);
+  sb.removeChannel(matchWatch.channel);
+  matchWatch = null;
+}
+function watchMatchMode(){
+  stopMatchWatch();
+  const at = () => new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  const refresh = async (why) => {
+    const el = document.getElementById('matchcount'), note = document.getElementById('matchnote');
+    if (!el) return stopMatchWatch();
+    const { count, error } = await sb.from('profiles').select('id', { count: 'exact', head: true })
+      .eq('role', 'member').eq('visible_to_therapists', true);
+    if (error) { note.textContent = `Could not count at ${at()}: ${error.message}`; return; }
+    if (String(count) !== el.textContent)
+      el.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.25)' }, { transform: 'scale(1)' }], 450);
+    el.textContent = count ?? '—';
+    note.textContent = `${why} at ${at()}.`;
+  };
+  const badge = (live) => {
+    const b = document.getElementById('matchlive');
+    if (!b) return;
+    b.className = `badge ${live ? 'live' : 'gray'}`;
+    b.textContent = live ? 'live' : 'every 30 s';
+    b.title = live ? 'Updates by itself as members switch it on or off'
+      : 'Live updates are not reaching this page, so it counts again every 30 seconds';
+  };
+  const onShow = () => { if (document.visibilityState === 'visible') refresh('Counted'); };
+  const channel = sb.channel('admin-match-mode')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => refresh('Refreshed after a change'))
+    .subscribe((status) => badge(status === 'SUBSCRIBED'));
+  document.addEventListener('visibilitychange', onShow);
+  matchWatch = { channel, onShow, timer: setInterval(() => refresh('Counted'), 30000) };
 }
 
 // Every row gets Manage; a row with a live membership also gets Discontinue,
