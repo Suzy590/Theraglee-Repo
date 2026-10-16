@@ -175379,5 +175379,5676 @@
    "play"
   ],
   "created_at": "2026-10-15T15:00:00+00:00"
+ },
+ {
+  "slug": "energy-budget-week-spending-plan",
+  "title": "Energy Budget Week Spending Plan",
+  "kind": "worksheet",
+  "summary": "A planning sheet where a client spends a limited weekly energy budget on activities that matter to them.",
+  "goal": "Use it to help a client see where energy goes and choose what to protect or drop.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Have the client list the week's commitments first, then give each a small, medium or large energy cost in their own judgment. Notice where the budget runs out before the week does. Let the client decide what to trade; your role is to ask what they would miss least.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What I have to do this week"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What gives me energy this week"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What drains my energy this week"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "One thing I could shrink or drop"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "One thing I will protect on purpose"
+   }
+  ],
+  "tags": [
+   "planning",
+   "energy",
+   "balance"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "values-and-daily-schedule-match-up",
+  "title": "Values and Daily Schedule Match-Up",
+  "kind": "worksheet",
+  "summary": "A two-column sheet that lines up a client's stated values against how their days are actually spent.",
+  "goal": "Use it to help a client spot gaps between what matters to them and where time goes.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Ask for three values in the client's words, then a typical day hour by hour. Draw lines between matching items and notice what has no line. Keep the tone curious; a gap is information, not a failing, and the client picks any change.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Three things that matter most to me"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What a normal weekday looks like for me"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Parts of my day that match what matters"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Parts of my day that do not match"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "One small shift I would try this week"
+   }
+  ],
+  "tags": [
+   "values",
+   "schedule",
+   "planning"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "kind-but-clear-limit-setting-script-sheet",
+  "title": "Kind but Clear Limit-Setting Script Sheet",
+  "kind": "worksheet",
+  "summary": "A fill-in sheet for drafting a short, kind and clear boundary statement ahead of a hard conversation.",
+  "goal": "Use it to help a client put a boundary into words they can say out loud.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "25 minutes",
+  "body_md": "Work through one real situation. The client drafts a statement with a feeling, a limit and an offer, then practices it aloud with you. Expect early drafts to over-explain; invite trimming. Rehearse the other person's likely reply too.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The situation where I need a limit"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What I feel in that situation"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "The limit I want to set, in one sentence"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What I can offer instead"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What I will say if they push back"
+   }
+  ],
+  "tags": [
+   "boundaries",
+   "assertiveness",
+   "communication"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "between-roles-handoff-ritual-sheet",
+  "title": "Between-Roles Handoff Ritual Sheet",
+  "kind": "worksheet",
+  "summary": "A sheet for designing a short ritual that marks the shift between work and home or between any two parts of the day.",
+  "goal": "Use it to help a client leave one role behind before stepping into the next.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "20 minutes",
+  "body_md": "Ask where the client feels carried-over tension, such as after work or after caregiving. Together sketch a three-step ritual that fits real life, like a walk, a shower or a song. Start tiny and review in a week to see what the client kept.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The transition that is hardest for me"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What I carry from one part of the day into the next"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Three small steps for my ritual"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Where and when I will do it"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "How I will know it helped"
+   }
+  ],
+  "tags": [
+   "routine",
+   "transition",
+   "self-care"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "closeness-rings-support-map",
+  "title": "Closeness Rings Support Map",
+  "kind": "worksheet",
+  "summary": "A set of concentric circles where a client places the people and places they can lean on, from close to occasional.",
+  "goal": "Use it to help a client see their supports and name where they are thin.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Draw the circles with the client and place names, groups, pets or places by closeness. Then ask what each person is good for, since not everyone offers everything. Thin spots are a conversation, not a verdict, and the client chooses whether to reach out.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "People in my inner circle"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "People I see sometimes"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Places or groups that help me feel steady"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What each person is best for"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "One connection I want to strengthen"
+   }
+  ],
+  "tags": [
+   "support",
+   "relationships",
+   "connection"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "forecast-against-result-comparison-log",
+  "title": "Forecast Against Result Comparison Log",
+  "kind": "cbt",
+  "summary": "A log where a client writes what they expect to happen, then what actually did, over several situations.",
+  "goal": "Use it to help a client compare their predictions with real outcomes.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "One week",
+  "body_md": "Pick two or three situations the client expects to go badly. They write the prediction and a confidence rating before, and the outcome afterward. Review patterns together; the point is the comparison, so avoid arguing with any single prediction.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The situation I am expecting"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What I predict will happen"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "How sure I am, from 0 to 100"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What actually happened"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What I notice when I compare the two"
+   }
+  ],
+  "tags": [
+   "behavioral experiment",
+   "predictions",
+   "CBT"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "downward-arrow-chain-worksheet",
+  "title": "Downward Arrow Chain Worksheet",
+  "kind": "cbt",
+  "summary": "A stepwise sheet that follows one thought down through \"and if that were true, what would it mean?\" questions.",
+  "goal": "Use it to help a client trace a surface thought to the belief underneath it.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Begin with a recent upsetting thought and keep asking what it would mean about the client or their future. Stop when the answers repeat. Go slowly, check how they are feeling after each step, and plan a next step for the belief you reach.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The thought that upset me"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "If that were true, what would it mean?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "And if that were true, what would it mean?"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "The belief at the bottom of the chain"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "How strongly I believe it, 0 to 100"
+   }
+  ],
+  "tags": [
+   "core beliefs",
+   "CBT",
+   "thoughts"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "cost-benefit-grid-for-a-habit",
+  "title": "Cost-Benefit Grid for a Habit",
+  "kind": "cbt",
+  "summary": "A four-box grid weighing the short-term and long-term costs and benefits of a habit a client wants to examine.",
+  "goal": "Use it to help a client weigh a habit honestly before deciding anything.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "25 minutes",
+  "body_md": "Choose one habit the client names. Fill all four boxes: benefits of continuing, costs of continuing, benefits of changing, costs of changing. Resist steering; clients often move when their own list is on paper. End by asking what they make of it.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The habit I am looking at"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What I get out of keeping it"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What it costs me"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What I would gain by changing it"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What changing would cost me"
+   }
+  ],
+  "tags": [
+   "cost-benefit",
+   "habits",
+   "CBT"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "evidence-court-role-play-sheet",
+  "title": "Evidence Court Role-Play Sheet",
+  "kind": "cbt",
+  "summary": "A courtroom-style sheet where a client plays prosecutor, defender and judge about one upsetting thought.",
+  "goal": "Use it to help a client weigh both sides of a thought in a structured way.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Pick a thought and role-play together, switching chairs if helpful. The client argues for the thought, then against, then writes the judge's balanced statement. Humor is welcome. Check the verdict feels believable instead of forced positive.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The thought on trial"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Evidence that supports it"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Evidence that does not support it"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "The judge's balanced statement"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "How I feel after the verdict"
+   }
+  ],
+  "tags": [
+   "thought record",
+   "CBT",
+   "balanced thinking"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "core-belief-flashcard-builder",
+  "title": "Core Belief Flashcard Builder",
+  "kind": "cbt",
+  "summary": "A card-making sheet for writing an old belief on one side and a more balanced statement on the other.",
+  "goal": "Use it to help a client practice a more balanced belief in small, repeatable moments.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Once a belief is named, help the client write a balanced alternative they can half-believe today, not a slogan. Have them put examples on the back. They read the card daily and note moments that fit either side, and you review it each session.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The old belief on the front of my card"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "A more balanced statement for the back"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "An example that fits the balanced statement"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Where I will keep the card"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "When I will read it"
+   }
+  ],
+  "tags": [
+   "core beliefs",
+   "CBT",
+   "practice"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "friday-values-compass-rating-sheet",
+  "title": "Friday Values Compass Rating Sheet",
+  "kind": "act",
+  "summary": "A short weekly sheet for rating how closely actions matched a client's chosen values.",
+  "goal": "Use it to help a client steer by values instead of by passing moods.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "15 minutes weekly",
+  "body_md": "Have the client name three to five values in their own words and rate each from 0 to 10 for how their actions matched this week. Invite one small action per value. Low ratings are a direction to choose, never a grade.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "A value I chose to steer by"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "How closely my actions matched it this week, 0 to 10"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "One action that matched it"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "One thing that got in the way"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "One small action for next week"
+   }
+  ],
+  "tags": [
+   "values",
+   "ACT",
+   "committed action"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "driver-seat-bus-metaphor-role-play-script",
+  "title": "Driver Seat Bus Metaphor Role-Play Script",
+  "kind": "act",
+  "summary": "A role-play script using the bus metaphor to practice moving toward a value while difficult thoughts ride along.",
+  "goal": "Use it to help a client practice acting on values while unwelcome thoughts come along.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "25 minutes",
+  "body_md": "Set up a chair as the bus and let the client name the passengers, such as doubts or old stories. Rehearse driving toward a chosen value while the passengers talk. Ask what changes when the client keeps driving. Take any turn the client wants.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The direction I want to drive in"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "The passengers who shout the loudest"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What they tell me to do"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What I did when I kept driving"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What I want to try with them this week"
+   }
+  ],
+  "tags": [
+   "ACT",
+   "defusion",
+   "values"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "hands-as-thoughts-defusion-practice",
+  "title": "Hands as Thoughts Defusion Practice",
+  "kind": "act",
+  "summary": "A physical exercise where a client holds their hands to their face, then lowers them, to feel the difference in distance from thoughts.",
+  "goal": "Use it to help a client feel what it is like to hold thoughts at a distance.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "10 minutes",
+  "body_md": "Ask the client to cup their hands over their face and talk about a hard thought, then lower them to their lap. Explore the difference in what they can see. Keep it light and optional, and end by asking where they might notice this at home.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The thought I held up close"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What it was like with hands over my face"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What it was like with hands in my lap"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Where I could use this in my week"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "A word that describes what shifted"
+   }
+  ],
+  "tags": [
+   "ACT",
+   "defusion",
+   "mindfulness"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "committed-action-mini-steps-planner",
+  "title": "Committed Action Mini-Steps Planner",
+  "kind": "act",
+  "summary": "A planning sheet that turns one chosen value into steps small enough to do on a bad day.",
+  "goal": "Use it to help a client break a valued direction into steps that are easy to start.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Start with a value, then a goal that serves it, then three steps from tiny to bigger. Ask what the smallest honest step is. Review obstacles in advance and have the client name a willing response, so the plan fits ordinary days.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The value I am moving toward"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "A goal that fits that value"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "My tiniest step"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "A medium step"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What might get in the way and how I will respond"
+   }
+  ],
+  "tags": [
+   "committed action",
+   "ACT",
+   "goals"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "willingness-dial-log",
+  "title": "Willingness Dial Log",
+  "kind": "act",
+  "summary": "A daily log of how willing a client was to let a hard feeling be present while doing something that matters.",
+  "goal": "Use it to help a client notice willingness as something that moves up and down.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "One week",
+  "body_md": "Each day the client rates willingness from 0 to 10 for one situation, notes what they did, and notes what it cost or gave. Explore times it moved. Avoid pushing the number up; you are watching the dial, not trying to turn it.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The situation today"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "The feeling that showed up"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "My willingness, 0 to 10"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What I did while the feeling was there"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What I noticed afterward"
+   }
+  ],
+  "tags": [
+   "willingness",
+   "ACT",
+   "acceptance"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "wise-mind-pause-card-builder",
+  "title": "Wise Mind Pause Card Builder",
+  "kind": "dbt",
+  "summary": "A card-making sheet that captures cues and a short script for pausing and finding wise mind.",
+  "goal": "Use it to help a client carry a short pause into heated moments.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "25 minutes",
+  "body_md": "Help the client name emotional mind and reasonable mind signals, then write a brief script for the pause, such as one breath and a question. Rehearse once in session. Keep the card pocket-sized and review which cues showed up this week.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "How I know emotional mind is in charge"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "How I know reasonable mind is in charge"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What wise mind sounds like for me"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "My pause script, in my own words"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "Where I will keep this card"
+   }
+  ],
+  "tags": [
+   "DBT",
+   "wise mind",
+   "emotion regulation"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "opposite-action-experiment-log",
+  "title": "Opposite Action Experiment Log",
+  "kind": "dbt",
+  "summary": "A log for trying the opposite of an emotion's urge when the feeling does not fit the facts, then noting what happened.",
+  "goal": "Use it to help a client test opposite action in small, chosen situations.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "One week",
+  "body_md": "Choose a feeling and urge with the client, then check whether the feeling fits the facts. If it does not, the client tries a small opposite action all the way through and logs the result. Pick low-stakes situations first.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The emotion and what it urged me to do"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Does the feeling fit the facts?"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "The opposite action I chose"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What happened as I did it"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "How the feeling changed, if at all"
+   }
+  ],
+  "tags": [
+   "DBT",
+   "opposite action",
+   "emotion regulation"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "tipp-calm-state-trial-sheet",
+  "title": "TIPP Calm-State Trial Sheet",
+  "kind": "dbt",
+  "summary": "A practice sheet for trying temperature, intense exercise, paced breathing and paired muscle relaxation in calm moments.",
+  "goal": "Use it to help a client try each TIPP skill before they need one.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Go through each skill in session when the client is calm, and have them rate their arousal before and after. Check for health limits on exercise and cold exposure first. The client picks which skill suits them and keeps it on a card.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "My arousal level before, 0 to 10"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "The skill I tried"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "My arousal level after, 0 to 10"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Which skill fits me best"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "Where I could use it this week"
+   }
+  ],
+  "tags": [
+   "DBT",
+   "distress tolerance",
+   "TIPP"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "radical-acceptance-reminder-sheet",
+  "title": "Radical Acceptance Reminder Sheet",
+  "kind": "dbt",
+  "summary": "A sheet for naming something that cannot be changed right now and writing coping statements for accepting it.",
+  "goal": "Use it to help a client practice accepting a reality without approving of it.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "25 minutes",
+  "body_md": "Ask for one situation the client is fighting that cannot change today. They write what happened, the facts, and statements of acceptance. Stress that acceptance is not approval. Expect grief and go at their pace.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The situation I am fighting"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "The facts, without opinions"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What I cannot change right now"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "A coping statement I can say to myself"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "One thing I can still choose to do"
+   }
+  ],
+  "tags": [
+   "DBT",
+   "radical acceptance",
+   "distress tolerance"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "fast-self-respect-rehearsal-sheet",
+  "title": "FAST Self-Respect Rehearsal Sheet",
+  "kind": "dbt",
+  "summary": "A rehearsal sheet for asking or saying no while keeping fair, apologies-free, stick-to-values and truthful.",
+  "goal": "Use it to help a client rehearse keeping self-respect in a hard request.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Pair this with DEAR MAN. The client picks a real request and drafts what staying fair, skipping unneeded apologies, sticking to values and being truthful would sound like. Role-play it, and ask which part was hardest to hold.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The situation where I want to keep my self-respect"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What staying fair sounds like"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Where I tend to over-apologize"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "The value I want to stick to"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What the truth is, said simply"
+   }
+  ],
+  "tags": [
+   "DBT",
+   "FAST",
+   "interpersonal effectiveness"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "weekly-state-of-the-home-meeting-agenda",
+  "title": "Weekly State of the Home Meeting Agenda",
+  "kind": "couples",
+  "summary": "A fill-in agenda for a short weekly check-in with sections for appreciation, logistics and one concern each.",
+  "goal": "Use it to help partners hold a short, steady check-in conversation each week.",
+  "audience": [
+   "Couples"
+  ],
+  "duration": "30 minutes weekly",
+  "body_md": "Each partner fills their side before the meeting. Start with one appreciation each, then logistics, then one concern each, using a timer. The listener summarizes before responding. Keep it short so it can survive busy weeks.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Partner A: something I appreciated this week"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Partner B: something I appreciated this week"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Logistics we need to settle"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Partner A: one concern, said gently"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "Partner B: one concern, said gently"
+   }
+  ],
+  "tags": [
+   "couples",
+   "communication",
+   "routine"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "repair-attempt-menu-for-two",
+  "title": "Repair Attempt Menu for Two",
+  "kind": "couples",
+  "summary": "A shared list where partners write the small gestures that help them reset after a tense moment.",
+  "goal": "Use it to help partners agree on repair moves they can reach for mid-argument.",
+  "audience": [
+   "Couples"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Each partner writes what helps them come back, such as a joke, a hand squeeze, or a short break with a return time. Swap lists and choose three that both can accept. Practice using one repair move in session and note what it felt like.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Partner A: what helps me reset"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Partner B: what helps me reset"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Repair moves we both can accept"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What we will say to call a pause"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "When we will come back to the topic"
+   }
+  ],
+  "tags": [
+   "couples",
+   "repair",
+   "conflict"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "specific-thanks-trading-cards-for-partners",
+  "title": "Specific Thanks Trading Cards for Partners",
+  "kind": "couples",
+  "summary": "A set of cards partners fill in with specific things they value about each other and trade.",
+  "goal": "Use it to help partners practice noticing and saying what they value in each other.",
+  "audience": [
+   "Couples"
+  ],
+  "duration": "20 minutes",
+  "body_md": "Each partner writes several cards naming a specific action and what it meant, then reads one aloud while the other simply listens and says thanks. Watch for vague praise and invite details. Send leftover cards home for the week.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Partner A: something specific my partner did that I valued"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Partner B: something specific my partner did that I valued"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What it meant to me"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "How it felt to hear this"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "A card I will give at home this week"
+   }
+  ],
+  "tags": [
+   "couples",
+   "appreciation",
+   "connection"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "stress-reducing-conversation-plan",
+  "title": "Stress-Reducing Conversation Plan",
+  "kind": "couples",
+  "summary": "A plan for partners to take turns talking about outside stress while the other listens without fixing.",
+  "goal": "Use it to help partners support each other through stress that comes from outside the relationship.",
+  "audience": [
+   "Couples"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Each partner takes ten minutes to share a stressor while the other asks questions and shows understanding, with no advice unless asked. Switch roles. Debrief on what felt supportive. Many couples slide into fixing, so name that pattern early.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Partner A: a stress I want to share"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Partner B: a stress I want to share"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What my partner did that felt supportive"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What I would rather they not do"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "When we will make time to do this again"
+   }
+  ],
+  "tags": [
+   "couples",
+   "stress",
+   "listening"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "shared-rituals-brainstorm",
+  "title": "Shared Rituals Brainstorm",
+  "kind": "couples",
+  "summary": "A brainstorming sheet where partners list small routines of connection they have, miss, or want to start.",
+  "goal": "Use it to help partners build small, repeatable moments of connection.",
+  "audience": [
+   "Couples"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Ask for rituals around mornings, evenings, meals, weekends and goodbyes. Each partner lists what they have, miss and want, then they pick one to try. Keep the choice small and doable, and check in on it next session.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Partner A: rituals we already have that I like"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Partner B: rituals we already have that I like"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Rituals one of us misses"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "One new ritual we want to try"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "When and how we will start it"
+   }
+  ],
+  "tags": [
+   "couples",
+   "rituals",
+   "connection"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "paper-plate-weather-dial-for-feelings",
+  "title": "Paper Plate Weather Dial for Feelings",
+  "kind": "kids",
+  "summary": "A drawing and craft activity where a child makes a weather dial for how they feel each day.",
+  "goal": "Use it to help a child show feelings through weather pictures and a dial they can turn.",
+  "audience": [
+   "Children"
+  ],
+  "duration": "30 minutes",
+  "body_md": "The child draws weather types on a paper plate, adds an arrow with a paper fastener, and names a feeling for each. Practice turning the dial. The parent learns to ask which weather it is today and respects the answer without fixing it.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The weather for happy"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "The weather for worried"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "The weather for mad"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "The weather today"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What would help on a stormy day"
+   }
+  ],
+  "tags": [
+   "kids",
+   "feelings",
+   "craft"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "calm-down-jar-builder",
+  "title": "Calm-Down Jar Builder",
+  "kind": "kids",
+  "summary": "A craft where a child makes a glitter jar and practices breathing while it settles.",
+  "goal": "Use it to help a child build a hands-on tool to slow down with.",
+  "audience": [
+   "Children"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Fill a clear jar with water, glue and glitter, and watch it settle together while breathing slowly. Let the child name the glitter after a feeling. The parent keeps it in a spot the child can reach and uses it with them, never as a punishment.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What my glitter stands for"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What I noticed as it settled"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "How my body felt after watching"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Where my jar will live at home"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "When I would like to use it"
+   }
+  ],
+  "tags": [
+   "kids",
+   "calming",
+   "craft"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "my-brave-badge-design",
+  "title": "My Brave Badge Design",
+  "kind": "kids",
+  "summary": "A drawing activity where a child designs a badge that shows a time they were brave.",
+  "goal": "Use it to help a child recognize their own courage in everyday moments.",
+  "audience": [
+   "Children"
+  ],
+  "duration": "25 minutes",
+  "body_md": "Ask for a time the child did something even though it felt hard, then have them draw it on a badge shape and add colors for how it felt. Share it with the parent, who says what they noticed. Display it at home.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "A time I was brave"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What it felt like in my body"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What helped me do it"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What my badge looks like"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "Who I will show it to"
+   }
+  ],
+  "tags": [
+   "kids",
+   "courage",
+   "drawing"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "worry-monster-drawing-and-name-change",
+  "title": "Worry Monster Drawing and Name-Change",
+  "kind": "kids",
+  "summary": "A drawing activity where a child draws their worry as a silly monster and gives it a new name.",
+  "goal": "Use it to help a child put distance between themselves and a worry through play.",
+  "audience": [
+   "Children"
+  ],
+  "duration": "25 minutes",
+  "body_md": "The child draws the worry as a monster, then adds silly features and a funny new name. Talk to the monster together in playful voices. The parent joins in and later uses the new name at home when worry shows up.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What my worry monster looks like"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Its new silly name"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What it says to me"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What I want to say back"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What the grown-up will do when it visits"
+   }
+  ],
+  "tags": [
+   "kids",
+   "worry",
+   "play"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "story-cubes-feelings-tale",
+  "title": "Story Cubes Feelings Tale",
+  "kind": "kids",
+  "summary": "A play activity where a child rolls picture cubes or draws cards to invent a story about a character and their feelings.",
+  "goal": "Use it to help a child tell stories that carry feelings and coping ideas.",
+  "audience": [
+   "Children"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Roll cubes or draw picture cards and take turns adding to a story about one character. Steer gently toward what the character feels and does. The parent listens, adds a line, and asks what helped the character, without pointing at the child.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The character in my story"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What the character felt"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What happened to them"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What helped the character"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "How the story ends"
+   }
+  ],
+  "tags": [
+   "kids",
+   "storytelling",
+   "play"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "skill-bingo-for-groups",
+  "title": "Skill Bingo for Groups",
+  "kind": "game",
+  "summary": "A bingo card of coping skills that group members mark off as they try them over a week.",
+  "goal": "Use it to help a group try a range of coping skills in a playful way.",
+  "audience": [
+   "Groups"
+  ],
+  "duration": "Full session plus one week",
+  "body_md": "Make cards with nine skills, such as breathing, a walk or calling a friend, and have members mark one when used. Share what they tried at the next session. Prizes are optional. Make sure everyone can mark a square without comparing.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The skills on my card"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "The square I marked first"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What it was like to try it"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "The square that was hardest"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What I will try next"
+   }
+  ],
+  "tags": [
+   "group",
+   "coping skills",
+   "game"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "emotion-charades-round-table",
+  "title": "Emotion Charades Round Table",
+  "kind": "game",
+  "summary": "A group charades game acting out feelings and situations, followed by a talk about how each felt to portray.",
+  "goal": "Use it to help a group recognize and name emotions through play.",
+  "audience": [
+   "Groups"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Cards name feelings; players act them without words and others guess. Pause after each round to ask what cues gave it away. Allow anyone to pass. The debrief connects body language to feelings the group sees in daily life.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The feeling I acted out"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "The cues that gave it away"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "A feeling that was hard to act"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "A feeling I noticed in someone else"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "Where I see this in my life"
+   }
+  ],
+  "tags": [
+   "group",
+   "emotions",
+   "game"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "two-facts-and-one-real-strength-guessing-game",
+  "title": "Two Facts and One Real Strength Guessing Game",
+  "kind": "game",
+  "summary": "A group game where each player shares two true facts and one personal strength and others guess which is the strength.",
+  "goal": "Use it to help a group practice naming strengths out loud.",
+  "audience": [
+   "Groups"
+  ],
+  "duration": "25 minutes",
+  "body_md": "Each player says two facts and one real strength in any order; the group guesses. Then the speaker explains the strength with an example. Keep it playful, and make sure quieter members get time. Debrief on which part felt hard.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "My two true facts"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "My strength"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "An example of that strength"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What it was like to say it out loud"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "A strength I noticed in someone else"
+   }
+  ],
+  "tags": [
+   "group",
+   "strengths",
+   "game"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "coping-cards-draw-and-do-game",
+  "title": "Coping Cards Draw-and-Do Game",
+  "kind": "game",
+  "summary": "A card game where players draw a stress scenario and a coping card and act out how they might respond.",
+  "goal": "Use it to help a group rehearse coping responses to everyday stress.",
+  "audience": [
+   "Groups"
+  ],
+  "duration": "35 minutes",
+  "body_md": "Make two decks, one of stress scenarios and one of coping skills. A player draws one of each and shows how they would use the skill. Others add ideas. Rules: no wrong answers, and anyone can swap a card. Debrief on the best fits.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The scenario I drew"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "The coping card I drew"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "How I would use it"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "An idea I got from someone else"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "The skill I want to remember"
+   }
+  ],
+  "tags": [
+   "group",
+   "coping skills",
+   "role-play"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "pass-the-perspective-storytelling-game",
+  "title": "Pass-the-Perspective Storytelling Game",
+  "kind": "game",
+  "summary": "A group storytelling game where each player retells a scene from a different character's point of view.",
+  "goal": "Use it to help a group practice seeing a situation from more than one side.",
+  "audience": [
+   "Groups"
+  ],
+  "duration": "35 minutes",
+  "body_md": "Read a short scene of conflict, then pass a prop. Each holder retells it as one of the characters, saying what that person thinks and feels. Take turns until everyone has spoken. Debrief on what changed when the view changed.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The scene we heard"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "The character I spoke for"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What that character felt and wanted"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What surprised me"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "A time I could try this in real life"
+   }
+  ],
+  "tags": [
+   "group",
+   "perspective-taking",
+   "game"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "safe-place-inventory-sheet",
+  "title": "Safe Place Inventory Sheet",
+  "kind": "worksheet",
+  "summary": "A sheet for listing real and imagined places, objects and sensations that help a client feel safe and steady.",
+  "goal": "Use it to help a client build a personal list of safety cues for stabilizing.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "25 minutes",
+  "body_md": "Ask only about what feels safe now, never about what happened. The client lists places, objects, people and sensory details, then picks two to practice bringing to mind. Check pacing often and stop if the exercise brings up distress.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "A place where I feel safe or calm"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Objects that help me feel steady"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "A person or pet who helps me feel safe"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Sounds or smells that settle me"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "The two I will practice this week"
+   }
+  ],
+  "tags": [
+   "stabilizing",
+   "safety",
+   "PTSD and trauma"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "stuck-points-sorting-sheet-for-safety-and-trust",
+  "title": "Stuck Points Sorting Sheet for Safety and Trust",
+  "kind": "cbt",
+  "summary": "A sheet where a client sorts beliefs about safety and trust into helpful, unhelpful and unsure, without describing events.",
+  "goal": "Use it to help a client examine present-day beliefs about safety at their own pace.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Keep the work on current beliefs, such as \"I can't trust anyone\", and leave out event details. Invite the client to sort and rate each belief, then pick one to look at gently. Pause for grounding whenever needed.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "A belief about safety I carry today"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "How much I believe it, 0 to 100"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Times it feels true"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Times it feels less true"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What I would say to a friend with this belief"
+   }
+  ],
+  "tags": [
+   "CBT",
+   "beliefs",
+   "PTSD and trauma"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "anchoring-values-while-feeling-unsettled",
+  "title": "Anchoring Values While Feeling Unsettled",
+  "kind": "act",
+  "summary": "A sheet for naming a value and one small action that can be done even when reminders of the past stir up discomfort.",
+  "goal": "Use it to help a client keep moving toward what matters while feelings come and go.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "25 minutes",
+  "body_md": "Focus on the present: what the client wants their days to hold. Name a value, a small step, and a grounding move to use if feelings rise. Never ask for details of the past, and treat any step they decline as their decision.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What I want my days to hold"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "A small step toward it"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What might stir up discomfort"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "A grounding move I can use then"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "Who I can tell about my step"
+   }
+  ],
+  "tags": [
+   "ACT",
+   "values",
+   "PTSD and trauma"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "grounding-skills-menu-with-rating-scale",
+  "title": "Grounding Skills Menu With Rating Scale",
+  "kind": "dbt",
+  "summary": "A menu of five-senses, temperature and movement grounding skills with a place to rate what helped.",
+  "goal": "Use it to help a client find grounding skills that work for their body and keep a short list.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Try two or three skills in session and rate distress before and after. Keep a ranked list on a card. Some clients find closing the eyes uncomfortable, so offer eyes-open versions. If crisis feelings arise, review 988 (call or text).",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The skill I tried"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Distress before, 0 to 10"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Distress after, 0 to 10"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "The skills I want on my short list"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "If things feel unsafe: I can call or text 988 and I will tell"
+   }
+  ],
+  "tags": [
+   "DBT",
+   "grounding",
+   "PTSD and trauma"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "grounding-scavenger-hunt-game",
+  "title": "Grounding Scavenger Hunt Game",
+  "kind": "game",
+  "summary": "A paced game where players find items in the room by color, texture or sound to practice grounding together.",
+  "goal": "Use it to help a group practice grounding in a light, low-pressure way.",
+  "audience": [
+   "Groups"
+  ],
+  "duration": "20 minutes",
+  "body_md": "Call out prompts such as something blue, something rough or something you hear. Players find, name and describe. No stories about the past, and anyone can opt out. Debrief on which prompts were most settling, and how to use them elsewhere.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "An item I found and what it was like"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "The prompt that settled me most"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What my body noticed"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Where I could use this outside"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "Who I will show this to"
+   }
+  ],
+  "tags": [
+   "group",
+   "grounding",
+   "PTSD and trauma"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "worry-time-and-action-sort-sheet",
+  "title": "Worry Time and Action Sort Sheet",
+  "kind": "worksheet",
+  "summary": "A sheet for sorting worries into those with a next step and those to set aside for a scheduled worry time.",
+  "goal": "Use it to help a client separate worries they can act on from those to postpone.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "25 minutes",
+  "body_md": "Have the client list the day's worries and mark each as something to do now, something to do later, or something to set aside. Schedule a short worry time and practice jotting a worry down instead of chasing it. Review how it went.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Worries on my mind today"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Ones I can act on and the step"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Ones I can set aside"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "My worry time, when and where"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What I will do if a worry shows up before then"
+   }
+  ],
+  "tags": [
+   "worry",
+   "planning",
+   "anxiety"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "uncertainty-tolerance-experiment-planner",
+  "title": "Uncertainty Tolerance Experiment Planner",
+  "kind": "cbt",
+  "summary": "A planner for choosing a small uncertain situation and practicing not seeking certainty.",
+  "goal": "Use it to help a client test what happens when they stay with not knowing.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Pick a low-stakes uncertainty, such as sending a message without re-reading it. The client predicts what will happen, tries it, and records the outcome. Move up in small steps. Notice reassurance-seeking and plan around it together.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The small uncertainty I will try"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What I predict will happen"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What I will do instead of seeking certainty"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What actually happened"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What I learned about not knowing"
+   }
+  ],
+  "tags": [
+   "CBT",
+   "uncertainty",
+   "anxiety"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "anxiety-as-weather-watching-practice",
+  "title": "Anxiety as Weather Watching Practice",
+  "kind": "act",
+  "summary": "A practice sheet using weather as a metaphor for noticing anxious feelings pass while doing a valued activity.",
+  "goal": "Use it to help a client observe anxious feelings arriving and passing without needing to fight them.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "25 minutes",
+  "body_md": "Invite the client to describe anxiety as weather in the body and keep doing something that matters while it passes. Log the activity, the weather and what they did. Emphasize that clouds move whether or not we like them.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The valued activity I kept doing"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "The anxious weather I noticed"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What I did while it was there"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "How long it lasted before shifting"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What I want to remember next time"
+   }
+  ],
+  "tags": [
+   "ACT",
+   "mindfulness",
+   "anxiety"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "paced-breathing-and-body-scan-log",
+  "title": "Paced Breathing and Body Scan Log",
+  "kind": "dbt",
+  "summary": "A daily log pairing a few minutes of paced breathing with a short body scan and a before-and-after rating.",
+  "goal": "Use it to help a client practice slowing down and noticing tension.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "Five minutes daily for two weeks",
+  "body_md": "Teach a slow exhale pattern and a quick head-to-toe scan in session. The client rates tension before and after each day. Some people feel more anxious focusing on breath; offer a movement or counting alternative.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Tension before, 0 to 10"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Where I noticed it in my body"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What I did for five minutes"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Tension after, 0 to 10"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What I want to adjust"
+   }
+  ],
+  "tags": [
+   "DBT",
+   "breathing",
+   "anxiety"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "worry-wizard-spell-book-for-kids",
+  "title": "Worry Wizard Spell Book for Kids",
+  "kind": "kids",
+  "summary": "A drawn and written spell book where a child invents friendly spells to shrink worries.",
+  "goal": "Use it to help a child practice playful coping ideas for worry.",
+  "audience": [
+   "Children"
+  ],
+  "duration": "30 minutes",
+  "body_md": "The child draws a wizard and writes spells such as a deep breath or a funny face. Role-play casting them. The parent keeps the book handy and reminds the child to look at it, joining in the spells rather than telling them to stop worrying.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What the wizard's worry looks like"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "A spell to make it smaller"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "A spell to calm my body"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "A spell to ask a grown-up for help"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "When the parent and I will use the book"
+   }
+  ],
+  "tags": [
+   "kids",
+   "worry",
+   "anxiety"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "small-wins-daily-ledger",
+  "title": "Small Wins Daily Ledger",
+  "kind": "worksheet",
+  "summary": "A simple ledger for recording a few small things done each day and how they felt.",
+  "goal": "Use it to help a client notice effort and small moments when mood is low.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "Five minutes daily for two weeks",
+  "body_md": "Ask for three small things each day, such as showering or answering a message, and a line on how each felt. Review together, noticing links between actions and mood without insisting on cheer. Keep expectations low and adjust the size of the wins.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Three things I did today"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "How each one felt"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What was hardest"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Something that made the day a little easier"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What I would like to do tomorrow"
+   }
+  ],
+  "tags": [
+   "mood",
+   "activity",
+   "small steps",
+   "depression"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "activity-and-mood-scheduling-grid",
+  "title": "Activity and Mood Scheduling Grid",
+  "kind": "cbt",
+  "summary": "A weekly grid where a client plans activities of mastery and pleasure and rates mood before and after.",
+  "goal": "Use it to help a client see how activity and mood connect over a week.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Plan a few doable activities for the week, mixing ones that give a sense of accomplishment and ones that give pleasure. The client rates mood before and after. Review the grid and ask what surprised them. Start small and expect missed days.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Activities I will plan this week"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Which are for mastery and which for pleasure"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Mood before, 0 to 10"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Mood after, 0 to 10"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What I notice from the grid"
+   }
+  ],
+  "tags": [
+   "CBT",
+   "behavioral activation",
+   "depression"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "values-without-waiting-for-motivation",
+  "title": "Values Without Waiting for Motivation",
+  "kind": "act",
+  "summary": "A sheet that pairs a value with one action to take even when motivation is low.",
+  "goal": "Use it to help a client act on values before the energy to do so shows up.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "25 minutes",
+  "body_md": "Explore what matters even now. Choose one value and a tiny action to do whether or not the client feels like it. Track the action, not the feeling. Expect that some days it will not happen and invite curiosity, not criticism.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "A value that still matters to me"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "A tiny action I can do without motivation"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "When I will do it"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What my mind says about it"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What I did anyway"
+   }
+  ],
+  "tags": [
+   "ACT",
+   "values",
+   "depression"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "build-mastery-and-accumulate-positives-planner",
+  "title": "Build Mastery and Accumulate Positives Planner",
+  "kind": "dbt",
+  "summary": "A planner of short-term pleasant events and a long-term goal, with one step for building a sense of mastery.",
+  "goal": "Use it to help a client add pleasant events and a sense of mastery to their week.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "List pleasant events the client can do this week and one thing that builds mastery, scaled to current energy. Add a step for staying mindful during the pleasant event. Review next session and rescale if the plan was too big.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Pleasant things I can do this week"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "One thing that builds a sense of mastery"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "A long-term goal I care about"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "One step toward it"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "How I will stay present during the pleasant event"
+   }
+  ],
+  "tags": [
+   "DBT",
+   "emotion regulation",
+   "depression"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "low-mood-support-plan-for-partners",
+  "title": "Low Mood Support Plan for Partners",
+  "kind": "couples",
+  "summary": "A shared plan for how a partner can help on low days and how the other can ask for it.",
+  "goal": "Use it to help partners agree on helpful and unhelpful support when mood is low.",
+  "audience": [
+   "Couples"
+  ],
+  "duration": "35 minutes",
+  "body_md": "Each partner writes what helps and what does not on low days, and what the other can say or do. Share and agree on two supports and a signal. If either mentions thoughts of self-harm, review 988 (call or text) and complete this in session.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Partner with low mood: what helps me"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Partner with low mood: what does not help"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Partner supporting: what I can do"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "The signal we will use for a hard day"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "If a day feels unsafe: 988 (call or text) and who we will reach out to"
+   }
+  ],
+  "tags": [
+   "couples",
+   "support",
+   "depression"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "externalize-it-reminder-station-planner",
+  "title": "Externalize It Reminder Station Planner",
+  "kind": "worksheet",
+  "summary": "A planning sheet for placing visible cues and reminders where a client actually looks.",
+  "goal": "Use it to help a client move reminders out of memory and into their space.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Walk through the client's home or work routine and find the places they pass most. Plan where to put notes, bins or alarms. Pick two to try this week. Review which ones got ignored and why, and adjust without blame.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Things I often forget"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Places I look at most every day"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "A cue I will put in each place"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "How I will keep cues fresh"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What I will adjust if I start ignoring them"
+   }
+  ],
+  "tags": [
+   "reminders",
+   "organization",
+   "ADHD"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "task-start-ladder-worksheet",
+  "title": "Task Start Ladder Worksheet",
+  "kind": "cbt",
+  "summary": "A ladder that breaks one avoided task into tiny first steps and tracks which step gets done.",
+  "goal": "Use it to help a client get started on a task they keep putting off.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "25 minutes",
+  "body_md": "Choose one task and divide it into five steps, the first being almost laughably small. The client commits to a step and a time and reports back. Ask what makes the first step easier, and explore thoughts that hold them back.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The task I keep putting off"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Step one, tiny enough to do in two minutes"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Steps two through five"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "When I will do step one"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What my mind says when I think about starting"
+   }
+  ],
+  "tags": [
+   "CBT",
+   "procrastination",
+   "ADHD"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "interest-compass-for-boring-tasks",
+  "title": "Interest Compass for Boring Tasks",
+  "kind": "act",
+  "summary": "A sheet for linking a dull task to a value and adding a bit of novelty to make it doable.",
+  "goal": "Use it to help a client connect tedious tasks to what matters and add interest.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "25 minutes",
+  "body_md": "Pick a boring task. The client names what it serves, then adds a twist such as music, a timer or working beside someone. Try it and log the result. Respect that what works varies and may need refreshing every few weeks.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The task I find boring"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What it serves in my life"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "A twist that could make it more interesting"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What I tried"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What I will change next time"
+   }
+  ],
+  "tags": [
+   "ACT",
+   "values",
+   "ADHD"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "mindful-pause-before-acting-cue-cards",
+  "title": "Mindful Pause Before Acting Cue Cards",
+  "kind": "dbt",
+  "summary": "A card set for practicing a one-breath pause before replying or acting on an impulse.",
+  "goal": "Use it to help a client practice a brief pause in everyday moments.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "20 minutes",
+  "body_md": "Create two or three cue cards with the situations where the client acts fast, and a one-breath pause plan. Role-play one scenario. Log pauses for a week and celebrate the tries, not perfect pauses.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "A moment when I act too fast"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "My cue for a pause"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What I will do in one breath"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "A time I paused this week"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "How it changed what happened"
+   }
+  ],
+  "tags": [
+   "DBT",
+   "mindfulness",
+   "impulse",
+   "ADHD"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "focus-quest-obstacle-course",
+  "title": "Focus Quest Obstacle Course",
+  "kind": "kids",
+  "summary": "A play activity where a child builds a home obstacle course and practices attention and waiting turns.",
+  "goal": "Use it to help a child practice attention and waiting in a movement game.",
+  "audience": [
+   "Children"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Set up a simple course with cushions, a hula hoop and a line to follow. The child does a task at each stop, like counting or remembering three items. The parent runs it with the child and adds one new step each time to build success.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The obstacles in my course"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "The task at each stop"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What was easy"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What was hard"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What the grown-up will help me do next time"
+   }
+  ],
+  "tags": [
+   "kids",
+   "attention",
+   "play",
+   "ADHD"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "urge-log-with-triggers-and-responses",
+  "title": "Urge Log With Triggers and Responses",
+  "kind": "worksheet",
+  "summary": "A log for noting when an urge for substance use showed up, what set it off and what the client did.",
+  "goal": "Use it to help a client notice patterns around urges and responses.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "One week",
+  "body_md": "Ask the client to jot down each urge: time, place, feeling, and what they did. Review for patterns without judgment. Where an urge led to use, treat it as information. Plan one response for the most common trigger.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "When and where the urge showed up"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What was happening and how I felt"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Strength of the urge, 0 to 10"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What I did"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What I would try next time"
+   }
+  ],
+  "tags": [
+   "substance use",
+   "urges",
+   "addiction"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "urge-surfing-prediction-sheet",
+  "title": "Urge Surfing Prediction Sheet",
+  "kind": "cbt",
+  "summary": "A sheet for predicting how long an urge will last, riding it, and recording how it actually changed.",
+  "goal": "Use it to help a client test whether urges rise and fall without acting on them.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "25 minutes",
+  "body_md": "Teach the idea of an urge as a wave. The client rates the urge, predicts how long it will last, rides it with a slow breath or distraction, and re-rates every few minutes. Compare the prediction with the result. Adapt the pace to the client.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The urge and how strong it was, 0 to 10"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "How long I predicted it would last"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What I did while I waited"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "How it changed over time"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What I learned about my urges"
+   }
+  ],
+  "tags": [
+   "CBT",
+   "urges",
+   "substance use",
+   "addiction"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "values-behind-my-change-plan",
+  "title": "Values Behind My Change Plan",
+  "kind": "act",
+  "summary": "A sheet that links a client's reasons for change to values and one action this week.",
+  "goal": "Use it to help a client reconnect with what they want their life to hold.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Ask what matters to the client apart from substance use. Name two values and one action that fits each this week. Avoid arguing for change; reflect what you hear. Check back on how the actions went and what got in the way.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What I want my life to hold"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Two values behind that"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "One action for each this week"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What might get in the way"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "Who can support me"
+   }
+  ],
+  "tags": [
+   "ACT",
+   "values",
+   "substance use",
+   "addiction"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "distress-tolerance-plan-for-urge-moments",
+  "title": "Distress Tolerance Plan for Urge Moments",
+  "kind": "dbt",
+  "summary": "A short plan of distraction, self-soothing and reminders of reasons to use when an urge is strong.",
+  "goal": "Use it to help a client prepare skills for strong urges ahead of time.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Build a plan with the client using distract, self-soothe, improve the moment and pros-and-cons ideas. Write it on a card. Rehearse one skill in session. If risk or overdose worries arise, review 988 (call or text) and local emergency steps.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Skills I can use to distract"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Ways I can soothe myself"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Reasons I want to hold on to"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "People I can contact"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "If things feel unsafe: 988 (call or text)"
+   }
+  ],
+  "tags": [
+   "DBT",
+   "distress tolerance",
+   "substance use",
+   "addiction"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "partner-support-agreement-on-substance-use",
+  "title": "Partner Support Agreement on Substance Use",
+  "kind": "couples",
+  "summary": "A shared sheet for partners to agree on helpful support, boundaries and how to talk about urges.",
+  "goal": "Use it to help partners talk about substance use, urges and support without blame.",
+  "audience": [
+   "Couples"
+  ],
+  "duration": "40 minutes",
+  "body_md": "Each partner writes what is helpful, what is not, and what boundaries they need. Practice talking about an urge calmly. The partner is not the client's clinician. Agree on a plan for hard moments and review it each session.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Partner with urges: what support helps me"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Partner with urges: what does not help"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Partner supporting: boundaries I need"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "How we will talk about a hard moment"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What we will do if a day goes off track"
+   }
+  ],
+  "tags": [
+   "couples",
+   "substance use",
+   "support",
+   "addiction"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "anger-early-warning-signs-map",
+  "title": "Anger Early Warning Signs Map",
+  "kind": "worksheet",
+  "summary": "A body outline and list where a client marks the first signs that anger is building.",
+  "goal": "Use it to help a client catch anger early, when they still have choices.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "25 minutes",
+  "body_md": "Have the client recall a recent moment and mark where they felt it first: heat, clenched jaw, fast thoughts. Rank signs from early to late and pick one early sign to watch for. Anger is information about what matters, so ask what was under it.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Where I feel anger first in my body"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Thoughts that show up early"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "My earliest warning sign"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What was underneath the anger"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What I will do when I notice that sign"
+   }
+  ],
+  "tags": [
+   "anger",
+   "awareness",
+   "anger management"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "anger-hot-thoughts-and-cool-thoughts-sheet",
+  "title": "Anger Hot Thoughts and Cool Thoughts Sheet",
+  "kind": "cbt",
+  "summary": "A two-column sheet comparing the thoughts that fuel anger with cooler, more balanced alternatives.",
+  "goal": "Use it to help a client notice how thoughts fuel anger and practice other readings.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Pick one recent angry moment. List hot thoughts such as \"they did it on purpose\", then write cooler alternatives and rate anger before and after. Avoid telling the client they were wrong; look at what else could also be true.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What happened"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "My hot thoughts"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Cooler thoughts that could also be true"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Anger before, 0 to 10"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "Anger after trying cooler thoughts, 0 to 10"
+   }
+  ],
+  "tags": [
+   "CBT",
+   "anger",
+   "thoughts",
+   "anger management"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "anger-and-the-value-underneath",
+  "title": "Anger and the Value Underneath",
+  "kind": "act",
+  "summary": "A sheet for finding the value that anger is protecting and choosing an action that serves it.",
+  "goal": "Use it to help a client turn anger into a choice about what to do next.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Ask what the client cares about in a situation that made them angry, such as fairness or respect. Then explore actions that serve that value, and which actions would work against it. Offer room for the feeling to exist without acting on it.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The situation that made me angry"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "The value underneath the anger"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Actions that would serve that value"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Actions that would work against it"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "The action I choose"
+   }
+  ],
+  "tags": [
+   "ACT",
+   "values",
+   "anger",
+   "anger management"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "cool-down-skills-plan-with-time-out-script",
+  "title": "Cool-Down Skills Plan With Time-Out Script",
+  "kind": "dbt",
+  "summary": "A plan that combines a respectful time-out script with a list of cool-down skills to use during the break.",
+  "goal": "Use it to help a client leave a heated moment and return to it calmly.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Draft a short sentence the client can say to pause a conversation, plus a return time. List skills for the break, like cold water or walking. Role-play the script. Stress that returning to the talk is part of the plan.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "My time-out sentence"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "The time I will return"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Skills I will use during the break"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What I will not do during the break"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "How I will restart the conversation"
+   }
+  ],
+  "tags": [
+   "DBT",
+   "cool-down",
+   "anger",
+   "anger management"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "anger-thermometer-charades-game",
+  "title": "Anger Thermometer Charades Game",
+  "kind": "game",
+  "summary": "A group game where players act out different anger levels and name how to cool each down.",
+  "goal": "Use it to help a group recognize anger levels and match coping moves to them.",
+  "audience": [
+   "Groups"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Cards show levels from annoyed to furious. Players act a level without words, and others guess and suggest a skill for that level. Make rules: gentle acting, no mocking. Debrief on early signs and which skills fit best.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The level I acted"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "A skill that would fit that level"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "A level I find hardest to notice"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "A skill I got from someone else"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What I will try this week"
+   }
+  ],
+  "tags": [
+   "group",
+   "anger",
+   "game",
+   "anger management"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "doubt-urge-and-response-pattern-sheet",
+  "title": "Doubt, Urge and Response Pattern Sheet",
+  "kind": "worksheet",
+  "summary": "A log of intrusive doubts, the urge to do something about them and what the client did.",
+  "goal": "Use it to help a client map the pattern between doubt, urge and response.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "One week",
+  "body_md": "The client notes each doubt, how strong the urge to do a ritual was, and what they did. Review for patterns. Intrusive thoughts are common and not a statement about the person. Pick one pattern to work on in a gentle, paced way.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The doubt or thought that showed up"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "How distressing it felt, 0 to 10"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "The urge I felt"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What I did"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What I noticed afterward"
+   }
+  ],
+  "tags": [
+   "intrusive thoughts",
+   "pattern log",
+   "OCD"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "exposure-ladder-builder-with-response-prevention-notes",
+  "title": "Exposure Ladder Builder With Response Prevention Notes",
+  "kind": "cbt",
+  "summary": "A ladder of situations ordered by difficulty with space to plan what the client will do instead of a ritual.",
+  "goal": "Use it to help a client and clinician plan small, paced steps together.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "45 minutes",
+  "body_md": "Build the ladder collaboratively and rate each rung. Plan the first rung to be doable, along with what the client will do instead of the ritual. Go at the client's pace and use your own training to guide the steps.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Situations that bother me, from easiest to hardest"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "The rung I will start with"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What I will do instead of the ritual"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "How distressed I expect to feel"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What I noticed when I tried it"
+   }
+  ],
+  "tags": [
+   "CBT",
+   "exposure",
+   "ladder",
+   "OCD"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "i-m-having-the-thought-that-labeling-sheet",
+  "title": "I'm Having the Thought That Labeling Sheet",
+  "kind": "act",
+  "summary": "A practice sheet for noticing an intrusive thought as a thought and returning to what matters.",
+  "goal": "Use it to help a client practice letting a thought be there without acting on it.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "25 minutes",
+  "body_md": "Teach labeling thoughts, such as \"I'm having the thought that...\". The client practices with mild thoughts and returns to a valued activity. Explore what happens when they do not respond. Stay curious about how they felt.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "A thought that showed up"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Saying it as \"I'm having the thought that...\""
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What I did next"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What I was doing that mattered to me"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What I noticed about the thought"
+   }
+  ],
+  "tags": [
+   "ACT",
+   "defusion",
+   "intrusive thoughts",
+   "OCD"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "urge-waiting-timer-and-soothing-plan",
+  "title": "Urge Waiting Timer and Soothing Plan",
+  "kind": "dbt",
+  "summary": "A plan for waiting out an urge to do a ritual with a timer and gentle self-soothing statements.",
+  "goal": "Use it to help a client practice extending the time before responding to an urge.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "25 minutes",
+  "body_md": "Set a timer for a short wait that feels possible and add a kind self-statement. Increase the wait step by step. Record what the urge did while waiting. Celebrate every extra minute and keep the plan tied to the client's ladder.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The urge I felt"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "How long I decided to wait"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What I said to myself while waiting"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What the urge did"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "How long I will try next time"
+   }
+  ],
+  "tags": [
+   "DBT",
+   "urges",
+   "self-soothing",
+   "OCD"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "the-bossy-brain-comic-strip",
+  "title": "The Bossy Brain Comic Strip",
+  "kind": "kids",
+  "summary": "A comic-strip activity where a child draws a bossy brain giving orders and the child choosing what to do.",
+  "goal": "Use it to help a child see the bossy thoughts as separate from themselves.",
+  "audience": [
+   "Children"
+  ],
+  "duration": "30 minutes",
+  "body_md": "The child draws a comic with a bossy brain voice and themselves answering back. Stay playful. The parent learns to avoid giving reassurance each time and to say something supportive like \"that sounds like the bossy brain\". Adapt to your training.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What the bossy brain says"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What it wants me to do"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What I could say back"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What I do instead"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "How the grown-up will help me"
+   }
+  ],
+  "tags": [
+   "kids",
+   "intrusive thoughts",
+   "drawing",
+   "OCD"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "panic-wave-tracker-with-body-sensations",
+  "title": "Panic Wave Tracker With Body Sensations",
+  "kind": "worksheet",
+  "summary": "A tracker for recording when panic waves came, what sensations arrived and how long they lasted.",
+  "goal": "Use it to help a client see that panic waves rise and fall over time.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "One week",
+  "body_md": "The client logs each wave: time, place, sensations, peak, and how long until it eased. Review for patterns and notice that peaks pass. Encourage the client to see a medical professional about physical symptoms if they have not.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "When and where it happened"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Sensations I felt"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Peak intensity, 0 to 10"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "How long until it eased"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What I did"
+   }
+  ],
+  "tags": [
+   "panic",
+   "tracking",
+   "panic attacks"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "panic-thoughts-and-sensations-interpretation-sheet",
+  "title": "Panic Thoughts and Sensations Interpretation Sheet",
+  "kind": "cbt",
+  "summary": "A sheet that pairs body sensations with the scary thoughts about them and a more balanced reading.",
+  "goal": "Use it to help a client examine how they read the body's signals.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "List sensations such as a racing heart and the fear attached to each. Write a balanced reading that the client finds partly believable. Then plan a small experiment, such as a brisk walk, to see what happens. Pace to the client.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "A sensation I notice"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "The scary thought attached to it"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "A more balanced reading"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "An experiment I could try"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What happened when I tried it"
+   }
+  ],
+  "tags": [
+   "CBT",
+   "interoceptive",
+   "panic",
+   "panic attacks"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "making-room-for-panic-practice",
+  "title": "Making Room for Panic Practice",
+  "kind": "act",
+  "summary": "A sheet for practicing making room for the feelings of panic while doing something that matters.",
+  "goal": "Use it to help a client practice not fighting the feelings of panic.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "25 minutes",
+  "body_md": "Teach the client to notice where panic sits, breathe around it, and keep doing a chosen activity. Start with mild moments. Ask what they notice when the fight drops. Keep it voluntary and slow.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Where I feel panic in my body"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What I usually do to fight it"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What I tried instead"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What I did that mattered to me"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What I noticed"
+   }
+  ],
+  "tags": [
+   "ACT",
+   "acceptance",
+   "panic",
+   "panic attacks"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "paced-exhale-and-ice-water-reset-card",
+  "title": "Paced Exhale and Ice Water Reset Card",
+  "kind": "dbt",
+  "summary": "A card for trying a slower exhale and cold water on the face during a rise of intense feelings.",
+  "goal": "Use it to help a client try two body-based skills during panic waves.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "20 minutes",
+  "body_md": "Try a slow exhale and a cold pack or water splash in session when the client is calm. Rate arousal before and after. Check for health concerns before using cold on the face. The client picks which skill to carry.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Arousal before, 0 to 10"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What I tried"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Arousal after, 0 to 10"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Which skill I prefer"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "Where I will keep my card"
+   }
+  ],
+  "tags": [
+   "DBT",
+   "distress tolerance",
+   "panic",
+   "panic attacks"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "panic-day-partner-plan",
+  "title": "Panic Day Partner Plan",
+  "kind": "couples",
+  "summary": "A shared plan for what a partner says and does during a panic wave and what they avoid.",
+  "goal": "Use it to help partners agree on a calm, supportive way to respond to panic.",
+  "audience": [
+   "Couples"
+  ],
+  "duration": "35 minutes",
+  "body_md": "The partner with panic says what helps, such as a slow voice or a seat, and what does not. The other writes a short script. Practice it once. Agree on when to seek medical help, and keep the plan simple.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Partner with panic: what helps me"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Partner with panic: what does not help"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Partner supporting: what I will say"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Partner supporting: what I will not do"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "Our plan if it does not ease"
+   }
+  ],
+  "tags": [
+   "couples",
+   "support",
+   "panic",
+   "panic attacks"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "parent-trigger-moments-planner",
+  "title": "Parent Trigger Moments Planner",
+  "kind": "worksheet",
+  "summary": "A planner for naming the moments when a parent loses patience and choosing a plan for each.",
+  "goal": "Use it to help a parent prepare for their hardest moments with their child.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "The parent lists the times of day or situations that test them most and what they feel. For each, plan a calmer response, such as a breath or leaving the room for a minute. Pick one to try this week. Normalize that every parent has such moments.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The moment that tests me most"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What I feel in my body"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What I usually do"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What I would like to do instead"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What I need to make that easier"
+   }
+  ],
+  "tags": [
+   "parenting",
+   "triggers",
+   "planning"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "parent-thought-check-worksheet",
+  "title": "Parent Thought Check Worksheet",
+  "kind": "cbt",
+  "summary": "A sheet for catching harsh thoughts about oneself or the child and writing a fairer alternative.",
+  "goal": "Use it to help a parent notice thoughts that shape their reactions.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Pick a recent hard moment. The parent writes the thought, such as \"I'm failing\", and how it felt, then a fairer thought. Be kind. The aim is clarity about the thought and its effect on the response.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "A hard moment with my child"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "The thought I had about myself or them"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "How it made me feel and act"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "A fairer way of thinking about it"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What I would like to do next time"
+   }
+  ],
+  "tags": [
+   "CBT",
+   "parenting",
+   "thoughts"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "parent-values-compass-and-repair-plan",
+  "title": "Parent Values Compass and Repair Plan",
+  "kind": "act",
+  "summary": "A sheet where a parent names the kind of parent they want to be and one action this week that fits.",
+  "goal": "Use it to help a parent reconnect with what matters in how they raise their child.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "25 minutes",
+  "body_md": "Ask what the parent wants their child to remember. Name two values, then one action each. Explore what gets in the way, such as exhaustion. Treat shortfalls with compassion and plan one repair when things go off course.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What I want my child to remember about me"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Two values I want to parent by"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "One action for each this week"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What gets in the way"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "How I will repair when I miss"
+   }
+  ],
+  "tags": [
+   "ACT",
+   "values",
+   "parenting"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "validate-then-limit-practice-sheet-for-parents",
+  "title": "Validate Then Limit Practice Sheet for Parents",
+  "kind": "dbt",
+  "summary": "A practice sheet for first acknowledging a child's feeling and then holding a limit.",
+  "goal": "Use it to help a parent practice pairing warmth with a clear limit.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Give situations such as a child refusing to leave the park. The parent writes a validating line and a limit line, and role-play it with you as the child. Notice tone. Practice at home this week with one situation.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The situation"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What my child is probably feeling"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "My validating line"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "My limit line"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "How my child responded when I tried it"
+   }
+  ],
+  "tags": [
+   "DBT",
+   "validation",
+   "parenting"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "daily-feelings-marker-chart-for-families",
+  "title": "Daily Feelings Marker Chart for Families",
+  "kind": "kids",
+  "summary": "A chart a child and parent make together to show feelings each day and a shared plan for hard moments.",
+  "goal": "Use it to help a child and parent make talking about feelings a daily habit.",
+  "audience": [
+   "Children"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Make a chart with faces or colors, and a magnet or sticker for each person. At a set time each day they place their marker and say one word. The parent goes first, models honesty, and does not fix. Review in session.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The faces or colors on our chart"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "When we will check in each day"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What the grown-up will do when I pick a hard feeling"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What I would like when I feel upset"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "How the check-in went this week"
+   }
+  ],
+  "tags": [
+   "kids",
+   "feelings",
+   "family",
+   "parenting"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "new-baby-week-rest-and-help-map",
+  "title": "New Baby Week Rest and Help Map",
+  "kind": "worksheet",
+  "summary": "A planner for mapping sleep, feeding help and rest into a realistic week with a new baby.",
+  "goal": "Use it to help a new parent plan help and rest around the baby's schedule.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Ask the parent to map a typical day and who can help. Mark where rest, meals and a break could fit. Make choices small. If the parent says things feel unsafe, review 988 (call or text) and your own steps in session.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "A typical day with my baby"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Who can help me and with what"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Where rest could fit in"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What I can let go of for now"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "If things ever feel unsafe, I can call or text 988"
+   }
+  ],
+  "tags": [
+   "perinatal",
+   "planning",
+   "rest",
+   "perinatal and postpartum"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "new-parent-thought-check-sheet",
+  "title": "New Parent Thought Check Sheet",
+  "kind": "cbt",
+  "summary": "A sheet for catching harsh thoughts about being a parent and writing a kinder alternative.",
+  "goal": "Use it to help a new parent notice and soften unfair thoughts about themselves.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Many new parents hold hard standards. List a recent thought such as \"a good mother would not be tired\", and write a fairer one. Normalize difficulty. Keep medical and emotional concerns on your radar and use your judgment.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "A thought about myself as a parent"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "How it made me feel"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What a friend would say"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "A fairer thought"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "One small thing I can do today"
+   }
+  ],
+  "tags": [
+   "CBT",
+   "perinatal",
+   "thoughts",
+   "perinatal and postpartum"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "values-in-the-fourth-trimester-sheet",
+  "title": "Values in the Fourth Trimester Sheet",
+  "kind": "act",
+  "summary": "A sheet for choosing what matters most in the early weeks with a baby and a small action to match.",
+  "goal": "Use it to help a new parent reconnect with values during a hard season.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "25 minutes",
+  "body_md": "Ask what the parent most wants these weeks to hold. Choose one value and one tiny action, like a short walk or a call to a friend. Accept that plans change. Review what felt possible and adjust together.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What I want these weeks to hold"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "A value behind that"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "One tiny action this week"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What gets in the way"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "Who I can ask for help"
+   }
+  ],
+  "tags": [
+   "ACT",
+   "values",
+   "perinatal",
+   "perinatal and postpartum"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "soothe-yourself-while-soothing-the-baby-menu",
+  "title": "Soothe Yourself While Soothing the Baby Menu",
+  "kind": "dbt",
+  "summary": "A menu of five-senses self-soothing skills that fit around caring for a baby.",
+  "goal": "Use it to help a new parent find quick soothing skills they can do with a baby nearby.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "25 minutes",
+  "body_md": "List sensory ideas that fit one hand free or a baby sleeping, such as a warm drink, a scent or a slow breath. Try one in session. The parent picks three for a small card kept near the feeding spot.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "A sound that soothes me"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "A smell or taste that soothes me"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "A touch that soothes me"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Three skills for my card"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "Where I will keep it"
+   }
+  ],
+  "tags": [
+   "DBT",
+   "self-soothing",
+   "perinatal",
+   "perinatal and postpartum"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "night-shift-handoff-plan-for-two-parents",
+  "title": "Night Shift Handoff Plan for Two Parents",
+  "kind": "couples",
+  "summary": "A shared plan for dividing nights, rest and check-ins between partners with a new baby.",
+  "goal": "Use it to help partners share the load and stay connected with a new baby.",
+  "audience": [
+   "Couples"
+  ],
+  "duration": "35 minutes",
+  "body_md": "Each partner lists their needs for sleep and support, then they build a simple rota with a protected block of rest for each. Add a daily five-minute check-in. Revisit weekly, as needs change quickly.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Partner A: what I need most right now"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Partner B: what I need most right now"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Our night rota"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Our daily check-in time and format"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What we will do when we are both worn out"
+   }
+  ],
+  "tags": [
+   "couples",
+   "perinatal",
+   "teamwork",
+   "perinatal and postpartum"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "strengths-evidence-folder-sheet",
+  "title": "Strengths Evidence Folder Sheet",
+  "kind": "worksheet",
+  "summary": "A sheet for collecting concrete evidence of strengths from a client's own life.",
+  "goal": "Use it to help a client build a record of their strengths in real examples.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Ask for strengths and a real example of each, then tasks where others noticed them. Add one new entry weekly. Watch for dismissal and ask what they would say about a friend with the same list.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "A strength I have"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "An example of it from my life"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Something someone said that fits"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "A strength I am working on"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "How I will add to this folder"
+   }
+  ],
+  "tags": [
+   "strengths",
+   "evidence",
+   "self-esteem"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "inner-critic-reality-check-worksheet",
+  "title": "Inner Critic Reality Check Worksheet",
+  "kind": "cbt",
+  "summary": "A worksheet for writing down an inner critic's statement and checking it against facts and a kinder view.",
+  "goal": "Use it to help a client examine critical self-talk with curiosity.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Pick a recent self-critical statement. The client writes the evidence for and against and a fairer version. Notice the tone of the critic and ask whose voice it echoes. Keep the alternative believable.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What my inner critic said"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Evidence for it"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Evidence against it"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "A fairer version"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "How I feel now"
+   }
+  ],
+  "tags": [
+   "CBT",
+   "self-talk",
+   "self-esteem"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "noticing-the-noticer-self-worth-practice-sheet",
+  "title": "Noticing the Noticer Self-Worth Practice Sheet",
+  "kind": "act",
+  "summary": "A practice sheet for noticing the part of the self that observes thoughts about self-worth.",
+  "goal": "Use it to help a client step back from harsh self-judgments.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "25 minutes",
+  "body_md": "Invite the client to notice a harsh judgment, then notice who is noticing. Use a sentence like \"I am having the thought that I am not enough.\" Practice for a few minutes and ask what they noticed.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "A harsh judgment about myself"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Saying it as \"I'm having the thought that...\""
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What it is like to notice that I am noticing"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What I want to do next"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "A value I can act on today"
+   }
+  ],
+  "tags": [
+   "ACT",
+   "self-as-context",
+   "self-esteem"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "self-validation-statements-builder",
+  "title": "Self-Validation Statements Builder",
+  "kind": "dbt",
+  "summary": "A builder for writing short statements that validate a client's own feelings and efforts.",
+  "goal": "Use it to help a client practice acknowledging their own feelings kindly.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "25 minutes",
+  "body_md": "Explain levels of validation. The client writes statements such as \"It makes sense I feel nervous after that\". Practice aloud. Keep statements honest instead of overly positive, and track use over the week.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "A feeling I had this week"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "A statement that makes sense of it"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "An effort I made that deserves credit"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "How it felt to say it to myself"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "When I will practice again"
+   }
+  ],
+  "tags": [
+   "DBT",
+   "validation",
+   "self-esteem"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "strength-spotlight-circle-game",
+  "title": "Strength Spotlight Circle Game",
+  "kind": "game",
+  "summary": "A group game where players get a spotlight turn and others name strengths they have seen in them.",
+  "goal": "Use it to help a group practice noticing strengths in each other and themselves.",
+  "audience": [
+   "Groups"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Each player takes a spotlight turn while others name one strength each, using a specific example. The player says thanks. Remind everyone to be specific and sincere. Debrief on what was hard to hear.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "A strength someone named in me"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "An example they gave"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "How it felt to hear it"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "A strength I named in someone else"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "One I want to remember"
+   }
+  ],
+  "tags": [
+   "group",
+   "strengths",
+   "game",
+   "self-esteem"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "social-situations-ladder-and-rating-sheet",
+  "title": "Social Situations Ladder and Rating Sheet",
+  "kind": "worksheet",
+  "summary": "A ladder of social situations from easiest to hardest with space to rate expected and actual discomfort.",
+  "goal": "Use it to help a client plan small, paced steps into social situations.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Build a ladder together and rate each rung. Pick one near the bottom to try this week. Log expected and actual discomfort. Review what was different from the prediction and plan the next step at the client's pace.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Situations I avoid, easiest to hardest"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "The rung I will try first"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Discomfort I expect, 0 to 10"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Discomfort I felt, 0 to 10"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What I want to try next"
+   }
+  ],
+  "tags": [
+   "social",
+   "exposure",
+   "social anxiety"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "spotlight-effect-experiment-sheet",
+  "title": "Spotlight Effect Experiment Sheet",
+  "kind": "cbt",
+  "summary": "A sheet for testing how much others actually notice something the client is worried about.",
+  "goal": "Use it to help a client test what other people actually notice.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Choose a feared slip such as a blush or a stumble. The client predicts how many people will notice, tries a mild version, and asks or observes. Compare. Keep it mild and let the client set the pace.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The thing I worry people will notice"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What I predict will happen"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What I did to test it"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What actually happened"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What I make of the difference"
+   }
+  ],
+  "tags": [
+   "CBT",
+   "experiment",
+   "social",
+   "social anxiety"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "hello-with-butterflies-action-sheet",
+  "title": "Hello With Butterflies Action Sheet",
+  "kind": "act",
+  "summary": "A sheet for choosing a social action that fits a value and doing it with nerves along for the ride.",
+  "goal": "Use it to help a client act on connection even when nerves are present.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "25 minutes",
+  "body_md": "Ask what kind of friend or colleague the client wants to be. Choose a small action, like saying hello, and plan how to bring the nerves along. Log what happened. Praise showing up over how it felt.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What kind of person I want to be around others"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "A small action I will try"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "The nerves I expect"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "How I will bring them along"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What happened"
+   }
+  ],
+  "tags": [
+   "ACT",
+   "values",
+   "social",
+   "social anxiety"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "interpersonal-effectiveness-starter-scripts",
+  "title": "Interpersonal Effectiveness Starter Scripts",
+  "kind": "dbt",
+  "summary": "A page of short scripts for starting a conversation, joining a group and leaving politely.",
+  "goal": "Use it to help a client practice a few go-to phrases for common social moments.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Draft two or three opening lines, ways to ask a question and polite exits. Role-play each with you. The client chooses words that sound like them. Try one script a day this week and track how it went.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "An opening line I could use"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "A question I could ask"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "A polite way to leave"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "The script I will try first"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "How it went"
+   }
+  ],
+  "tags": [
+   "DBT",
+   "interpersonal effectiveness",
+   "social",
+   "social anxiety"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "low-pressure-chat-cards-group-game",
+  "title": "Low-Pressure Chat Cards Group Game",
+  "kind": "game",
+  "summary": "A group card game where players draw topics and practice short, low-pressure exchanges.",
+  "goal": "Use it to help a group practice small talk in a safe setting.",
+  "audience": [
+   "Groups"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Cards offer easy topics like weekend plans or favorite foods. Pairs rotate for two-minute chats. Anyone may pass a card. Debrief on what helped and what felt hard. Keep it light and optional.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "A topic I enjoyed"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "A question I asked"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What felt hard"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What I noticed in the other person"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "One thing I will try this week"
+   }
+  ],
+  "tags": [
+   "group",
+   "small talk",
+   "game",
+   "social anxiety"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "grief-tide-notes-and-steadying-anchors-log",
+  "title": "Grief Tide Notes and Steadying Anchors Log",
+  "kind": "worksheet",
+  "summary": "A log for noting when waves of grief arrive and what helped the client stay steady.",
+  "goal": "Use it to help a client notice the rhythm of grief and what anchors them.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "One week",
+  "body_md": "The client records when a wave came, what set it off, and what helped. Normalize that waves vary and have no schedule. Look for anchors worth repeating. Do not hurry the client toward feeling better.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "When the wave came and what set it off"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What it felt like"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What helped me stay steady"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What I needed but did not have"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "An anchor I want to keep"
+   }
+  ],
+  "tags": [
+   "grief",
+   "tracking",
+   "grief and loss"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "should-have-thoughts-check-sheet",
+  "title": "Should-Have Thoughts Check Sheet",
+  "kind": "cbt",
+  "summary": "A sheet for looking at \"if only\" and \"I should have\" thoughts with compassion and a wider view.",
+  "goal": "Use it to help a client look at self-blame thoughts after a loss.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Let the client write the \"if only\" thoughts and what they knew at the time. Ask what they would say to a friend. Do not rush to remove guilt; make space for it and look at what else is true. Pace to their readiness.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "An \"if only\" or \"should have\" thought"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What I knew at the time"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What I would say to a friend in my place"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "A kinder way of putting it"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "How I feel after writing this"
+   }
+  ],
+  "tags": [
+   "CBT",
+   "guilt",
+   "grief and loss"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "carrying-love-forward-values-sheet",
+  "title": "Carrying Love Forward Values Sheet",
+  "kind": "act",
+  "summary": "A sheet for finding the values a loved one embodied and choosing a way to carry one forward.",
+  "goal": "Use it to help a client keep a connection with someone they lost through values.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Ask what mattered to the person who died or what the loss meant. The client names one value and a small action that honors it. Make room for tears. Let the client decide the pace and what to share.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Who or what I miss"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "A value that connection stood for"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "A small action that carries it forward"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What feels hard about doing it"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "Who I could share it with"
+   }
+  ],
+  "tags": [
+   "ACT",
+   "values",
+   "remembrance",
+   "grief and loss"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "self-soothe-and-ride-the-wave-plan-for-hard-dates",
+  "title": "Self-Soothe and Ride the Wave Plan for Hard Dates",
+  "kind": "dbt",
+  "summary": "A plan for anniversaries and holidays using self-soothing skills and a supportive contact list.",
+  "goal": "Use it to help a client prepare for dates that bring grief to the surface.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Name the upcoming date and plan the day in blocks. Include self-soothing, a person to contact, and room to change plans. If feelings turn unsafe, review 988 (call or text) and complete that part in session.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The date I am preparing for"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "How I would like to spend it"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Skills I will use to soothe myself"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "People I can reach out to"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "If it feels unsafe: 988 (call or text)"
+   }
+  ],
+  "tags": [
+   "DBT",
+   "self-soothing",
+   "anniversaries",
+   "grief and loss"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "memory-box-craft-for-a-child",
+  "title": "Memory Box Craft for a Child",
+  "kind": "kids",
+  "summary": "A craft where a child decorates a box and fills it with drawings and small keepsakes about someone they miss.",
+  "goal": "Use it to help a child hold memories of someone they lost in a physical, safe place.",
+  "audience": [
+   "Children"
+  ],
+  "duration": "40 minutes",
+  "body_md": "The child decorates a box and picks things to put inside, such as a drawing or a photo. Let them tell stories if they want. The parent helps choose a spot at home and sits with the child when they open it. Use your judgment about age.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Who my box is for"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What I drew on the outside"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Things I put inside"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "A memory I like"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "Who I can look at it with"
+   }
+  ],
+  "tags": [
+   "kids",
+   "memory",
+   "craft",
+   "grief and loss"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "needs-and-requests-sorting-sheet",
+  "title": "Needs and Requests Sorting Sheet",
+  "kind": "worksheet",
+  "summary": "A sheet for turning complaints about a relationship into clear needs and specific requests.",
+  "goal": "Use it to help a client change criticisms into clear, doable requests.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Have the client write a complaint, name the need under it, and rewrite it as a small, specific request. Role-play delivering it. Avoid blaming language, and ask how the other person might hear it.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "A complaint I have"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "The need underneath it"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "A specific, doable request"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "How I will say it kindly"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "How I think they might hear it"
+   }
+  ],
+  "tags": [
+   "relationships",
+   "communication",
+   "needs",
+   "relationship issues"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "mind-reading-check-worksheet-for-relationships",
+  "title": "Mind-Reading Check Worksheet for Relationships",
+  "kind": "cbt",
+  "summary": "A sheet for catching assumptions about what a partner or friend thinks and checking them.",
+  "goal": "Use it to help a client test assumptions about other people's thoughts.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "The client writes what they assumed someone thought, their evidence, other possible explanations, and a way to ask. Practice the asking line. The goal is curiosity before conclusions.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What I assumed they thought or meant"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "My evidence"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Other things it could mean"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "A way I could ask them"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What they actually said"
+   }
+  ],
+  "tags": [
+   "CBT",
+   "assumptions",
+   "relationships",
+   "relationship issues"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "relationship-values-and-small-actions-sheet",
+  "title": "Relationship Values and Small Actions Sheet",
+  "kind": "act",
+  "summary": "A sheet for naming the kind of partner or friend a client wants to be and daily actions to match.",
+  "goal": "Use it to help a client act on how they want to show up in a relationship.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "25 minutes",
+  "body_md": "Ask what the client wants their relationship to feel like, whatever the other person does. Pick one value and a small action each day this week. Reflect on what moved and what blocked, with no scorekeeping.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The kind of partner or friend I want to be"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "A value behind it"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "A small action each day this week"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What gets in the way"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What I noticed after a week"
+   }
+  ],
+  "tags": [
+   "ACT",
+   "values",
+   "relationships",
+   "relationship issues"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "dear-man-practice-sheet-for-a-relationship-request",
+  "title": "DEAR MAN Practice Sheet for a Relationship Request",
+  "kind": "dbt",
+  "summary": "A worksheet for drafting an assertive request using Describe, Express, Assert, Reinforce, Mindful, Appear confident and Negotiate.",
+  "goal": "Use it to help a client prepare and rehearse an assertive request.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "35 minutes",
+  "body_md": "Pick a real request and draft each piece. Role-play with you in the other seat, switching at least once. Notice tone and body language. Ask what they will do if the answer is no.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The situation I will describe"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "How I feel and what I ask for"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What I will say to reinforce"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What I will do to stay mindful"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What I am willing to negotiate"
+   }
+  ],
+  "tags": [
+   "DBT",
+   "DEAR MAN",
+   "relationships",
+   "relationship issues"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "softened-startup-rewrite-for-partners",
+  "title": "Softened Startup Rewrite for Partners",
+  "kind": "couples",
+  "summary": "A sheet where partners rewrite harsh openers into softer starts that name a feeling and a request.",
+  "goal": "Use it to help partners start hard conversations in a way that invites listening.",
+  "audience": [
+   "Couples"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Each partner writes a harsh opener they have used, then rewrites it using \"I feel... about... I need...\" forms. Read them to each other and give feedback on how each landed. Practice with a current issue and keep it brief.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Partner A: an opener I have used"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Partner A: my softer rewrite"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Partner B: an opener I have used"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Partner B: my softer rewrite"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "How each one landed for the listener"
+   }
+  ],
+  "tags": [
+   "couples",
+   "communication",
+   "Gottman",
+   "relationship issues"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "safety-and-support-plan-for-the-week",
+  "title": "Safety and Support Plan for the Week",
+  "kind": "worksheet",
+  "summary": "A plan listing safe people, safe places and steps for hard moments, with no details of past events.",
+  "goal": "Use it to help a client strengthen present-day safety and support.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Focus entirely on now: who the client can contact, where they feel safe, and what they will do if a day is hard. Never ask for details of what happened, and do not assign writing about it. Review your reporting duties and local resources.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "People I can reach out to"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Places where I feel safe"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What I will do on a hard day"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Something comforting I can do tonight"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "If I feel unsafe: I can call or text 988"
+   }
+  ],
+  "tags": [
+   "safety",
+   "support",
+   "stabilizing",
+   "sexual abuse"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "self-blame-thought-check-for-today",
+  "title": "Self-Blame Thought Check for Today",
+  "kind": "cbt",
+  "summary": "A sheet for noticing present-day thoughts of shame or blame and writing a kinder response, with no event details.",
+  "goal": "Use it to help a client gently loosen shame-based thoughts in the present.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Keep the focus on a thought the client has today, such as \"something is wrong with me\", and not on any event. Write a kinder statement they might say to a friend. Pause for grounding when needed and let the client lead the pace.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "A thought I have today that feels shameful"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "How much I believe it, 0 to 100"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What I would say to a friend with that thought"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "A kinder statement I can half-believe"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "Something that helps me feel steady"
+   }
+  ],
+  "tags": [
+   "CBT",
+   "shame",
+   "stabilizing",
+   "sexual abuse"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "choosing-direction-values-sheet",
+  "title": "Choosing Direction Values Sheet",
+  "kind": "act",
+  "summary": "A sheet for naming what the client wants their life to be about and one small action they choose.",
+  "goal": "Use it to help a client practice choice and control in small, safe steps.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "25 minutes",
+  "body_md": "Offer lots of choices throughout. The client picks a value and a small action in their present life. Skip details of the past. Respect decisions to stop, and revisit pacing at the start of each session.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What I want my life to be about"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "A value that matters to me"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "One small action I choose"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What would make it feel safe"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "Who I can tell"
+   }
+  ],
+  "tags": [
+   "ACT",
+   "values",
+   "choice",
+   "sexual abuse"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "safe-boundaries-and-body-comfort-grounding-menu",
+  "title": "Safe Boundaries and Body Comfort Grounding Menu",
+  "kind": "dbt",
+  "summary": "A menu of grounding skills and boundary phrases the client chooses from to feel steady in the present.",
+  "goal": "Use it to help a client build grounding skills and boundary phrases they control.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Offer grounding and boundary phrases as options only and let the client choose. Practice phrases like \"I need a break.\" Keep it about the present. Stop whenever the client wants and check how they are before leaving.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Grounding skills I might try"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Phrases I can use to set a limit"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "The ones I will practice"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Who I can practice with"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "If things feel unsafe: call or text 988"
+   }
+  ],
+  "tags": [
+   "DBT",
+   "boundaries",
+   "grounding",
+   "sexual abuse"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "my-safe-people-hand-drawing",
+  "title": "My Safe People Hand Drawing",
+  "kind": "kids",
+  "summary": "A drawing where a child traces their hand and writes a safe grown-up on each finger.",
+  "goal": "Use it to help a child name trusted adults they can tell if something feels wrong.",
+  "audience": [
+   "Children"
+  ],
+  "duration": "25 minutes",
+  "body_md": "The child traces a hand and names one safe adult on each finger. Talk about telling a safe adult when something feels not okay. Remember your reporting duties if a child discloses, and follow your agency's steps. The parent keeps a copy at home.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The grown-ups I wrote on my fingers"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "A way I can ask for help"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "A time I feel safe"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What I can say if something does not feel okay"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "Where the drawing will live"
+   }
+  ],
+  "tags": [
+   "kids",
+   "safe adults",
+   "safety",
+   "sexual abuse"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "coping-skills-toolbox-builder",
+  "title": "Coping Skills Toolbox Builder",
+  "kind": "worksheet",
+  "summary": "A sheet for building a personal toolbox of coping skills sorted by what they help with.",
+  "goal": "Use it to help a client collect skills that fit their own life.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Sort skills into calming, distracting, connecting and problem-solving. The client rates each one they have tried. Choose two to try this week and put the list somewhere visible. Update it often.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Skills that help me calm down"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Skills that help me distract"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Skills that help me connect"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Skills that help me solve a problem"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "The two I will try this week"
+   }
+  ],
+  "tags": [
+   "toolbox",
+   "coping skills"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "coping-thoughts-card-writer",
+  "title": "Coping Thoughts Card Writer",
+  "kind": "cbt",
+  "summary": "A sheet for writing short, believable coping statements on cards for hard moments.",
+  "goal": "Use it to help a client carry a few short coping thoughts for tough moments.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "25 minutes",
+  "body_md": "Name two or three hard moments, then draft statements the client can half-believe, like \"this is hard and I can get through it for now\". Test them in role-play and keep the ones that feel true.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "A hard moment I face"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What I tell myself now"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "A coping thought I could use"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "How believable it is, 0 to 100"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "Where I will keep it"
+   }
+  ],
+  "tags": [
+   "CBT",
+   "coping thoughts",
+   "coping skills"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "choice-point-map-for-hard-moments",
+  "title": "Choice Point Map for Hard Moments",
+  "kind": "act",
+  "summary": "A map where a client plots the moves toward and away from what matters when something hard shows up.",
+  "goal": "Use it to help a client see their options in a hard moment.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Draw a choice point diagram. The client lists the hard feeling, moves that take them away from what matters, and moves that take them toward it. Ask which move they will try next time and what they will notice.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The hard moment or feeling"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Moves that take me away from what matters"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Moves that take me toward it"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "The move I will try"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What I noticed"
+   }
+  ],
+  "tags": [
+   "ACT",
+   "choice point",
+   "coping skills"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "distress-tolerance-skill-chooser",
+  "title": "Distress Tolerance Skill Chooser",
+  "kind": "dbt",
+  "summary": "A chooser that matches a client's distress level and situation to a skill from their DBT toolbox.",
+  "goal": "Use it to help a client pick the right skill for the moment.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Go through situations and rate distress. Match each with a skill: distract, self-soothe, improve the moment, or pros and cons. Create a one-page chart. Rehearse picking in session and review which worked.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "A situation that overwhelms me"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "My distress level, 0 to 10"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "The skill that fits"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What I did"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "Whether it helped"
+   }
+  ],
+  "tags": [
+   "DBT",
+   "distress tolerance",
+   "coping skills"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "coping-skill-pictionary-game",
+  "title": "Coping Skill Pictionary Game",
+  "kind": "game",
+  "summary": "A drawing game where players sketch coping skills for teammates to guess, then discuss which they use.",
+  "goal": "Use it to help a group learn and share coping skills in a fun way.",
+  "audience": [
+   "Groups"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Teams take turns drawing a coping skill from a card, and teammates guess. After each round, ask who uses that skill and when. Keep scoring light. Debrief on skills people want to try.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "A skill I drew or guessed"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Who uses it and when"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "One that was new to me"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "One I would like to try"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "How I will remember it"
+   }
+  ],
+  "tags": [
+   "group",
+   "game",
+   "coping skills"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "fear-ladder-with-safety-behaviors-column",
+  "title": "Fear Ladder With Safety Behaviors Column",
+  "kind": "worksheet",
+  "summary": "A ladder of feared situations with a column for the safety behaviors a client leans on at each step.",
+  "goal": "Use it to help a client plan graded steps and notice safety behaviors that keep fear going.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "40 minutes",
+  "body_md": "Build the ladder together, rating each rung. Add what the client does to feel safer, such as checking exits or bringing a companion. Plan the first rung with fewer safety behaviors. Go at the client's pace and use your training.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The fear I want to work on"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Situations from easiest to hardest"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "What I do to feel safer at each one"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "The first rung I will try"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What happened when I tried it"
+   }
+  ],
+  "tags": [
+   "fear ladder",
+   "exposure",
+   "phobias"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "fear-prediction-testing-sheet-for-phobias",
+  "title": "Fear Prediction Testing Sheet for Phobias",
+  "kind": "cbt",
+  "summary": "A sheet for predicting what will happen in a feared situation, trying a small step, and comparing.",
+  "goal": "Use it to help a client test fearful predictions with small steps.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Choose one rung on the ladder. The client writes a prediction and a rating, tries it, and records what happened. Compare and talk about what the experiment shows. Repeat the step before moving up.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The step I will try"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What I predict will happen"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "How scary I expect it to be, 0 to 100"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What actually happened"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What I learned"
+   }
+  ],
+  "tags": [
+   "CBT",
+   "exposure",
+   "predictions",
+   "phobias"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "bringing-fear-along-on-the-way-sheet",
+  "title": "Bringing Fear Along on the Way Sheet",
+  "kind": "act",
+  "summary": "A sheet for choosing a valued action that involves a feared situation and practicing taking fear with you.",
+  "goal": "Use it to help a client do something that matters while fear is present.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "25 minutes",
+  "body_md": "Ask what the fear keeps the client from, like visiting a friend. Pick a small step toward that value and plan how to take the fear along. Go at their pace and respect limits. Review how it went.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What my fear keeps me from"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Why that matters to me"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "A small step toward it"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "How I will take my fear along"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What happened"
+   }
+  ],
+  "tags": [
+   "ACT",
+   "values",
+   "willingness",
+   "phobias"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "relaxation-and-self-soothing-plan-for-facing-fears",
+  "title": "Relaxation and Self-Soothing Plan for Facing Fears",
+  "kind": "dbt",
+  "summary": "A plan of calming and self-soothing skills to use before and after practicing a fear ladder step.",
+  "goal": "Use it to help a client prepare skills for before and after facing a feared step.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "25 minutes",
+  "body_md": "Plan the skills for the day of a practice step: what to do before, how to stay mindful during, and how to soothe after. Include a reward. Rehearse one skill in session and adjust together.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The step I am facing"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "A skill I will use before"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "How I will stay present during"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "How I will soothe myself after"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "A small reward I will choose"
+   }
+  ],
+  "tags": [
+   "DBT",
+   "self-soothing",
+   "exposure",
+   "phobias"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "brave-explorer-map-for-fears",
+  "title": "Brave Explorer Map for Fears",
+  "kind": "kids",
+  "summary": "A drawn map where a child plots small steps toward a feared thing as an adventure.",
+  "goal": "Use it to help a child take small, playful steps toward something they fear.",
+  "audience": [
+   "Children"
+  ],
+  "duration": "30 minutes",
+  "body_md": "The child draws a map with stops that get closer to the feared thing and decorates each. Work through the first stop together. The parent walks alongside the child, cheers effort, and does not push past the child's stop sign.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "The thing I am scared of"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "The stops on my map"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "The first stop and what I will do"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What my body feels like when brave"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "How the grown-up will help"
+   }
+  ],
+  "tags": [
+   "kids",
+   "fear",
+   "map",
+   "phobias"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "what-my-body-does-for-me-list",
+  "title": "What My Body Does For Me List",
+  "kind": "worksheet",
+  "summary": "A list of things a client's body does, feels and enables, from walking to hugging.",
+  "goal": "Use it to help a client notice what their body does for them rather than how it looks.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "25 minutes",
+  "body_md": "Ask the client to list actions and sensations their body makes possible, then add feelings tied to each. Look for patterns. Avoid talk of appearance or measurements. Discuss what shifts when attention moves from looks to function.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Things my body lets me do"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "Moments I enjoyed because of my body"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "A part of my body I am grateful for and why"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "What I usually focus on instead"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "One way I will notice this week what my body does"
+   }
+  ],
+  "tags": [
+   "body image",
+   "gratitude"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "mirror-and-social-media-thought-check-sheet",
+  "title": "Mirror and Social Media Thought Check Sheet",
+  "kind": "cbt",
+  "summary": "A sheet for catching critical thoughts triggered by mirrors or feeds and writing balanced alternatives.",
+  "goal": "Use it to help a client notice what triggers critical body thoughts and respond differently.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "30 minutes",
+  "body_md": "Ask when the thoughts show up: before a mirror, scrolling or a photo. The client writes the thought, how it felt, and a balanced alternative that does not rely on appearance. Plan one change to the trigger, like changing a feed.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Where I was when the thought showed up"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "The thought"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "How it made me feel"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "A balanced alternative"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "One change I will make around that trigger"
+   }
+  ],
+  "tags": [
+   "CBT",
+   "self-talk",
+   "media",
+   "body image"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "values-beyond-looks-sheet",
+  "title": "Values Beyond Looks Sheet",
+  "kind": "act",
+  "summary": "A sheet for naming values and actions that a client wants their time to serve, apart from how they look.",
+  "goal": "Use it to help a client spend energy on what matters instead of on appearance.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "25 minutes",
+  "body_md": "Ask what the client would do with their time if they spent less of it worrying about how they look. Name a value and an action this week. Treat harsh thoughts as thoughts and keep going with the action.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "What I would do with more time and energy"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "A value behind that"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "An action I will take this week"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "The thoughts that show up"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "What I did anyway"
+   }
+  ],
+  "tags": [
+   "ACT",
+   "values",
+   "body image"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "self-compassion-break-for-hard-body-moments",
+  "title": "Self-Compassion Break for Hard Body Moments",
+  "kind": "dbt",
+  "summary": "A short script for pausing, naming the hurt, remembering others feel this too and offering oneself kind words.",
+  "goal": "Use it to help a client respond kindly to hard moments about their body.",
+  "audience": [
+   "Adults"
+  ],
+  "duration": "20 minutes",
+  "body_md": "Teach three steps: notice the hurt, remember it is common, and say something kind. The client writes their own words and practices aloud. Pair it with a grounding skill. Check how it feels, since kindness can be awkward at first.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "A moment that was hard"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "What I noticed in my body and feelings"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "Why this is a human thing to feel"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Kind words I would say to a friend"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "Kind words I can say to myself"
+   }
+  ],
+  "tags": [
+   "DBT",
+   "self-compassion",
+   "body image"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
+ },
+ {
+  "slug": "all-the-things-my-body-can-do-collage",
+  "title": "All the Things My Body Can Do Collage",
+  "kind": "kids",
+  "summary": "A collage where a child cuts and pastes pictures or draws what their body can do.",
+  "goal": "Use it to help a child celebrate what their body does instead of how it looks.",
+  "audience": [
+   "Children"
+  ],
+  "duration": "30 minutes",
+  "body_md": "The child makes a collage of actions like running, hugging, drawing or dancing. Talk about how it feels to do them. The parent joins in, shares what their own body does, and avoids comments about looks during the activity.",
+  "fields": [
+   {
+    "id": "f0",
+    "type": "textarea",
+    "label": "Things my body can do"
+   },
+   {
+    "id": "f1",
+    "type": "textarea",
+    "label": "My favorite one and why"
+   },
+   {
+    "id": "f2",
+    "type": "textarea",
+    "label": "How I feel when I do it"
+   },
+   {
+    "id": "f3",
+    "type": "textarea",
+    "label": "Something new I want my body to try"
+   },
+   {
+    "id": "f4",
+    "type": "textarea",
+    "label": "Who I will show my collage to"
+   }
+  ],
+  "tags": [
+   "kids",
+   "collage",
+   "body image"
+  ],
+  "created_at": "2026-10-16T15:00:00+00:00"
  }
 ]
