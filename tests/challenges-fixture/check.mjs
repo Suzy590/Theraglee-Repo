@@ -3,7 +3,7 @@
 // Fails (exit 1) if a challenge is malformed, repeats a slug, a title or another
 // challenge's to-dos, is missing its description, has too few to-dos, uses an
 // unknown tag or theme, or is written in language the library avoids.
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 
 const CH = JSON.parse(readFileSync(new URL('../../data/challenges.json', import.meta.url), 'utf8'));
 
@@ -171,6 +171,12 @@ for (let i = 0; i < CH.length; i++) {
       errors.push(`${CH[i].slug} and ${CH[j].slug}: ${shared} of the same to-dos — write a different challenge`);
     }
   }
+}
+
+// Every challenge has an indexable page under site/challenges/ (see docs/seo.md).
+for (const c of CH) {
+  if (!existsSync(new URL(`../../site/challenges/${c.slug}/index.html`, import.meta.url)))
+    err(c, 'no page under site/challenges/; run python3 tools/build_seo_pages.py');
 }
 
 if (errors.length) {

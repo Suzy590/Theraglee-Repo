@@ -119,7 +119,9 @@ Each day's session:
    `tests/challenges-fixture/check.mjs`.
 2. Writes two new themes and appends them to `data/challenges.json` with
    today's date at 17:00:00+00:00.
-3. Runs `node tests/challenges-fixture/check.mjs` and fixes anything it flags.
+3. Runs `python3 tools/build_seo_pages.py`, which writes each new theme's page
+   under `site/challenges/` (see `seo.md`), then
+   `node tests/challenges-fixture/check.mjs`, and fixes anything it flags.
 4. Generates the day's migration with `tools/challenges_sql.py --since <today>`,
    then loads the day's two with the files from
    `tools/challenges_sync.py batches --since <today>`.
