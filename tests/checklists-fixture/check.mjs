@@ -3,7 +3,7 @@
 // Fails (exit 1) if a checklist is malformed, repeats a slug, a title or another
 // checklist's items, is missing its description, uses an unknown tag or theme,
 // or is written in language the library avoids.
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 
 const CL = JSON.parse(readFileSync(new URL('../../data/checklists.json', import.meta.url), 'utf8'));
 
@@ -178,6 +178,12 @@ for (let i = 0; i < CL.length; i++) {
       errors.push(`${CL[i].slug} and ${CL[j].slug}: ${shared} of the same items — write a different checklist`);
     }
   }
+}
+
+// Every checklist has an indexable page under site/checklists/ (see docs/seo.md).
+for (const c of CL) {
+  if (!existsSync(new URL(`../../site/checklists/${c.slug}/index.html`, import.meta.url)))
+    err(c, 'no page under site/checklists/; run python3 tools/build_seo_pages.py');
 }
 
 if (errors.length) {

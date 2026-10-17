@@ -67,7 +67,9 @@ Each day's session:
    two are genuinely new.
 2. Writes two new checklists on two different themes and appends them to
    `data/checklists.json` with today's date at 16:00:00+00:00.
-3. Runs `node tests/checklists-fixture/check.mjs` and fixes anything it flags.
+3. Runs `python3 tools/build_seo_pages.py`, which writes each new checklist's
+   page under `site/checklists/` (see `seo.md`), then
+   `node tests/checklists-fixture/check.mjs`, and fixes anything it flags.
 4. Generates the day's migration with `tools/checklists_sql.py --since <today>`
    and applies it to the database.
 5. Confirms with a query that the two rows are in `checklists`.
