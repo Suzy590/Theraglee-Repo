@@ -38,7 +38,7 @@ supabase/
                        connect, session payments) — see docs/stripe.md
   migrations/          Schema changes that go with them
 documents/
-  index.html           Browsable library of all 836 documents
+  index.html           Browsable library of all 844 documents
   CONTENT-HEALTH.md    Source-data defects found while building
   challenges/ articles/ checklists/ journal-prompts/ quizzes/ worksheets/
 ```
@@ -108,16 +108,16 @@ chromium --headless --no-pdf-header-footer \
 | File | Source table | Rows |
 |---|---|---|
 | `articles.json` | `articles` | 207 (five more every day — see `docs/articles.md`) |
-| `checklists.json` | `checklists` | 56 (two more every day — see `docs/checklists.md`) |
-| `challenges.json` | `challenge_templates` + `challenge_days` | 64 themes (365 daily to-dos each, 23,360 in all; two more themes every day — see `docs/challenges.md`) |
+| `checklists.json` | `checklists` | 60 (two more every day — see `docs/checklists.md`) |
+| `challenges.json` | `challenge_templates` + `challenge_days` | 68 themes (365 daily to-dos each, 24,820 in all; two more themes every day — see `docs/challenges.md`) |
 | `worksheets.json` | `worksheets` | 186 |
 | `quizzes.txt` | `quizzes` + `quiz_questions` + `quiz_bands` | 312 (1,503 q, 1,247 bands) |
 | `journal-prompts.txt` | `daily_content` where `kind = 'journal_prompt'` | 372 |
-| `therapist-resources.json` | `therapist_resources` (the clinician library on the therapist dashboard; not rendered into `documents/`) | 3925 (five more of every kind and five on each of eighteen topics every day — see `docs/therapist-resources.md`) |
+| `therapist-resources.json` | `therapist_resources` (the clinician library on the therapist dashboard; not rendered into `documents/`) | 4175 (five more of every kind and five on each of eighteen topics every day — see `docs/therapist-resources.md`) |
 
 The 372 journal prompts are grouped into 11 themed collections at build time
-(keyword rules live in `THEMES` in the generator), which is why 836 documents come
-out of 1,187 source rows (the journal prompt rows collapse into 11 collections).
+(keyword rules live in `THEMES` in the generator), which is why 844 documents come
+out of 1,195 source rows (the journal prompt rows collapse into 11 collections).
 
 `quizzes.txt` is a compact pipe-delimited format rather than JSON — `Q|` a quiz,
 `P|` a question, `O|value|label` an option, `B|min|max|label|interpretation` a
