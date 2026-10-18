@@ -55,3 +55,8 @@ verify_jwt = false
 # administrator with their session. The function checks both itself.
 [functions.twilio-numbers]
 verify_jwt = false
+
+# therapist-nudges is called by pg_cron each morning and by the unsubscribe
+# link in the emails it sends; neither carries a user JWT.
+[functions.therapist-nudges]
+verify_jwt = false

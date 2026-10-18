@@ -525,6 +525,7 @@ function footer() {
         <a href="for-therapists.html">Therapist membership</a>
         <a href="for-therapists/match-mode">Theraglee Match Mode for therapists</a>
         <a href="for-therapists/compare">Compare the directories</a>
+        <a href="for-therapists/leaving-psychology-today">Leaving Psychology Today?</a>
         <a href="privacy-promise.html">Our privacy promise</a>
         <a href="${DOORS.therapist.signin}">Therapist sign in</a>
         <a href="therapist-dashboard.html">Practice dashboard</a></div>

@@ -56,6 +56,7 @@ PUBLIC_ROOT_PAGES = [
     ("match-mode.html", "0.9"),
     ("for-therapists/match-mode", "0.8"),
     ("for-therapists/compare", "0.8"),
+    ("for-therapists/leaving-psychology-today", "0.8"),
     ("privacy-promise.html", "0.6"),
     ("articles.html", "0.8"),
     ("pricing.html", "0.7"),
@@ -129,6 +130,9 @@ FAQ_PAGES = [
     ("for-therapists.html", "https://theraglee.com/for-therapists.html", "<h2>Questions</h2>"),
     ("match-mode.html", "https://theraglee.com/match-mode.html", '<h2 id="faq-title">Common questions</h2>'),
     ("for-therapists/match-mode/index.html", "https://theraglee.com/for-therapists/match-mode",
+     '<h2 id="faq-title">Common questions</h2>'),
+    ("for-therapists/leaving-psychology-today/index.html",
+     "https://theraglee.com/for-therapists/leaving-psychology-today",
      '<h2 id="faq-title">Common questions</h2>'),
 ]
 
@@ -316,10 +320,18 @@ def page_html(page: dict, site: str) -> str:
         "publisher": publisher(site),
     })
     # The same back link the member pages carry: the tool pages return to the
-    # free tool hub, the hand-written article page to the articles list.
-    back = ('      <a class="faint" href="/discover.html">← All tools</a>'
-            if page["path"].startswith("tools/") else
-            '      <a class="faint" href="/articles.html">← All articles</a>')
+    # free tool hub, the hand-written article page to the articles list, and a
+    # page written for therapists to the therapist pitch (`back` on the row
+    # names any other destination).
+    if page.get("back"):
+        back = (f'      <a class="faint" href="{esc(page["back"]["href"])}">'
+                f'← {esc(page["back"]["label"])}</a>')
+    elif page["path"].startswith("tools/"):
+        back = '      <a class="faint" href="/discover.html">← All tools</a>'
+    elif page["path"].startswith("for-therapists/"):
+        back = '      <a class="faint" href="/for-therapists.html">← For therapists</a>'
+    else:
+        back = '      <a class="faint" href="/articles.html">← All articles</a>'
     body = "\n".join(filter(None, [
         back,
         f"      <h1 style=\"margin-top:12px\">{esc(page['h1'])}</h1>",
@@ -328,8 +340,14 @@ def page_html(page: dict, site: str) -> str:
         tiles_section(rel.get("h2", ""), rel.get("items", [])),
         faq_html,
     ]))
+    # A page written for therapists sits under the For Therapists button and,
+    # like the other therapist pages, carries no feature showcase.
+    therapist = page["path"].startswith("for-therapists/")
     return shell(title=page["title"], description=page["description"], url=url,
-                 body=body, ld=[article_ld, faq_ld])
+                 body=body, ld=[article_ld, faq_ld],
+                 script=("import { chrome } from '/assets/app.js';\n"
+                         "await chrome({ active: 'for-therapists.html', showcase: false });")
+                 if therapist else "")
 
 
 # ---------------------------------------------------------------------------
