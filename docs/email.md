@@ -9,7 +9,8 @@ confuse:
    page, the terms and the homepage. A person reads it and replies to it.
 2. **The site's own email** — `notifications@theraglee.com`, which the app
    sends automatically: the daily digest, therapist messages, license
-   verification and the Sunday tool email. Nobody types these.
+   verification, the Sunday tool email and the follow-ups to therapists who
+   start a listing and stop (`docs/therapist-nudges.md`). Nobody types these.
 
 They need different setups and they fail in different ways. Both are covered
 below.

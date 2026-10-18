@@ -97,6 +97,7 @@ Add an object to `pages` in `data/seo-pages.json` and re-run the script:
 | `blocks` | `{ "h2": ..., "html": ... }` sections, in order |
 | `related` | Links on to other tools, so no page is a dead end |
 | `faq` | `{ "q": ..., "a": ... }` pairs. These also become `FAQPage` data |
+| `back` | Optional `{ "href": ..., "label": ... }` for the link above the headline. Without it a `tools/` page returns to the free tool hub, a `for-therapists/` page to the therapist pitch, and anything else to the articles list |
 
 Two rules the script cannot check for you. Structured data has to describe what
 a visitor can actually read, so never put a question in `faq` that is not on the

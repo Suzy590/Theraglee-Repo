@@ -185,3 +185,15 @@ match and, for a kind of goal with enough of them, a milestone set. Never add a
 theme there (that is a database change) and never change a shipped key.
 `node tests/quest-paths/check.mjs` checks every goal matches its theme and set
 and that each week added at least twenty. `docs/goal-library.md` is the guide.
+
+## Therapists who start a listing and stop get four emails, then silence
+
+A therapist account whose listing is not live gets a follow-up on days 1, 3, 7
+and 14 after sign-up, each saying what is still missing (the membership, the
+license and profile, or both) with one button, and never a promise of
+referrals. The decisions are in `supabase/functions/_shared/therapist-nudges.ts`;
+`node tests/therapist-nudges/check.mjs` guards them. `docs/therapist-nudges.md`
+is the guide. The pages those emails and the ads point at are
+`/for-therapists/leaving-psychology-today` and the generated
+`/for-therapists/is-psychology-today-worth-it`; `docs/therapist-pages.md`
+covers both.
