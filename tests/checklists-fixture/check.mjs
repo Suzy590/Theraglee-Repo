@@ -34,11 +34,11 @@ export const TAGS = new Set([
 export const CATEGORIES = new Set([
   'Anger', 'Anxiety', 'Body', 'Boundaries', 'Burnout', 'Caregiving', 'Communication',
   'Comparison', 'Confidence', 'Connection', 'Decisions', 'Driving', 'Family', 'Focus', 'Food',
-  'Forgiveness', 'Grief', 'Grounding', 'Habits', 'Health', 'Home', 'Loneliness', 'Milestones',
-  'Mindfulness', 'Money', 'Mornings', 'Motivation', 'Parenting', 'Pets', 'Play',
-  'Relationships', 'Rest', 'Seasons', 'Self-Care', 'Self-Compassion', 'Setbacks', 'Sleep',
-  'Social Anxiety', 'Stress', 'Study', 'Therapy', 'Transitions', 'Travel', 'Wellbeing', 'Work',
-  'Worry',
+  'Forgiveness', 'Friendship', 'Grief', 'Grounding', 'Habits', 'Health', 'Home', 'Loneliness',
+  'Milestones', 'Mindfulness', 'Money', 'Mornings', 'Motivation', 'Parenting', 'Pets', 'Play',
+  'Relationships', 'Rest', 'Retirement', 'Seasons', 'Self-Care', 'Self-Compassion', 'Setbacks',
+  'Sleep', 'Social Anxiety', 'Stress', 'Study', 'Therapy', 'Transitions', 'Travel', 'Wellbeing',
+  'Work', 'Worry',
 ]);
 
 const CADENCE = new Set(['daily', 'weekly', 'as needed']);
