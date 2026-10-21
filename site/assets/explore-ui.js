@@ -3,7 +3,7 @@
    Shared by explore.html and the Explore Library tab on the member dashboard,
    so both show the same thing and are maintained in one place.
    ========================================================================== */
-import { sb, esc, tierName, unlockHref } from './app.js';
+import { sb, esc, tierName, unlockHref, searchStem } from './app.js';
 import { library, isFavorite, isLater, favButton, statusBadge,
          bindLibrary, progressOf } from './library.js';
 import { TOOLS, TOPICS } from './discover-tools.js';
@@ -115,7 +115,7 @@ export async function mountLibrary(root, a, { type = '', view = '' } = {}) {
   if (view) $(`[data-views] .chip[data-v="${view}"]`)?.classList.add('on');
 
   function render(){
-    const t = term.trim().toLowerCase();
+    const t = searchStem(term.trim());   // any form of a word family finds the same items
     const list = all.filter(r =>
       (!type || r.kind === type) &&
       (!topic || r.category === topic) &&
