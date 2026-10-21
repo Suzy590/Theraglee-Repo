@@ -461,7 +461,7 @@
 
 <script type="module">
 import { chrome, sb, access, requireAuth, esc, tierName, toast, fmtDate,
-         contentCounts, counted, lockNotice, modal, busy } from './assets/app.js';
+         contentCounts, counted, lockNotice, modal, busy, logActivity } from './assets/app.js';
 import { library, isFavorite, favButton, statusBadge, bindLibrary } from './assets/library.js';
 import { TOOLS } from './assets/discover-tools.js';
 import { SETS as TRIVIA } from './assets/trivia-sets.js';
@@ -506,6 +506,9 @@ function showTab(next) {
   // Progress, once a tab too, is the #progress zone under the check-in.
   const moodLink = next === 'mood' || next.startsWith('mood-');
   tab = PANELS.includes(next) ? next : moodLink ? 'today' : panelOf(next) || 'today';
+  // One activity_log row per tab opened, so the admin Content tab can see
+  // which tabs get used (admin_feature_usage counts the tag).
+  logActivity('dashboard', null, 'view', [tab]);
   document.querySelectorAll('[data-panel]').forEach(el => el.classList.toggle('on', el.dataset.panel === tab));
   // The feature showcase is one column, so it follows the open tab into that tab's
   // slot. A tab without a slot (Mental Health Goals) leaves it where it was, hidden
