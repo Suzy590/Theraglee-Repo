@@ -62,6 +62,20 @@ export const esc = (s) => String(s ?? '').replace(/[&<>"']/g,
   (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 export const qs = (k, d = null) => new URLSearchParams(location.search).get(k) ?? d;
 
+/* --------------------------------------------------------- search stems */
+// Every search on the site matches substrings, so forms of one word that share
+// no common whole miss each other: "dissociation" does not contain
+// "dissociate". Where a subject is written about under several such forms, the
+// forms are listed here with the stem they share, and any of them typed
+// searches for that stem instead, so they all find the same items. Every other
+// word is returned untouched.
+const SEARCH_STEMS = [[/^dissociat(e|es|ed|ing|ion|ions|ive)$/, 'dissociat']];
+export const searchStem = (w) => {
+  const s = String(w ?? '').toLowerCase();
+  for (const [form, stem] of SEARCH_STEMS) if (form.test(s)) return stem;
+  return s;
+};
+
 /* ------------------------------------------------------- catalog counts */
 // How many items of each kind the library holds, e.g. { quiz: 62, worksheet: 16 },
 // read from content_catalog so the numbers in marketing copy can never go stale.

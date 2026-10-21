@@ -48,7 +48,7 @@
   </div>
 </div></main>
 <script type="module">
-import { chrome, sb, esc, qs, fmtDate } from './assets/app.js';
+import { chrome, sb, esc, qs, fmtDate, searchStem } from './assets/app.js';
 import { library, isFavorite, isLater, favButton, progressOf, bindLibrary, signupHref }
   from './assets/library.js';
 await chrome({ active:'articles.html' });
@@ -89,16 +89,9 @@ const readOf = (a) => progressOf(lib, 'article', a.id)?.status === 'completed';
    page already has (title, summary, topics). The full text stays in the
    database, so the same words are also sent to it and any article whose body
    mentions all of them is included. Every article is free, so the search
-   works signed in or out.
-
-   Matching is on substrings, so forms of one word that share no common whole
-   miss each other: "dissociation" does not contain "dissociate". Where a
-   subject is written about under several such forms, the forms are listed
-   here with the stem they share, and any of them typed searches for that
-   stem instead, so they all find the same articles. */
-const STEMS = [[/^dissociat(e|es|ed|ing|ion|ions|ive)?$/, 'dissociat']];
-const stemOf = (w) => { for (const [re, s] of STEMS) if (re.test(w)) return s; return w; };
-const words = (t) => t.toLowerCase().split(/\s+/).filter(w => w.length > 1).map(stemOf);
+   works signed in or out. Each word goes through searchStem, so any form of a
+   word written about under several of them finds the same articles. */
+const words = (t) => t.toLowerCase().split(/\s+/).filter(w => w.length > 1).map(searchStem);
 const localHit = (a, ws) => {
   const hay = (a.title + ' ' + (a.excerpt || '') + ' ' + (a.tags || []).join(' ')).toLowerCase();
   return ws.every(w => hay.includes(w));
