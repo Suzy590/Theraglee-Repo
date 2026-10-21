@@ -114,7 +114,7 @@ export async function mountUsage(host, sb, { esc, fmtDate }) {
       <div class="grid g3">${rows.map(card).join('')}</div>
       <p class="faint" style="margin:18px 0 0">The big number counts times, not different items: 16 profile views
         can be one profile opened 16 times. A member counts once per feature however often they used it.
-        Therapist profile views include visitors without an account.</p>`;
+        Administrator accounts are left out of every count. Therapist profile views include visitors without an account.</p>`;
   }
 
   shell();
