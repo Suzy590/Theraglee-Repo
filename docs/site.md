@@ -951,7 +951,9 @@ dashboard and `/admin.html`, which offers:
   a chosen window (7 days to a year), the all-time figures and the last use.
   `admin_feature_usage()` (`20261021190000_admin_feature_usage.sql`, trimmed
   of session payments and AssignRemind, neither in use, by
-  `20261021220000_admin_feature_usage_trim.sql`) counts them as the table owner,
+  `20261021220000_admin_feature_usage_trim.sql`, and leaving out every row by
+  an admin account by `20261021230000_admin_feature_usage_no_admins.sql`)
+  counts them as the table owner,
   since every activity table is locked to its own member's rows, and says
   what counts as a use of each; `site/assets/admin-usage.js` draws the cards.
   Features with no table of their own (the pet page and its download buttons,
