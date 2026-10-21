@@ -11,7 +11,7 @@
    reopens where the member left it; Start over clears both and goes back to
    the first step.
    ========================================================================== */
-import { esc, toast } from './app.js';
+import { esc, toast, logActivity } from './app.js';
 import { GENRES, MOODS, PLAYLISTS } from './playlists.js';
 
 const REMEMBER = 'tg.playlists';
@@ -115,6 +115,8 @@ export function mountPlaylists(host) {
     } else {
       const g = genreOf(), m = moodOf(), list = PLAYLISTS[genre][mood];
       const ready = Boolean(list.spotify);
+      // Counted for the admin Content tab: which list was opened, never what was played.
+      logActivity('playlist', null, 'play', [mood, genre]);
       host.innerHTML = `${steps()}
         <div class="pl-head">
           <div>

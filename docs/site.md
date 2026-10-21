@@ -943,6 +943,21 @@ dashboard and `/admin.html`, which offers:
 - the therapist license verification queue
 - Stripe price IDs, the platform fee, and the on/off switches for payments,
   sales tax and session payments
+- content: **What members are using**, one card per feature (journal, mood
+  tracker, self-discovery tools, quizzes, worksheets, checklists, challenges,
+  articles, mandalas, trivia, desktop pet, Mental Health Goals, playlists, the
+  local resource map, the Today tab, favorites, the therapist directory, Match
+  Mode, tracking numbers, session payments, the Sunday tool email and
+  AssignRemind) with uses and members in a chosen window (7 days to a year),
+  the all-time figures and the last use. `admin_feature_usage()`
+  (`20261021190000_admin_feature_usage.sql`) counts them as the table owner,
+  since every activity table is locked to its own member's rows, and says
+  what counts as a use of each; `site/assets/admin-usage.js` draws the cards.
+  Features with no table of their own (the pet page and its download buttons,
+  a playlist opened, a resource-map search, each dashboard tab opened) write a
+  row to `activity_log` through `logActivity()`, so their numbers start from
+  the day that shipped. `tests/admin-usage/check.mjs` holds the list to the
+  showcase strip, so a new feature card has to be counted here too.
 - content counts
 
 ## Privacy Policy and Terms of Service

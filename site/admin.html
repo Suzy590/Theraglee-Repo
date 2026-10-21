@@ -21,6 +21,11 @@
   .kvrow{display:grid;grid-template-columns:230px 1fr;gap:12px;align-items:center;margin-bottom:10px}
   code{background:var(--sand);padding:2px 6px;border-radius:5px;font-size:.86rem;
     font-family:ui-monospace,Menlo,monospace}
+  .usage-card .kicker{margin-bottom:6px}
+  .usage-big{font-size:1.8rem;font-weight:300;color:var(--green);line-height:1.1}
+  .usage-bar{height:6px;border-radius:3px;background:var(--mist);margin:10px 0 8px;overflow:hidden}
+  .usage-bar span{display:block;height:100%;background:var(--green);border-radius:3px}
+  .usage-card .faint{margin-top:4px}
 </style>
 </head>
 <body>
@@ -30,6 +35,7 @@
 
 <script type="module">
 import { chrome, sb, requireAuth, esc, toast, busy, fmtDate, modal, callStripeFn } from './assets/app.js';
+import { mountUsage } from './assets/admin-usage.js';
 // The admin screen is a working page, not a member one, so it goes without the
 // feature showcase beside it and keeps the whole width for its tables.
 await chrome({ showcase: false });
@@ -840,7 +846,21 @@ async function billing(){
 }
 
 /* --------------------------------------------------------- content */
+// Two halves: what members are using (assets/admin-usage.js, counted by
+// admin_feature_usage() in the database), then what is in the library.
 async function content(){
+  render(`<div id="usage"></div>
+    <section class="zone" aria-labelledby="library-title" style="margin-top:28px">
+      <div class="zone-head">
+        <h2 id="library-title">What's in the library</h2>
+        <p class="muted">How much of each kind of content the site holds.</p>
+      </div>
+      <div id="library"><div class="skeleton" style="height:120px"></div></div>
+      <div class="notice" style="margin-top:24px">Content is edited in the Supabase table editor
+        for now. Ask and I'll build an in-site editor.</div>
+    </section>`);
+  mountUsage(document.getElementById('usage'), sb, { esc, fmtDate });
+
   const tables = ['daily_content','articles','checklists','worksheets','quizzes',
                   'challenge_templates','mandalas','therapist_resources','profiles',
                   'therapist_profiles','therapist_messages'];
@@ -849,12 +869,10 @@ async function content(){
     const { count } = await sb.from(t).select('id', { count:'exact', head:true });
     counts[t] = count ?? '—';
   }
-  render(`<h2>What's in the library</h2>
-    <div class="grid g4" style="margin-top:18px">${Object.entries(counts).map(([k,v])=>
+  const lib = document.getElementById('library');
+  if (lib) lib.innerHTML = `<div class="grid g4">${Object.entries(counts).map(([k,v])=>
       `<div class="card"><div style="font-size:1.8rem;font-weight:300;color:var(--green)">${v}</div>
-       <div class="faint">${esc(k.replace(/_/g,' '))}</div></div>`).join('')}</div>
-    <div class="notice" style="margin-top:24px">Content is edited in the Supabase table editor
-      for now. Ask and I'll build an in-site editor.</div>`);
+       <div class="faint">${esc(k.replace(/_/g,' '))}</div></div>`).join('')}</div>`;
 }
 
 function route(){ ({ members, codes, verify, numbers, billing, content }[tab] || members)(); }
