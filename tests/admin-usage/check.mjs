@@ -3,9 +3,9 @@
 //   node tests/admin-usage/check.mjs
 // Fails (exit 1) if a feature on the showcase strip (site/assets/showcase.js)
 // has no card on the panel, a card's key is not counted by
-// admin_feature_usage() in the migration, a key repeats, a card is missing
+// admin_feature_usage() in the newest migration that defines it, a key repeats, a card is missing
 // its words, or the copy uses UK spelling.
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { FEATURES, WINDOWS } from '../../site/assets/admin-usage.js';
 
 const errors = [];
@@ -16,7 +16,10 @@ const read = (p) => readFileSync(new URL('../../' + p, import.meta.url), 'utf8')
 const showcase = [...read('site/assets/showcase.js').matchAll(/^\s*\['([^']+)',$/gm)].map(m => m[1]);
 if (showcase.length < 10) errors.push(`showcase: only ${showcase.length} feature names found`);
 
-const migration = read('supabase/migrations/20261021190000_admin_feature_usage.sql');
+// The newest migration that defines admin_feature_usage() is the one that counts.
+const migrationFile = readdirSync(new URL('../../supabase/migrations/', import.meta.url))
+  .filter(f => /_admin_feature_usage/.test(f)).sort().at(-1);
+const migration = read('supabase/migrations/' + migrationFile);
 const counted = new Set([...migration.matchAll(/select '([a-z]+)'(?: as f)?,/g)].map(m => m[1]));
 
 const seen = new Set();

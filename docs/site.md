@@ -947,10 +947,11 @@ dashboard and `/admin.html`, which offers:
   tracker, self-discovery tools, quizzes, worksheets, checklists, challenges,
   articles, mandalas, trivia, desktop pet, Mental Health Goals, playlists, the
   local resource map, the Today tab, favorites, the therapist directory, Match
-  Mode, tracking numbers, session payments, the Sunday tool email and
-  AssignRemind) with uses and members in a chosen window (7 days to a year),
-  the all-time figures and the last use. `admin_feature_usage()`
-  (`20261021190000_admin_feature_usage.sql`) counts them as the table owner,
+  Mode, tracking numbers and the Sunday tool email) with uses and members in
+  a chosen window (7 days to a year), the all-time figures and the last use.
+  `admin_feature_usage()` (`20261021190000_admin_feature_usage.sql`, trimmed
+  of session payments and AssignRemind, neither in use, by
+  `20261021220000_admin_feature_usage_trim.sql`) counts them as the table owner,
   since every activity table is locked to its own member's rows, and says
   what counts as a use of each; `site/assets/admin-usage.js` draws the cards.
   Features with no table of their own (the pet page and its download buttons,
