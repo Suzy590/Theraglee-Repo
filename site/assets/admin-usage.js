@@ -17,21 +17,21 @@
 export const FEATURES = [
   ['journal',     'Journal',                    'entries written',              null,                          ['Personal Journal', 'Daily Journal Prompt']],
   ['mood',        'Mood tracker',               'check-ins',                    null,                          ['Mood Tracker']],
-  ['discover',    'Self-discovery tools',       'tools finished',               'tools opened',                ['Self-Discovery Tools']],
-  ['quizzes',     'Quizzes',                    'quizzes finished',             'quizzes opened',              ['Mental Health Quizzes']],
-  ['worksheets',  'Worksheets',                 'worksheets saved',             'worksheets opened',           ['Mental Health Worksheets']],
-  ['checklists',  'Checklists',                 'days checked',                 'checklists opened',           ['Mental Health Checklists']],
+  ['discover',    'Self-discovery tools',       'tools finished',               'tool opens',                ['Self-Discovery Tools']],
+  ['quizzes',     'Quizzes',                    'quizzes finished',             'quiz opens',              ['Mental Health Quizzes']],
+  ['worksheets',  'Worksheets',                 'worksheets saved',             'worksheet opens',           ['Mental Health Worksheets']],
+  ['checklists',  'Checklists',                 'days checked',                 'checklist opens',           ['Mental Health Checklists']],
   ['challenges',  'Challenges',                 'days checked off',             'challenges started',          ['Mental Health Challenges']],
-  ['articles',    'Articles',                   'articles read',                'articles favorited',          ['Articles']],
-  ['mandalas',    'Mandalas',                   'colorings saved',              'mandalas opened',             ['Mandalas']],
-  ['trivia',      'Trivia',                     'sets played',                  'sets opened',                 ['Mental Health Trivia']],
+  ['articles',    'Articles',                   'article reads',                'articles favorited',          ['Articles']],
+  ['mandalas',    'Mandalas',                   'colorings saved',              'mandala opens',             ['Mandalas']],
+  ['trivia',      'Trivia',                     'sets played',                  'set opens',                 ['Mental Health Trivia']],
   ['pet',         'Desktop pet',                'downloads',                    'pet page opens',              ['Desktop Pet']],
   ['goals',       'Mental Health Goals',        'steps checked off',            'goals set',                   ['Mental Health Goals']],
-  ['playlists',   'Playlists',                  'playlists opened',             'tab opens',                   ['Music Playlists by Genre and Mood']],
+  ['playlists',   'Playlists',                  'playlist opens',               'tab opens',                   ['Music Playlists by Genre and Mood']],
   ['nearby',      'Local resource map',         'places searched',              'tab opens',                   ['Mental Health Local Resource Map']],
   ['today',       'Today tab (daily content)',  'tab opens',                    'daily emails sent',           ['Daily Quote', 'Daily Mental Health Tip', 'Daily Mental Health Did You Know', 'Daily Affirmation']],
   ['favorites',   'Favorites and save for later', 'items marked',               null,                          []],
-  ['therapists',  'Therapist directory',        'profiles viewed',              'messages sent to therapists', ['Find a Therapist']],
+  ['therapists',  'Therapist directory',        'profile views',                'messages sent to therapists', ['Find a Therapist']],
   ['match',       'Theraglee Match Mode',       'messages exchanged',           'members have it on now',      ['Theraglee Match Mode']],
   ['calls',       'Tracking numbers',           'calls answered',               null,                          []],
   ['toolmail',    'Sunday tool email',          'sign-ups',                     'emails sent',                 []],
@@ -112,7 +112,8 @@ export async function mountUsage(host, sb, { esc, fmtDate }) {
           (${pct(stats.members_active)}%)</span></span>
       </div>
       <div class="grid g3">${rows.map(card).join('')}</div>
-      <p class="faint" style="margin:18px 0 0">A member counts once per feature however often they used it.
+      <p class="faint" style="margin:18px 0 0">The big number counts times, not different items: 16 profile views
+        can be one profile opened 16 times. A member counts once per feature however often they used it.
         Therapist profile views include visitors without an account.</p>`;
   }
 
