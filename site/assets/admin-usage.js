@@ -34,9 +34,7 @@ export const FEATURES = [
   ['therapists',  'Therapist directory',        'profiles viewed',              'messages sent to therapists', ['Find a Therapist']],
   ['match',       'Theraglee Match Mode',       'messages exchanged',           'members have it on now',      ['Theraglee Match Mode']],
   ['calls',       'Tracking numbers',           'calls answered',               null,                          []],
-  ['payments',    'Session payments',           'sessions paid for',            null,                          []],
   ['toolmail',    'Sunday tool email',          'sign-ups',                     'emails sent',                 []],
-  ['assignremind','AssignRemind',               'assignments made',             'workspaces',                  []],
 ];
 
 /* Features whose use is written to activity_log from the browser, so their
@@ -90,13 +88,13 @@ export async function mountUsage(host, sb, { esc, fmtDate }) {
       const alsoLine = !r.also ? ''
         : r.key === 'match' ? `<div class="faint">${n(stats.match_on)} ${esc(r.also)}</div>`
         : `<div class="faint">${n(r.also_recent)} ${esc(r.also)} in the window · ${n(r.also_total)} all time</div>`;
-      const share = r.key === 'calls' || r.key === 'toolmail' || r.key === 'assignremind' ? ''
+      const share = r.key === 'calls' || r.key === 'toolmail' ? ''
         : `<div class="usage-bar" title="${pct(r.recent_members)}% of members used it in the window">
              <span style="width:${pct(r.recent_members)}%"></span></div>`;
       return `<div class="card usage-card">
         <span class="kicker">${esc(r.name)}</span>
         <div class="usage-big">${n(r.recent)}</div>
-        <div class="muted">${esc(r.what)} in the window${r.members == null || r.key === 'calls' || r.key === 'toolmail' || r.key === 'assignremind'
+        <div class="muted">${esc(r.what)} in the window${r.members == null || r.key === 'calls' || r.key === 'toolmail'
           ? '' : `, by ${n(r.recent_members)} member${r.recent_members === 1 ? '' : 's'}`}</div>
         ${share}
         <div class="faint">${n(r.total)} all time${r.members ? ` by ${n(r.members)} member${r.members === 1 ? '' : 's'}` : ''}
