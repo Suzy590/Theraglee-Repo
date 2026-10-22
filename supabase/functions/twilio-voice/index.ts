@@ -8,7 +8,10 @@
 //
 //   1. The Theraglee number rings. The number's "A call comes in" webhook in
 //      the Twilio Console points here. The function finds whose number was
-//      called and answers with TwiML that dials their real number.
+//      called and answers with TwiML that dials their real number. When the
+//      caller *is* that real number (the therapist trying their own listing),
+//      the function says so instead of dialing: a phone cannot ring itself,
+//      and the network would refuse the call at once.
 //   2. The forwarded leg ends. The <Dial> we returned names this function
 //      again (?step=dial&t=<therapist id>) as its action; Twilio POSTs how it
 //      went (DialCallStatus, DialCallDuration) and the call is kept in
@@ -19,8 +22,8 @@
 // docs/phone-numbers.md is the guide.
 import { admin } from "../_shared/supabase.ts";
 import {
-  callRow, emptyTwiml, forwardTwiml, isUuid, NO_ANSWER, NO_LINE, sayTwiml,
-  signatureMatches, therapistForNumber, toE164,
+  callerIsTherapist, callRow, dialSummary, emptyTwiml, forwardTwiml, isUuid, NO_ANSWER, NO_LINE,
+  sayTwiml, SELF_CALL, signatureMatches, therapistForNumber, toE164,
 } from "../_shared/twilio.ts";
 
 /** This function's public URL: what Twilio is configured with and signs. */
@@ -48,6 +51,10 @@ async function incoming(params: Record<string, string>) {
     console.warn("no forwarding number for", params.To);
     return xml(sayTwiml(NO_LINE));
   }
+  if (callerIsTherapist(params.From, t)) {
+    console.info("therapist", t.id, "called their own number from the phone it forwards to");
+    return xml(sayTwiml(SELF_CALL));
+  }
   const action = `${SELF}?step=dial&t=${encodeURIComponent(t.id)}`;
   return xml(forwardTwiml(to, action));
 }
@@ -61,6 +68,7 @@ async function dialEnded(url: URL, params: Record<string, string>) {
     console.warn("dial action without a therapist or call id");
     return xml(emptyTwiml());
   }
+  console.info(dialSummary(tid, params));
   const { error } = await admin.from("therapist_calls").upsert(row, { onConflict: "provider_sid" });
   if (error) console.error("could not record call", row.provider_sid, error);
   return xml(row.answered ? emptyTwiml() : sayTwiml(NO_ANSWER));

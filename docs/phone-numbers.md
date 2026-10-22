@@ -27,6 +27,19 @@ dashboard counts them. This is how that works and how to set a number up.
 A number nobody owns, or a listing with no contact number on file, hears an
 apology and the call ends. Nothing is stored for it.
 
+A therapist who calls their own Theraglee number **from the phone it forwards
+to** hears a different message: that the number works, that it forwards to
+the phone they are calling from so it cannot ring there, and to try it from a
+different phone. Nothing is stored for that either. Before this check, the
+function dialed the phone anyway; the network refuses a phone that asks to
+ring itself, in under a second, and the caller heard "no one could pick up".
+
+Every forwarded leg that ends writes one line to the function's log
+(Supabase Dashboard → **Edge Functions → twilio-voice → Logs**): Twilio's
+status for it (`completed`, `busy`, `no-answer`, `failed` or `canceled`), how
+long it lasted and the caller's last four digits. When a caller reports that
+a number did not connect, that line says why.
+
 The decisions (matching numbers, the TwiML, the row, Twilio's request
 signature, which numbers to ask for and how a purchase is worded) are in
 `supabase/functions/_shared/twilio.ts` and tested by:
@@ -116,9 +129,11 @@ their forwarding number, their Theraglee number and where it came from:
   with method **HTTP POST**.
 
 The therapist's **Forwards to** column must show a number, or callers hear the
-apology. After issuing a number, call it once from your own phone: the
-therapist's phone should ring, and a minute later the call appears on their
-dashboard's Referrals tab.
+apology. After issuing a number, call it once from a phone **other than the
+one it forwards to**: the therapist's phone should ring, and a minute later the
+call appears on their dashboard's Referrals tab. Calling it from the
+therapist's own phone cannot ring that phone; the caller is told so and
+nothing is recorded.
 
 Each number costs about $1.15 a month, and each call Twilio's inbound rate
 plus its outbound rate for the forwarded leg, a few cents a minute in all.
