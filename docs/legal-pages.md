@@ -22,7 +22,7 @@ fact; if any of these change, the policy must change in the same pull request.
 
 | Statement in the policy | Where it comes from |
 | --- | --- |
-| No advertising trackers, pixels, session replay or third-party analytics | Nothing of the kind is loaded from `site/`. Adding Vercel Analytics, Google Analytics, a Meta pixel, etc. requires updating sections 2, 5 and 6 and honoring opt-out signals |
+| No advertising trackers, pixels, session replay or third-party analytics | Nothing of the kind is loaded from `site/` while the **Load the tag on every page** switch on the admin screen's Google Analytics tab is off (`app_config.ga_tag_enabled`, off by default; `docs/google-analytics.md`). Turning it on, or adding Vercel Analytics, a Meta pixel, etc., requires updating sections 2, 5 and 6 first. The tag honors Global Privacy Control and Do Not Track by not loading at all, and runs with ad storage and Google signals off |
 | Service providers: Supabase, Vercel, Stripe, Resend, a telephony provider, a license-verification service, Google Fonts, OpenStreetMap, SAMHSA's FindTreatment.gov locator | `docs/site.md`, `site/admin.html`, the `<link>` tags on every page, `site/goals.html`, `site/api/nearby.js` (`docs/nearby-help.md`) |
 | No AI chatbot, AI companion or AI therapy; personalization is rule-based | `daily_pick` is a database function. If a conversational or generative feature is ever added, Illinois, Nevada, Utah, California, New York, Oregon, Tennessee and Washington all have laws that apply — read them first |
 | Personal data is not used to train AI or LLMs | Connecticut requires this disclosure either way |
