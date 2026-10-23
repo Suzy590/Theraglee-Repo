@@ -36,10 +36,10 @@ export const CATEGORIES = new Set([
   'Comparison', 'Confidence', 'Connection', 'Dating', 'Decisions', 'Drinking', 'Driving',
   'Family', 'Focus', 'Food', 'Forgiveness', 'Friendship', 'Grief', 'Grounding', 'Habits',
   'Health', 'Home', 'Loneliness', 'Milestones', 'Mindfulness', 'Money', 'Mornings',
-  'Motivation', 'Moving', 'Neighbors', 'Outdoors', 'Parenting', 'Pets', 'Play',
-  'Relationships', 'Rest', 'Retirement', 'Seasons', 'Self-Care',
+  'Motivation', 'Moving', 'Neighbors', 'Outdoors', 'Parenting', 'Perfectionism', 'Pets',
+  'Play', 'Relationships', 'Rest', 'Retirement', 'Seasons', 'Self-Care',
   'Self-Compassion', 'Setbacks', 'Sleep', 'Social Anxiety', 'Stress', 'Study', 'Therapy',
-  'Transitions', 'Travel', 'Visiting', 'Wellbeing', 'Work', 'Worry',
+  'Transitions', 'Travel', 'Visiting', 'Volunteering', 'Wellbeing', 'Work', 'Worry',
 ]);
 
 const CADENCE = new Set(['daily', 'weekly', 'as needed']);
