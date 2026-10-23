@@ -1,0 +1,30 @@
+<!--
+  The "Reset Password" email Supabase Auth sends when a member or therapist
+  asks for a reset link. Supabase fills in {{ .ConfirmationURL }}: the link
+  that signs them in and opens reset-password.html on the site.
+
+  This file is the repo's copy of the template that lives in the Supabase
+  dashboard (Authentication → Emails → Templates → Reset Password). After
+  changing it here, paste the body and the subject into the dashboard;
+  docs/auth-emails.md says how. The link appears twice on purpose, as a
+  button and written out in full, so a mail app that drops buttons or
+  strips HTML still shows a link that can be tapped or copied.
+-->
+<div style="font-family:system-ui,-apple-system,'Segoe UI',sans-serif;max-width:560px;margin:0 auto;color:#16241C">
+  <p style="color:#8B978E;font-size:13px;margin:0 0 14px">Theraglee · your password</p>
+  <p style="font-size:17px;margin:0">Hello.</p>
+  <p style="margin:14px 0 0;line-height:1.55">Someone asked to reset the password for the Theraglee
+    account with this email address. If that was you, use the button below. It signs you in and
+    takes you to a page where you choose a new password.</p>
+  <p style="margin:18px 0 0"><a href="{{ .ConfirmationURL }}" style="display:inline-block;background:#187C1A;color:#fff;padding:11px 22px;border-radius:100px;text-decoration:none;font-size:15px">Choose a new password</a></p>
+  <p style="margin:18px 0 0;color:#5A6760;font-size:14px;line-height:1.5">If the button does not work,
+    copy this link into your browser:</p>
+  <p style="margin:6px 0 0;font-size:13px;line-height:1.5;word-break:break-all"><a href="{{ .ConfirmationURL }}" style="color:#187C1A">{{ .ConfirmationURL }}</a></p>
+  <p style="margin:18px 0 0;color:#5A6760;font-size:14px;line-height:1.5">The link works once and
+    expires after an hour. If you did not ask for this, you can ignore this email; your password stays
+    as it is.</p>
+  <hr style="border:0;border-top:1px solid #E6E8E1;margin:26px 0">
+  <p style="color:#8B978E;font-size:12px;line-height:1.5;margin:0">Theraglee is educational and supportive
+    only — not medical advice, diagnosis or treatment. In crisis? Call or text 988 in the US, or call 911
+    if you are in danger.</p>
+</div>

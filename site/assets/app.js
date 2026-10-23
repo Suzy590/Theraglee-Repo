@@ -13,6 +13,14 @@ export const sb = createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
 });
 
+// The link in a password-reset email arrives with the sign-in tokens and
+// `type=recovery` in the part of the address after #. supabase-js reads them
+// a moment after the client above is created, signs the member in, and
+// clears them from the address, so what arrived is noted here, first thing,
+// while it is still there. chrome() uses it to take an older email's link
+// (one that pointed at the account page) to reset-password.html.
+const RESET_ARRIVAL = /[#&]type=recovery(?:&|$)/.test(location.hash) ? location.hash : '';
+
 // Supabase answers one request with at most 1,000 rows, however many the table
 // holds. selectAll runs the same query a page at a time and joins the pages, so
 // a table that has grown past that (the clinician library) comes back whole.
@@ -393,8 +401,12 @@ function placeShowcase(a) {
 }
 
 export async function chrome({ active = '', showcase = true } = {}) {
-  const a = await access();
   const here = location.pathname.split('/').pop() || 'index.html';
+  // A reset link that landed anywhere but the page that sets the new password
+  // (emails sent before that page existed pointed at the account page or the
+  // practice dashboard) is taken there, tokens and all.
+  if (RESET_ARRIVAL && here !== 'reset-password.html') location.replace('reset-password.html' + RESET_ARRIVAL);
+  const a = await access();
   const therapist = a.authenticated && a.profile?.role === 'therapist';
   const admin = a.authenticated && a.profile?.role === 'admin';
 

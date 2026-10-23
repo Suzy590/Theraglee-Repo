@@ -33,6 +33,7 @@ the other.
 |---|---|---|
 | Sign up | `signup.html` (free, no card) | `therapist-signup.html` |
 | Sign in | `login.html` | `therapist-login.html` |
+| Forgot password | the link in the reset email opens `reset-password.html`, which sets the new password and opens the member dashboard; see [`auth-emails.md`](auth-emails.md) | the same page, which opens the practice dashboard |
 | Home after signing in | `dashboard.html` | `therapist-dashboard.html` |
 | Account page | `account.html` (tier, profile, privacy, inbox, history) | `account.html` shows a short therapist version (membership, sign-in and data) |
 | Plans | `pricing.html` (Free, Basic, Premium) | `for-therapists.html#membership` (one flat price); billing starts from the practice dashboard |
@@ -491,6 +492,7 @@ gated by tier, so Basic and Premium have them too:
 | Keep favorites in your dashboard | `favorites` table via `assets/library.js`; "Your favorites" on the dashboard | RLS `own rows` |
 | Tons of journal prompts | 374 `daily_content` rows of kind `journal_prompt`, the Journal tab on the dashboard (`dashboard.html#journal`, drawn by `site/assets/journal-ui.js`; `journal.html` forwards there) | `min_level = 1` |
 | Articles sent to your inbox | the `daily-digest` Edge Function, below | `profiles.daily_email` |
+| An evening reminder to check in on your mood (opt-in tick box on the check-in and the account page) | the `mood-reminder` Edge Function; see [`mood.md`](mood.md) | `profiles.mood_reminder`, off until ticked |
 | Themed challenges, 7 days at a time | 78 `challenge_templates` at `min_level = 1`, two more added every day; one to-do a day from `challenge_days`, runs in `user_challenges`, ticks in `user_challenge_progress`; `guard_challenge_length()` keeps a Free member's run to 7 days — see [`challenges.md`](challenges.md) | `min_level`, RLS `own rows` |
 | Checklists with progress tracked | 70 `checklists` at `min_level = 1`, two more added every day, `checklist_progress` + `item_progress` | `min_level`, RLS `own rows` |
 | Theraglee Match Mode (dashboard switch: let therapists reach out) | `profiles.visible_to_therapists`, toggled on `dashboard.html` and `account.html`; the details therapists see are asked for in `assets/match.js`; blocks in `member_blocks` | `member_opted_in()`, `member_blocked()` |
