@@ -3,6 +3,7 @@
    ========================================================================== */
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.47.10';
 import { mountShowcase } from './showcase.js';
+import { loadAnalyticsTag } from './analytics-tag.js';
 
 export const SUPABASE_URL = 'https://oekqzuguruyqkafsqhos.supabase.co';
 export const SUPABASE_KEY = 'sb_publishable_eyxjcu2EnB7PrQywDJu9Ug_XRK-PZk0';
@@ -468,6 +469,11 @@ export async function chrome({ active = '', showcase = true } = {}) {
   addEventListener('scroll', onScroll, { passive: true }); onScroll();
 
   if (a.authenticated) idleLogoff({ login: loginFor(a.profile) });
+
+  // Google's tag, when the admin screen's Google Analytics tab has switched it
+  // on (assets/analytics-tag.js decides; an administrator's own pages are
+  // never counted). Not awaited: the page never waits on analytics.
+  loadAnalyticsTag(sb, { admin });
 
   footer();
   return a;

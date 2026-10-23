@@ -185,3 +185,17 @@ match and, for a kind of goal with enough of them, a milestone set. Never add a
 theme there (that is a database change) and never change a shipped key.
 `node tests/quest-paths/check.mjs` checks every goal matches its theme and set
 and that each week added at least twenty. `docs/goal-library.md` is the guide.
+
+## Google Analytics is off until the privacy policy says otherwise
+
+The admin screen's Google Analytics tab (`site/assets/admin-analytics.js`)
+keeps the GA4 ids in `app_config` and reads the property's reports through
+the `google-analytics` Edge Function, whose decisions live in
+`supabase/functions/_shared/analytics.ts`. The tag itself
+(`site/assets/analytics-tag.js`) loads on a page only when the tab's switch
+is on, never for an administrator, and never for a browser that sends Global
+Privacy Control or Do Not Track. The switch starts off: `site/privacy.html`
+says the site runs no third-party analytics, and that wording (sections 2, 5
+and 6, per `docs/legal-pages.md`) has to change before it goes on. Never turn
+the switch on from code or a migration. `node tests/google-analytics/check.mjs`
+guards this; `docs/google-analytics.md` is the guide.

@@ -20,6 +20,7 @@ Moving the domain off HostGator is written up step by step in
 | Sunday tool email | One free discovery tool a week to visitors with no account, from the box above the footer. See [`weekly-tool-email.md`](weekly-tool-email.md). | `site/index.html` `#inbox`, `supabase/functions/tool-signup`, `supabase/functions/weekly-tools` |
 | Search landing pages | Real HTML at `/articles/<slug>` for every article, `/tools/...` landing pages and catalogs, plus `sitemap.xml` and `robots.txt`, so the library is indexable. See [`seo.md`](seo.md). | `data/seo-pages.json`, `tools/build_seo_pages.py` |
 | Feature showcase | The column of feature cards beside the content, in the right third of every page but the admin page, the For Therapists pages (`for-therapists.html`, `for-therapists/match-mode`, `for-therapists/compare`) and the therapist dashboard, sign-in, sign-up and profile pages; on the landing page it stands in the explore panel beside "Today on Theraglee". See [below](#the-feature-showcase-beside-the-page). | `site/assets/showcase.js`, placed by `chrome()` in `site/assets/app.js`, styles in `site/assets/styles.css` |
+| Google Analytics | The admin screen's Google Analytics tab: the GA4 settings, the tag on every page (off until the privacy policy allows it), and the property's reports. See [`google-analytics.md`](google-analytics.md). | `site/assets/admin-analytics.js`, `site/assets/analytics-tag.js`, `supabase/functions/google-analytics` |
 | Domain | `theraglee.com`. | Registered at Network Solutions, served by Vercel |
 
 ## Two front doors: members and therapists
@@ -962,6 +963,13 @@ dashboard and `/admin.html`, which offers:
   the day that shipped. `tests/admin-usage/check.mjs` holds the list to the
   showcase strip, so a new feature card has to be counted here too.
 - content counts
+- **Google Analytics** tab: the GA4 measurement id, property id and the
+  switch that loads Google's tag on every page, then the property's reports
+  (people now, the headline numbers against the window before, people per
+  day, pages, channels, devices) read by the `google-analytics` Edge Function
+  with a service account. The switch starts off, and stays off until the
+  privacy policy says the site uses Google Analytics.
+  [`google-analytics.md`](google-analytics.md) is the guide.
 
 ## Privacy Policy and Terms of Service
 

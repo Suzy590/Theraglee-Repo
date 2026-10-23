@@ -55,3 +55,8 @@ verify_jwt = false
 # administrator with their session. The function checks both itself.
 [functions.twilio-numbers]
 verify_jwt = false
+
+# Google Analytics reports for the admin screen's Google Analytics tab; the
+# function checks the caller is an admin itself.
+[functions.google-analytics]
+verify_jwt = false
