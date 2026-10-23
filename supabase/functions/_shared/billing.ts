@@ -126,13 +126,6 @@ export const foundingTrialEnd = (now: Date = new Date()): number =>
   Math.floor(now.getTime() / 1000) + FOUNDING_TRIAL_DAYS * DAY;
 
 /**
- * What to do when Stripe says a trial is about to end:
- *   extend — a founding membership still waiting for its first match keeps
- *            its free time; push the trial end out again;
- *   none   — anything else (a founding member whose first match has arrived,
- *            a membership not on the founding price, a trial already over).
- */
-/**
  * Whether a subscription that just left the founding price is still carrying
  * the founding free period: the therapist (or an admin) switched a trialing
  * founding membership to the regular monthly or yearly plan. The free time
@@ -145,6 +138,13 @@ export const leavesFreePeriod = (
   founding: boolean,
 ): boolean => !founding && !!p.founding_member && sub.status === "trialing";
 
+/**
+ * What to do when Stripe says a trial is about to end:
+ *   extend — a founding membership still waiting for its first match keeps
+ *            its free time; push the trial end out again;
+ *   none   — anything else (a founding member whose first match has arrived,
+ *            a membership not on the founding price, a trial already over).
+ */
 export function foundingTrialAction(
   p: { founding_member?: boolean | null; first_match_at?: string | null },
   sub: { status: string },
