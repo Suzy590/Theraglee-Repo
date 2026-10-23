@@ -117,9 +117,18 @@ const statusBadge = (p) => {
   const live = LIVE_STATUSES.includes(st);
   const label = st === 'comped' ? 'complimentary'
     : p.cancel_at_period_end && live ? 'canceling' : st.replace(/_/g, ' ');
-  return `<span class="badge ${live ? 'live' : 'gray'}">${esc(label)}</span>`;
+  // A founding member is free until their first match (trialing, nothing
+  // charged), then pays the locked-in founding rate.
+  const founding = !p.founding_member ? ''
+    : st === 'trialing' && !p.first_match_at ? ' · founding, free until first match'
+    : st === 'trialing' ? ' · founding, first match arrived'
+    : ' · founding rate';
+  return `<span class="badge ${live ? 'live' : 'gray'}">${esc(label + founding)}</span>`;
 };
 const renews = (p) => p.subscription_status === 'comped' ? 'No charge'
+  : p.founding_member && p.subscription_status === 'trialing' && !p.first_match_at ? 'Free until first match'
+  : p.founding_member && p.subscription_status === 'trialing' && p.current_period_end && !p.cancel_at_period_end
+    ? `Billing starts ${fmtDate(p.current_period_end)}`
   : p.current_period_end ? `${p.cancel_at_period_end ? 'Ends' : 'Renews'} ${fmtDate(p.current_period_end)}` : '—';
 
 /** Calls the admin-membership Edge Function; toasts and returns null on failure. */
@@ -137,7 +146,7 @@ let mView = 'members', mQuery = '', mStatus = 'all';
 async function members(){
   render('<div class="skeleton" style="height:150px"></div>');
   const [{ data: people, error }, { data: listings }] = await Promise.all([
-    sb.from('profiles').select('id,email,full_name,role,tier,stripe_subscription_id,subscription_status,current_period_end,cancel_at_period_end,created_at,visible_to_therapists')
+    sb.from('profiles').select('id,email,full_name,role,tier,stripe_subscription_id,subscription_status,current_period_end,cancel_at_period_end,created_at,visible_to_therapists,founding_member,first_match_at')
       .order('created_at', { ascending: false }),
     sb.rpc('admin_pending_therapists'),
   ]);
@@ -810,19 +819,23 @@ async function billing(){
     ${row('display_therapist_monthly','Therapist — monthly','29')}
     ${row('display_therapist_yearly','Therapist — yearly','290')}
 
-    <h2 style="margin-top:34px">Founding member offer</h2>
-    <p class="muted" style="max-width:64ch">A discounted <em>monthly</em> therapist rate for the
-      first therapists who join. In Stripe, add it as a third price on the therapist membership
-      product, then paste its ID here. Therapists who take it keep the rate for as long as their
-      membership stays active, even after the offer closes. The switch below turns the offer on and
-      off across the site; the deadline and the number of spots close it on their own.</p>
+    <h2 style="margin-top:34px">The founding offer</h2>
+    <p class="muted" style="max-width:64ch">Free until the first member match, then a discounted
+      <em>monthly</em> therapist rate, locked in. In Stripe, add the rate as a third price on the
+      therapist membership product, then paste its ID here. Checkout saves the therapist's card and
+      starts the subscription on a free trial; every hour the <code>founding-billing</code> function
+      looks for founding therapists whose live listing now has a matching member, gives them a
+      week's notice by email, and lets Stripe begin billing on the founding price. The rate stays
+      for as long as the membership stays continuously active, even after the offer closes. The
+      switch below turns the offer on and off across the site; the deadline and the number of spots
+      (memberships live on the founding price) close it on their own.</p>
     ${row('price_therapist_founding','Founding — Stripe price ID','price_…')}
-    ${row('display_therapist_founding','Founding — monthly price shown','20')}
+    ${row('display_therapist_founding','Founding — monthly price shown, after the first match','20')}
     ${row('founding_spots','Spots (blank = no limit)','150')}
     ${row('founding_deadline','Last day to join (YYYY-MM-DD, blank = none)','2026-12-31')}
     <div class="stack" style="margin-top:12px">
-      ${toggle('founding_enabled','Offer the founding member rate',
-        'Shows the offer on the For Therapists page and a "Founding member" button on the practice dashboard, and lets checkout sell it. Admins can test the checkout while this is off.')}
+      ${toggle('founding_enabled','Offer the founding rate',
+        'Shows the offer on the therapist pages and a "Founding offer" button on the practice dashboard, and lets checkout sell it. Admins can test the checkout while this is off.')}
     </div>
 
     <h2 style="margin-top:34px">Session payments (Stripe Connect)</h2>

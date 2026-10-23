@@ -183,7 +183,8 @@
   .founder>*{position:relative}
   .founder-kicker{display:inline-block;padding:4px 12px;border-radius:var(--r-pill);background:var(--lime);
     color:var(--ink);font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
-  .founder-price{display:flex;align-items:baseline;gap:12px;margin:14px 0 8px;flex-wrap:wrap}
+  .founder-free{margin:14px 0 0;font-size:1.15rem;font-weight:500;color:#fff}
+  .founder-price{display:flex;align-items:baseline;gap:12px;margin:6px 0 8px;flex-wrap:wrap}
   .founder-price s{color:rgba(255,255,255,.55);font-size:1.35rem;font-weight:300}
   .founder-price b{font-size:2.9rem;font-weight:300;letter-spacing:-.03em;line-height:1;color:var(--lime)}
   .founder-price small{color:rgba(255,255,255,.8);font-size:.95rem}
@@ -212,7 +213,8 @@
       <p class="faint" style="margin-top:10px"><a href="#how">How it works</a> · <a href="#membership">Pricing</a> · <a href="#why">Why switch</a> · <a href="for-therapists/compare">Compare the directories</a></p>
       <p class="faint" style="margin-top:14px">License verified before you go live. Cancel any time.</p>
       <div class="founder" id="founder" role="note">
-        <span class="founder-kicker">Founding member offer</span>
+        <span class="founder-kicker">The founding offer</span>
+        <p class="founder-free">Free until your first member match, then</p>
         <div class="founder-price">
           <s id="founder-regular" hidden></s>
           <b id="founder-rate"></b><small>/month, locked in</small>
@@ -449,10 +451,11 @@
         <span class="badge">What it costs</span>
         <h2 style="margin-top:14px">One flat rate. That's it.</h2>
         <p class="muted">$<span class="tg-rate-monthly">29</span> a month, or
-          $<span class="tg-rate-yearly">290</span> a year<span class="tg-founding"> — and
-          <strong>$<span class="tg-rate-founding">20</span>/month locked in</strong> for founding
-          therapists</span>. No per-session fees. No per-contact fees. No cut of your earnings,
-          ever. Cancel anytime. Everything below is included:</p>
+          $<span class="tg-rate-yearly">290</span> a year<span class="tg-founding"> — and for founding
+          therapists, <strong>free until your first member match, then
+          $<span class="tg-rate-founding">20</span>/month locked in</strong></span>. No per-session
+          fees. No per-contact fees. No cut of your earnings, ever. Cancel anytime. Everything below
+          is included:</p>
         <ul class="muted" style="font-size:.93rem;padding-left:20px">
           <li>Reach out to members who have toggled <span style="color:var(--green)">ON</span> <strong>Theraglee Match Mode</strong></li>
           <li>Full profile: specialties, insurances, languages, locations, fees, and more</li>
@@ -609,34 +612,37 @@ if (cfg.display_therapist_monthly) {
   document.getElementById('th-note').textContent = 'Price shown once payments are switched on.';
 }
 
-// Founding-member offer. The rate, the number of spots, the deadline and the
+// The founding offer. The rate, the number of spots, the deadline and the
 // on/off switch all live on the admin screen (Stripe setup tab). When the
 // offer is off, has no price yet, or its deadline has passed, the panel under
 // the hero buttons and the line under the membership price are hidden.
 const offer = foundingOffer(cfg);
 if (offer.open && offer.rate) {
-  const who = offer.spots ? `Be one of the first <strong>${offer.spots} therapists</strong> to join`
-                          : 'Join';
-  const by = offer.deadlineText ? ` by <strong>${esc(offer.deadlineText)}</strong>` : '';
+  const limits = [offer.spots ? `the first <strong>${offer.spots} therapists</strong> whose memberships go live` : '',
+                  offer.deadlineText ? `anyone who joins by <strong>${esc(offer.deadlineText)}</strong>` : '']
+    .filter(Boolean).join(', or ') + (offer.spots && offer.deadlineText ? ', whichever comes first' : '');
   document.getElementById('founder-rate').textContent = `$${offer.rate}`;
   document.getElementById('founder-pitch').innerHTML =
-    `${who}${by} and lock in your monthly rate at <strong>$${esc(offer.rate)}</strong>
-     for as long as you keep your membership.`;
+    `You pay nothing until the first member who matches your practice appears on your dashboard.
+     Only then does billing begin, at your locked-in founding rate of <strong>$${esc(offer.rate)}/month</strong>,
+     for as long as your membership stays continuously active. We'll let you know before your first
+     charge. No surprise charges, ever.${limits ? ` For ${limits}.` : ''}`;
   if (cfg.display_therapist_monthly) {
     const reg = document.getElementById('founder-regular');
     reg.textContent = `$${cfg.display_therapist_monthly}`; reg.hidden = false;
     document.getElementById('founder-fine').textContent =
-      `Regular rate: $${cfg.display_therapist_monthly}/month` +
+      `Standard membership: $${cfg.display_therapist_monthly}/month` +
       (cfg.display_therapist_yearly ? `, or $${cfg.display_therapist_yearly} a year.` : '.') +
-      ' Founding members keep the locked-in monthly rate as long as their membership stays active.';
+      ' Same features, same dashboard, same Theraglee Match Mode, plus a Founding Member badge' +
+      ' on your profile and a direct line to our team.';
   } else {
     document.getElementById('founder-fine').textContent =
-      'Founding members keep the locked-in monthly rate as long as their membership stays active.';
+      'Same features, same dashboard, same Theraglee Match Mode, plus a Founding Member badge' +
+      ' on your profile and a direct line to our team.';
   }
-  const limits = [offer.spots ? `for the first ${offer.spots} therapists` : '',
-                  offer.deadlineText ? `who join by ${esc(offer.deadlineText)}` : ''].filter(Boolean).join(' ');
   document.getElementById('th-founder').innerHTML =
-    `<strong>Founding members:</strong> $${esc(offer.rate)}/month locked in${limits ? ' ' + limits : ''}.
+    `<strong>The founding offer:</strong> free until your first member match, then $${esc(offer.rate)}/month
+     locked in${limits ? `, for ${limits.replace(/<\/?strong>/g, '')}` : ''}.
      <a href="therapist-signup.html?plan=founding">Become a founding member</a> or
      <a href="founding-members.html">learn more</a>.`;
 } else {

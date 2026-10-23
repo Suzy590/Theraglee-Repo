@@ -11,13 +11,16 @@
 //     to change plan, instead of selling them a second subscription;
 //   - turns on Stripe Tax (with address collection) when the admin has enabled it;
 //   - sells the therapist founding-member rate only while that offer is open
-//     (switch on, price set, deadline not passed, spots left);
+//     (switch on, price set, deadline not passed, spots left), as a trialing
+//     subscription with the card on file: free until the first matching
+//     member appears on the dashboard (see FOUNDING_TRIAL_DAYS in billing.ts);
 //   - only redirects back to origins we own.
 import { CORS, json, readBody } from "../_shared/http.ts";
 import { admin, allowedOrigins, callerFrom, loadConfig } from "../_shared/supabase.ts";
 import { stripeClient } from "../_shared/stripe.ts";
 import {
-  foundingOffer, hasLiveStripeSub, isInterval, isPlanKey, minuteBucket, PLANS, priceKeyFor, safeReturnOrigin,
+  FOUNDING_TRIAL_DAYS, foundingOffer, hasLiveStripeSub, isInterval, isPlanKey, minuteBucket, PLANS, priceKeyFor,
+  safeReturnOrigin,
 } from "../_shared/billing.ts";
 import type { Stripe } from "../_shared/stripe.ts";
 
@@ -145,6 +148,17 @@ Deno.serve(async (req) => {
     }
 
     const taxOn = cfg.stripe_tax_enabled === "true";
+    // The founding membership is free until the first match: the card is
+    // taken now, nothing is charged, and the subscription starts trialing for
+    // as long as Stripe allows. The founding-billing function ends the trial
+    // (with a week's notice) when the first matching member appears, and the
+    // webhook extends it while there is still none.
+    const foundingTrial = offer
+      ? {
+        trial_period_days: FOUNDING_TRIAL_DAYS,
+        trial_settings: { end_behavior: { missing_payment_method: "cancel" as const } },
+      }
+      : {};
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       customer: customerId,
@@ -156,9 +170,18 @@ Deno.serve(async (req) => {
         ? { automatic_tax: { enabled: true }, customer_update: { address: "auto", name: "auto" } }
         : {}),
       ...(taxOn && planCfg.audience === "therapist" ? { tax_id_collection: { enabled: true } } : {}),
+      ...(offer
+        ? {
+          payment_method_collection: "always" as const,
+          custom_text: { submit: { message:
+            `Founding offer: you pay nothing today, and nothing until the first member who matches your ` +
+            `practice appears on your dashboard. We email you before your first charge; billing then begins ` +
+            `at $${offer.rate} a month, locked in while your membership stays continuously active.` } },
+        }
+        : {}),
       success_url: `${site}/${home}?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${site}/pricing.html?checkout=cancelled`,
-      subscription_data: { metadata: { supabase_user_id: user.id, plan, interval } },
+      subscription_data: { ...foundingTrial, metadata: { supabase_user_id: user.id, plan, interval } },
       metadata: { supabase_user_id: user.id, plan, interval },
     }, { idempotencyKey: `checkout-${user.id}-${plan}-${interval}-${minuteBucket()}` });
 

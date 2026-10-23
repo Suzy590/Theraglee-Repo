@@ -1,5 +1,6 @@
 /* Therapist membership rates on the therapist-facing pages.
-   The numbers printed in the HTML ($29/month, $290/year, $20/month founding)
+   The numbers printed in the HTML ($29/month, $290/year, and $20/month after
+   the first member match for founding therapists)
    are only what shows until app_config loads; the admin screen's Stripe setup
    tab is the one place they are edited (display_therapist_monthly,
    display_therapist_yearly, display_therapist_founding and the founding

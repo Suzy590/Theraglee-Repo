@@ -47,6 +47,8 @@ supabase/
     stripe-redeem/                  a paying member enters a discount code
     delete-account/                 a member deletes their account; ends the
                                     membership, keeps the paid time
+    founding-billing/               hourly: starts a founding therapist's
+                                    billing when their first match arrives
 site/
   assets/app.js                     startCheckout, openPortal, connectAction,
                                     startSessionPayment
@@ -165,7 +167,7 @@ With the Supabase CLI installed and signed in:
 supabase link --project-ref oekqzuguruyqkafsqhos
 supabase functions deploy stripe-checkout stripe-portal stripe-webhook \
   stripe-connect stripe-session-checkout \
-  admin-membership stripe-redeem delete-account
+  admin-membership stripe-redeem delete-account founding-billing
 ```
 
 `supabase/config.toml` already carries the per-function settings (JWT checks
@@ -213,34 +215,77 @@ Created on the live account on 2026-10-12. The same IDs are in `app_config`
 | Premium, $19 / $190 | `prod_VQOsBs4DYJ1UvY` | `price_1UPY4VCq38pvaVwyzbuehXPR` | `price_1UPY4XCq38pvaVwyurLs5hHu` |
 | Therapist, $29 / $290 | `prod_VQOsiNk5pHIru6` | `price_1UPY4aCq38pvaVwyEBjPoHmI` | `price_1UPY4cCq38pvaVwyD0sfDpp3` |
 
-The founding-member rate, $20 a month, is `price_1UPY4dCq38pvaVwyu0i9KSuO` on
+The founding rate, $20 a month, is `price_1UPY4dCq38pvaVwyu0i9KSuO` on
 the Therapist product. Every price is tax-exclusive, so Stripe Tax adds tax on
 top rather than carving it out of the amount.
 
-#### The founding-member offer (optional)
+#### The founding offer (optional)
 
-A discounted *monthly* therapist rate for the first therapists who join, sold
-only while the offer is open. Therapists who take it keep the rate for as long
-as their membership stays active, because Stripe keeps a subscription on the
-price it started with.
+**Free until the first member match, then $20/month locked in.** The standard
+membership is $29/month. A founding therapist pays nothing until the first
+member who matches their practice appears on their dashboard; only then does
+billing begin, at the founding rate, for as long as the membership stays
+continuously active. The rate is for the first 150 therapists whose
+memberships go live, or anyone who joins before December 31, 2026, whichever
+comes first. Founding members also get a Founding Member badge on their
+profile and a direct line to the team.
+
+How it works in Stripe:
+
+- **Checkout** (`stripe-checkout`, interval `founding`) saves the card and
+  starts the subscription on the founding price **trialing**, for as long as
+  Stripe allows (`FOUNDING_TRIAL_DAYS`, two years, in
+  `_shared/billing.ts`). Nothing is charged. The Checkout page carries a
+  line explaining the offer.
+- **The webhook** marks the profile `founding_member` while a live
+  subscription sits on the founding price (`subscriptionPatch`), and on
+  `customer.subscription.trial_will_end` pushes the trial out again if the
+  therapist still has no match, so the free period never runs out on its
+  own. Add that event to the account endpoint (step 5 below).
+- **`founding-billing`**, called by pg_cron every hour (at ten past), reads
+  `founding_first_matches()`: founding therapists still in their free period
+  whose live listing now has a matching member (a `match_sightings` row, or
+  a Match Mode member who fits by the `member_discovery` rules). For each it
+  moves the trial's end to `FOUNDING_NOTICE_DAYS` (a week) from now, records
+  `profiles.first_match_at`, and emails the therapist the date of their
+  first charge. Stripe then bills the founding rate monthly from that day;
+  the subscription stays on the price it started with, which is what locks
+  the rate in. An administrator can run the check now by calling the
+  function with their session.
+- **The Membership tab** shows "Free until your first match", then "Billing
+  starts <date>" once the first match arrives, then "Active · founding
+  rate"; the Home tab says so the day the match appears. The public profile
+  and the directory card show the badge while `founding_member` is true.
+
+Setting it up:
 
 1. In the Dashboard, open **Theraglee Therapist membership** and add a third
    price: recurring, monthly, the discounted amount (for example $20).
-2. Copy its price ID into `/admin.html` → **Stripe setup** → **Founding member
+2. Copy its price ID into `/admin.html` → **Stripe setup** → **The founding
    offer**. Fill in the amount shown on the site, the number of spots (blank
    for no limit) and the last day to join as `YYYY-MM-DD` (blank for no
-   deadline). Tick **Offer the founding member rate** and Save.
+   deadline). Tick **Offer the founding rate** and Save.
+3. Deploy `founding-billing` (it is in the deploy line in step 4) and apply
+   `20261023180000_founding_free_until_first_match.sql`, which adds the
+   columns, the finder, the shared key and the hourly job.
+4. Optional: in Stripe → **Settings → Subscriptions and emails**, turn on
+   the email about an ending trial, so Stripe sends its own reminder too.
 
 While the offer is open, `for-therapists.html` shows the founding panel and the
-practice dashboard's Membership tab shows a **Founding member** button next to
-the regular monthly and yearly ones. The offer closes on its own when the
-deadline passes or the spots run out (the checkout counts live subscriptions on
-the founding price in Stripe), and immediately when the switch is turned off.
-An admin can test the founding checkout while the switch is off.
+practice dashboard's Membership tab shows a **Founding offer · free until your
+first match** button next to the regular monthly and yearly ones. The offer
+closes on its own when the deadline passes or the spots run out (the checkout
+counts live subscriptions, trialing included, on the founding price in Stripe),
+and immediately when the switch is turned off. An admin can test the founding
+checkout while the switch is off.
 
-One thing to know: if a founding member later switches to the yearly plan in
-the billing portal, they move to the yearly price and give up the locked-in
-rate. The dashboard says so next to the button.
+Two things to know: if a founding member switches to the regular monthly or
+yearly plan in the billing portal, they move to that price and give up the
+locked-in rate (and the badge); done during the free period, the free period
+ends too and billing begins on the new price at once (`leavesFreePeriod` in
+the webhook). The dashboard says so next to the button. And a founding
+therapist who cancels before their first match is never charged at all: the
+trial ends with the subscription.
 
 ### 5. Point Stripe at the webhook
 
@@ -258,6 +303,7 @@ customer.subscription.updated
 customer.subscription.deleted
 customer.subscription.paused
 customer.subscription.resumed
+customer.subscription.trial_will_end
 invoice.paid
 invoice.payment_failed
 invoice.payment_action_required
@@ -448,6 +494,8 @@ All in `app_config`, all editable from `/admin.html`:
 | Table / column | Written by | Meaning |
 |---|---|---|
 | `profiles.tier`, `subscription_status`, `current_period_end`, `cancel_at_period_end`, `stripe_customer_id`, `stripe_subscription_id` | webhook | The membership, as Stripe last reported it |
+| `profiles.founding_member` | webhook | True while the live subscription is on the founding price: the badge, the locked-in rate, the free-until-first-match rule |
+| `profiles.first_match_at` | `founding-billing` | When the first matching member appeared; billing begins a week later |
 | `therapist_profiles.stripe_account_id`, `stripe_account_status`, `charges_enabled`, `payouts_enabled` | webhook, `stripe-connect` | Payout account: `none`, `onboarding`, `enabled`, `restricted` |
 | `therapist_profiles.accepts_payments`, `session_fee_cents` | the therapist | Their choice to take payments, and the price ($5–$1,000) |
 | `session_payments` | `stripe-session-checkout`, webhook | One row per session payment: `pending`, `paid`, `refunded`, `partially_refunded`, `disputed` |
@@ -462,10 +510,16 @@ verified or paid-out from the browser.
 
 ## If something goes wrong
 
-- **"The founding-member offer is not open right now"** or **"has ended"** —
+- **A founding therapist has a match but is still "free until your first
+  match"** — the `founding-billing` cron job has not run yet (every hour, at
+  ten past), the function is not deployed, or the listing is not live
+  (`founding_first_matches()` only counts a published, verified listing).
+  Call the function with an admin session to run the check now; the
+  response lists what it did for each account.
+- **"The founding offer is not open right now"** or **"has ended"** —
   the `founding_enabled` switch is off, no founding price is pasted, or the
   deadline has passed. **"All founding-member spots are taken"** — Stripe
-  already has `founding_spots` live subscriptions on the founding price; raise
+  already has `founding_spots` live or trialing subscriptions on the founding price; raise
   the number or clear it to keep selling.
 - **"Payments are not switched on yet"** — the `stripe_enabled` switch is off
   (or, for sessions, `connect_enabled`). Admins bypass the first.

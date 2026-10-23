@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Founding member offer — Theraglee</title>
-<meta name="description" content="Be one of the first 150 therapists on Theraglee and lock in the founding rate for as long as your membership stays active. Every feature included.">
+<title>The founding offer — Theraglee</title>
+<meta name="description" content="Founding therapists join Theraglee free: pay nothing until your first member match, then $20/month locked in for as long as your membership stays active. Every feature included.">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="alternate icon" href="assets/favicon.png" sizes="48x48">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
 <link rel="stylesheet" href="assets/styles.css">
 <style>
-  /* Founding member offer page. Copy follows the design canvas; colors, type
+  /* The founding offer page. Copy follows the design canvas; colors, type
      and spacing follow the site's own tokens so it sits with the other pages. */
   .fm-kicker{display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border-radius:var(--r-pill);
     background:var(--soft);border:1px solid var(--mist);font-size:.74rem;font-weight:600;letter-spacing:.14em;
@@ -29,6 +29,7 @@
     border-radius:var(--r-pill);background:var(--lime);color:var(--ink);font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase}
   .fm-price .amt{display:flex;align-items:baseline;justify-content:center;gap:2px;line-height:1}
   .fm-price .amt b{font-size:3.6rem;font-weight:300;letter-spacing:-.03em}
+  .fm-price .then{font-size:1.15rem;font-weight:500;color:var(--ink);margin-top:4px}
   .fm-price .amt s{font-size:3rem;font-weight:300;letter-spacing:-.03em;color:var(--faint);text-decoration-thickness:2px}
   .fm-price .amt small{font-size:1.1rem;font-weight:300;color:var(--ink-2)}
   .fm-price .sub{color:var(--muted);font-size:.98rem}
@@ -81,18 +82,22 @@
 <section class="section fm-hero" id="top">
   <div class="wrap">
     <div id="fm-closed" class="notice warn fm-closed" hidden></div>
-    <span class="fm-kicker"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2c.8 5.2 4.8 9.2 10 10-5.2.8-9.2 4.8-10 10-.8-5.2-4.8-9.2-10-10 5.2-.8 9.2-4.8 10-10z"/></svg> Founding member offer</span>
-    <h1 id="fm-title">Be one of the <em class="script">first <span class="fm-spots">150</span>.</em></h1>
-    <p class="muted fm-lede">Theraglee is opening its doors to a small founding group of licensed
-      therapists. Join now and lock in a founding rate of
-      <strong>$<span class="fm-rate">20</span>/month</strong>, every feature included, for as long as
-      your membership stays active.</p>
+    <span class="fm-kicker"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2c.8 5.2 4.8 9.2 10 10-5.2.8-9.2 4.8-10 10-.8-5.2-4.8-9.2-10-10 5.2-.8 9.2-4.8 10-10z"/></svg> The founding offer</span>
+    <h1 id="fm-title">Free until your first member match, <em class="script">then
+      $<span class="fm-rate">20</span>/month locked in.</em></h1>
+    <p class="muted fm-lede">The standard membership is $<span class="fm-regular">29</span>/month.
+      Founding therapists join free: you pay nothing until the first member who matches your
+      practice appears on your dashboard. Only then does billing begin, at your locked-in founding
+      rate of <strong>$<span class="fm-rate">20</span>/month</strong>, for as long as your membership
+      stays continuously active. We'll let you know before your first charge. No surprise charges,
+      ever.</p>
 
     <div class="fm-prices">
       <div class="fm-price main">
-        <span class="tag">Founding rate</span>
-        <div class="amt"><b>$<span class="fm-rate">20</span></b><small>/month</small></div>
-        <div class="sub">Locked while your membership stays active</div>
+        <span class="tag">The founding offer</span>
+        <div class="amt"><b>$0</b><small> until your first match</small></div>
+        <div class="then">then $<span class="fm-rate">20</span>/month</div>
+        <div class="sub">Locked in while your membership stays continuously active</div>
       </div>
       <div class="fm-price" id="fm-standard">
         <div class="amt"><s>$<span class="fm-regular">29</span></s><small>/month</small></div>
@@ -100,13 +105,14 @@
       </div>
     </div>
 
-    <p class="muted fm-spots-line" id="fm-spots-line"><strong><span class="fm-spots">150</span> spots.</strong>
-      When they're gone, or on <span class="fm-deadline">December 31, 2026</span>, whichever comes
-      first, the founding rate is gone with them.</p>
+    <p class="muted fm-spots-line" id="fm-spots-line">The founding rate is for the
+      <strong>first <span class="fm-spots">150</span> therapists</strong> whose memberships go live,
+      or anyone who joins before <span class="fm-deadline">December 31, 2026</span>, whichever comes
+      first.</p>
 
     <div class="fm-cta">
       <a class="btn lg fm-claim" href="therapist-signup.html?plan=founding">Claim your founding spot</a>
-      <span class="faint">License verification required · Cancel any time</span>
+      <span class="faint">License verification required · Card saved, nothing charged until your first match · Cancel any time</span>
     </div>
   </div>
 </section>
@@ -114,9 +120,10 @@
 <section class="section" id="included" style="padding-top:20px">
   <div class="wrap">
     <div class="fm-center">
-      <h2 class="fm-h2">The founding rate includes <em class="script">everything.</em></h2>
-      <p class="muted">No tiers, no add-ons, no fee per contact. Founding members get the complete
-        therapist membership, the same one everyone else pays full price for.</p>
+      <h2 class="fm-h2">The founding offer includes <em class="script">everything.</em></h2>
+      <p class="muted">Same features, same dashboard, same Theraglee Match Mode. No tiers, no
+        add-ons, no fee per contact. Founding members get the complete therapist membership, the
+        same one everyone else pays full price for.</p>
     </div>
     <div class="fm-grid">
       <div class="fm-card">
@@ -173,7 +180,7 @@
         <div class="fm-badge">
           <span class="star"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2c.8 5.2 4.8 9.2 10 10-5.2.8-9.2 4.8-10 10-.8-5.2-4.8-9.2-10-10 5.2-.8 9.2-4.8 10-10z"/></svg></span>
           <p><strong>Founding Member</strong>: a badge on your profile, marking you as one of the
-            first <span class="fm-spots">150</span></p>
+            first therapists on Theraglee</p>
         </div>
         <p>Plus a direct line to our team: founding members get first say on new features, from
           Theraglee Match Mode improvements to the clinician library's next shelf.</p>
@@ -186,27 +193,37 @@
   <div class="wrap narrow">
     <div class="fm-center">
       <h2 class="fm-h2">The fine print, <em class="script">in plain print.</em></h2>
-      <p class="muted">No legalese. Here's exactly how the founding rate works.</p>
+      <p class="muted">No legalese. Here's exactly how the founding offer works.</p>
     </div>
     <ol class="fm-fine">
       <li><span class="n">1</span><div>
-        <h3><span class="fm-spots">150</span> spots, then it's over.</h3>
-        <p class="muted">The founding rate is available to the first <span class="fm-spots">150</span>
-          therapists whose memberships go live, or until <span class="fm-deadline">December 31,
-          2026</span>, whichever comes first.</p></div></li>
+        <h3>Free until your first member match.</h3>
+        <p class="muted">You pay nothing until the first member who matches your practice appears on
+          your dashboard. Checkout saves a card so billing can begin on its own when that day comes;
+          nothing is charged before it. If it never comes, you never pay.</p></div></li>
       <li><span class="n">2</span><div>
-        <h3>$<span class="fm-rate">20</span>/month, locked while you stay.</h3>
-        <p class="muted">As long as your membership stays continuously active, your rate never goes
-          up, even when the standard rate does.</p></div></li>
+        <h3>We'll let you know before your first charge.</h3>
+        <p class="muted">The day your first match appears, we email you the date billing begins, a
+          week later. No surprise charges, ever.</p></div></li>
       <li><span class="n">3</span><div>
+        <h3>$<span class="fm-rate">20</span>/month, locked while you stay.</h3>
+        <p class="muted">Once billing begins, your rate is $<span class="fm-rate">20</span> a month for
+          as long as your membership stays continuously active. It never goes up, even when the
+          standard rate does.</p></div></li>
+      <li id="fm-fine-limits"><span class="n">4</span><div>
+        <h3><span class="fm-spots">150</span> therapists, or <span class="fm-deadline">December 31, 2026</span>.</h3>
+        <p class="muted">The founding rate is for the first <span class="fm-spots">150</span>
+          therapists whose memberships go live, or anyone who joins before
+          <span class="fm-deadline">December 31, 2026</span>, whichever comes first.</p></div></li>
+      <li><span class="n">5</span><div>
         <h3>Cancel, and the rate goes with it.</h3>
         <p class="muted">If you cancel your membership, the founding rate ends. Rejoin later and
           you'll pay whatever the standard rate is at that time.</p></div></li>
-      <li><span class="n">4</span><div>
+      <li><span class="n">6</span><div>
         <h3>A card hiccup won't cost you your rate.</h3>
         <p class="muted">If a payment fails, you have 30 days to fix it before anything changes. We
           only count it as a cancellation if billing stays unresolved past that.</p></div></li>
-      <li><span class="n">5</span><div>
+      <li><span class="n">7</span><div>
         <h3>Everything else works the usual way.</h3>
         <p class="muted">License verification is required before your listing goes live, and you can
           cancel any time from your practice dashboard.</p></div></li>
@@ -219,9 +236,10 @@
     <h2 class="fm-h2">One honest <em class="script">note.</em></h2>
     <p class="muted">As a founding member, you're joining <strong>before our public launch</strong>.
       That means you'll be first in line as members arrive, and client flow will build over time
-      rather than arriving all at once. In exchange for your early faith, you get the lowest rate
-      we'll ever offer, a badge that says you were here first, and a real voice in what Theraglee
-      becomes.</p>
+      rather than arriving all at once. That is exactly why the offer is free until your first
+      match: you pay nothing while you wait. In exchange for your early faith, you get the lowest
+      rate we'll ever offer, a badge that says you were here first, and a real voice in what
+      Theraglee becomes.</p>
   </div>
 </section>
 
@@ -229,6 +247,16 @@
   <div class="wrap narrow">
     <h2 class="fm-h2 center" style="margin-bottom:26px">Questions</h2>
     <div class="fm-faq">
+      <details><summary>What counts as my first match?</summary>
+        <p class="muted">A member who has Theraglee Match Mode on and fits your practice on age,
+          gender, topics, who the sessions are for, insurance and location appears on your
+          dashboard's Home tab. The first time that happens is your first match, whether or not you
+          choose to reach out. That is the moment your free period ends and the countdown to your
+          first charge begins.</p></details>
+      <details><summary>Do I need a card to join?</summary>
+        <p class="muted">Yes. Checkout saves a card so billing can begin on its own when your first
+          match arrives. Nothing is charged until then, and you get an email a week before the first
+          charge. Cancel before that date and you are never charged at all.</p></details>
       <details><summary>What happens to my rate if I cancel?</summary>
         <p class="muted">Your founding rate ends with your membership. If you rejoin later, you'll pay
           the standard rate in effect at that time. That's why the rate rewards staying: it's our
@@ -248,10 +276,11 @@
       <details><summary>When does the offer end?</summary>
         <p class="muted">As soon as <span class="fm-spots">150</span> founding memberships are live, or
           on <span class="fm-deadline">December 31, 2026</span>, whichever comes first. After that,
-          new members pay the standard $<span class="fm-regular">29</span>/month.</p></details>
+          new members pay the standard $<span class="fm-regular">29</span>/month from day one.</p></details>
       <details><summary>How is this different from the standard membership?</summary>
-        <p class="muted">Only the price and the Founding Member badge. Same listing, same Theraglee
-          Theraglee Match Mode access, same library, same dashboard. Founders simply pay less for believing
+        <p class="muted">Only the billing, the Founding Member badge, and the direct line to our
+          team. Same features, same dashboard, same Theraglee Match Mode, same library. Founders
+          simply pay nothing until their first match, and less after it, for believing
           early.</p></details>
     </div>
   </div>
@@ -265,11 +294,13 @@
     <div class="fm-cta" style="margin-top:24px">
       <a class="btn lg fm-claim" href="therapist-signup.html?plan=founding">Claim your founding spot</a>
     </div>
-    <p class="faint" style="margin-top:18px">Founding rate: $<span class="fm-rate">20</span>/month, locked
-      while your membership stays continuously active. Available to the first
-      <span class="fm-spots">150</span> therapists or until <span class="fm-deadline">December 31,
-      2026</span>. License verification required. Cancel any time; cancellation forfeits the founding
-      rate. <a href="for-therapists.html">Everything the membership includes</a>.</p>
+    <p class="faint" style="margin-top:18px">The founding offer: free until your first member match,
+      then $<span class="fm-rate">20</span>/month, locked in while your membership stays continuously
+      active. For the first <span class="fm-spots">150</span> therapists whose memberships go live, or
+      anyone who joins before <span class="fm-deadline">December 31, 2026</span>, whichever comes
+      first. License verification required. We'll let you know before your first charge. Cancel any
+      time; cancellation forfeits the founding rate.
+      <a href="for-therapists.html">Everything the membership includes</a>.</p>
   </div>
 </section>
 </main>
@@ -296,17 +327,15 @@ if (offer.spots) fill('fm-spots', String(offer.spots));
 if (offer.deadlineText) fill('fm-deadline', offer.deadlineText);
 
 // No cap or no deadline configured: keep the sentences honest.
-if (!offer.spots) {
-  document.getElementById('fm-title').innerHTML = 'Be a <em class="script">founding member.</em>';
-}
 if (!offer.spots && !offer.deadlineText) {
   document.getElementById('fm-spots-line').hidden = true;
+  document.getElementById('fm-fine-limits').hidden = true;
 } else if (!offer.spots) {
   document.getElementById('fm-spots-line').innerHTML =
-    `The founding rate is open until <strong>${esc(offer.deadlineText)}</strong>.`;
+    `The founding rate is for anyone who joins before <strong>${esc(offer.deadlineText)}</strong>.`;
 } else if (!offer.deadlineText) {
   document.getElementById('fm-spots-line').innerHTML =
-    `<strong>${offer.spots} spots.</strong> When they're gone, the founding rate is gone with them.`;
+    `The founding rate is for the <strong>first ${offer.spots} therapists</strong> whose memberships go live.`;
 }
 
 // Offer closed (switched off, no price yet, or past its deadline): say so up
@@ -314,7 +343,7 @@ if (!offer.spots && !offer.deadlineText) {
 if (!offer.open) {
   const box = document.getElementById('fm-closed');
   box.hidden = false;
-  box.innerHTML = `<strong>The founding member offer ${offer.closedBecause === 'expired' ? 'has ended' : 'is not open right now'}.</strong>
+  box.innerHTML = `<strong>The founding offer ${offer.closedBecause === 'expired' ? 'has ended' : 'is not open right now'}.</strong>
     ${cfg.display_therapist_monthly ? `Therapist membership is $${esc(cfg.display_therapist_monthly)}/month` +
       (cfg.display_therapist_yearly ? ` or $${esc(cfg.display_therapist_yearly)} a year` : '') + ', with everything below included.' : ''}`;
   document.querySelectorAll('.fm-claim').forEach(a => { a.href = 'therapist-signup.html'; a.textContent = 'Start your listing'; });
