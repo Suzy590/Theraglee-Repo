@@ -16,8 +16,8 @@
 import { admin, deleteAccount, loadConfig } from "../_shared/supabase.ts";
 import { type Stripe, stripeClient } from "../_shared/stripe.ts";
 import {
-  connectStatus, deletionAfterSync, isPlanKey, isStaleSubscription, keepsComp, planForPrice,
-  subscriptionPatch,
+  connectStatus, deletionAfterSync, foundingTrialAction, foundingTrialEnd, isFoundingPrice, isPlanKey,
+  isStaleSubscription, keepsComp, leavesFreePeriod, planForPrice, subscriptionPatch,
 } from "../_shared/billing.ts";
 
 const idOf = (x: unknown): string | null =>
@@ -39,7 +39,7 @@ async function syncSubscription(stripe: Stripe, subscriptionId: string) {
   if (!userId) { console.error("no profile for customer", customerId); return; }
 
   const { data: profile } = await admin
-    .from("profiles").select("stripe_subscription_id, subscription_status, deletion_requested_at")
+    .from("profiles").select("stripe_subscription_id, subscription_status, deletion_requested_at, founding_member")
     .eq("id", userId).maybeSingle();
   if (isStaleSubscription(profile?.stripe_subscription_id, sub)) {
     console.log("ignoring stale subscription", sub.id, "current is", profile?.stripe_subscription_id);
@@ -55,7 +55,17 @@ async function syncSubscription(stripe: Stripe, subscriptionId: string) {
   // Prefer the price id; fall back to the plan we stamped in metadata at checkout.
   const stamped = sub.metadata?.plan;
   const plan = planForPrice(cfg, priceId) ?? (isPlanKey(stamped) ? stamped : null);
-  const { patch, unpublishTherapist } = subscriptionPatch(sub, customerId, plan);
+  // A subscription on the founding price makes (and keeps) a founding member;
+  // one that ends or moves to another price gives the mark up with the rate.
+  const founding = isFoundingPrice(cfg, priceId);
+  // The free period belongs to the founding offer: a founding membership
+  // switched to the regular monthly or yearly plan while still free starts
+  // paying now. Stripe answers with another update, which lands here again.
+  if (leavesFreePeriod(profile ?? {}, sub, founding)) {
+    await stripe.subscriptions.update(sub.id, { trial_end: "now" });
+    console.log("founding free period ended on plan change", sub.id);
+  }
+  const { patch, unpublishTherapist } = subscriptionPatch(sub, customerId, plan, founding);
 
   if (unpublishTherapist) {
     await admin.from("therapist_profiles").update({ published: false }).eq("user_id", userId);
@@ -79,6 +89,27 @@ async function syncSubscription(stripe: Stripe, subscriptionId: string) {
         `Could not delete account ${userId} after its membership ended: ${failed}. Close it by hand.`, null);
     }
   }
+}
+
+/* ------------------------------------------------ founding free period */
+
+/**
+ * Stripe warns three days before a trial ends. A founding membership is free
+ * until its first match, so while the therapist still has none the trial is
+ * pushed out again (FOUNDING_TRIAL_DAYS); the founding-billing function is
+ * the only thing that lets it end, once the first match has arrived.
+ */
+async function trialWillEnd(stripe: Stripe, subscriptionId: string) {
+  const sub = await stripe.subscriptions.retrieve(subscriptionId);
+  const userId = (sub.metadata?.supabase_user_id as string) || null;
+  if (!userId) return;
+  const cfg = await loadConfig();
+  const founding = isFoundingPrice(cfg, sub.items?.data?.[0]?.price?.id);
+  const { data: profile } = await admin.from("profiles")
+    .select("founding_member, first_match_at").eq("id", userId).maybeSingle();
+  if (foundingTrialAction(profile ?? {}, sub, founding) !== "extend") return;
+  await stripe.subscriptions.update(sub.id, { trial_end: foundingTrialEnd(), proration_behavior: "none" });
+  console.log("founding free period extended", sub.id);
 }
 
 /* ----------------------------------------------------- session payments */
@@ -193,6 +224,10 @@ Deno.serve(async (req) => {
       case "customer.subscription.paused":
       case "customer.subscription.resumed":
         await syncSubscription(stripe, (obj as Stripe.Subscription).id);
+        break;
+
+      case "customer.subscription.trial_will_end":
+        await trialWillEnd(stripe, (obj as Stripe.Subscription).id);
         break;
 
       case "invoice.paid":

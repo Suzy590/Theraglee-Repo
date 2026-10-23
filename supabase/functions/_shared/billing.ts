@@ -21,8 +21,10 @@ export const hasLiveStripeSub = (
 ): boolean => !!p.stripe_subscription_id && p.subscription_status !== COMPED && isActive(p.subscription_status);
 
 export type PlanKey = "basic" | "premium" | "therapist";
-/** `founding` is the therapist founding-member rate: monthly billing at a
- *  locked-in price, sold only while the offer is open (see `foundingOffer`). */
+/** `founding` is the therapist founding-member rate: free until the first
+ *  member who matches the practice appears on the dashboard, then monthly
+ *  billing at a locked-in price, sold only while the offer is open (see
+ *  `foundingOffer` and the "Founding offer" section below). */
 export type Interval = "monthly" | "yearly" | "founding";
 
 /**
@@ -92,6 +94,67 @@ export interface FoundingOffer {
   deadline: string;
 }
 
+/**
+ * Free until the first match, in Stripe terms.
+ *
+ * A founding membership starts as a trialing subscription on the founding
+ * price, with the card on file, so nothing is charged. The trial is as long
+ * as Stripe allows (FOUNDING_TRIAL_DAYS, two years); while the therapist still
+ * has no match, the webhook pushes it out again each time Stripe warns that
+ * it is about to end (`customer.subscription.trial_will_end`). When the first
+ * matching member appears, the `founding-billing` function moves the trial's
+ * end to FOUNDING_NOTICE_DAYS from now and emails the therapist, so the
+ * first charge is announced before it happens. Stripe then bills the
+ * founding rate every month from that day, on the price the subscription
+ * started with, which is what keeps the rate locked in.
+ */
+export const FOUNDING_TRIAL_DAYS = 730;
+export const FOUNDING_NOTICE_DAYS = 7;
+
+const DAY = 24 * 60 * 60;
+
+/** Whether this subscription sits on the founding price. */
+export const isFoundingPrice = (config: Record<string, string>, priceId: string | null | undefined): boolean =>
+  !!priceId && !!(config.price_therapist_founding ?? "").trim() && config.price_therapist_founding.trim() === priceId;
+
+/** Unix seconds when billing begins for a therapist whose first match arrived `now`. */
+export const foundingBillingStart = (now: Date = new Date()): number =>
+  Math.floor(now.getTime() / 1000) + FOUNDING_NOTICE_DAYS * DAY;
+
+/** Unix seconds for a fresh stretch of free time starting `now`. */
+export const foundingTrialEnd = (now: Date = new Date()): number =>
+  Math.floor(now.getTime() / 1000) + FOUNDING_TRIAL_DAYS * DAY;
+
+/**
+ * What to do when Stripe says a trial is about to end:
+ *   extend — a founding membership still waiting for its first match keeps
+ *            its free time; push the trial end out again;
+ *   none   — anything else (a founding member whose first match has arrived,
+ *            a membership not on the founding price, a trial already over).
+ */
+/**
+ * Whether a subscription that just left the founding price is still carrying
+ * the founding free period: the therapist (or an admin) switched a trialing
+ * founding membership to the regular monthly or yearly plan. The free time
+ * belongs to the founding offer, so the webhook ends the trial and billing
+ * begins on the new price straight away.
+ */
+export const leavesFreePeriod = (
+  p: { founding_member?: boolean | null },
+  sub: { status: string },
+  founding: boolean,
+): boolean => !founding && !!p.founding_member && sub.status === "trialing";
+
+export function foundingTrialAction(
+  p: { founding_member?: boolean | null; first_match_at?: string | null },
+  sub: { status: string },
+  founding: boolean,
+): "extend" | "none" {
+  if (!founding || !p.founding_member) return "none";
+  if (p.first_match_at) return "none";
+  return sub.status === "trialing" ? "extend" : "none";
+}
+
 /** Parses YYYY-MM-DD as the end of that day in UTC; null when unset or malformed. */
 export function deadlineEnd(deadline: string | null | undefined): Date | null {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec((deadline ?? "").trim());
@@ -145,8 +208,14 @@ export interface SubscriptionSync {
  * - A subscription whose plan cannot be identified is treated as lapsed only
  *   when it is no longer active, so an unknown-but-live subscription never
  *   downgrades anyone by accident.
+ * - `founding` says the subscription sits on the founding price. A live one
+ *   marks the profile a founding member (the badge, and the free-until-first-
+ *   match billing); one that ends or moves to another price takes the mark
+ *   away, because the founding rate is forfeited with it.
  */
-export function subscriptionPatch(sub: SubscriptionLike, customerId: string, plan: PlanKey | null): SubscriptionSync {
+export function subscriptionPatch(
+  sub: SubscriptionLike, customerId: string, plan: PlanKey | null, founding = false,
+): SubscriptionSync {
   const live = isActive(sub.status);
   // current_period_end moved onto the subscription item in newer API versions.
   const periodEnd = sub.current_period_end ?? sub.items?.data?.[0]?.current_period_end ?? null;
@@ -162,6 +231,7 @@ export function subscriptionPatch(sub: SubscriptionLike, customerId: string, pla
   let unpublishTherapist = false;
   if (plan === "therapist") {
     patch.role = "therapist";
+    patch.founding_member = live && founding;
     unpublishTherapist = !live;
   } else if (plan) {
     patch.tier = live ? plan : "free";

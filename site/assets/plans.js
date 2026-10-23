@@ -73,8 +73,9 @@ export async function loadPrices(sb) {
 }
 
 /**
- * The therapist founding-member offer, from the same app_config keys the
- * admin screen writes (founding_enabled, price_therapist_founding,
+ * The therapist founding offer (free until the first member match, then the
+ * founding rate locked in), from the same app_config keys the admin screen
+ * writes (founding_enabled, price_therapist_founding,
  * display_therapist_founding, founding_spots, founding_deadline). Mirrors
  * foundingOffer() in supabase/functions/_shared/billing.ts — keep the two in
  * step. The server is the one that decides at checkout; this only chooses

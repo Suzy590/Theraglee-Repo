@@ -23,6 +23,7 @@
   .kv{display:grid;grid-template-columns:auto 1fr;gap:12px 26px;font-size:1.02rem}
   .kv dt{color:var(--faint)}
   .kv dd{margin:0;color:var(--ink-2)}
+  .verified.founding{color:var(--green-deep)}
   .verified{display:inline-flex;align-items:center;gap:6px;color:var(--green);
     font-size:.95rem;font-weight:500}
   .contact-box{background:var(--paper);border:1px solid var(--hair);border-radius:var(--r);
@@ -102,6 +103,10 @@ if (!t) {
                 stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M20 6 9 17l-5-5"/></svg>
               License verified with the state board</p>
+            ${t.founding_member ? `<p class="verified founding" style="margin:0 0 10px">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 2c.8 5.2 4.8 9.2 10 10-5.2.8-9.2 4.8-10 10-.8-5.2-4.8-9.2-10-10 5.2-.8 9.2-4.8 10-10z"/></svg>
+              Founding Member · one of the first therapists on Theraglee</p>` : ''}
             <p class="faint" style="margin:0 0 14px">
               ${t.delivery==='telehealth'?'Telehealth':t.delivery==='both'?'In person &amp; telehealth':'In person'}
               ${(t.license_states||[]).length?' · Licensed in '+t.license_states.join(', '):''}</p>
