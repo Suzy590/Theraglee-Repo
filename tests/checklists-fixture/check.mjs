@@ -32,12 +32,13 @@ export const TAGS = new Set([
 // The theme a checklist belongs to. It is the word after "Checklist" on the
 // library tile, so it is short and plain. Add one here before using it.
 export const CATEGORIES = new Set([
-  'Anger', 'Anxiety', 'Body', 'Boundaries', 'Burnout', 'Caregiving', 'Communication',
-  'Comparison', 'Confidence', 'Connection', 'Dating', 'Decisions', 'Drinking', 'Driving',
-  'Family', 'Focus', 'Food', 'Forgiveness', 'Friendship', 'Grief', 'Grounding', 'Habits',
+  'Affairs', 'Anger', 'Anxiety', 'Body', 'Boundaries', 'Burnout', 'Caregiving',
+  'Communication', 'Comparison', 'Confidence', 'Connection', 'Dating', 'Decisions', 'Drinking',
+  'Driving', 'Family', 'Focus', 'Food', 'Forgiveness', 'Friendship', 'Grief', 'Grounding',
+  'Habits',
   'Health', 'Home', 'Loneliness', 'Milestones', 'Mindfulness', 'Money', 'Mornings',
   'Motivation', 'Moving', 'Neighbors', 'Outdoors', 'Parenting', 'Perfectionism', 'Pets',
-  'Play', 'Relationships', 'Rest', 'Retirement', 'Seasons', 'Self-Care',
+  'Play', 'Relationships', 'Rest', 'Retirement', 'Screens', 'Seasons', 'Self-Care',
   'Self-Compassion', 'Setbacks', 'Sleep', 'Social Anxiety', 'Stress', 'Study', 'Therapy',
   'Transitions', 'Travel', 'Visiting', 'Volunteering', 'Wellbeing', 'Work', 'Worry',
 ]);
