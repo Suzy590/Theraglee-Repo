@@ -91,6 +91,14 @@ answers every existing link into it (`explore.html?type=quiz` and so on).
 
 The four sign-in and sign-up pages share one script, `site/assets/auth.js`,
 which owns the form and what happens on submit; each page owns only its copy.
+The form is drawn before anything is asked of the server: the "already signed
+in?" check runs once it is up, and `access()` in `app.js` gives up after eight
+seconds and counts the visitor as signed out, so a connection that drops on the
+way to Supabase never leaves a page blank. A sign-in or sign-up request that
+gets no answer in twenty seconds becomes a "could not reach the sign-in
+service" message, and a short plain script on each of the four pages replaces
+the gray placeholder with a "did not load" message if the module scripts
+themselves never arrive.
 The sign-up page decides the account type (`role` in the sign-up metadata, read
 by `handle_new_user`), so there is no "I am joining as" choice any more. The
 old address `login.html?mode=signup` redirects to `signup.html`.
