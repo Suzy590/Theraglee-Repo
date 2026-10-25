@@ -23,15 +23,47 @@ The script writes:
 |---|---|---|
 | `site/tools/<slug>/index.html`, `site/articles/how-to-find-a-therapist/index.html` | `pages` in `data/seo-pages.json` | The hand-written landing pages, one per row |
 | `site/articles/<slug>/index.html` | `data/articles.json` | One page per article, with the whole article in the markup (every article is free) |
+| `site/articles/topics/<tag>/index.html`, `site/articles/topics/index.html` | The tags in `data/articles.json` | One hub per tag listing every article that carries it, newest first, plus the index of hubs. Every article links to its hubs, so nothing is more than two clicks from the homepage |
 | `site/tools/quizzes/index.html`, `site/tools/worksheets/index.html` | `data/quizzes.txt`, `data/worksheets.json` | Catalogs naming every quiz and worksheet by topic, so the library is crawlable even though the tools are for members |
-| `site/therapists/<city-st>/index.html` | `cities` in `data/seo-pages.json` | One directory page per launch metro (none yet; see below) |
+| `site/tools/journal-prompts/index.html` | `data/journal-prompts.txt` | Every journal prompt on one long page, with a how-to and an FAQ |
+| `site/challenges/<slug>/index.html`, `site/challenges/themes/index.html` | `data/challenges.json` | One page per challenge theme (the first seven to-dos, five from later in the year, how a challenge works) and the index by category |
+| `site/checklists/<slug>/index.html`, `site/checklists/index.html` | `data/checklists.json` | One page per checklist with every item on it, and the index by category |
+| `site/discover/<topic>/index.html`, `site/discover/topics/index.html` | `site/assets/discover-tools.js` (read through `node`) | One page per Discover topic naming its twenty free tools, with the kind and minutes of each, and the index |
+| `site/therapists/<city-st>/index.html` | `cities` in `data/seo-pages.json` | One directory page per launch metro |
 | `site/sitemap.xml` | All of the above | Plus the public pages at the site root |
+| `site/llms.txt` | All of the above | A plain summary of the site and its sections for AI assistants and answer engines, which read it the way crawlers read `robots.txt` |
 | The FAQ block in `site/index.html` and `site/for-therapists.html` | The questions visible on each page | `FAQPage` structured data |
 
-Never hand-edit the generated HTML or `sitemap.xml`. Change the source row, or
-the script, and run it again. Running it twice in a row changes nothing.
-`node tests/seo-pages/check.mjs` confirms every article has its page, every
-page is in the sitemap, and the structured data parses.
+Never hand-edit the generated HTML, `sitemap.xml` or `llms.txt`. Change the
+source row, or the script, and run it again. Running it twice in a row changes
+nothing. A folder whose source row is gone (a renamed slug) is removed on the
+next run. `node tests/seo-pages/check.mjs` confirms every article, tag,
+challenge, checklist and Discover topic has its page, every page is in the
+sitemap, every description fits a search result, every page carries the share
+image and breadcrumb data, and the structured data parses.
+
+### What every page's head carries
+
+Generated pages get it from `shell()`; the hand-maintained pages at the site
+root carry the same tags by hand:
+
+- `<title>` with the search term first and `— Theraglee` last.
+- A `<meta name="description">` between 50 and 160 characters. The generator
+  trims a long excerpt with `meta_description()`, which ends at a sentence
+  when it can and never cuts a word in half.
+- `<link rel="canonical">` matching the URL exactly.
+- Open Graph and Twitter tags (`og:title`, `og:description`, `og:url`,
+  `og:image`, `twitter:card` of `summary_large_image`) so a shared link shows
+  a title, a line and a picture. The picture is `site/assets/social-card.png`,
+  1200 by 630, drawn by `python3 tools/social_card.py` from the logo and the
+  site's typefaces. Re-run that after changing the logo or the tagline.
+- `BreadcrumbList` structured data from the `crumbs` passed to `shell()`, so a
+  search result can show `Theraglee › Articles › Anxiety` under the title.
+
+Pages that only forward to the dashboard or hold a member tool behind a
+`?slug=` (`journal.html`, `goals.html`, `quiz.html`, `worksheet.html`,
+`checklist.html`) say `<meta name="robots" content="noindex">`: the crawlable
+page for each is the generated one.
 
 ### Articles
 
@@ -167,9 +199,14 @@ IndexNow at all and needs the Search Console steps above.
   yet" until the first practices in those counties are verified. The copy
   above the listing is what there is to rank on until then.
 - **Search Console and Bing.** Submitting the sitemap needs the Google and
-  Microsoft accounts; the steps are above.
+  Microsoft accounts; the steps are above, and `seo-plan.md` walks through
+  them.
 - **One page per quiz and worksheet.** The catalogs name every tool, but each
   quiz and worksheet is still only reachable through a `?slug=` URL, and every
   one is `min_level = 2`, so a visitor arriving from a search has to pay to use
   it. Making a handful of quizzes free would give a per-quiz page something to
   convert with; until then, per-tool pages would be thin.
+- **One page per Discover tool.** The 360 free tools have topic pages, not
+  pages of their own. A per-tool page needs more words than a title and two
+  sentences to be worth indexing; the plan names the few (the feelings wheel,
+  the breathing tools) that deserve a hand-written landing page first.
