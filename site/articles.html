@@ -62,7 +62,7 @@
   </div>
 </div></main>
 <script type="module">
-import { chrome, sb, esc, qs, fmtDate } from './assets/app.js';
+import { chrome, sb, esc, qs, fmtDate, searchStem } from './assets/app.js';
 import { library, isFavorite, isLater, favButton, progressOf, bindLibrary, signupHref }
   from './assets/library.js';
 await chrome({ active:'articles.html' });
@@ -103,8 +103,9 @@ const readOf = (a) => progressOf(lib, 'article', a.id)?.status === 'completed';
    page already has (title, summary, topics). The full text stays in the
    database, so the same words are also sent to it and any article whose body
    mentions all of them is included. Every article is free, so the search
-   works signed in or out. */
-const words = (t) => t.toLowerCase().split(/\s+/).filter(w => w.length > 1);
+   works signed in or out. Each word goes through searchStem, so any form of a
+   word written about under several of them finds the same articles. */
+const words = (t) => t.toLowerCase().split(/\s+/).filter(w => w.length > 1).map(searchStem);
 const localHit = (a, ws) => {
   const hay = (a.title + ' ' + (a.excerpt || '') + ' ' + (a.tags || []).join(' ')).toLowerCase();
   return ws.every(w => hay.includes(w));

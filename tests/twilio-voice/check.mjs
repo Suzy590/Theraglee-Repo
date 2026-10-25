@@ -6,9 +6,10 @@
 // Exits non-zero on the first failed assertion.
 import assert from "node:assert/strict";
 import {
-  areaCodeOf, callRow, emptyTwiml, formatUs, forwardTwiml, friendlyNameFor, isUuid, last10,
-  maskCaller, NO_ANSWER, numberSearches, purchaseForm, sameNumber, sayTwiml, signatureMatches,
-  therapistForNumber, toE164, twilioAuthHeader, twilioSignature,
+  areaCodeOf, callerIsTherapist, callRow, dialSummary, emptyTwiml, formatUs, forwardTwiml,
+  friendlyNameFor, isUuid, last10, maskCaller, NO_ANSWER, numberSearches, purchaseForm, sameNumber,
+  sayTwiml, SELF_CALL, signatureMatches, therapistForNumber, toE164, twilioAuthHeader,
+  twilioSignature,
 } from "../../supabase/functions/_shared/twilio.ts";
 
 let n = 0;
@@ -47,6 +48,23 @@ await test("the called number finds the listing it belongs to", () => {
   assert.equal(therapistForNumber(rows, "+15550100200")?.id, "b");
   assert.equal(therapistForNumber(rows, "+15550100300"), null);
   assert.equal(therapistForNumber([], "+15550100199"), null);
+});
+
+await test("a therapist calling their own number from their own phone is told so", () => {
+  const t = { id: "a", proxy_phone: "(805) 608-4639", contact_phone: "8057466567" };
+  assert.equal(callerIsTherapist("+18057466567", t), true, "the phone the number forwards to");
+  assert.equal(callerIsTherapist("(805) 746-6567", t), true);
+  assert.equal(callerIsTherapist("+12349013030", t), false, "anyone else is forwarded");
+  assert.equal(callerIsTherapist("", t), false);
+  assert.equal(callerIsTherapist("+18057466567", { contact_phone: null }), false);
+  assert.match(sayTwiml(SELF_CALL), /<Say>This is your own Theraglee number.*call it from a different phone\.<\/Say><Hangup\/>/);
+});
+
+await test("how a forwarded leg went is written to the log", () => {
+  const line = dialSummary("abc", { DialCallStatus: "busy", DialCallDuration: "0", From: "+18057466567" });
+  assert.equal(line, "forwarded leg for abc: busy after 0s, caller ***-***-6567");
+  assert.equal(dialSummary("abc", {}), "forwarded leg for abc: unknown after 0s, caller unknown");
+  assert.doesNotMatch(line, /8057466567/, "the full caller number never reaches the log");
 });
 
 await test("the forwarding TwiML dials the real number and reports back", () => {

@@ -215,13 +215,16 @@ competitive. The daily content, the hubs and the links above are what shorten
 that. If after eight weeks indexed pages are not climbing, something is wrong
 with step 1 and it is worth a look before anything else.
 
-The privacy policy promises no third-party analytics on the site, which is a
-real selling point for a mental health site and worth keeping. Search Console
-is not on-site analytics (it reports Google's side), so it does not break
-that promise. If on-site numbers are ever wanted, Vercel's own cookieless Web
-Analytics is the option that comes closest to keeping it, but that is a
-decision for the owner and a change to the policy text, so it is not switched
-on here.
+Search Console reports Google's side (what people searched, what they
+clicked) and does not put anything on the site. For what visitors do once
+they arrive, the admin screen's **Google Analytics** tab
+(`/admin.html#analytics`, set up in `google-analytics.md`) shows people per
+day, the pages opened most and how people arrived, including the share that
+came from search. Two numbers from it worth watching alongside Search
+Console: visits from the "Organic Search" channel, and which of the new hub
+and tool pages people land on. One caution: the privacy policy still says
+there are no third-party analytics on the site, so if the tag is switched on,
+the policy text and the privacy promise page need to say so too.
 
 ## The first ninety days
 

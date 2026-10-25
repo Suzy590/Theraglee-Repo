@@ -8,7 +8,7 @@
    SAMHSA's locator (through /api/nearby) and from OpenStreetMap, each added
    when it answers, so one slow or busy source never blanks the tab.
    ========================================================================== */
-import { esc, toast, busy } from './app.js';
+import { esc, toast, busy, logActivity } from './app.js';
 import {
   RADIUS_MI, KINDS, kindInfo, overpassQuery, geocodeUrl, toPlaces,
   samhsaPlaces, mergePlaces, fmtMiles, directionsHref, telHref,
@@ -176,6 +176,9 @@ export function mapView(body, zip = '', { heading = true } = {}) {
 
   async function draw(center, label, q) {
     const me = ++searchId;
+    // Counted for the admin Content tab. Only that a search happened, and whether
+    // it was typed or a shared location: never the place.
+    logActivity('nearby', null, 'search', [q ? 'typed' : 'location']);
     const stale = () => me !== searchId;
     box.innerHTML = `
       <div id="nearby-map" role="region" aria-label="Map of mental health help near ${esc(label)}"></div>

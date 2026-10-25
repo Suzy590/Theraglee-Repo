@@ -54,7 +54,7 @@
 </div></main>
 
 <script type="module">
-import { chrome, contentCounts, counted, funCrumb } from './assets/app.js';
+import { chrome, contentCounts, counted, funCrumb, logActivity } from './assets/app.js';
 const a = await chrome({ active:'dashboard.html' });
 const c = await contentCounts();
 const root = document.getElementById('root');
@@ -73,7 +73,7 @@ const downloads = () => {
   const mac = `<div class="card ${onMac?'here':''}">
       <h3>For Mac</h3>
       <span class="meta">${MAC.needs} · ${MAC.size}</span>
-      <a class="btn ${onMac?'':'ghost'}" href="${MAC.file}" download>Download for Mac</a>
+      <a class="btn ${onMac?'':'ghost'}" href="${MAC.file}" download data-pet="mac">Download for Mac</a>
       <ol class="steps">
         <li>Open the downloaded file, then drag <strong>Pip</strong> to your Applications folder.</li>
         <li>Double-click Pip. The first time, macOS says it cannot check the app — that is
@@ -85,7 +85,7 @@ const downloads = () => {
   const win = `<div class="card ${onMac?'':'here'}">
       <h3>For Windows</h3>
       <span class="meta">${WIN.needs} · ${WIN.size}</span>
-      <a class="btn ${onMac?'ghost':''}" href="${WIN.file}" download>Download for Windows</a>
+      <a class="btn ${onMac?'ghost':''}" href="${WIN.file}" download data-pet="windows">Download for Windows</a>
       <ol class="steps">
         <li>Open the downloaded file and drag <strong>Pip</strong> somewhere you will find it
             again — your Desktop is fine.</li>
@@ -162,6 +162,10 @@ const upgradeView = () => `
 
 root.insertAdjacentHTML('beforebegin', funCrumb(a));   // back to the Fun tab
 root.innerHTML = a.level >= 2 ? memberView() : upgradeView();
+// Counted for the admin Content tab: the page opened, and each download clicked.
+logActivity('pet', null, 'view');
+root.querySelectorAll('[data-pet]').forEach(el =>
+  el.addEventListener('click', () => logActivity('pet', null, 'download', [el.dataset.pet])));
 </script>
 </body>
 </html>

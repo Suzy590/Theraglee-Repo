@@ -42,6 +42,15 @@ export function therapistForNumber<T extends ProxyRow>(rows: T[], called: unknow
   return rows.find((r) => sameNumber(r.proxy_phone, called)) ?? null;
 }
 
+/**
+ * True when the caller is the very phone the number forwards to: the
+ * therapist trying their own Theraglee number. Dialing it would ask their
+ * phone to ring itself, which the phone network refuses at once, so the
+ * caller hears "no one could pick up" and thinks the number is broken.
+ */
+export const callerIsTherapist = (from: unknown, t: { contact_phone: string | null }): boolean =>
+  sameNumber(from, t.contact_phone);
+
 /* ------------------------------------------------------------------ TwiML */
 
 const escapeXml = (s: string): string =>
@@ -70,6 +79,8 @@ export const NO_LINE =
   "Sorry, this therapist's line is not available right now. Please try again later, or send them a message from their Theraglee profile.";
 export const NO_ANSWER =
   "Sorry, no one could pick up just now. Please try again later, or send a message from their Theraglee profile.";
+export const SELF_CALL =
+  "This is your own Theraglee number, and it forwards to the phone you are calling from, so it cannot ring here. Your number is working. To hear it ring through, call it from a different phone.";
 
 /* ------------------------------------------------- the row for a call */
 
@@ -84,6 +95,18 @@ export interface CallRow {
 
 /** Twilio's DialCallStatus values that mean the therapist picked up. */
 const ANSWERED = new Set(["completed", "answered"]);
+
+/**
+ * One line for the function's log about how a forwarded leg went, so a call
+ * that did not connect can be explained later: Twilio's DialCallStatus
+ * (completed, busy, no-answer, failed, canceled), how long the leg lasted,
+ * and the caller masked to four digits. Nothing in it is personal.
+ */
+export function dialSummary(therapistId: string, p: Record<string, string>): string {
+  const status = (p.DialCallStatus ?? "").trim() || "unknown";
+  const secs = (p.DialCallDuration ?? "").trim() || "0";
+  return `forwarded leg for ${therapistId}: ${status} after ${secs}s, caller ${maskCaller(p.From) ?? "unknown"}`;
+}
 
 /**
  * The therapist_calls row for a forwarded leg that just ended, from the

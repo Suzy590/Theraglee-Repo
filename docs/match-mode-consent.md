@@ -17,7 +17,7 @@ request.
 >   like to work on with a therapist, whether the sessions are for you, a couple
 >   or your family, whether you’d prefer in-person/telehealth (video)/either,
 >   your insurance, and the first 3 digits of your ZIP.
-> - If you indicate that you are open to telehealth (video) sessions, therapists
+> - If you indicate that you are open to telehealth (video) sessions, matched therapists
 >   anywhere in your state can reach out to you.
 > - Your real name is shared only if you reply.
 > - You can block any therapist with one tap.

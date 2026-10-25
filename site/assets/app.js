@@ -3,6 +3,7 @@
    ========================================================================== */
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.47.10';
 import { mountShowcase } from './showcase.js';
+import { loadAnalyticsTag } from './analytics-tag.js';
 
 export const SUPABASE_URL = 'https://oekqzuguruyqkafsqhos.supabase.co';
 export const SUPABASE_KEY = 'sb_publishable_eyxjcu2EnB7PrQywDJu9Ug_XRK-PZk0';
@@ -61,6 +62,20 @@ export const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 export const esc = (s) => String(s ?? '').replace(/[&<>"']/g,
   (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 export const qs = (k, d = null) => new URLSearchParams(location.search).get(k) ?? d;
+
+/* --------------------------------------------------------- search stems */
+// Every search on the site matches substrings, so forms of one word that share
+// no common whole miss each other: "dissociation" does not contain
+// "dissociate". Where a subject is written about under several such forms, the
+// forms are listed here with the stem they share, and any of them typed
+// searches for that stem instead, so they all find the same items. Every other
+// word is returned untouched.
+const SEARCH_STEMS = [[/^dissociat(e|es|ed|ing|ion|ions|ive)$/, 'dissociat']];
+export const searchStem = (w) => {
+  const s = String(w ?? '').toLowerCase();
+  for (const [form, stem] of SEARCH_STEMS) if (form.test(s)) return stem;
+  return s;
+};
 
 /* ------------------------------------------------------- catalog counts */
 // How many items of each kind the library holds, e.g. { quiz: 62, worksheet: 16 },
@@ -454,6 +469,11 @@ export async function chrome({ active = '', showcase = true } = {}) {
   addEventListener('scroll', onScroll, { passive: true }); onScroll();
 
   if (a.authenticated) idleLogoff({ login: loginFor(a.profile) });
+
+  // Google's tag, when the admin screen's Google Analytics tab has switched it
+  // on (assets/analytics-tag.js decides; an administrator's own pages are
+  // never counted). Not awaited: the page never waits on analytics.
+  loadAnalyticsTag(sb, { admin });
 
   footer();
   return a;

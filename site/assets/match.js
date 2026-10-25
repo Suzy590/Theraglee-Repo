@@ -144,7 +144,7 @@ export const MATCH_BLURB = `
         on with a therapist, whether the sessions are for you, a couple or your family, whether
         you’d prefer in-person/telehealth (video)/either, your insurance, and the first 3 digits
         of your ZIP.</li>
-      <li>If you indicate that you are open to telehealth (video) sessions, therapists anywhere in
+      <li>If you indicate that you are open to telehealth (video) sessions, matched therapists anywhere in
         your state can reach out to you.</li>
       <li>Your real name is shared only if you reply.</li>
       <li>You can block any therapist with one tap.</li>
