@@ -592,7 +592,10 @@ is in `docs/match-mode-consent.md`.
 | Migrations | `supabase/migrations/20260913200000_match_mode_anonymous.sql`, `supabase/migrations/20260914210000_match_reply_alert.sql`, `supabase/migrations/20260918150000_match_mode_pseudonymous.sql` |
 
 `profiles.full_name` is now just what the dashboard greets the member by; the
-sign-up form asks for "what should we call you" and marks it optional.
+sign-up form asks for "what should we call you" and requires an answer (a first
+name or nickname is fine), as does the account page when the member edits it.
+An administrator's invite from the admin screen is the one way an account can
+still arrive without a name.
 
 ### Messages from a profile
 
