@@ -494,7 +494,7 @@ gated by tier, so Basic and Premium have them too:
 | Articles sent to your inbox | the `daily-digest` Edge Function, below | `profiles.daily_email` |
 | An evening reminder to check in on your mood (opt-in tick box on the check-in and the account page) | the `mood-reminder` Edge Function; see [`mood.md`](mood.md) | `profiles.mood_reminder`, off until ticked |
 | Themed challenges, 7 days at a time | 88 `challenge_templates` at `min_level = 1`, two more added every day; one to-do a day from `challenge_days`, runs in `user_challenges`, ticks in `user_challenge_progress`; `guard_challenge_length()` keeps a Free member's run to 7 days — see [`challenges.md`](challenges.md) | `min_level`, RLS `own rows` |
-| Checklists with progress tracked | 78 `checklists` at `min_level = 1`, two more added every day, `checklist_progress` + `item_progress` | `min_level`, RLS `own rows` |
+| Checklists with progress tracked | 80 `checklists` at `min_level = 1`, two more added every day, `checklist_progress` + `item_progress` | `min_level`, RLS `own rows` |
 | Theraglee Match Mode (dashboard switch: let therapists reach out) | `profiles.visible_to_therapists`, toggled on `dashboard.html` and `account.html`; the details therapists see are asked for in `assets/match.js`; blocks in `member_blocks` | `member_opted_in()`, `member_blocked()` |
 
 ## The feature showcase beside the page
@@ -720,7 +720,7 @@ Most of it was imported from the Word documents in the parent folder:
 - 312 self-assessment quizzes (1,503 questions, 1,247 result bands; 62 imported, 250 written for the site — see below)
 - 374 journal prompts
 - 186 interactive worksheets (16 imported, 170 written for the site — see below)
-- 78 checklists, with two more added every day — see [`checklists.md`](checklists.md)
+- 80 checklists, with two more added every day — see [`checklists.md`](checklists.md)
 - 88 themed challenges (365 daily to-dos each), with two more themes added every day — see [`challenges.md`](challenges.md)
 - 262 articles, free to everyone, with five more published every day — see [`articles.md`](articles.md)
 - 282 mandalas to print or color online (drawn in the browser from a seed): 200 round, 82 shaped like animals, plants and symbols
