@@ -288,6 +288,9 @@ export const discountCodeBox = () => `
         style="text-transform:uppercase">
       <button class="btn ghost" type="submit">Apply</button>
     </div>
+    <p class="muted" style="margin:10px 0 0;font-size:.92rem">A code entered here applies from your
+      next bill on. It does not change a payment you have already made, so if you are about to
+      upgrade, enter your code on the checkout page before you pay.</p>
   </form>`;
 
 export function wireDiscountCode(onDone = () => location.reload()) {
