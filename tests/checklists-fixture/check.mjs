@@ -3,7 +3,7 @@
 // Fails (exit 1) if a checklist is malformed, repeats a slug, a title or another
 // checklist's items, is missing its description, uses an unknown tag or theme,
 // or is written in language the library avoids.
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 
 const CL = JSON.parse(readFileSync(new URL('../../data/checklists.json', import.meta.url), 'utf8'));
 
@@ -32,14 +32,16 @@ export const TAGS = new Set([
 // The theme a checklist belongs to. It is the word after "Checklist" on the
 // library tile, so it is short and plain. Add one here before using it.
 export const CATEGORIES = new Set([
-  'Anger', 'Anxiety', 'Body', 'Boundaries', 'Burnout', 'Caregiving', 'Communication',
-  'Comparison', 'Confidence', 'Connection', 'Dating', 'Decisions', 'Drinking', 'Driving',
-  'Family', 'Focus', 'Food', 'Forgiveness', 'Friendship', 'Grief', 'Grounding', 'Habits',
-  'Health', 'Home', 'Loneliness', 'Milestones', 'Mindfulness', 'Money', 'Mornings',
-  'Motivation', 'Moving', 'Neighbors', 'Outdoors', 'Parenting', 'Perfectionism', 'Pets',
-  'Play', 'Relationships', 'Rest', 'Retirement', 'Seasons', 'Self-Care',
-  'Self-Compassion', 'Setbacks', 'Sleep', 'Social Anxiety', 'Stress', 'Study', 'Therapy',
-  'Transitions', 'Travel', 'Visiting', 'Volunteering', 'Wellbeing', 'Work', 'Worry',
+  'Affairs', 'Anger', 'Anxiety', 'Body', 'Boundaries', 'Burnout', 'Caregiving',
+  'Communication', 'Comparison', 'Confidence', 'Connection', 'Dating', 'Debt', 'Decisions',
+  'Drinking', 'Driving', 'Estrangement', 'Family', 'Focus', 'Food', 'Forgiveness',
+  'Friendship', 'Gratitude', 'Grief', 'Grounding', 'Habits', 'Health', 'Home', 'Job Search',
+  'Loneliness', 'Milestones', 'Mindfulness', 'Money', 'Mornings', 'Motivation', 'Moving',
+  'Neighbors', 'Outdoors', 'Overstimulation', 'Pacing', 'Parenting', 'Perfectionism', 'Pets',
+  'Play', 'Relationships', 'Rest', 'Retirement', 'Screens', 'Seasons', 'Self-Care',
+  'Self-Compassion', 'Setbacks', 'Sleep', 'Smoking', 'Social Anxiety', 'Stress', 'Study',
+  'Teenagers', 'Therapy', 'Transitions', 'Travel', 'Visiting', 'Volunteering', 'Wellbeing',
+  'Work', 'Worry',
 ]);
 
 const CADENCE = new Set(['daily', 'weekly', 'as needed']);
@@ -180,6 +182,12 @@ for (let i = 0; i < CL.length; i++) {
       errors.push(`${CL[i].slug} and ${CL[j].slug}: ${shared} of the same items — write a different checklist`);
     }
   }
+}
+
+// Every checklist has an indexable page under site/checklists/ (see docs/seo.md).
+for (const c of CL) {
+  if (!existsSync(new URL(`../../site/checklists/${c.slug}/index.html`, import.meta.url)))
+    err(c, 'no page under site/checklists/; run python3 tools/build_seo_pages.py');
 }
 
 if (errors.length) {

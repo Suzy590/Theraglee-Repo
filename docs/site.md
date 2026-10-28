@@ -18,7 +18,7 @@ Moving the domain off HostGator is written up step by step in
 | Payments | Stripe: Checkout, billing portal, Tax, Radar, Connect. See [`stripe.md`](stripe.md). | `supabase/functions/`, deployed as Supabase Edge Functions |
 | Hosting | Serves the site. | Vercel project `theraglee-site` |
 | Sunday tool email | One free discovery tool a week to visitors with no account, from the box above the footer. See [`weekly-tool-email.md`](weekly-tool-email.md). | `site/index.html` `#inbox`, `supabase/functions/tool-signup`, `supabase/functions/weekly-tools` |
-| Search landing pages | Real HTML at `/articles/<slug>` for every article, `/tools/...` landing pages and catalogs, plus `sitemap.xml` and `robots.txt`, so the library is indexable. See [`seo.md`](seo.md). | `data/seo-pages.json`, `tools/build_seo_pages.py` |
+| Search landing pages | Real HTML at `/articles/<slug>` for every article, a hub per topic at `/articles/topics/<tag>`, a page per challenge theme and checklist, a page per Discover topic, the journal prompts, `/tools/...` landing pages and catalogs, plus `sitemap.xml`, `robots.txt` and `llms.txt`, so the library is indexable. See [`seo.md`](seo.md) for the build and [`seo-plan.md`](seo-plan.md) for the strategy. | `data/seo-pages.json`, `tools/build_seo_pages.py` |
 | Feature showcase | The column of feature cards beside the content, in the right third of every page but the admin page, the For Therapists pages (`for-therapists.html`, `for-therapists/match-mode`, `for-therapists/compare`) and the therapist dashboard, sign-in, sign-up and profile pages; on the landing page it stands in the explore panel beside "Today on Theraglee". See [below](#the-feature-showcase-beside-the-page). | `site/assets/showcase.js`, placed by `chrome()` in `site/assets/app.js`, styles in `site/assets/styles.css` |
 | Google Analytics | The admin screen's Google Analytics tab: the GA4 settings, the tag on every page (off until the privacy policy allows it), and the property's reports. See [`google-analytics.md`](google-analytics.md). | `site/assets/admin-analytics.js`, `site/assets/analytics-tag.js`, `supabase/functions/google-analytics` |
 | Domain | `theraglee.com`. | Registered at Network Solutions, served by Vercel |
@@ -33,6 +33,7 @@ the other.
 |---|---|---|
 | Sign up | `signup.html` (free, no card) | `therapist-signup.html` |
 | Sign in | `login.html` | `therapist-login.html` |
+| Forgot password | the link in the reset email opens `reset-password.html`, which sets the new password and opens the member dashboard; see [`auth-emails.md`](auth-emails.md) | the same page, which opens the practice dashboard |
 | Home after signing in | `dashboard.html` | `therapist-dashboard.html` |
 | Account page | `account.html` (tier, profile, privacy, inbox, history) | `account.html` shows a short therapist version (membership, sign-in and data) |
 | Plans | `pricing.html` (Free, Basic, Premium) | `for-therapists.html#membership` (one flat price); billing starts from the practice dashboard |
@@ -193,7 +194,7 @@ takes the count down. It includes:
   (`supabase/migrations/20261008170000_therapist_calls.sql` and
   `20261008180000_therapist_calls_answered.sql`)
 - the names and topics of members who opted in to being contacted (any registered member can)
-- a clinician library of 4800 resources (worksheets, CBT, ACT, DBT, couples, kids, games), with five more of every kind and five on each of eighteen topics added every day, all adjuncts to the therapist's own judgment rather than protocols — see [`therapist-resources.md`](therapist-resources.md)
+- a clinician library of 5425 resources (worksheets, CBT, ACT, DBT, couples, kids, games), with five more of every kind and five on each of eighteen topics added every day, all adjuncts to the therapist's own judgment rather than protocols — see [`therapist-resources.md`](therapist-resources.md)
 
 If either the license or the membership lapses, the listing comes down on its own
 and the library and member list close, while the therapist keeps their own inbox
@@ -491,8 +492,9 @@ gated by tier, so Basic and Premium have them too:
 | Keep favorites in your dashboard | `favorites` table via `assets/library.js`; "Your favorites" on the dashboard | RLS `own rows` |
 | Tons of journal prompts | 374 `daily_content` rows of kind `journal_prompt`, the Journal tab on the dashboard (`dashboard.html#journal`, drawn by `site/assets/journal-ui.js`; `journal.html` forwards there) | `min_level = 1` |
 | Articles sent to your inbox | the `daily-digest` Edge Function, below | `profiles.daily_email` |
-| Themed challenges, 7 days at a time | 78 `challenge_templates` at `min_level = 1`, two more added every day; one to-do a day from `challenge_days`, runs in `user_challenges`, ticks in `user_challenge_progress`; `guard_challenge_length()` keeps a Free member's run to 7 days — see [`challenges.md`](challenges.md) | `min_level`, RLS `own rows` |
-| Checklists with progress tracked | 70 `checklists` at `min_level = 1`, two more added every day, `checklist_progress` + `item_progress` | `min_level`, RLS `own rows` |
+| An evening reminder to check in on your mood (opt-in tick box on the check-in and the account page) | the `mood-reminder` Edge Function; see [`mood.md`](mood.md) | `profiles.mood_reminder`, off until ticked |
+| Themed challenges, 7 days at a time | 88 `challenge_templates` at `min_level = 1`, two more added every day; one to-do a day from `challenge_days`, runs in `user_challenges`, ticks in `user_challenge_progress`; `guard_challenge_length()` keeps a Free member's run to 7 days — see [`challenges.md`](challenges.md) | `min_level`, RLS `own rows` |
+| Checklists with progress tracked | 80 `checklists` at `min_level = 1`, two more added every day, `checklist_progress` + `item_progress` | `min_level`, RLS `own rows` |
 | Theraglee Match Mode (dashboard switch: let therapists reach out) | `profiles.visible_to_therapists`, toggled on `dashboard.html` and `account.html`; the details therapists see are asked for in `assets/match.js`; blocks in `member_blocks` | `member_opted_in()`, `member_blocked()` |
 
 ## The feature showcase beside the page
@@ -592,7 +594,10 @@ is in `docs/match-mode-consent.md`.
 | Migrations | `supabase/migrations/20260913200000_match_mode_anonymous.sql`, `supabase/migrations/20260914210000_match_reply_alert.sql`, `supabase/migrations/20260918150000_match_mode_pseudonymous.sql` |
 
 `profiles.full_name` is now just what the dashboard greets the member by; the
-sign-up form asks for "what should we call you" and marks it optional.
+sign-up form asks for "what should we call you" and requires an answer (a first
+name or nickname is fine), as does the account page when the member edits it.
+An administrator's invite from the admin screen is the one way an account can
+still arrive without a name.
 
 ### Messages from a profile
 
@@ -715,9 +720,9 @@ Most of it was imported from the Word documents in the parent folder:
 - 312 self-assessment quizzes (1,503 questions, 1,247 result bands; 62 imported, 250 written for the site — see below)
 - 374 journal prompts
 - 186 interactive worksheets (16 imported, 170 written for the site — see below)
-- 70 checklists, with two more added every day — see [`checklists.md`](checklists.md)
-- 78 themed challenges (365 daily to-dos each), with two more themes added every day — see [`challenges.md`](challenges.md)
-- 242 articles, free to everyone, with five more published every day — see [`articles.md`](articles.md)
+- 80 checklists, with two more added every day — see [`checklists.md`](checklists.md)
+- 88 themed challenges (365 daily to-dos each), with two more themes added every day — see [`challenges.md`](challenges.md)
+- 267 articles, free to everyone, with five more published every day — see [`articles.md`](articles.md)
 - 282 mandalas to print or color online (drawn in the browser from a seed): 200 round, 82 shaped like animals, plants and symbols
 - 150 mental health trivia quizzes (1,500 questions), written for the site rather than imported
 - 140 daily items — affirmations, tips, fun facts, quotes

@@ -66,3 +66,19 @@ verify_jwt = false
 # session. The function checks both itself.
 [functions.founding-billing]
 verify_jwt = false
+
+# The evening mood reminder; called by pg_cron with the shared key in
+# app_secrets, which the function checks itself. GET ?u=<token> is the
+# unsubscribe link in every email.
+[functions.mood-reminder]
+verify_jwt = false
+
+# The emails Supabase Auth sends. The repo's copy of each template lives in
+# supabase/templates/; the live copy is the one in the dashboard
+# (Authentication → Emails → Templates), pasted from here by hand, as
+# docs/auth-emails.md says. Never run `supabase config push` to apply it:
+# that would also push every other [auth] setting this file leaves at its
+# default (the Site URL among them) over the live ones.
+[auth.email.template.recovery]
+subject = "Reset your Theraglee password"
+content_path = "./supabase/templates/recovery.html"

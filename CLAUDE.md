@@ -51,16 +51,24 @@ it and commit the regenerated output.
 
 ## The search landing pages are generated
 
-`site/tools/`, `site/articles/` and `site/sitemap.xml` are built from
-`data/seo-pages.json`, and the FAQ structured data on `site/index.html` and
-`site/for-therapists.html` is rebuilt from the questions visible on those pages.
-Never hand-edit that output:
+`site/tools/`, `site/articles/` (including the topic hubs under
+`site/articles/topics/`), `site/challenges/`, `site/checklists/`,
+`site/discover/`, `site/sitemap.xml` and `site/llms.txt` are built from
+`data/seo-pages.json`, `data/articles.json`, `data/challenges.json`,
+`data/checklists.json`, `data/journal-prompts.txt` and
+`site/assets/discover-tools.js`, and the FAQ structured data on
+`site/index.html` and `site/for-therapists.html` is rebuilt from the questions
+visible on those pages. Never hand-edit that output:
 
 ```bash
 python3 tools/build_seo_pages.py
 ```
 
-`docs/seo.md` is the guide.
+`node tests/seo-pages/check.mjs` guards it. Every public page carries a
+canonical, a description under 160 characters and the share image
+`site/assets/social-card.png` (drawn by `python3 tools/social_card.py`);
+pages that only forward or hold member tools say `noindex`. `docs/seo.md` is
+the guide to the build and `docs/seo-plan.md` to the strategy.
 
 The free tool list the Sunday email draws from is generated too, from the
 browser's own copy in `site/assets/discover-tools.js`:
@@ -91,6 +99,16 @@ in `supabase/migrations/`. Change them here, run
 `node tests/billing-logic/check.mjs`, and deploy with the Supabase CLI — never
 edit a function in the Supabase Dashboard, or the next deploy will overwrite it.
 `docs/stripe.md` is the guide.
+
+## The sign-in emails are Supabase templates, kept in `supabase/templates/`
+
+The confirmation and password-reset emails are sent by Supabase Auth from the
+templates in its dashboard, not by code in this repo. The repo's copy of the
+reset template is `supabase/templates/recovery.html`, named in
+`supabase/config.toml`; change it there, then paste it into the dashboard by
+hand (never `supabase config push`, which would overwrite the live auth
+settings). The link in it must stay `{{ .ConfirmationURL }}`, and it lands on
+`site/reset-password.html`. `docs/auth-emails.md` is the guide.
 
 ## Tracking numbers forward through Twilio
 

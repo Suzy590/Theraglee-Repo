@@ -44,11 +44,59 @@ Every rating runs the same way, so a higher number is always the better day:
 10 for stress means no stress, 10 for loneliness means connected, 10 for the
 weather means it felt fantastic to the member.
 
+## The evening reminder email
+
+Under the faces there is a tick box, **Email me a reminder on days I have
+not checked in by evening**. It is off for everyone until they tick it (the
+same box is on the account page under Profile → Mood reminder), and ticking
+it saves straight away to `profiles.mood_reminder`.
+
+Every day at 01:00 UTC (9 pm Eastern in summer, 8 pm in winter; 6 pm or
+5 pm Pacific) pg_cron calls the `mood-reminder` Edge Function with the key in
+`app_secrets.mood_reminder_key`. The function asks
+`mood_reminder_recipients()` who is due: opted in, with an email address,
+not closing their account, and with **no submitted check-in for today**.
+"Today" is the Los Angeles date (`mood_reminder_today()`), because at 01:00
+UTC every US time zone is still on the same calendar day and
+`mood_logs.logged_on` is the member's own local date. A member who tapped a
+face but never pressed Submit is told the check-in is still open; one who has
+not started is nudged to begin. Nobody gets two in a day
+(`mood_reminder_sends`), a failed send is retried at most once more that day,
+and every email has a one-click unsubscribe link that flips the box off
+(`mood_reminder_unsubscribe()`, reached as `GET ?u=<email_token>` on the
+function, the same token the morning email uses).
+
+The words are in `supabase/functions/_shared/mood-reminder.ts`, which has no
+imports so `node tests/mood-reminder/check.mjs` can run them: a greeting, why
+it matters, one **Check in now** button to `dashboard.html#mood`, the crisis
+line, and the way out. It never mentions streaks, scores or a diagnosis.
+
+To preview or test without waiting for the evening:
+
+```bash
+KEY=$(psql "$DATABASE_URL" -Atc "select value from app_secrets where key='mood_reminder_key'")
+curl -s -X POST https://oekqzuguruyqkafsqhos.supabase.co/functions/v1/mood-reminder \
+  -H "x-mood-reminder-key: $KEY" -H "Content-Type: application/json" \
+  -d '{"dry_run": true, "user_id": "<profile id>", "started": false}'
+```
+
+Drop `dry_run` to send to that one member (a `user_id` skips the
+once-a-day and not-yet-submitted rules so you can test against your own
+inbox); drop `user_id` too and it does exactly what the scheduled run does.
+It needs the same `RESEND_API_KEY` secret as the morning digest
+(`docs/email.md`). Ship it with:
+
+```bash
+supabase db push                        # 20261024120000_mood_reminder.sql
+supabase functions deploy mood-reminder
+```
+
 ## Where it lives
 
 | Piece | Where |
 |---|---|
 | The tab | `site/assets/mood-ui.js`, mounted by `site/dashboard.html` when its Today tab first opens |
+| The reminder | `supabase/functions/mood-reminder/` sends; `supabase/functions/_shared/mood-reminder.ts` composes; `supabase/migrations/20261024120000_mood_reminder.sql` adds `profiles.mood_reminder`, `mood_reminder_sends`, `mood_reminder_recipients()` and the cron job; `node tests/mood-reminder/check.mjs` guards them |
 | Styles | `site/assets/mood.css`, linked from `site/dashboard.html` |
 | Factors, weather, and the analysis | `site/assets/mood-patterns.js` (no imports) |
 | Columns | `supabase/migrations/20260925120000_mood_factors.sql` adds `sleep`, `home_stress`, `work_stress`, `nutrition`, `hunger`, `loneliness`, `thoughts`, `activity`, `social` (1 to 10) and `weather` to `mood_logs`; `20261008190000_mood_weather_feel.sql` adds `weather_feel` (1 to 10) and extends the submitted-day lock to it |

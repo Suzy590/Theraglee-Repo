@@ -72,6 +72,12 @@ export async function mountMood(host, profile) {
       <div class="mood" data-mood>${MOODS.map(([m, e, l]) =>
         `<button type="button" data-m="${m}" title="${l}" aria-label="${l}">${e}</button>`).join('')}</div>
       <div data-mood-after class="faint" style="margin-top:12px"></div>
+      <label class="mood-remind">
+        <input type="checkbox" data-remind ${profile.mood_reminder ? 'checked' : ''}>
+        <span><strong>Email me a reminder</strong> on days I have not checked in by evening.
+          <span class="faint">One short email in the evening (US time), only on those days, each with an
+          unsubscribe link. Off until you tick it. Untick it here or on your account page to stop.</span></span>
+      </label>
     </div>
 
     <div class="card" id="mood-factors" style="margin-top:26px">
@@ -199,6 +205,21 @@ export async function mountMood(host, profile) {
     mountMood(host, profile);
     return true;
   };
+
+  // The evening reminder: saved the moment the box is ticked or unticked.
+  // The `mood-reminder` Edge Function emails whoever has it on and has not
+  // submitted today's check-in by evening (docs/mood.md).
+  const remind = $('[data-remind]');
+  remind.addEventListener('change', async () => {
+    const on = remind.checked;
+    remind.disabled = true;
+    const { error } = await sb.from('profiles').update({ mood_reminder: on }).eq('id', uid);
+    remind.disabled = false;
+    if (error) { remind.checked = !on; return toast(error.message, 'err'); }
+    profile.mood_reminder = on;
+    toast(on ? 'Reminders on. We will email you on the evenings you have not checked in.'
+             : 'Reminders off. No more evening emails.', 'ok');
+  });
 
   host.querySelectorAll('[data-mood] button').forEach(b => b.addEventListener('click', async () => {
     if (submitted() || dayChanged()) return;
