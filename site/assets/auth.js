@@ -21,12 +21,34 @@ const EYE_SHUT = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" st
   stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
   <path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>
   <path d="M4 4l16 16"/></svg>`;
-const pwField = (id, autocomplete, placeholder) => `<div class="pw">
+export const pwField = (id, autocomplete, placeholder) => `<div class="pw">
   <input id="${id}" type="password" autocomplete="${autocomplete}" required minlength="8"
          placeholder="${placeholder}">
   <button type="button" class="pw-eye" aria-label="Show password" aria-pressed="false"
           title="Show password"><span class="eye-open">${EYE_OPEN}</span><span class="eye-shut">${EYE_SHUT}</span></button>
 </div>`;
+
+// The eye beside a password box shows the password in plain text while it
+// is pressed, and hides it again on the next press. Wired once on the form
+// that holds the boxes; reset-password.html uses it too.
+export function wireEyes(form) {
+  form.addEventListener('click', (e) => {
+    const eye = e.target.closest('.pw-eye');
+    if (!eye) return;
+    const input = eye.parentElement.querySelector('input');
+    const show = input.type === 'password';
+    input.type = show ? 'text' : 'password';
+    eye.setAttribute('aria-pressed', show ? 'true' : 'false');
+    eye.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+    eye.title = show ? 'Hide password' : 'Show password';
+    eye.classList.toggle('on', show);
+  });
+}
+
+// Where the reset email's link lands: the page that sets the new password,
+// for members and therapists alike (it sends each to their own dashboard
+// afterwards). The account page sends its reset links there too.
+export const resetLandingUrl = () => location.origin + '/reset-password.html';
 
 /**
  * Draws the form into `#auth` and wires it up.
@@ -137,7 +159,7 @@ export async function authPage({ audience, mode, next: nextGiven }) {
     ${!up ? `<p class="center faint" style="margin:18px 0 0">
       <a href="#" id="forgot">Forgot your password?</a></p>` : ''}`;
 
-  const resetTo = location.origin + '/' + (audience === 'therapist' ? 'therapist-dashboard.html' : 'account.html');
+  const resetTo = resetLandingUrl();
   // The confirmation email's link lands wherever the sign-up was headed (the
   // pricing page, for someone buying a plan), else on the dashboard.
   const confirmTo = location.origin + '/' + (next || door.home);
@@ -149,19 +171,7 @@ export async function authPage({ audience, mode, next: nextGiven }) {
       : `Reset link sent to ${esc(email)}. It can take a minute.`, error ? 'err' : 'warn');
   };
 
-  // The eye beside a password box shows the password in plain text while it
-  // is pressed, and hides it again on the next press.
-  $('#form').addEventListener('click', (e) => {
-    const eye = e.target.closest('.pw-eye');
-    if (!eye) return;
-    const input = eye.parentElement.querySelector('input');
-    const show = input.type === 'password';
-    input.type = show ? 'text' : 'password';
-    eye.setAttribute('aria-pressed', show ? 'true' : 'false');
-    eye.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
-    eye.title = show ? 'Hide password' : 'Show password';
-    eye.classList.toggle('on', show);
-  });
+  wireEyes($('#form'));
 
   // The hint under a new password turns green, with a check, once the
   // password is long enough, so nobody has to count.

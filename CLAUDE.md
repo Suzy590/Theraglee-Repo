@@ -100,6 +100,16 @@ in `supabase/migrations/`. Change them here, run
 edit a function in the Supabase Dashboard, or the next deploy will overwrite it.
 `docs/stripe.md` is the guide.
 
+## The sign-in emails are Supabase templates, kept in `supabase/templates/`
+
+The confirmation and password-reset emails are sent by Supabase Auth from the
+templates in its dashboard, not by code in this repo. The repo's copy of the
+reset template is `supabase/templates/recovery.html`, named in
+`supabase/config.toml`; change it there, then paste it into the dashboard by
+hand (never `supabase config push`, which would overwrite the live auth
+settings). The link in it must stay `{{ .ConfirmationURL }}`, and it lands on
+`site/reset-password.html`. `docs/auth-emails.md` is the guide.
+
 ## Tracking numbers forward through Twilio
 
 A verified therapist's profile shows a Theraglee number

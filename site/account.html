@@ -40,6 +40,7 @@ import { matchDetailsModal, matchSummary, matchComplete, MATCH_BLURB } from './a
 import { loadPrices, tierCards, PLANS_INTRO, PLANS_NOTE } from './assets/plans.js';
 import { mountInbox, unreadCount } from './assets/inbox.js';
 import { downloadMyData } from './assets/my-data.js';
+import { resetLandingUrl } from './assets/auth.js';
 await chrome({ active:'account.html' });
 let a = await requireAuth();
 const prices = await loadPrices(sb);   // display prices for the tier cards
@@ -214,7 +215,7 @@ function security(){
   return `
     <div style="max-width:560px">
       <h2>Password</h2>
-      <p class="muted">We email you a link; the link signs you in and lets you set a new one.</p>
+      <p class="muted">We email you a link. It signs you in and opens a page where you choose a new password.</p>
       <button class="btn ghost" id="pw">Send me a reset link</button>
 
       <hr class="hr">
@@ -255,6 +256,12 @@ function profile(){
         <div class="chips" id="kinds">${[['article','Article'],['affirmation','Affirmation'],['quote','Quote'],
           ['tip','Tip'],['fun_fact','Fun fact'],['journal_prompt','Journal prompt']].map(([k,l])=>
           `<button type="button" class="chip ${(p.daily_email_kinds||[]).includes(k)?'on':''}" data-v="${k}">${l}</button>`).join('')}</div></div>
+
+      <h3>Mood reminder</h3>
+      <label class="switch"><input type="checkbox" id="mremind" ${p.mood_reminder?'checked':''}>
+        <span><strong>Remind me to check in on my mood</strong><br>
+        <span class="muted">One short email in the evening, only on days you have not submitted the
+        mood check-in on your dashboard. Off until you tick it; every email has an unsubscribe link.</span></span></label>
 
       <button class="btn" id="savep" type="submit">Save changes</button>
     </form>
@@ -439,7 +446,7 @@ async function render(){
   if (tab === 'security') {
     document.getElementById('pw').addEventListener('click', async () => {
       const { error } = await sb.auth.resetPasswordForEmail(a.profile.email,
-        { redirectTo: location.origin + '/therapist-dashboard.html' });
+        { redirectTo: resetLandingUrl() });
       error ? toast(error.message,'err') : toast('Reset link sent to your email.','ok');
     });
     wireDelete();
@@ -463,6 +470,9 @@ async function render(){
         issues: chipVals('issues'),
         daily_email: document.getElementById('demail').checked,
         daily_email_kinds: chipVals('kinds'),
+        // The mood reminder column arrives with 20261024120000_mood_reminder.sql;
+        // until that migration is applied, saving the rest must still work.
+        ...('mood_reminder' in a.profile ? { mood_reminder: document.getElementById('mremind').checked } : {}),
         onboarded: true,
       }).eq('id', a.profile.id);
       busy(btn, false);
@@ -472,7 +482,7 @@ async function render(){
     });
     document.getElementById('pw').addEventListener('click', async () => {
       const { error } = await sb.auth.resetPasswordForEmail(a.profile.email,
-        { redirectTo: location.origin + '/account.html' });
+        { redirectTo: resetLandingUrl() });
       error ? toast(error.message,'err') : toast('Reset link sent to your email.','ok');
     });
   }
