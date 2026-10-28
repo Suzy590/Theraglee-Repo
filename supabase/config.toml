@@ -61,6 +61,12 @@ verify_jwt = false
 [functions.google-analytics]
 verify_jwt = false
 
+# Starts a founding therapist's billing when their first match arrives; called
+# by pg_cron every hour with a shared key, or by an administrator with their
+# session. The function checks both itself.
+[functions.founding-billing]
+verify_jwt = false
+
 # The evening mood reminder; called by pg_cron with the shared key in
 # app_secrets, which the function checks itself. GET ?u=<token> is the
 # unsubscribe link in every email.

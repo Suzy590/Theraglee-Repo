@@ -9,6 +9,8 @@ import {
   codeFitsRole, connectStatus, deletionAfterSync, deletionPlan, hasLiveStripeSub, isDeleteWhen, keepsComp,
   parseDiscountInput, planChangeError,
   priceKeysForAudience, deadlineEnd, foundingOffer, isActive, isInterval,
+  FOUNDING_NOTICE_DAYS, FOUNDING_TRIAL_DAYS, foundingBillingStart, foundingTrialAction, foundingTrialEnd,
+  isFoundingPrice, leavesFreePeriod,
   isStaleSubscription, isValidSessionFee, planForPrice, platformFee, priceKeyFor,
   safeReturnOrigin, subscriptionPatch,
 } from "../../supabase/functions/_shared/billing.ts";
@@ -185,6 +187,51 @@ test("a blank deadline never expires and a blank or bad cap means no cap", () =>
   assert.equal(foundingOffer(founding({ founding_spots: " 25 " }), before).spots, 25);
 });
 
+test("free until the first match: the trial is as long as Stripe allows, the notice a week", () => {
+  const now = new Date("2026-10-23T12:00:00Z");
+  assert.equal(FOUNDING_TRIAL_DAYS, 730);
+  assert.equal(FOUNDING_NOTICE_DAYS, 7);
+  assert.equal(foundingBillingStart(now), Math.floor(now.getTime() / 1000) + 7 * 86400);
+  assert.equal(foundingTrialEnd(now), Math.floor(now.getTime() / 1000) + 730 * 86400);
+  // Stripe wants a trial end at least 48 hours out; a week's notice clears it.
+  assert.ok(foundingBillingStart(now) - Math.floor(now.getTime() / 1000) >= 2 * 86400);
+});
+
+test("isFoundingPrice matches only the configured founding price", () => {
+  assert.equal(isFoundingPrice(founding(), "price_t_f"), true);
+  assert.equal(isFoundingPrice(founding(), "price_t_m"), false);
+  assert.equal(isFoundingPrice(founding(), ""), false);
+  assert.equal(isFoundingPrice(founding(), null), false);
+  assert.equal(isFoundingPrice(founding({ price_therapist_founding: "" }), ""), false);
+  assert.equal(isFoundingPrice({}, "price_t_f"), false);
+});
+
+test("a founding trial is extended only while the first match has not arrived", () => {
+  const waiting = { founding_member: true, first_match_at: null };
+  assert.equal(foundingTrialAction(waiting, { status: "trialing" }, true), "extend");
+  // The first match arrived: the founding-billing function set the end; leave it.
+  assert.equal(foundingTrialAction({ founding_member: true, first_match_at: "2026-10-23T12:00:00Z" },
+    { status: "trialing" }, true), "none");
+  // Not on the founding price, or not marked a founding member: an ordinary trial.
+  assert.equal(foundingTrialAction(waiting, { status: "trialing" }, false), "none");
+  assert.equal(foundingTrialAction({ founding_member: false, first_match_at: null }, { status: "trialing" }, true), "none");
+  assert.equal(foundingTrialAction({}, { status: "trialing" }, true), "none");
+  // A trial that already ended is not revived.
+  assert.equal(foundingTrialAction(waiting, { status: "active" }, true), "none");
+  assert.equal(foundingTrialAction(waiting, { status: "canceled" }, true), "none");
+});
+
+test("a founding membership switched to a regular plan while still free starts paying now", () => {
+  const wasFounding = { founding_member: true };
+  assert.equal(leavesFreePeriod(wasFounding, { status: "trialing" }, false), true);
+  // Still on the founding price: the free period stands.
+  assert.equal(leavesFreePeriod(wasFounding, { status: "trialing" }, true), false);
+  // Already paying, or never founding: nothing to end.
+  assert.equal(leavesFreePeriod(wasFounding, { status: "active" }, false), false);
+  assert.equal(leavesFreePeriod({ founding_member: false }, { status: "trialing" }, false), false);
+  assert.equal(leavesFreePeriod({}, { status: "trialing" }, false), false);
+});
+
 const sub = (over = {}) => ({
   id: "sub_1", status: "active", cancel_at_period_end: false,
   items: { data: [{ current_period_end: 1_800_000_000, price: { id: "price_b_m" } }] },
@@ -216,6 +263,18 @@ test("therapist subscriptions confirm the role and unpublish when lapsed", () =>
   assert.equal(live.unpublishTherapist, false);
   const gone = subscriptionPatch(sub({ status: "unpaid" }), "cus_1", "therapist");
   assert.equal(gone.unpublishTherapist, true);
+});
+
+test("a live subscription on the founding price makes a founding member; leaving it takes the mark away", () => {
+  const trial = subscriptionPatch(sub({ status: "trialing" }), "cus_1", "therapist", true);
+  assert.equal(trial.patch.founding_member, true);
+  assert.equal(trial.unpublishTherapist, false);
+  assert.equal(subscriptionPatch(sub(), "cus_1", "therapist", true).patch.founding_member, true);
+  // The regular price, a switch to yearly, or an ended membership: no badge, no locked-in rate.
+  assert.equal(subscriptionPatch(sub(), "cus_1", "therapist").patch.founding_member, false);
+  assert.equal(subscriptionPatch(sub({ status: "canceled" }), "cus_1", "therapist", true).patch.founding_member, false);
+  // Member plans never carry the mark.
+  assert.equal("founding_member" in subscriptionPatch(sub(), "cus_1", "basic", true).patch, false);
 });
 
 test("an unknown plan never downgrades a live subscription", () => {

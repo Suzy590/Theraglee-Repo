@@ -210,7 +210,6 @@ const isPaid = (p) => ['active','trialing','comped'].includes(p?.subscription_st
 // up to date before drawing anything.
 const justPaid = qs('checkout') === 'success';
 if (qs('checkout') || qs('connect')) {
-  if (justPaid) toast('Payment received — welcome aboard.', 'ok');
   if (qs('connect') === 'return') await callStripeFn('stripe-connect', { action: 'status' });
   if (qs('connect') === 'refresh') {
     // The onboarding link expired or was reused; Stripe asks us to make a new one.
@@ -223,6 +222,13 @@ if (qs('checkout') || qs('connect')) {
   for (let i = 0; justPaid && !isPaid(a.profile) && i < 6; i++) {
     await new Promise(r => setTimeout(r, 2000));
     clearAccess(); a = await access(true); T = a.therapist || T;
+  }
+  // A founding membership saved a card and charged nothing; say so, rather
+  // than thanking them for a payment that did not happen.
+  if (justPaid) {
+    toast(a.profile.founding_member && a.profile.subscription_status === 'trialing'
+      ? 'Card saved — welcome aboard. Nothing is charged until your first member match.'
+      : 'Payment received — welcome aboard.', 'ok');
   }
   // After paying, the next step is the profile; after the payouts setup, back
   // to Membership.
@@ -544,6 +550,16 @@ async function home(){
   if (error) return render(`<div class="notice err">${esc(error.message)}</div>`);
   const rows = data || [];
   unreadReplies = (replies||[]).filter(r => !r.read_at).length;
+  // A founding member's first match starts their billing; the Membership tab
+  // has the date, and this is where they see the match itself.
+  const foundingNote = a.profile.founding_member && a.profile.subscription_status === 'trialing'
+    && a.profile.first_match_at
+    ? `<div class="notice" style="margin-bottom:16px"><strong>Your first match is here.</strong> As a
+         founding member you have paid nothing until now; billing begins${
+         a.profile.current_period_end && !a.profile.cancel_at_period_end
+           ? ` on ${fmtDate(a.profile.current_period_end)}` : ' soon'} at your locked-in founding rate.
+         <a href="#membership">See your membership</a>.</div>`
+    : '';
 
   // Conversations: everything you sent and everything a member answered, by member.
   const threads = new Map();
@@ -567,6 +583,7 @@ async function home(){
 
   render(`
     <h2>Members who have toggled <span style="color:var(--green)">ON</span> <strong>Theraglee Match Mode</strong></h2>
+    ${foundingNote}
     ${!liveListing ? `<div class="notice warn">Your listing has to be live before you can
       reach out.</div>` : ''}
 
@@ -1276,6 +1293,16 @@ async function membership(){
   // (or to the admin, so it can be tested before the switch is on).
   const offer = foundingOffer(cfg);
   const founding = (offer.open || (p.role === 'admin' && offer.priceId)) && offer.rate;
+  // Where a founding membership stands: free until the first match (a
+  // trialing subscription on the founding price), billing about to begin
+  // (the first match arrived; the webhook synced the start date into
+  // current_period_end), or paying the locked-in rate.
+  const foundingFree = !!p.founding_member && p.subscription_status === 'trialing';
+  const foundingWaiting = foundingFree && !p.first_match_at;
+  const foundingStarting = foundingFree && !!p.first_match_at;
+  const limits = [offer.spots ? `for the first ${offer.spots} therapists whose memberships go live` : '',
+                  offer.deadlineText ? `anyone who joins by ${esc(offer.deadlineText)}` : '']
+    .filter(Boolean).join(', or ') + (offer.spots && offer.deadlineText ? ', whichever comes first' : '');
 
   const acct = T?.stripe_account_status || 'none';
   const acctLabel = { none:'Not set up', onboarding:'Setup not finished',
@@ -1294,17 +1321,34 @@ async function membership(){
         <h3>${title}</h3>${badge}</div>
       <p class="meta"${cls ? '' : ' style="color:var(--muted)"'}>${blurb}</p></a>`;
 
-  // One-time pointer for an account that chose the founding rate at sign-up.
+  // One-time pointer for an account that chose the founding offer at sign-up.
   const foundingHello = wantFounding && !paid
     ? (founding
-        ? `<div class="notice" style="margin-top:16px"><strong>Welcome. You chose the founding member
-             rate.</strong> Click <strong>Founding member · $${esc(offer.rate)}/month</strong> below to start it${
-             offer.spots || offer.deadlineText ? ' while it lasts' : ''}. Your listing goes live on its own
-             once your license is verified.</div>`
-        : `<div class="notice warn" style="margin-top:16px"><strong>The founding member offer is no longer
+        ? `<div class="notice" style="margin-top:16px"><strong>Welcome. You chose the founding
+             offer.</strong> Click <strong>Founding offer · free until your first match</strong> below to
+             save a card${offer.spots || offer.deadlineText ? ' while the offer lasts' : ''}. Nothing is charged
+             until the first member who matches your practice appears on your dashboard; then it is
+             $${esc(offer.rate)}/month, locked in. Your listing goes live on its own once your license
+             is verified.</div>`
+        : `<div class="notice warn" style="margin-top:16px"><strong>The founding offer is no longer
              available.</strong> The regular membership is below.</div>`)
     : '';
   wantFounding = false;
+
+  // A founding member: the badge, and the direct line to the team.
+  const foundingPerks = p.founding_member ? `
+    <div class="card" style="margin-top:16px">
+      <div class="row" style="align-items:flex-start;gap:14px">
+        <span class="badge">★ Founding member</span>
+        <div style="flex:1;min-width:240px">
+          <strong>You were here first.</strong>
+          <p class="muted" style="margin:4px 0 0;font-size:.93rem">Your public profile carries the
+            Founding Member badge, and you have a direct line to our team with first say on new
+            features, from Theraglee Match Mode improvements to the clinician library's next shelf.
+            <a href="mailto:hello@theraglee.com?subject=Founding%20member">Write to us</a> any time.</p>
+        </div>
+      </div>
+    </div>` : '';
 
   render(`
     <h2>${payFirst ? 'Start your membership' : 'Therapist membership'}</h2>
@@ -1317,29 +1361,51 @@ async function membership(){
     <div class="card" style="margin-top:16px">
       <div class="spread">
         <div><strong>Status</strong><br>
-          <span class="muted">${comped ? 'Complimentary (no charge)' : paid ? 'Active' : (p.subscription_status || 'Not subscribed')}</span></div>
-        ${p.current_period_end ? `<div><strong>${p.cancel_at_period_end?'Ends':'Renews'}</strong><br>
+          <span class="muted">${comped ? 'Complimentary (no charge)'
+            : foundingWaiting ? 'Founding member · free until your first match'
+            : foundingStarting ? 'Founding member · first match arrived'
+            : paid && p.founding_member ? 'Active · founding rate'
+            : paid ? 'Active' : (p.subscription_status || 'Not subscribed')}</span></div>
+        ${foundingWaiting ? `<div><strong>First charge</strong><br>
+          <span class="muted">After your first member match</span></div>`
+        : foundingStarting && p.current_period_end && !p.cancel_at_period_end ? `<div><strong>Billing starts</strong><br>
+          <span class="muted">${fmtDate(p.current_period_end)}</span></div>`
+        : p.current_period_end ? `<div><strong>${p.cancel_at_period_end?'Ends':'Renews'}</strong><br>
           <span class="muted">${fmtDate(p.current_period_end)}</span></div>` : ''}
         <div class="row">
           ${paid ? (paysStripe ? `<button class="btn ghost" id="portal">Cancel/Manage membership</button>` : '')
-                 : `${founding ? `<button class="btn" id="sub-founding">Founding member · $${esc(offer.rate)}/month</button>` : ''}
+                 : `${founding ? `<button class="btn" id="sub-founding">Founding offer · free until your first match</button>` : ''}
                     <button class="btn ${founding ? 'ghost' : ''}" id="sub">${founding ? 'Regular monthly' : 'Start monthly'}${
                       cfg.display_therapist_monthly ? ' · $' + esc(cfg.display_therapist_monthly) + '/month' : ''}</button>
                     <button class="btn ghost" id="sub-yearly">Yearly${
                       cfg.display_therapist_yearly ? ' · $' + esc(cfg.display_therapist_yearly) + '/year' : ''}</button>`}
         </div>
       </div>
+      ${foundingWaiting ? `<p class="muted" style="margin:14px 0 0;font-size:.93rem">
+        <strong>Nothing is charged yet.</strong> Your card is saved, and billing begins only when the
+        first member who matches your practice appears on your Home tab${
+        offer.rate ? `, at your locked-in founding rate of $${esc(offer.rate)} a month` : ''}. We email you
+        that day with the date of your first charge, a week later. Switching to the yearly plan gives up
+        the locked-in rate.</p>` : ''}
+      ${foundingStarting ? `<p class="muted" style="margin:14px 0 0;font-size:.93rem">
+        <strong>Your first match is here.</strong> Billing begins${
+        p.current_period_end && !p.cancel_at_period_end ? ` on ${fmtDate(p.current_period_end)}` : ' soon'}${
+        offer.rate ? ` at your locked-in founding rate of $${esc(offer.rate)} a month` : ''}, on the card you
+        saved. Switching to the yearly plan gives up the locked-in rate.</p>` : ''}
       ${!paid && founding ? `<p class="muted" style="margin:14px 0 0;font-size:.93rem">
-        <strong>Founding member offer${offer.open ? '' : ' (off — visible to admins only)'}:</strong>
-        $${esc(offer.rate)} a month, locked in for as long as your membership stays active${
-        offer.spots ? `, for the first ${offer.spots} therapists` : ''}${
-        offer.deadlineText ? ` who join by ${esc(offer.deadlineText)}` : ''}.
-        Switching to the yearly plan later gives up the locked-in rate.</p>` : ''}
+        <strong>The founding offer${offer.open ? '' : ' (off — visible to admins only)'}:</strong>
+        free until your first member match, then $${esc(offer.rate)}/month locked in. You pay nothing until
+        the first member who matches your practice appears on your dashboard; only then does billing
+        begin, at your locked-in founding rate, for as long as your membership stays continuously
+        active. We'll let you know before your first charge. No surprise charges, ever.${
+        limits ? ` The founding rate is ${limits}.` : ''} Switching to the yearly plan later gives up the
+        locked-in rate.</p>` : ''}
       ${paid ? '' : `<p class="faint" style="margin:14px 0 0">One flat membership for licensed
         professionals, separate from the member plans. Your listing goes live once your license
         is verified, and it opens the clinician library and Theraglee Match Mode. Cancel any time.
         Everything it includes is listed below.</p>`}
     </div>
+    ${foundingPerks}
     ${paysStripe ? discountCodeBox() : ''}
 
     <h2 style="margin-top:34px">What your membership includes</h2>

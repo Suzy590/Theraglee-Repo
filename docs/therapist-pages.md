@@ -30,8 +30,12 @@ redirects in `site/vercel.json`.
 
 ## Prices are not hardcoded
 
-The numbers printed in the HTML ($29/month, $290/year, $20/month founding)
-are only what shows until `app_config` loads. `site/assets/therapist-rates.js`
+The numbers printed in the HTML ($29/month, $290/year, and $20/month after
+the first member match for founding therapists) are only what shows until
+`app_config` loads. The founding offer's own wording ("free until your first
+member match, then $20/month locked in", the 150 spots, December 31, 2026)
+is explained in `docs/stripe.md` under *The founding offer*; the spots and
+deadline on the page come from the same admin screen. `site/assets/therapist-rates.js`
 fills every `.tg-rate-monthly`, `.tg-rate-yearly` and `.tg-rate-founding`
 from the admin screen's Stripe setup tab, hides `.tg-founding` and turns each
 `.tg-founding-cta` into a plain "Start your listing" button when the founding

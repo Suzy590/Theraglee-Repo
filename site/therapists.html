@@ -284,7 +284,8 @@ async function run(){
           ${t.delivery === 'telehealth' ? ' · Telehealth' : t.delivery === 'both' ? ' · In person &amp; telehealth' : ' · In person'}
         </p>
         ${t.bio ? `<p class="muted" style="margin:0 0 8px;font-size:.93rem">${esc(String(t.bio).slice(0,150))}${t.bio.length>150?'…':''}</p>` : ''}
-        <div class="chips">${spec.map(s=>`<span class="badge gray">${esc(s)}</span>`).join('')}</div>
+        <div class="chips">${t.founding_member ? '<span class="badge" title="One of the first therapists on Theraglee">★ Founding Member</span>' : ''}${
+          spec.map(s=>`<span class="badge gray">${esc(s)}</span>`).join('')}</div>
         ${(t.age_ranges||[]).length ? `<p class="faint" style="margin:8px 0 0;font-size:.85rem">
           Ages: ${t.age_ranges.map(esc).join(' · ')}</p>` : ''}
         ${otherLangs.length ? `<p class="faint" style="margin:8px 0 0;font-size:.85rem">

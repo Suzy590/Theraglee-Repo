@@ -83,7 +83,7 @@ import { foundingOffer } from './assets/plans.js';
 await chrome();
 
 // Opened from a "Become a founding member" button (?plan=founding): show the
-// founding rate up top, remember the choice, and send the new account to the
+// founding offer up top, remember the choice, and send the new account to the
 // Membership tab with the founding option waiting. The offer itself (rate,
 // spots, deadline, on/off) comes from the admin screen, and the checkout is
 // what finally decides whether it can still be sold.
@@ -97,25 +97,30 @@ if (qs('plan') === 'founding') {
   const box = document.getElementById('founding-banner');
   box.hidden = false;
   if (offer.open && offer.rate) {
-    const who = offer.spots ? `the first ${offer.spots} therapists` : 'founding members';
-    const by = offer.deadlineText ? ` who join by ${esc(offer.deadlineText)}` : '';
+    const limits = [offer.spots ? `the first ${offer.spots} therapists whose memberships go live` : '',
+                    offer.deadlineText ? `anyone who joins by ${esc(offer.deadlineText)}` : '']
+      .filter(Boolean).join(', or ') + (offer.spots && offer.deadlineText ? ', whichever comes first' : '');
     box.innerHTML = `<div class="founding-note" role="note">
-      <span class="kicker">Founding member offer</span>
-      <div class="rate"><b>$${esc(offer.rate)}</b><small>/month, locked in for as long as your membership stays active</small></div>
-      <p>For ${who}${by}. Create your account below, and the founding rate will be waiting on
+      <span class="kicker">The founding offer</span>
+      <div class="rate"><b>Free</b><small>until your first member match, then $${esc(offer.rate)}/month locked in</small></div>
+      <p>You pay nothing until the first member who matches your practice appears on your dashboard.
+        Only then does billing begin, at your locked-in founding rate, for as long as your membership
+        stays continuously active. We'll let you know before your first charge.${
+        limits ? ` For ${limits}.` : ''} Create your account below, and the offer will be waiting on
         your practice dashboard, one click away. <a href="founding-members.html">How the offer works</a>.</p></div>`;
     document.getElementById('next-step-2').textContent =
-      `Start your founding membership at $${offer.rate}/month.`;
+      `Save a card for your founding membership: free until your first match, then $${offer.rate}/month.`;
     document.getElementById('price-line').innerHTML =
-      `Founding member rate: $${esc(offer.rate)}/month, locked in while your membership stays active` +
-      (cfg.display_therapist_monthly ? ` (regular rate $${esc(cfg.display_therapist_monthly)}/month)` : '') +
-      `. Cancel any time. <a href="for-therapists.html">See everything it includes</a>.`;
+      `The founding offer: free until your first member match, then $${esc(offer.rate)}/month locked in while ` +
+      `your membership stays continuously active` +
+      (cfg.display_therapist_monthly ? ` (standard rate $${esc(cfg.display_therapist_monthly)}/month)` : '') +
+      `. We'll let you know before your first charge. Cancel any time. <a href="for-therapists.html">See everything it includes</a>.`;
     try { localStorage.setItem('theraglee_plan', 'founding'); } catch {}
     next = 'therapist-dashboard.html?plan=founding#membership';
   } else {
     const why = offer.closedBecause === 'expired' ? 'has ended' : 'is not open right now';
     box.innerHTML = `<div class="notice warn" style="margin-bottom:22px">
-      <strong>The founding member offer ${why}.</strong>${cfg.display_therapist_monthly
+      <strong>The founding offer ${why}.</strong>${cfg.display_therapist_monthly
         ? ` Therapist membership is $${esc(cfg.display_therapist_monthly)}/month` +
           (cfg.display_therapist_yearly ? ` or $${esc(cfg.display_therapist_yearly)} a year` : '') + '.'
         : ''} You can still create your account below.</div>`;
