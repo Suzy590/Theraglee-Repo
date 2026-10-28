@@ -122,10 +122,10 @@ export async function authPage({ audience, mode, next: nextGiven }) {
     <form id="form" class="stack" novalidate>
       ${up && audience === 'therapist' ? `<div class="field">
         <label for="name">Your name</label>
-        <input id="name" type="text" autocomplete="name" placeholder="First and last name">
+        <input id="name" type="text" autocomplete="name" required placeholder="First and last name">
       </div>` : up ? `<div class="field">
-        <label for="name">What should we call you? <span class="faint">(optional)</span></label>
-        <input id="name" type="text" autocomplete="given-name" placeholder="A first name or nickname is fine">
+        <label for="name">What should we call you?</label>
+        <input id="name" type="text" autocomplete="given-name" required placeholder="A first name or nickname is fine">
         <div class="help">Only for greeting you. Therapists never see it; you give a therapist your
           real name only if you reply to one.</div>
       </div>` : ''}
@@ -192,6 +192,13 @@ export async function authPage({ audience, mode, next: nextGiven }) {
     const full_name = up ? $('#name').value.trim() : '';
     $('#alert').innerHTML = '';
 
+    // A name is required at sign-up so no account arrives without one: the
+    // dashboard greets the member by it, and the admin list shows it.
+    if (up && !full_name) {
+      say(audience === 'therapist' ? 'Please type your name.' : 'Please tell us what to call you.');
+      $('#name').focus({ preventScroll: true });
+      return;
+    }
     if (!email || !password) return say('Please fill in your email and password.');
     if (up && password.length < 8)
       return say('Please choose a password of at least 8 characters.');

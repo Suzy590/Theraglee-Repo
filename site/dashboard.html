@@ -674,11 +674,15 @@ vis.addEventListener('click', async () => {
 });
 
 /* ---- counts ---- */
+// "Your week" counts the last seven days only: entries written, quizzes taken
+// and activities completed since this moment a week ago. Active challenges is
+// a current state (every challenge not archived), so it has no date cutoff.
+const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 const [{ count: nJ }, { data: ch }, { count: nQ }, { count: nD }] = await Promise.all([
-  sb.from('journal_entries').select('id', { count:'exact', head:true }).eq('user_id', p.id),
+  sb.from('journal_entries').select('id', { count:'exact', head:true }).eq('user_id', p.id).gte('created_at', weekAgo),
   sb.from('user_challenges').select('id,title,total_days,started_on').eq('user_id', p.id).eq('archived', false),
-  sb.from('quiz_attempts').select('id', { count:'exact', head:true }).eq('user_id', p.id),
-  sb.from('item_progress').select('item_id', { count:'exact', head:true }).eq('user_id', p.id).eq('status', 'completed'),
+  sb.from('quiz_attempts').select('id', { count:'exact', head:true }).eq('user_id', p.id).gte('created_at', weekAgo),
+  sb.from('item_progress').select('item_id', { count:'exact', head:true }).eq('user_id', p.id).eq('status', 'completed').gte('completed_at', weekAgo),
 ]);
 document.getElementById('n-entries').textContent = nJ ?? 0;
 document.getElementById('n-quiz').textContent    = nQ ?? 0;

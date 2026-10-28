@@ -232,7 +232,7 @@ function profile(){
   return `
     <form id="pf" style="max-width:560px">
       <div class="field"><label for="name">What should we call you?</label>
-        <input id="name" value="${esc(p.full_name||'')}" placeholder="A first name or nickname is fine">
+        <input id="name" value="${esc(p.full_name||'')}" required placeholder="A first name or nickname is fine">
         <div class="help">Only for greeting you on your dashboard. Therapists never see it. You give
           a therapist your real name only when you reply to one from your inbox.</div></div>
       <div class="field"><label for="zip">Zip code</label>
@@ -456,10 +456,16 @@ async function render(){
     wireChips('issues'); wireChips('kinds');
     document.getElementById('pf').addEventListener('submit', async (e) => {
       e.preventDefault();
+      const fullName = document.getElementById('name').value.trim();
+      if (!fullName) {
+        toast('Please tell us what to call you.', 'err');
+        document.getElementById('name').focus({ preventScroll: true });
+        return;
+      }
       const btn = document.getElementById('savep');
       busy(btn, true, 'Saving…');
       const { error } = await sb.from('profiles').update({
-        full_name: document.getElementById('name').value.trim() || null,
+        full_name: fullName,
         zip: document.getElementById('zip').value.trim() || null,
         issues: chipVals('issues'),
         daily_email: document.getElementById('demail').checked,
