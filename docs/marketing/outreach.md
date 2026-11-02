@@ -166,8 +166,8 @@ Subject: Guest post idea: what a therapist directory should actually cost
 > I read [Blog]'s piece on [recent post title] and thought your readers might
 > want a follow-up from a different seat. I founded Theraglee, a therapist
 > directory with one flat rate ($29 a month or $290 a year) and no per-session
-> or per-contact fees, and I have spent a year looking closely at how the
-> directories charge.
+> or per-contact fees, and I have looked closely at how the directories
+> charge.
 >
 > I would like to write [a plain, numbers-first piece on what a directory
 > listing really costs once the fees are added up, and what it is supposed to
@@ -194,8 +194,8 @@ Subject: Guest idea for [Podcast]: a flat-fee directory, built by a therapist
 > I have listened to [Podcast] since [episode or topic], and I would like to
 > offer myself as a guest.
 >
-> I am [Your name], founder of Theraglee. I am a licensed marriage and family
-> therapist in California, and I built the directory I wished existed: one flat
+> I am [Your name], founder of Theraglee[, and a licensed marriage and family
+> therapist in California]. I built the directory I wished existed: one flat
 > rate, $29 a month or $290 a year, no per-session or per-contact fees, license
 > verified before a listing goes live, and a feature called Match Mode where a
 > member who is ready for therapy flips a switch and fitting therapists message
