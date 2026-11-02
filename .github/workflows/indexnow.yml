@@ -1,0 +1,51 @@
+# Tells Bing (and every other IndexNow search engine: Yandex, Seznam, Naver)
+# which pages are new or changed, after each push to the default branch has
+# deployed. Nothing to set up: the key file lives in site/ and is served by
+# Vercel, and tools/indexnow_submit.py compares the sitemap with the one in
+# the previous commit so only the pages that moved are announced.
+#
+# Google does not take IndexNow; it reads site/sitemap.xml on its own once the
+# property is verified in Search Console (docs/seo-plan.md, step 1).
+name: Announce new pages (IndexNow)
+
+on:
+  push:
+    branches: ['claude/theraglee-template-design-utlypx']
+    paths: ['site/sitemap.xml']
+  workflow_dispatch:
+    inputs:
+      all:
+        description: Submit every URL in the sitemap, not just the ones that changed
+        type: boolean
+        default: false
+
+jobs:
+  announce:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Wait for the deploy to serve the new sitemap
+        run: |
+          want=$(grep -c '<loc>' site/sitemap.xml)
+          for i in $(seq 1 30); do
+            have=$(curl -sS -m 20 https://theraglee.com/sitemap.xml | grep -c '<loc>' || echo 0)
+            if [ "$have" = "$want" ]; then echo "live sitemap has $have urls"; exit 0; fi
+            echo "live sitemap has $have urls, repo has $want; waiting ($i/30)"; sleep 20
+          done
+          echo "::warning::the live sitemap never matched the repo's; submitting anyway"
+
+      - name: Submit to IndexNow
+        env:
+          ALL: ${{ inputs.all }}
+          BEFORE: ${{ github.event.before }}
+        run: |
+          if [ "$ALL" = "true" ]; then
+            python3 tools/indexnow_submit.py
+          elif [ -n "$BEFORE" ] && git cat-file -e "$BEFORE" 2>/dev/null; then
+            python3 tools/indexnow_submit.py --changed "$BEFORE"
+          else
+            python3 tools/indexnow_submit.py --changed HEAD~1
+          fi

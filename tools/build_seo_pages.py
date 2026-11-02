@@ -51,7 +51,10 @@ import pathlib
 import re
 import subprocess
 import sys
+import urllib.parse
 from collections import defaultdict
+from datetime import datetime, timezone
+from email.utils import format_datetime
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SOURCE = ROOT / "data" / "seo-pages.json"
@@ -61,6 +64,7 @@ WORKSHEETS = ROOT / "data" / "worksheets.json"
 CHALLENGES = ROOT / "data" / "challenges.json"
 CHECKLISTS = ROOT / "data" / "checklists.json"
 JOURNAL_PROMPTS = ROOT / "data" / "journal-prompts.txt"
+DAILY_CONTENT = ROOT / "data" / "daily-content.json"
 SITE = ROOT / "site"
 DISCOVER_TOOLS = SITE / "assets" / "discover-tools.js"
 DISCOVER_ENGINE = SITE / "assets" / "discover.js"
@@ -71,6 +75,7 @@ SOCIAL_IMAGE = "/assets/social-card.png"
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 from build_documents import load_quizzes  # noqa: E402
+from share_cards import card_for, finish as finish_cards, TOUCHED as CARDS_TOUCHED  # noqa: E402
 
 # Public pages at the site root that belong in the sitemap. Anything behind a
 # sign-in, anything about one member's own account, and the 404 are left out.
@@ -144,7 +149,18 @@ SHARED_CSS = """\
   .seo-days{list-style:none;margin:0 0 .9em;padding:0}
   .seo-days li{margin:0 0 .6em}
   .seo-days .d{font-size:.78rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-right:8px}
-  .seo-cta{margin:22px 0 6px}"""
+  .seo-cta{margin:22px 0 6px}
+  .share{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:38px;padding-top:18px;border-top:1px solid var(--hair)}
+  .share-l{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-right:4px}
+  .share-b{display:inline-flex;align-items:center;padding:7px 13px;border:1px solid var(--hair);border-radius:var(--r-pill);
+    background:var(--paper);color:var(--ink-2);font:inherit;font-size:.9rem;line-height:1.2;cursor:pointer;text-decoration:none}
+  .share-b:hover{border-color:var(--mist);color:var(--green)}
+  .seo-quotes{list-style:none;margin:0 0 .9em;padding:0}
+  .seo-quotes li{padding:12px 0;border-top:1px solid var(--hair)}
+  .seo-quotes li:last-child{border-bottom:1px solid var(--hair)}
+  .seo-quotes .who{display:block;color:var(--muted);font-size:.9rem;margin-top:2px}
+  .seo-lines{margin:0 0 .9em;padding-left:1.25em}
+  .seo-lines li{margin:0 0 .5em}"""
 
 # The words a visitor reads at the foot of every article, so a reader who came
 # in from a search knows what Theraglee is and is not.
@@ -398,19 +414,67 @@ def blocks_section(blocks: list[dict]) -> str:
     )
 
 
+SHARE_SCRIPT = """\
+const bar = document.getElementById('share');
+if (bar) {
+  const url = bar.dataset.url, title = bar.dataset.title;
+  const copy = bar.querySelector('[data-copy]');
+  copy?.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(url); copy.textContent = 'Link copied';
+      setTimeout(() => { copy.textContent = 'Copy link'; }, 1800); }
+    catch { window.prompt('Copy this link', url); }
+  });
+  if (navigator.share) {
+    const b = document.createElement('button'); b.className = 'share-b'; b.type = 'button';
+    b.textContent = 'Share…';
+    b.addEventListener('click', () => navigator.share({ title, url }).catch(() => {}));
+    bar.appendChild(b);
+  }
+}"""
+
+
+def share_bar(url: str, title: str, image_url: str) -> str:
+    """The row of share buttons at the foot of every generated page. Plain
+    links, so they work before any script runs; the copy button and the
+    device's own share sheet are added by SHARE_SCRIPT."""
+    q = urllib.parse.quote
+    links = [
+        ("Facebook", f"https://www.facebook.com/sharer/sharer.php?u={q(url)}"),
+        ("X", f"https://twitter.com/intent/tweet?text={q(title)}&url={q(url)}"),
+        ("LinkedIn", f"https://www.linkedin.com/sharing/share-offsite/?url={q(url)}"),
+        ("Pinterest", f"https://www.pinterest.com/pin/create/button/?url={q(url)}&media={q(image_url)}&description={q(title)}"),
+        ("Email", f"mailto:?subject={q(title)}&body={q(title + ' — ' + url)}"),
+    ]
+    anchors = "\n".join(
+        f'        <a class="share-b" href="{esc(href)}" target="_blank" rel="noopener">{esc(name)}</a>'
+        for name, href in links)
+    return (f'      <div class="share no-print" id="share" data-url="{esc(url)}" data-title="{esc(title)}" '
+            f'aria-label="Share this page">\n        <span class="share-l">Share</span>\n{anchors}\n'
+            f'        <button class="share-b" type="button" data-copy>Copy link</button>\n      </div>')
+
+
 def shell(*, title: str, description: str, url: str, body: str, ld: list[str],
           og_type: str = "article", script: str = "", active: str = "",
-          crumbs: list[tuple[str, str]] | None = None, image: str = SOCIAL_IMAGE) -> str:
+          crumbs: list[tuple[str, str]] | None = None, image: str = SOCIAL_IMAGE,
+          card: tuple[str, str, str] | None = None, showcase: bool = True,
+          share_title: str | None = None) -> str:
     """The page around the content: head, structured data, the site's chrome.
     `crumbs` are (name, href) pairs from the homepage down to this page; they
-    become BreadcrumbList data, which search results show as a path."""
+    become BreadcrumbList data, which search results show as a path. `card` is
+    (path, kicker, headline): the page gets a share image of its own, drawn by
+    tools/share_cards.py, in place of the site card. Every page ends with the
+    share bar (Facebook, X, LinkedIn, Pinterest, email, copy link)."""
     origin = re.match(r"https?://[^/]+", url).group(0)
+    if card:
+        image = card_for(*card) or image
     image_url = image if image.startswith("http") else origin + image
     ld = list(ld)
     if crumbs:
         ld.append(breadcrumb_ld(crumbs, origin))
     head_ld = "\n".join(ld)
-    module = script or f"import {{ chrome }} from '/assets/app.js';\nawait chrome({{ active: '{active}' }});"
+    module = script or (f"import {{ chrome }} from '/assets/app.js';\n"
+                        f"await chrome({{ active: '{active}'{'' if showcase else ', showcase: false'} }});")
+    share = share_bar(url, share_title or (crumbs[-1][0] if crumbs else title), image_url)
     return f"""<!doctype html>
 <html lang="en">
 {GENERATED_BANNER}
@@ -436,6 +500,7 @@ def shell(*, title: str, description: str, url: str, body: str, ld: list[str],
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="alternate icon" href="/assets/favicon.png" sizes="48x48">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="alternate" type="application/rss+xml" title="Theraglee articles" href="/feed.xml">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
 <link rel="stylesheet" href="/assets/styles.css">
@@ -449,12 +514,16 @@ def shell(*, title: str, description: str, url: str, body: str, ld: list[str],
   <div class="wrap">
     <article class="seo-wrap">
 {body}
+{share}
     </article>
   </div>
 </main>
 
 <script type="module">
 {module}
+</script>
+<script type="module">
+{SHARE_SCRIPT}
 </script>
 </body>
 </html>
@@ -481,9 +550,8 @@ def page_html(page: dict, site: str) -> str:
     })
     # The same back link the member pages carry: the tool pages return to the
     # free tool hub, the hand-written article page to the articles list.
-    back = ('      <a class="faint" href="/discover.html">← All tools</a>'
-            if page["path"].startswith("tools/") else
-            '      <a class="faint" href="/articles.html">← All articles</a>')
+    section_of = page_section(page["path"])
+    back = f'      <a class="faint" href="{esc(section_of["back"][1])}">← {esc(section_of["back"][0])}</a>'
     body = "\n".join(filter(None, [
         back,
         f"      <h1 style=\"margin-top:12px\">{esc(page['h1'])}</h1>",
@@ -492,10 +560,69 @@ def page_html(page: dict, site: str) -> str:
         tiles_section(rel.get("h2", ""), rel.get("items", [])),
         faq_html,
     ]))
-    section = ("Articles", "/articles.html") if page["path"].startswith("articles/") else ("Free tools", "/discover.html")
     return shell(title=page["title"], description=meta_description(page["description"]), url=url,
-                 body=body, ld=[article_ld, faq_ld],
-                 crumbs=[("Home", "/"), section, (page["h1"], url)])
+                 body=body, ld=[article_ld, faq_ld], active=section_of["active"],
+                 showcase=section_of["showcase"],
+                 crumbs=[("Home", "/"), *section_of["crumbs"], (page["h1"], url)],
+                 card=(page["path"], section_of["kicker"], page["h1"]))
+
+
+GUIDES_PREFIX = "for-therapists/guides/"
+
+
+def page_section(path: str) -> dict:
+    """Where a hand-written page sits on the site: the back link, the crumbs
+    above its own, the header tab to light, and whether the feature showcase
+    (for members) belongs beside it."""
+    if path.startswith(GUIDES_PREFIX):
+        return {"back": ("Guides for therapists", "/for-therapists/guides"),
+                "crumbs": [("For therapists", "/for-therapists.html"), ("Guides", "/for-therapists/guides")],
+                "active": "for-therapists.html", "showcase": False, "kicker": "For therapists"}
+    if path.startswith("for-therapists/"):
+        return {"back": ("For therapists", "/for-therapists.html"),
+                "crumbs": [("For therapists", "/for-therapists.html")],
+                "active": "for-therapists.html", "showcase": False, "kicker": "For therapists"}
+    if path.startswith("articles/"):
+        return {"back": ("All articles", "/articles.html"), "crumbs": [("Articles", "/articles.html")],
+                "active": "articles.html", "showcase": True, "kicker": "Guide"}
+    return {"back": ("All tools", "/discover.html"), "crumbs": [("Free tools", "/discover.html")],
+            "active": "explore.html", "showcase": True, "kicker": "Free tool"}
+
+
+def guides_index(pages: list[dict], site: str) -> str:
+    """The list of hand-written guides for therapists, at for-therapists/guides."""
+    path = "for-therapists/guides"
+    url = f"{site}/{path}"
+    rows = [p for p in pages if p["path"].startswith(GUIDES_PREFIX)]
+    title = "Guides for Therapists: Getting Clients, Directories, Profiles — Theraglee"
+    description = meta_description(
+        "Plain-spoken guides for therapists in private practice: how to get clients, what "
+        "directories cost, how to write a profile that gets replies, and marketing that "
+        "does not feel like marketing.")
+    h1 = "Guides for therapists"
+    items = [{"label": p["h1"], "href": f"/{p['path']}", "note": meta_description(p["description"], 150)}
+             for p in rows]
+    crumbs = [("Home", "/"), ("For therapists", "/for-therapists.html"), ("Guides", url)]
+    body = "\n".join(filter(None, [
+        crumb_line(crumbs),
+        f'      <h1 style="margin-top:12px">{esc(h1)}</h1>',
+        '      <p class="seo-lede">Honest, practical reading for a private practice: where clients '
+        'actually come from, what the directories charge, and how to write about your work so the '
+        'right person reaches out. Written by Theraglee, which lists therapists for one flat rate; '
+        'we say so where it matters and leave it out where it does not.</p>',
+        tiles_section("The guides", items),
+        '      <section class="seo-block">\n        <h2>About Theraglee for therapists</h2>',
+        '        <p>Theraglee is a license-verified directory with one flat monthly rate and no '
+        'per-session or per-contact fees, plus <a href="/for-therapists/match-mode">Theraglee Match '
+        'Mode</a>, where members who want a therapist to reach out appear on your dashboard. '
+        '<a href="/for-therapists.html">See what is included</a> or '
+        '<a href="/for-therapists/compare">compare the directories</a>.</p>',
+        '      </section>',
+    ]))
+    ld = collection_ld(h1, description, url, [(p["h1"], f"{site}/{p['path']}") for p in rows], site)
+    return shell(title=title, description=description, url=url, body=body, ld=[ld],
+                 og_type="website", active="for-therapists.html", showcase=False, crumbs=crumbs,
+                 card=(path, "For therapists", h1))
 
 
 # ---------------------------------------------------------------------------
@@ -647,7 +774,8 @@ def article_page(article: dict, articles: list[dict], hand_pages: dict[str, dict
         crumbs.append((first_tag, f"/articles/topics/{tag_slug(first_tag)}"))
     crumbs.append((article["title"], url))
     return shell(title=title, description=description, url=url, body=body, ld=[ld],
-                 script=script, crumbs=crumbs)
+                 script=script, crumbs=crumbs,
+                 card=(path, "Article · " + first_tag if first_tag else "Article", article["title"]))
 
 
 MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August",
@@ -985,7 +1113,8 @@ def city_page(city: dict, site: str) -> str:
         "cities": json.dumps(cities, ensure_ascii=False), "zips": json.dumps(zips)}
     return shell(title=title, description=description, url=url, body=body,
                  ld=[ld, faq_ld], og_type="website", script=script,
-                 crumbs=[("Home", "/"), ("Find a therapist", "/therapists.html"), (h1, url)])
+                 crumbs=[("Home", "/"), ("Find a therapist", "/therapists.html"), (h1, url)],
+                 card=(path, "Verified therapist directory", h1))
 
 
 # ---------------------------------------------------------------------------
@@ -1075,7 +1204,8 @@ def topic_page(tag: str, rows: list[dict], by_tag: dict[str, list[dict]],
     ld = collection_ld(h1, description, url,
                        [(a["title"], f"{site}/articles/{a['slug']}") for a in rows], site)
     return shell(title=title, description=description, url=url, body=body, ld=[ld],
-                 og_type="website", active="articles.html", crumbs=crumbs)
+                 og_type="website", active="articles.html", crumbs=crumbs,
+                 card=(path, f"{n} free articles", h1))
 
 
 def topics_index(by_tag: dict[str, list[dict]], site: str) -> str:
@@ -1211,7 +1341,8 @@ def challenge_page(row: dict, rows: list[dict], by_tag: dict[str, list[dict]], s
         "publisher": publisher(site),
     })
     return shell(title=title, description=description, url=url, body=body, ld=[ld],
-                 active="challenges.html", crumbs=crumbs)
+                 active="challenges.html", crumbs=crumbs,
+                 card=(path, "Daily challenge · " + str(row.get("category") or "Wellbeing"), h1))
 
 
 def grouped_tiles(rows: list[dict], href_for, note_for) -> str:
@@ -1323,7 +1454,8 @@ def checklist_page(row: dict, rows: list[dict], by_tag: dict[str, list[dict]], s
         "publisher": publisher(site),
     })
     return shell(title=title, description=description, url=url, body=body, ld=[ld],
-                 active="explore.html", crumbs=crumbs)
+                 active="explore.html", crumbs=crumbs,
+                 card=(path, "Checklist · " + str(row.get("category") or "Mental health"), h1))
 
 
 def checklists_index(rows: list[dict], site: str) -> str:
@@ -1433,7 +1565,8 @@ def discover_topic_page(topic: str, tools: list[dict], topics: list[str], kinds:
     ld = collection_ld(h1, description, url,
                        [(t["title"], f"{site}/discover.html?slug={t['slug']}") for t in tools], site)
     return shell(title=title, description=description, url=url, body=body, ld=[ld],
-                 og_type="website", active="explore.html", crumbs=crumbs)
+                 og_type="website", active="explore.html", crumbs=crumbs,
+                 card=(path, f"{n} free tools · no account needed", f"Free {low} tools"))
 
 
 def discover_index(tools: list[dict], topics: list[str], site: str) -> str:
@@ -1563,12 +1696,290 @@ def journal_prompts_page(prompts: list[str], site: str) -> str:
         "publisher": publisher(site),
     })
     return shell(title=title, description=description, url=url, body=body, ld=[ld, faq_ld],
-                 crumbs=crumbs)
+                 crumbs=crumbs, card=(path, f"{n} free journal prompts", "Journal prompts for mental health"))
 
 
 # ---------------------------------------------------------------------------
 # llms.txt: the site in plain words for AI assistants and answer engines
 # ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# Affirmations, quotes and tips (data/daily-content.json → tools/...)
+# ---------------------------------------------------------------------------
+
+DAILY_PAGES = {
+    "affirmation": {
+        "path": "tools/positive-affirmations",
+        "title": "Positive Affirmations for Mental Health: {n} Free Affirmations — Theraglee",
+        "h1": "{n} positive affirmations for mental health",
+        "description": "{n} free positive affirmations for anxiety, low days, self-worth, work and "
+                       "relationships, written in plain language. Read them here or get one a day "
+                       "on your free Theraglee dashboard.",
+        "lede": "An affirmation is a short sentence you say to yourself on purpose. These {n} are "
+                "the ones Theraglee members see, one a day: plain, believable and in the present "
+                "tense, sorted by what they are for.",
+        "noun": "affirmations",
+        "how": [
+            ("How to use an affirmation so it actually helps",
+             "<p>An affirmation works when it is believable. \u201cI am completely calm\u201d bounces off on "
+             "a bad day; \u201cMy racing thoughts are loud, but they are not in charge\u201d can land, because "
+             "it admits the hard part. Pick one that is true enough to say without flinching.</p>"
+             "<p>Say it at a fixed moment: brushing your teeth, the first red light, before you open "
+             "your email. Once a day, out loud or on paper, beats twenty times in a rush. Pair it with "
+             "one small action that matches it; a sentence about rest means more on a day you actually "
+             "stop for ten minutes.</p>"
+             "<p>If a line makes you feel worse, drop it. An affirmation is a tool, not a test, and "
+             "the right one for you may change week to week.</p>"),
+        ],
+        "faq": [
+            ("Do positive affirmations work?",
+             "They help some people notice and soften a harsh inner voice, especially when the words "
+             "are believable and said at a regular moment. They are not a treatment for anything, and "
+             "a line that feels false can make a bad day feel worse, so choose ones you can say honestly."),
+            ("How many affirmations should I use at once?",
+             "One or two. A single sentence you return to every day for a week does more than a long "
+             "list you read once."),
+            ("Can I get these one at a time?",
+             "Yes. A free Theraglee account shows one affirmation a day on your dashboard, chosen to "
+             "fit what you have told us matters to you, with a new quote, tip and fact beside it."),
+            ("Is this a substitute for therapy?",
+             "No. Affirmations are a small daily practice, not care. If low mood or anxiety is getting "
+             "in the way of your life, a licensed therapist can help, and the Theraglee directory lists "
+             "only therapists whose licenses we have verified."),
+        ],
+    },
+    "quote": {
+        "path": "tools/mental-health-quotes",
+        "title": "Mental Health Quotes: {n} Quotes on Anxiety, Hope and Healing — Theraglee",
+        "h1": "{n} mental health quotes worth keeping",
+        "description": "{n} quotes on anxiety, grief, courage, rest, change and self-compassion, with "
+                       "the person who said each one. Sorted by theme, free to read and share.",
+        "lede": "The {n} quotes Theraglee shows members, one a day, with the person who said each. "
+                "They are sorted by theme so you can find one for the day you are having.",
+        "noun": "quotes",
+        "how": [
+            ("How to use a quote instead of just reading it",
+             "<p>Pick one line that names something you are carrying. Write it where you will see it "
+             "tomorrow: a sticky note, a lock screen, the top of a journal page. Then ask one question "
+             "of it: what would today look like if I believed this? A quote becomes useful when it "
+             "changes one small decision.</p>"),
+        ],
+        "faq": [
+            ("Who said these quotes?",
+             "Each quote names its author, from Stoic philosophers and poets to writers and therapists. "
+             "If you think an attribution is wrong, email hello@theraglee.com and we will check it."),
+            ("Can I share these quotes?",
+             "Yes. Share the page, pin it, or copy a line. Please keep the author\u2019s name with it."),
+            ("Why are the quotes sorted by theme?",
+             "Because the line you need on an anxious morning is not the one you need in grief. The "
+             "themes match the topics in Theraglee\u2019s free tools and articles."),
+            ("Do I need an account?",
+             "No. The page is free to read. A free account adds one quote a day on your dashboard "
+             "alongside an affirmation, a tip and a fact."),
+        ],
+    },
+    "tip": {
+        "path": "tools/mental-health-tips",
+        "title": "Mental Health Tips: {n} Small Things to Try Today — Theraglee",
+        "h1": "{n} small mental health tips you can try today",
+        "description": "{n} practical mental health tips, each one small enough to do today: for "
+                       "anxiety, sleep, stress, low mood, relationships and focus. Free to read.",
+        "lede": "Every tip here is one small, specific thing to do, not a lifestyle to adopt. They are "
+                "the {n} tips Theraglee members see one a day, sorted by what they help with.",
+        "noun": "tips",
+        "how": [
+            ("How to use this page",
+             "<p>Do not try to do many. Read the section for the thing that is loudest this week and "
+             "pick one tip you could do in the next hour. Try it for a few days. If it helps, keep it; "
+             "if it does not, pick another. Small and repeated beats large and abandoned.</p>"
+             "<p>None of these tips treat or cure anything. They are the kind of thing a steady friend "
+             "might suggest. If what you are dealing with is bigger than a tip, that is what a "
+             "licensed therapist is for.</p>"),
+        ],
+        "faq": [
+            ("Are these tips medical advice?",
+             "No. They are small everyday practices, educational only, and not a diagnosis or "
+             "treatment. Talk to a professional about anything that worries you."),
+            ("How do I choose which tip to try?",
+             "Pick the section that matches what is loudest this week, then the one tip you could "
+             "do today. One tip for a few days teaches you more than ten tips read once."),
+            ("Can I get a new tip each day?",
+             "Yes. A free Theraglee account shows one tip a day on your dashboard, with an "
+             "affirmation, a quote and a fact beside it."),
+            ("What if nothing here helps?",
+             "That is useful information, not a failure. Persistent anxiety, low mood or sleep "
+             "trouble is worth taking to a licensed therapist. The Theraglee directory verifies every "
+             "therapist\u2019s license before listing them."),
+        ],
+    },
+}
+
+TAG_LABELS = {"cbt": "CBT", "dbt": "DBT", "ptsd": "PTSD", "adhd": "ADHD", "ocd": "OCD"}
+
+
+def tag_label(tag: str) -> str:
+    return TAG_LABELS.get(tag.lower(), tag.replace("-", " ").replace("_", " ").capitalize())
+
+
+def load_daily() -> dict[str, list[dict]]:
+    rows = json.loads(DAILY_CONTENT.read_text(encoding="utf-8"))
+    out: dict[str, list[dict]] = defaultdict(list)
+    seen: set[tuple[str, str]] = set()
+    for r in rows:
+        body = " ".join(str(r.get("body") or "").split())
+        key = (r.get("kind", ""), body.lower())
+        if not body or key in seen:
+            continue
+        seen.add(key)
+        out[r["kind"]].append({"body": body, "author": r.get("author"), "tags": r.get("tags") or []})
+    return out
+
+
+def daily_page(kind: str, rows: list[dict], site: str) -> str:
+    spec = DAILY_PAGES[kind]
+    n = len(rows)
+    path = spec["path"]
+    url = f"{site}/{path}"
+    title = spec["title"].format(n=n)
+    h1 = spec["h1"].format(n=n)
+    description = meta_description(spec["description"].format(n=n))
+    groups: dict[str, list[dict]] = defaultdict(list)
+    for r in rows:
+        groups[(r["tags"][0] if r["tags"] else "general")].append(r)
+    order = sorted(groups, key=lambda t: (-len(groups[t]), t))
+    chips = " ".join(
+        f'<a class="badge" href="#{tag_slug(t)}">{esc(tag_label(t))} · {len(groups[t])}</a>' for t in order)
+    sections = []
+    for t in order:
+        if kind == "quote":
+            items = "\n".join(
+                f'          <li>\u201c{esc(r["body"])}\u201d'
+                + (f'<span class="who">\u2014 {esc(r["author"])}</span>' if r.get("author") else "")
+                + "</li>" for r in groups[t])
+            lst = f'        <ul class="seo-quotes">\n{items}\n        </ul>'
+        else:
+            items = "\n".join(f'          <li>{esc(r["body"])}</li>' for r in groups[t])
+            lst = f'        <ul class="seo-lines">\n{items}\n        </ul>'
+        sections.append(
+            f'      <section class="seo-block" id="{tag_slug(t)}">\n'
+            f'        <h2>{esc(tag_label(t))} {spec["noun"]}</h2>\n{lst}\n      </section>')
+    how = blocks_section([{"h2": h2, "html": body} for h2, body in spec["how"]])
+    faq_html, faq_ld = faq_section([{"q": q, "a": a} for q, a in spec["faq"]])
+    crumbs = [("Home", "/"), ("Free tools", "/discover.html"), (h1, url)]
+    body = "\n".join(filter(None, [
+        crumb_line(crumbs),
+        f'      <h1 style="margin-top:12px">{esc(h1)}</h1>',
+        f'      <p class="seo-lede">{esc(spec["lede"].format(n=n))}</p>',
+        f'      <p class="faint no-print">Free to read. <a href="/signup.html?why=daily">Create a free account</a> '
+        f'to get one a day on your dashboard, picked for what matters to you.</p>',
+        f'      <div class="chips" style="margin-top:14px">{chips}</div>',
+        how,
+        *sections,
+        tiles_section("More free things", [
+            {"label": "Journal prompts", "href": "/tools/journal-prompts",
+             "note": "Hundreds of free prompts for writing a few lines a day."},
+            {"label": "Free tools by topic", "href": "/discover/topics",
+             "note": "Short, interactive self-discovery exercises, no account needed."},
+            {"label": "Articles by topic", "href": "/articles/topics",
+             "note": "Plain-language reading on anxiety, sleep, grief, work and more."},
+        ]),
+        faq_html,
+        NOTICE,
+    ]))
+    ld = json_ld({
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": h1,
+        "description": description,
+        "mainEntityOfPage": url,
+        "isAccessibleForFree": True,
+        "author": {"@type": "Organization", "name": "Theraglee", "url": site},
+        "publisher": publisher(site),
+    })
+    return shell(title=title, description=description, url=url, body=body, ld=[ld, faq_ld],
+                 active="explore.html", crumbs=crumbs, card=(path, f"{n} free {spec['noun']}", h1))
+
+
+# ---------------------------------------------------------------------------
+# RSS feeds (for readers, and for the tools that post new pages to social
+# accounts and Pinterest on their own)
+# ---------------------------------------------------------------------------
+
+def rfc822(iso: str) -> str | None:
+    try:
+        dt = datetime.fromisoformat(iso.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return format_datetime(dt)
+
+
+def rss(site: str, *, path: str, title: str, description: str, items: list[dict]) -> str:
+    """RSS 2.0. Each item: title, link (site-relative), date (ISO), summary,
+    image (site-relative or None), category (or None). Items without a date are
+    left out, and the newest come first."""
+    dated = [(i, rfc822(i.get("date") or "")) for i in items]
+    dated = [(i, d) for i, d in dated if d]
+    dated.sort(key=lambda p: _stamp(p[0]["date"]), reverse=True)
+    rows = []
+    for item, date in dated:
+        link = f"{site}{item['link']}"
+        row = (f"  <item>\n    <title>{esc(item['title'])}</title>\n    <link>{esc(link)}</link>\n"
+               f"    <guid isPermaLink=\"true\">{esc(link)}</guid>\n    <pubDate>{date}</pubDate>\n"
+               f"    <description>{esc(item['summary'])}</description>\n")
+        if item.get("category"):
+            row += f"    <category>{esc(item['category'])}</category>\n"
+        image = item.get("image")
+        if image:
+            file = SITE / image.lstrip("/")
+            if file.exists():
+                row += (f'    <enclosure url="{esc(site + image)}" length="{file.stat().st_size}" type="image/jpeg"/>\n'
+                        f'    <media:content url="{esc(site + image)}" medium="image" type="image/jpeg" width="1200" height="630"/>\n')
+        row += "  </item>"
+        rows.append(row)
+    last = dated[0][1] if dated else format_datetime(datetime(2026, 1, 1, tzinfo=timezone.utc))
+    return (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<!-- Generated by tools/build_seo_pages.py. Do not edit by hand. -->\n'
+        '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">\n'
+        '<channel>\n'
+        f'  <title>{esc(title)}</title>\n  <link>{esc(site)}/</link>\n'
+        f'  <description>{esc(description)}</description>\n  <language>en-us</language>\n'
+        f'  <lastBuildDate>{last}</lastBuildDate>\n'
+        f'  <atom:link href="{esc(site)}/{path}" rel="self" type="application/rss+xml"/>\n'
+        f'  <image><url>{esc(site)}/assets/apple-touch-icon.png</url><title>{esc(title)}</title><link>{esc(site)}/</link></image>\n'
+        + "\n".join(rows) + "\n</channel>\n</rss>\n"
+    )
+
+
+FEEDS = [
+    ("feed.xml", "Theraglee articles", "Free, plain-language mental health articles from Theraglee, five new ones a day."),
+    ("feed-checklists.xml", "Theraglee checklists", "Free mental health checklists from Theraglee, two new ones a day."),
+    ("feed-challenges.xml", "Theraglee challenges", "Daily wellbeing challenge themes from Theraglee, two new ones a day."),
+]
+
+
+def feed_items(kind: str, rows: list[dict], limit: int = 50) -> list[dict]:
+    out = []
+    for r in rows:
+        if kind == "articles":
+            out.append({"title": r["title"], "link": f"/articles/{r['slug']}", "date": r.get("published_at"),
+                        "summary": " ".join(str(r.get("excerpt") or "").split()),
+                        "image": f"/assets/cards/articles/{r['slug']}.jpg",
+                        "category": (r.get("tags") or [None])[0]})
+        elif kind == "checklists":
+            items = " · ".join(str(i).split(" — ")[0] for i in (r.get("items") or []))
+            out.append({"title": r["title"], "link": f"/checklists/{r['slug']}", "date": r.get("published_at"),
+                        "summary": " ".join(str(r.get("description") or "").split()) + (f" Items: {items}." if items else ""),
+                        "image": f"/assets/cards/checklists/{r['slug']}.jpg", "category": r.get("category")})
+        else:
+            out.append({"title": r["title"], "link": f"/challenges/{r['slug']}", "date": r.get("published_at"),
+                        "summary": " ".join(str(r.get("description") or "").split()),
+                        "image": f"/assets/cards/challenges/{r['slug']}.jpg", "category": r.get("category")})
+    out.sort(key=lambda i: _stamp(i.get("date") or ""), reverse=True)
+    return out[:limit]
+
 
 def llms_txt(site: str, *, articles: list[dict], by_tag: dict[str, list[dict]],
              challenges: list[dict], checklists: list[dict], tools: list[dict],
@@ -1616,6 +2027,11 @@ def llms_txt(site: str, *, articles: list[dict], by_tag: dict[str, list[dict]],
     for p in pages:
         lines.append(f"- [{p['h1']}]({site}/{p['path']}): {p['description']}")
     lines += [f"- [Journal prompts]({site}/tools/journal-prompts): the prompts members get one a day",
+              f"- [Positive affirmations]({site}/tools/positive-affirmations): the affirmations members get one a day",
+              f"- [Mental health quotes]({site}/tools/mental-health-quotes): the quotes members get one a day, with authors",
+              f"- [Mental health tips]({site}/tools/mental-health-tips): the small daily tips members get one a day",
+              *([f"- [Guides for therapists]({site}/for-therapists/guides): getting clients, directory costs, writing a profile"]
+                if any(p["path"].startswith(GUIDES_PREFIX) for p in pages) else []),
               f"- [Quizzes]({site}/tools/quizzes): {len(quizzes)} short check-ins by topic (Basic membership)",
               f"- [Worksheets]({site}/tools/worksheets): {len(worksheets)} fillable worksheets by topic (Basic membership)",
               "",
@@ -1631,7 +2047,11 @@ def llms_txt(site: str, *, articles: list[dict], by_tag: dict[str, list[dict]],
         lines += ["", "## Therapist directory by area"]
         for c in cities:
             lines.append(f"- [{c.get('name') or c.get('city')}, {c['state']}]({site}/{c['path']})")
-    lines += ["", "## Policies",
+    lines += ["", "## Feeds",
+              f"- [Articles feed]({site}/feed.xml): RSS, the newest fifty articles",
+              f"- [Checklists feed]({site}/feed-checklists.xml): RSS",
+              f"- [Challenges feed]({site}/feed-challenges.xml): RSS",
+              "", "## Policies",
               f"- [Privacy policy]({site}/privacy.html)",
               f"- [Terms of service]({site}/terms.html)",
               f"- [Sitemap]({site}/sitemap.xml)",
@@ -1717,6 +2137,10 @@ def main() -> int:
         if not emit(page["path"], page_html(page, site), "0.8"):
             return 1
     print(f"wrote {len(pages)} landing pages")
+    if any(p["path"].startswith(GUIDES_PREFIX) for p in pages):
+        if not emit("for-therapists/guides", guides_index(pages, site), "0.8"):
+            return 1
+        print("wrote the guides index for therapists")
 
     # Articles: newest first in the sitemap, and a stale folder from a renamed
     # slug is cleared so an old URL does not linger. `topics` is the hub folder.
@@ -1749,6 +2173,14 @@ def main() -> int:
     if not emit("tools/journal-prompts", journal_prompts_page(prompts, site), "0.8"):
         return 1
     print(f"wrote the journal prompts page ({len(prompts)} prompts)")
+
+    daily = load_daily()
+    for kind, spec in DAILY_PAGES.items():
+        rows = daily.get(kind) or []
+        if rows and not emit(spec["path"], daily_page(kind, rows, site), "0.8"):
+            return 1
+    print("wrote the affirmations, quotes and tips pages ("
+          + ", ".join(f"{len(daily.get(k) or [])} {DAILY_PAGES[k]['noun']}" for k in DAILY_PAGES) + ")")
 
     prune(SITE / "challenges", {c["slug"] for c in challenges} | {"themes"}, "challenge")
     if not emit("challenges/themes", challenges_index(challenges, site), "0.8"):
@@ -1800,6 +2232,17 @@ def main() -> int:
         if count < 0:
             return 1
         print(f"synced site/{filename} FAQ structured data ({count} questions)")
+
+    removed = finish_cards(set(CARDS_TOUCHED))
+    print(f"share images: {len(CARDS_TOUCHED)} pages have one"
+          + (f", {removed} stale removed" if removed else ""))
+
+    for (filename, title, description), rows in zip(
+            FEEDS, (feed_items("articles", articles), feed_items("checklists", checklists),
+                    feed_items("challenges", challenges))):
+        (SITE / filename).write_text(
+            rss(site, path=filename, title=title, description=description, items=rows), encoding="utf-8")
+    print(f"wrote {len(FEEDS)} RSS feeds")
 
     (SITE / "sitemap.xml").write_text(sitemap(site, entries), encoding="utf-8")
     print(f"wrote site/sitemap.xml ({len(PUBLIC_ROOT_PAGES) + len(entries)} urls)")

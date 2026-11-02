@@ -30,6 +30,10 @@ The script writes:
 | `site/checklists/<slug>/index.html`, `site/checklists/index.html` | `data/checklists.json` | One page per checklist with every item on it, and the index by category |
 | `site/discover/<topic>/index.html`, `site/discover/topics/index.html` | `site/assets/discover-tools.js` (read through `node`) | One page per Discover topic naming its twenty free tools, with the kind and minutes of each, and the index |
 | `site/therapists/<city-st>/index.html` | `cities` in `data/seo-pages.json` | One directory page per launch metro |
+| `site/tools/positive-affirmations/`, `site/tools/mental-health-quotes/`, `site/tools/mental-health-tips/` | `data/daily-content.json` | The affirmations, quotes (with authors) and tips members get one a day, each kind on one long page grouped by theme |
+| `site/for-therapists/guides/index.html` | The `pages` rows whose path starts with `for-therapists/guides/` | The index of the hand-written guides for therapists; the guides themselves are ordinary `pages` rows |
+| `site/assets/cards/<path>.jpg` | Each generated page's title | A 1200 by 630 share image per page (see below) |
+| `site/feed.xml`, `site/feed-checklists.xml`, `site/feed-challenges.xml` | `data/articles.json`, `data/checklists.json`, `data/challenges.json` | RSS 2.0, the newest fifty of each, every item with its share image as an enclosure, so Pinterest, Buffer, Zapier, dlvr.it and feed readers can post new pages on their own (`docs/marketing/auto-posting.md`) |
 | `site/sitemap.xml` | All of the above | Plus the public pages at the site root |
 | `site/llms.txt` | All of the above | A plain summary of the site and its sections for AI assistants and answer engines, which read it the way crawlers read `robots.txt` |
 | The FAQ block in `site/index.html` and `site/for-therapists.html` | The questions visible on each page | `FAQPage` structured data |
@@ -54,9 +58,13 @@ root carry the same tags by hand:
 - `<link rel="canonical">` matching the URL exactly.
 - Open Graph and Twitter tags (`og:title`, `og:description`, `og:url`,
   `og:image`, `twitter:card` of `summary_large_image`) so a shared link shows
-  a title, a line and a picture. The picture is `site/assets/social-card.png`,
-  1200 by 630, drawn by `python3 tools/social_card.py` from the logo and the
-  site's typefaces. Re-run that after changing the logo or the tagline.
+  a title, a line and a picture. On the hand-maintained pages the picture is
+  `site/assets/social-card.png`, 1200 by 630, drawn by
+  `python3 tools/social_card.py` from the logo and the site's typefaces; re-run
+  that after changing the logo or the tagline. Every generated page gets a
+  card of its own instead, with the page's title on it: see *Share images*.
+- `<link rel="alternate" type="application/rss+xml">` pointing at `/feed.xml`,
+  so a feed reader or an auto-posting tool given any page finds the feed.
 - `BreadcrumbList` structured data from the `crumbs` passed to `shell()`, so a
   search result can show `Theraglee › Articles › Anxiety` under the title.
 
@@ -64,6 +72,29 @@ Pages that only forward to the dashboard or hold a member tool behind a
 `?slug=` (`journal.html`, `goals.html`, `quiz.html`, `worksheet.html`,
 `checklist.html`) say `<meta name="robots" content="noindex">`: the crawlable
 page for each is the generated one.
+
+### Share images
+
+`tools/share_cards.py` draws `site/assets/cards/<path>.jpg` for every
+generated page (`/articles/a-slug` → `assets/cards/articles/a-slug.jpg`):
+the logo, a small green kicker ("Article · Anxiety", "Checklist · Evenings",
+"For therapists"), the title as large as fits in four lines, and the site's
+line at the foot. The builder asks for a card through `shell(card=(path,
+kicker, headline))` and only draws one when the page is new or its words
+changed (`site/assets/cards/manifest.json` holds a hash per page), so a
+rebuild redraws nothing and the daily routines add a handful of pictures a
+day, about 40 KB each. A card whose page is gone is removed. The typefaces are
+bundled in `tools/fonts/` so no network is needed; if the Pillow library is
+missing, the build warns and the page falls back to the site card. To redraw
+every card after a design change, bump `VERSION` in `share_cards.py`.
+
+### The share bar
+
+Every generated page ends with a row of share buttons (Facebook, X, LinkedIn,
+Pinterest with the page's card as the pin picture, email, copy link, and the
+device's own share sheet where the browser offers one). It is plain links, so
+it works before any script runs; `share_bar()` and `SHARE_SCRIPT` in the
+builder are the whole of it.
 
 ### Articles
 
@@ -186,10 +217,34 @@ python3 tools/indexnow_submit.py                      # every URL in the sitemap
 python3 tools/indexnow_submit.py /articles/a-slug     # or just the new ones
 ```
 
-posts them. A `200` or `202` means the batch was accepted, and Bing then
-crawls those URLs on its own schedule. This is a nudge, not a replacement for
-Bing Webmaster Tools, which is where the reports live; Google does not take
-IndexNow at all and needs the Search Console steps above.
+posts them. A `200` or `202` means the batch was accepted (`202` while the
+engine has not yet read the key file), and Bing then crawls those URLs on its
+own schedule. A `403` means the engine could not verify the key: the file was
+not live yet, or it cached a failed check on an old key. The first key this
+repo carried was rejected that way, so it was retired and replaced on
+2026-11-02; if it happens again, make a new 32-hex key, write it to
+`site/<key>.txt` with no trailing newline, delete the old file, deploy, and
+submit after the deploy.
+
+Nobody has to remember to run it: `.github/workflows/indexnow.yml` runs
+`python3 tools/indexnow_submit.py --changed <previous commit>` after every
+push to the default branch that changes `site/sitemap.xml`, once the live
+sitemap matches the repo's. It submits only the URLs that are new or whose
+`<lastmod>` moved. Run the workflow by hand with *all* ticked to submit the
+whole sitemap.
+
+This is a nudge, not a replacement for Bing Webmaster Tools, which is where
+the reports live; Google does not take IndexNow at all and needs the Search
+Console steps above.
+
+### RSS feeds
+
+`site/feed.xml` (articles), `site/feed-checklists.xml` and
+`site/feed-challenges.xml` hold the newest fifty of each, newest first, with
+title, link, date, a summary, a category and the page's share image as an
+`<enclosure>` and `<media:content>`. They are what the auto-posting tools in
+`docs/marketing/auto-posting.md` read, and what a feed reader subscribes to.
+The checker confirms each item is a page on the site and each picture exists.
 
 ## What is not done yet
 

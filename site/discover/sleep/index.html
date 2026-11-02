@@ -13,16 +13,17 @@
 <meta property="og:description" content="20 free, interactive sleep tools from Theraglee, each two to seven minutes and open to everyone with no account.">
 <meta property="og:url" content="https://theraglee.com/discover/sleep">
 <meta property="og:site_name" content="Theraglee">
-<meta property="og:image" content="https://theraglee.com/assets/social-card.png">
+<meta property="og:image" content="https://theraglee.com/assets/cards/discover/sleep.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Free Sleep Tools: 20 Short Self-Discovery Exercises — Theraglee">
 <meta name="twitter:description" content="20 free, interactive sleep tools from Theraglee, each two to seven minutes and open to everyone with no account.">
-<meta name="twitter:image" content="https://theraglee.com/assets/social-card.png">
+<meta name="twitter:image" content="https://theraglee.com/assets/cards/discover/sleep.jpg">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="alternate icon" href="/assets/favicon.png" sizes="48x48">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="alternate" type="application/rss+xml" title="Theraglee articles" href="/feed.xml">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap">
 <link rel="stylesheet" href="/assets/styles.css">
@@ -67,6 +68,17 @@
   .seo-days li{margin:0 0 .6em}
   .seo-days .d{font-size:.78rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-right:8px}
   .seo-cta{margin:22px 0 6px}
+  .share{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:38px;padding-top:18px;border-top:1px solid var(--hair)}
+  .share-l{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-right:4px}
+  .share-b{display:inline-flex;align-items:center;padding:7px 13px;border:1px solid var(--hair);border-radius:var(--r-pill);
+    background:var(--paper);color:var(--ink-2);font:inherit;font-size:.9rem;line-height:1.2;cursor:pointer;text-decoration:none}
+  .share-b:hover{border-color:var(--mist);color:var(--green)}
+  .seo-quotes{list-style:none;margin:0 0 .9em;padding:0}
+  .seo-quotes li{padding:12px 0;border-top:1px solid var(--hair)}
+  .seo-quotes li:last-child{border-bottom:1px solid var(--hair)}
+  .seo-quotes .who{display:block;color:var(--muted);font-size:.9rem;margin-top:2px}
+  .seo-lines{margin:0 0 .9em;padding-left:1.25em}
+  .seo-lines li{margin:0 0 .5em}
 </style>
 <script type="application/ld+json">
 {
@@ -370,6 +382,15 @@
         </div>
       </section>
 <div class="notice warn" style="margin-top:34px">Educational only — not medical advice, diagnosis or treatment. <a href="/therapists.html">Find a licensed therapist</a> if you want support.</div>
+      <div class="share no-print" id="share" data-url="https://theraglee.com/discover/sleep" data-title="Sleep" aria-label="Share this page">
+        <span class="share-l">Share</span>
+        <a class="share-b" href="https://www.facebook.com/sharer/sharer.php?u=https%3A//theraglee.com/discover/sleep" target="_blank" rel="noopener">Facebook</a>
+        <a class="share-b" href="https://twitter.com/intent/tweet?text=Sleep&amp;url=https%3A//theraglee.com/discover/sleep" target="_blank" rel="noopener">X</a>
+        <a class="share-b" href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A//theraglee.com/discover/sleep" target="_blank" rel="noopener">LinkedIn</a>
+        <a class="share-b" href="https://www.pinterest.com/pin/create/button/?url=https%3A//theraglee.com/discover/sleep&amp;media=https%3A//theraglee.com/assets/cards/discover/sleep.jpg&amp;description=Sleep" target="_blank" rel="noopener">Pinterest</a>
+        <a class="share-b" href="mailto:?subject=Sleep&amp;body=Sleep%20%E2%80%94%20https%3A//theraglee.com/discover/sleep" target="_blank" rel="noopener">Email</a>
+        <button class="share-b" type="button" data-copy>Copy link</button>
+      </div>
     </article>
   </div>
 </main>
@@ -377,6 +398,24 @@
 <script type="module">
 import { chrome } from '/assets/app.js';
 await chrome({ active: 'explore.html' });
+</script>
+<script type="module">
+const bar = document.getElementById('share');
+if (bar) {
+  const url = bar.dataset.url, title = bar.dataset.title;
+  const copy = bar.querySelector('[data-copy]');
+  copy?.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(url); copy.textContent = 'Link copied';
+      setTimeout(() => { copy.textContent = 'Copy link'; }, 1800); }
+    catch { window.prompt('Copy this link', url); }
+  });
+  if (navigator.share) {
+    const b = document.createElement('button'); b.className = 'share-b'; b.type = 'button';
+    b.textContent = 'Share…';
+    b.addEventListener('click', () => navigator.share({ title, url }).catch(() => {}));
+    bar.appendChild(b);
+  }
+}
 </script>
 </body>
 </html>
