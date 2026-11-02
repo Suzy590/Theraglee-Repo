@@ -919,7 +919,39 @@ function profile(){
   const saveLabel = t.id ? 'Save changes' : 'Save my profile';
   const viewLink = t.published
     ? `<a class="btn ghost" href="therapist.html?slug=${esc(t.slug)}">View public profile</a>` : '';
+  // Once the listing is live, the ways to send people to it: the link, and a
+  // "License verified on Theraglee" badge for the therapist's own website,
+  // which links back to the listing.
+  const profileUrl = `https://theraglee.com/therapist.html?slug=${encodeURIComponent(t.slug || '')}`;
+  const badgeCode = `<a href="${profileUrl}" title="License verified on Theraglee"><img src="https://theraglee.com/assets/badge-verified.svg" alt="License verified on Theraglee" width="220" height="56" style="border:0"></a>`;
+  const shareCard = t.published ? `
+      <section class="card" style="margin-bottom:24px" aria-labelledby="share-title">
+        <div class="kicker">Your listing is live</div>
+        <h2 id="share-title" style="font-size:1.25rem;margin:4px 0 6px">Send people to it</h2>
+        <p class="muted" style="margin:0 0 12px;font-size:.95rem">Put the link in your email
+          signature and your bios, and the badge on your website. Every click back to your
+          verified listing counts in your stats.</p>
+        <div class="field"><label for="share-url">Your listing</label>
+          <div class="row" style="gap:8px;align-items:stretch">
+            <input id="share-url" value="${esc(profileUrl)}" readonly style="flex:1;min-width:220px">
+            <button class="btn ghost" type="button" id="share-copy-url">Copy link</button>
+          </div></div>
+        <div class="field" style="margin-bottom:0"><label for="share-code">Badge for your website</label>
+          <div class="row" style="gap:16px;align-items:flex-start;flex-wrap:wrap">
+            <a href="${esc(profileUrl)}" style="flex:0 0 auto"><img src="assets/badge-verified.svg"
+              alt="License verified on Theraglee" width="220" height="56"></a>
+            <div style="flex:1;min-width:240px">
+              <textarea id="share-code" readonly rows="3" style="font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.82rem">${esc(badgeCode)}</textarea>
+              <div class="row" style="gap:8px;margin-top:8px;align-items:center">
+                <button class="btn ghost sm" type="button" id="share-copy-code">Copy the code</button>
+                <span class="help" style="margin:0">Paste it anywhere your site takes HTML: a footer, an
+                  About page, a sidebar. It shows the badge and links to your listing.</span>
+              </div>
+            </div>
+          </div></div>
+      </section>` : '';
   render(`
+    ${shareCard}
     <form id="pform">
       <div class="row" style="justify-content:flex-end;margin-bottom:20px">
         <button class="btn lg js-save" type="submit">${saveLabel}</button>
@@ -1094,6 +1126,17 @@ function profile(){
   document.getElementById('addloc').onclick = () =>
     document.getElementById('locs').insertAdjacentHTML('beforeend', locRow({}));
   document.getElementById('pform').addEventListener('submit', save);
+  for (const [btnId, srcId, done] of [['share-copy-url', 'share-url', 'Link copied'],
+                                       ['share-copy-code', 'share-code', 'Code copied']]) {
+    const btn = document.getElementById(btnId), src = document.getElementById(srcId);
+    if (!btn || !src) continue;
+    btn.addEventListener('click', async () => {
+      const was = btn.textContent;
+      try { await navigator.clipboard.writeText(src.value); }
+      catch { src.select(); document.execCommand?.('copy'); }
+      btn.textContent = done; setTimeout(() => { btn.textContent = was; }, 1800);
+    });
+  }
   const pick = document.getElementById('photo');
   pick.addEventListener('change', async () => {
     const file = pick.files?.[0];

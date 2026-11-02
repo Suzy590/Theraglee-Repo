@@ -16,6 +16,28 @@ The two pages in folders carry `<base href="/">` and absolute asset paths, like
 the generated landing pages. The clean addresses for the other two are
 redirects in `site/vercel.json`.
 
+## The guides for therapists
+
+The hand-written guides (`/for-therapists/guides/how-to-get-therapy-clients`
+and the others) are `pages` rows in `data/seo-pages.json` whose path starts
+with `for-therapists/guides/`; `python3 tools/build_seo_pages.py` writes them
+and the index at `/for-therapists/guides`, without the member feature
+showcase. They rank for what a therapist types when looking for clients, and
+each ends with a short, honest "Where Theraglee fits". The footer's
+Therapists column links the index.
+
+## The "License verified on Theraglee" badge
+
+Once a listing is live, the top of the **My profile** tab on the practice
+dashboard shows a card with the listing's address, a copy button, and the
+badge `site/assets/badge-verified.svg` with the HTML to paste into the
+therapist's own website. The snippet links to
+`https://theraglee.com/therapist.html?slug=<slug>`, so every badge is a link
+from a relevant site back to Theraglee, which is the best kind of link a
+search engine can see (`docs/seo-plan.md`). The badge says only what is true,
+that the license was verified; never change its wording to a claim the
+listing does not back.
+
 ## Where they are linked from
 
 - The header's **For Therapists** button opens the first page; its hero links

@@ -53,22 +53,29 @@ it and commit the regenerated output.
 
 `site/tools/`, `site/articles/` (including the topic hubs under
 `site/articles/topics/`), `site/challenges/`, `site/checklists/`,
-`site/discover/`, `site/sitemap.xml` and `site/llms.txt` are built from
-`data/seo-pages.json`, `data/articles.json`, `data/challenges.json`,
-`data/checklists.json`, `data/journal-prompts.txt` and
-`site/assets/discover-tools.js`, and the FAQ structured data on
-`site/index.html` and `site/for-therapists.html` is rebuilt from the questions
-visible on those pages. Never hand-edit that output:
+`site/discover/`, `site/for-therapists/guides/`, the share images in
+`site/assets/cards/`, the RSS feeds `site/feed*.xml`, `site/sitemap.xml` and
+`site/llms.txt` are built from `data/seo-pages.json`, `data/articles.json`,
+`data/challenges.json`, `data/checklists.json`, `data/journal-prompts.txt`,
+`data/daily-content.json` and `site/assets/discover-tools.js`, and the FAQ
+structured data on `site/index.html` and `site/for-therapists.html` is rebuilt
+from the questions visible on those pages. Never hand-edit that output:
 
 ```bash
 python3 tools/build_seo_pages.py
 ```
 
 `node tests/seo-pages/check.mjs` guards it. Every public page carries a
-canonical, a description under 160 characters and the share image
-`site/assets/social-card.png` (drawn by `python3 tools/social_card.py`);
-pages that only forward or hold member tools say `noindex`. `docs/seo.md` is
-the guide to the build and `docs/seo-plan.md` to the strategy.
+canonical, a description under 160 characters and a share image: the site
+card `site/assets/social-card.png` (drawn by `python3 tools/social_card.py`)
+on the hand-maintained pages, and a card of its own under `site/assets/cards/`
+(drawn by `tools/share_cards.py` during the build, only when a page is new or
+its title changed) on every generated page, which also ends with the share
+bar. Pages that only forward or hold member tools say `noindex`. After a push
+to the default branch, `.github/workflows/indexnow.yml` tells Bing which
+sitemap URLs changed. `docs/seo.md` is the guide to the build,
+`docs/seo-plan.md` to the strategy, and `docs/marketing/` to everything that
+promotes the site beyond search.
 
 The free tool list the Sunday email draws from is generated too, from the
 browser's own copy in `site/assets/discover-tools.js`:

@@ -38,6 +38,13 @@ the daily routines already run, and checked by `node tests/seo-pages/check.mjs`.
 | Breadcrumb data | Every generated page | Search results can show `Theraglee › Articles › Anxiety` under the title |
 | Member-only shells marked noindex | `quiz.html`, `worksheet.html`, `checklist.html`, `journal.html`, `goals.html` | Keeps empty JavaScript shells out of the index so the real pages rank instead |
 | Footer links to every hub | Every page | The hubs are one click from everywhere, which spreads ranking power across the site |
+| A share image per page | `/assets/cards/<page>.jpg` on every generated page | A shared article, checklist or challenge shows its own title on the green card instead of the generic one. Drawn during the build, only for new or retitled pages (`tools/share_cards.py`) |
+| Share buttons on every generated page | Facebook, X, LinkedIn, Pinterest, email, copy link | Readers do the promoting; the Pinterest button pins the page's own card |
+| RSS feeds | `/feed.xml`, `/feed-checklists.xml`, `/feed-challenges.xml` | Posting tools and Pinterest read them and post every new page on their own (`marketing/auto-posting.md`) |
+| Affirmations, quotes and tips pages | `/tools/positive-affirmations`, `/tools/mental-health-quotes`, `/tools/mental-health-tips` | "Positive affirmations" and "mental health quotes" are among the most searched phrases in this space; the 900 lines members see one a day are now on three pages, grouped by theme |
+| Guides for therapists | `/for-therapists/guides` and five guides under it | The paying customer's searches: how to get therapy clients, Psychology Today alternatives, writing a profile, private practice marketing, what directories cost |
+| Bing told after every deploy | `.github/workflows/indexnow.yml` | The first IndexNow key was rejected by Bing (a cached failed check); it was replaced on 2026-11-02 and the submission now runs itself after each push to the default branch |
+| The therapist badge | Practice dashboard → My profile, once the listing is live | "License verified on Theraglee", with the code to paste into the therapist's own site; every one is a link back to Theraglee |
 
 The sitemap went from 223 addresses to 412, and every new one is a page with
 words on it, not a shell.
@@ -86,17 +93,19 @@ worth the five minutes.
 2. Choose **Import from Google Search Console** and follow the prompts. It
    copies the verification and the sitemap across; nothing else to do.
 
-### 3. Tell Bing about new pages after each deploy (1 minute, repeatable)
+### 3. Tell Bing about new pages after each deploy (now automatic)
 
-The repo already holds an IndexNow key. From the repo folder:
+Nothing to do. `.github/workflows/indexnow.yml` submits the changed sitemap
+URLs after every push to the default branch, once the deploy is live. To
+submit the whole sitemap by hand, run the workflow from the repository's
+Actions tab with *all* ticked, or from the repo folder:
 
 ```bash
 python3 tools/indexnow_submit.py
 ```
 
-A `200` or `202` back means Bing has the list. Run it after this change
-deploys, and any time a batch of new pages goes live. Google does not take
-IndexNow; it reads the sitemap on its own once step 1 is done.
+A `200` or `202` back means Bing has the list. Google does not take IndexNow;
+it reads the sitemap on its own once step 1 is done.
 
 ### 4. Claim the name everywhere (20 minutes)
 
@@ -144,12 +153,15 @@ aim to own. Each is a title, a hub, or a page to write.
 | cbt thought record | `/tools/cbt-thought-record` | Live |
 | gratitude challenge | `/challenges/fostering-gratitude` | Live |
 | how to find a therapist | `/articles/how-to-find-a-therapist` | Live |
-| feelings wheel | A hand-written page at `/tools/feelings-wheel` pointing at the Discover "wheel" tools | **Write next.** Very high volume, and the site already has the tool |
-| box breathing / breathing exercise for anxiety | `/tools/breathing-exercises` pointing at the Discover "breathe" tools | Write next |
-| grounding techniques | `/articles/topics/grounding` today; a hand page at `/tools/grounding-techniques` later | Hub live |
+| feelings wheel | `/tools/feelings-wheel` | Live (2026-11-02) |
+| box breathing / breathing exercise for anxiety | `/tools/breathing-exercises` | Live (2026-11-02) |
+| grounding techniques | `/tools/grounding-techniques`, with the hub at `/articles/topics/grounding` | Live (2026-11-02) |
+| positive affirmations | `/tools/positive-affirmations` | Live (2026-11-02) |
+| mental health quotes | `/tools/mental-health-quotes` | Live (2026-11-02) |
+| mental health tips | `/tools/mental-health-tips` | Live (2026-11-02) |
 | burnout journal prompts | `/tools/journal-prompts-burnout` | Live |
 | free mental health tools | `/discover/topics` | Live |
-| mood tracker | A hand page at `/tools/mood-tracker` describing the Mood tab | Write when the Mood tab is open to free accounts |
+| mood tracker | `/tools/mood-tracker` | Live (2026-11-02) |
 | therapist near me + a county name | `/therapists/ventura-county`, `/therapists/los-angeles-county` | Live, empty until the first local therapists are verified |
 
 **For therapists (the paying side)**
@@ -158,7 +170,11 @@ aim to own. Each is a title, a hub, or a page to write.
 |---|---|---|
 | therapist directory listing / list my practice | `/for-therapists.html` | Live |
 | psychology today alternative for therapists | `/for-therapists/compare` | Live, and the title already names Psychology Today. This is the highest-value phrase on the therapist side |
-| how to get therapy clients | An article on the therapist side, linking to Match Mode | Write |
+| how to get therapy clients | `/for-therapists/guides/how-to-get-therapy-clients` | Live (2026-11-02) |
+| therapist directories besides psychology today | `/for-therapists/guides/psychology-today-alternatives` | Live (2026-11-02) |
+| how to write a therapist bio | `/for-therapists/guides/how-to-write-a-therapist-profile` | Live (2026-11-02) |
+| private practice marketing | `/for-therapists/guides/private-practice-marketing` | Live (2026-11-02) |
+| how much do therapist directories cost | `/for-therapists/guides/therapist-directory-costs` | Live (2026-11-02) |
 | therapist directory no per-session fee | `/for-therapists.html` | Live |
 
 Adding a hand-written page means adding a row to `pages` in
@@ -169,12 +185,11 @@ Adding a hand-written page means adding a row to `pages` in
 Links from other websites are still the strongest ranking signal, and the one
 thing the code cannot do. In rough order of effort to payoff:
 
-1. **A "Verified on Theraglee" badge for therapists.** Every verified
-   therapist has a website. Give them a small badge that links back to their
-   Theraglee profile and they will put it on their site, because it says
-   "license verified" to their own visitors. A hundred therapists is a hundred
-   relevant links. This is the single best link idea Theraglee has, and it is
-   a small build: an image and a snippet on the practice dashboard.
+1. **The "License verified on Theraglee" badge (built 2026-11-02).** Every
+   live listing shows the therapist the badge and the code to paste into their
+   own website, on the My profile tab of the practice dashboard. A hundred
+   therapists is a hundred relevant links. Mention it to every newly verified
+   therapist.
 2. **Give the free tools away as resources.** University counseling centers,
    school districts, employee assistance programs, libraries and nonprofits
    keep "mental health resources" pages and are glad to add a free,
@@ -231,9 +246,20 @@ the policy text and the privacy promise page need to say so too.
 | When | Do |
 |---|---|
 | Week 1 | Steps 1 to 4 above. Run `indexnow_submit.py` after this deploys. Claim the social handles. |
-| Weeks 2 to 4 | Write the feelings-wheel and breathing landing pages. Build the therapist badge. Start the weekly 15 minutes. Send the first ten resource-page emails. |
+| Weeks 2 to 4 | Connect the feeds to a posting tool and to Pinterest (`marketing/auto-posting.md`). Start the weekly 15 minutes. Send the first ten resource-page emails (`marketing/outreach.md`). The landing pages and the badge are done. |
 | Weeks 5 to 8 | Check indexed pages are climbing. Pick the three nearly-ranking phrases each week and improve those pages. Sign up for Connectively and Qwoted. First Reddit answers. |
 | Weeks 9 to 12 | Pitch two therapist podcasts or blogs. Add a city page for the next metro once local therapists are verified. Review which article titles earned impressions and steer the daily routine toward those phrasings. |
+
+## What runs every week on its own
+
+The *Theraglee weekly growth* scheduled task runs every Tuesday: it reads this
+plan, picks three phrases the site has content for but no page (two for
+members, one for therapists), writes the pages as rows in
+`data/seo-pages.json`, rebuilds and checks, writes the next week's social
+posts into `marketing/social-posts.md`, and opens a pull request for you to
+merge with one click. Reply to its summary with a phrase from Search Console
+and the next run writes that page.
+`marketing/README.md` lists everything else that runs by itself.
 
 ## What is deliberately not done here
 

@@ -40,6 +40,10 @@ const paths = [
   'tools/quizzes',
   'tools/worksheets',
   'tools/journal-prompts',
+  'tools/positive-affirmations',
+  'tools/mental-health-quotes',
+  'tools/mental-health-tips',
+  ...(SEO.pages.some((p) => p.path.startsWith('for-therapists/guides/')) ? ['for-therapists/guides'] : []),
   'challenges/themes',
   ...CHALLENGES.map((c) => `challenges/${c.slug}`),
   'checklists',
@@ -60,7 +64,11 @@ for (const path of paths) {
   if (h1s.length !== 1) err(`${path}: ${h1s.length} <h1> elements, expected one`);
   if (!html.includes(`<link rel="canonical" href="${site}/${path}">`)) err(`${path}: canonical does not match its URL`);
   if (!html.includes('<base href="/">')) err(`${path}: missing <base href="/">, so relative links would break`);
-  if (!html.includes('<meta property="og:image" content="')) err(`${path}: no og:image, so a shared link shows no picture`);
+  const og = html.match(/<meta property="og:image" content="([^"]*)">/)?.[1];
+  if (!og) err(`${path}: no og:image, so a shared link shows no picture`);
+  else if (og.includes('/assets/cards/') && !exists(`site/${og.replace(`${site}/`, '')}`)) err(`${path}: its share image ${og} is not in site/assets/cards; run the build`);
+  if (!html.includes('id="share"')) err(`${path}: no share bar`);
+  if (!html.includes('<link rel="alternate" type="application/rss+xml"')) err(`${path}: no feed link`);
   if (!html.includes('"@type": "BreadcrumbList"')) err(`${path}: no BreadcrumbList structured data`);
   const desc = unescape(html.match(/<meta name="description" content="([^"]*)">/)?.[1] ?? '');
   if (desc.length < 50) err(`${path}: description is ${desc.length} characters; write at least 50`);
@@ -161,13 +169,31 @@ for (const shell of ['journal.html', 'goals.html', 'quiz.html', 'worksheet.html'
 }
 if (!exists('site/assets/social-card.png')) err('site/assets/social-card.png is missing; run python3 tools/social_card.py');
 
+// The RSS feeds exist, and every item in them is a page on the site with a
+// share image that exists.
+for (const feed of ['feed.xml', 'feed-checklists.xml', 'feed-challenges.xml']) {
+  if (!exists(`site/${feed}`)) { err(`site/${feed} is missing; run python3 tools/build_seo_pages.py`); continue; }
+  const xml = read(`site/${feed}`);
+  if (!xml.startsWith('<?xml') || !xml.includes('<rss ') || !xml.includes('</rss>')) err(`site/${feed}: not an RSS document`);
+  const items = xml.match(/<item>/g)?.length ?? 0;
+  if (items < 1) err(`site/${feed}: no items`);
+  for (const [, link] of xml.matchAll(/<item>[\s\S]*?<link>([^<]+)<\/link>/g)) {
+    const rel = link.replace(`${site}/`, '');
+    if (!exists(`site/${rel}/index.html`)) err(`${feed}: ${link} is not a page on the site`);
+  }
+  for (const [, url] of xml.matchAll(/<enclosure url="([^"]+)"/g)) {
+    if (!exists(`site/${url.replace(`${site}/`, '')}`)) err(`${feed}: enclosure ${url} does not exist`);
+  }
+  if (/&(?!amp;|lt;|gt;|quot;|#x27;|#\d+;)/.test(xml)) err(`${feed}: a bare & would break the XML`);
+}
+
 // llms.txt points only at pages that exist.
 if (!exists('site/llms.txt')) err('site/llms.txt is missing; run python3 tools/build_seo_pages.py');
 else {
   for (const [, url] of read('site/llms.txt').matchAll(/\]\((https?:[^)]+)\)/g)) {
     const rel = url.replace(`${site}/`, '').split('?')[0];
     if (rel === '' || rel === 'sitemap.xml') continue;
-    const ok = rel.endsWith('.html') ? exists(`site/${rel}`) : exists(`site/${rel}/index.html`);
+    const ok = /\.(html|xml)$/.test(rel) ? exists(`site/${rel}`) : exists(`site/${rel}/index.html`);
     if (!ok) err(`llms.txt: ${url} is not a page on the site`);
   }
 }

@@ -552,6 +552,7 @@ function footer() {
         <a href="challenges.html">Challenges</a><a href="checklists">Checklists</a>
         <a href="dashboard.html#journal">Journal</a><a href="tools/journal-prompts">Journal prompts</a>
         <a href="articles.html">Articles</a><a href="articles/topics">Articles by topic</a>
+        <a href="tools/positive-affirmations">Affirmations</a><a href="tools/mental-health-quotes">Quotes</a>
         <a href="therapists.html">Find a therapist</a>
         <a href="match-mode.html">Theraglee Match Mode</a></div>
       <div><h4>Membership</h4>
@@ -562,6 +563,7 @@ function footer() {
         <a href="for-therapists.html">Therapist membership</a>
         <a href="for-therapists/match-mode">Theraglee Match Mode for therapists</a>
         <a href="for-therapists/compare">Compare the directories</a>
+        <a href="for-therapists/guides">Guides for therapists</a>
         <a href="privacy-promise.html">Our privacy promise</a>
         <a href="${DOORS.therapist.signin}">Therapist sign in</a>
         <a href="therapist-dashboard.html">Practice dashboard</a></div>
