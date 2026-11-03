@@ -33,16 +33,16 @@ export const TAGS = new Set([
 // library tile, so it is short and plain. Add one here before using it.
 export const CATEGORIES = new Set([
   'Affairs', 'Aging Parents', 'Anger', 'Anxiety', 'Body', 'Boundaries', 'Burnout',
-  'Caregiving', 'Communication', 'Comparison', 'Confidence', 'Connection', 'Dating', 'Debt',
-  'Decisions', 'Drinking', 'Driving', 'Estrangement', 'Faith', 'Family', 'Focus', 'Food',
-  'Forgiveness', 'Friendship', 'Gratitude', 'Grief', 'Grounding', 'Habits', 'Health',
+  'Caregiving', 'College', 'Communication', 'Comparison', 'Confidence', 'Connection', 'Dating',
+  'Debt', 'Decisions', 'Drinking', 'Driving', 'Estrangement', 'Faith', 'Family', 'Focus',
+  'Food', 'Forgiveness', 'Friendship', 'Gratitude', 'Grief', 'Grounding', 'Habits', 'Health',
   'Holidays', 'Home', 'Job Search', 'Loneliness', 'Medication', 'Milestones', 'Mindfulness',
   'Money', 'Mornings', 'Motivation', 'Moving', 'Neighbors', 'Newborn', 'Outdoors',
   'Overstimulation', 'Pacing', 'Parenting', 'Perfectionism', 'Pets', 'Play', 'Reading',
-  'Relationships', 'Rest', 'Retirement', 'Screens', 'Seasons', 'Self-Care', 'Self-Compassion',
-  'Self-Employment', 'Separation', 'Setbacks', 'Shift Work', 'Sleep', 'Smoking',
-  'Social Anxiety', 'Speaking', 'Stress', 'Study', 'Teenagers', 'Therapy', 'Transitions',
-  'Travel', 'Visiting', 'Volunteering', 'Wellbeing', 'Work', 'Worry',
+  'Recovery', 'Relationships', 'Rest', 'Retirement', 'Screens', 'Seasons', 'Self-Care',
+  'Self-Compassion', 'Self-Employment', 'Separation', 'Setbacks', 'Shift Work', 'Sleep',
+  'Smoking', 'Social Anxiety', 'Speaking', 'Stress', 'Study', 'Teenagers', 'Therapy',
+  'Transitions', 'Travel', 'Visiting', 'Volunteering', 'Wellbeing', 'Work', 'Worry',
 ]);
 
 const CADENCE = new Set(['daily', 'weekly', 'as needed']);
