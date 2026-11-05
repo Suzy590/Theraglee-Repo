@@ -38,11 +38,24 @@
   </div>
 </main>
 
+<script>
+// If the scripts below never load (a dropped or blocked connection), say so
+// after a while instead of leaving the gray placeholder where the form should be.
+setTimeout(function () {
+  var box = document.getElementById('auth');
+  if (!box || !box.querySelector('.skeleton')) return;
+  box.innerHTML = '<div class="notice err"><strong>The sign-in form did not load.</strong><br>' +
+    'Check your connection, then reload this page. If it keeps happening, try another browser.</div>';
+}, 12000);
+</script>
 <script type="module">
 import { chrome } from './assets/app.js';
 import { authPage } from './assets/auth.js';
+// The form goes up first, so it is there even if the header's own lookup
+// is slow; the header follows.
+const form = authPage({ audience: 'therapist', mode: 'signin' });
 await chrome();
-await authPage({ audience: 'therapist', mode: 'signin' });
+await form;
 </script>
 </body>
 </html>
