@@ -194,7 +194,7 @@ takes the count down. It includes:
   (`supabase/migrations/20261008170000_therapist_calls.sql` and
   `20261008180000_therapist_calls_answered.sql`)
 - the names and topics of members who opted in to being contacted (any registered member can)
-- a clinician library of 6550 resources (worksheets, CBT, ACT, DBT, couples, kids, games), with five more of every kind and five on each of eighteen topics added every day, all adjuncts to the therapist's own judgment rather than protocols — see [`therapist-resources.md`](therapist-resources.md)
+- a clinician library of 6800 resources (worksheets, CBT, ACT, DBT, couples, kids, games), with five more of every kind and five on each of eighteen topics added every day, all adjuncts to the therapist's own judgment rather than protocols — see [`therapist-resources.md`](therapist-resources.md)
 
 If either the license or the membership lapses, the listing comes down on its own
 and the library and member list close, while the therapist keeps their own inbox
@@ -722,7 +722,7 @@ Most of it was imported from the Word documents in the parent folder:
 - 186 interactive worksheets (16 imported, 170 written for the site — see below)
 - 98 checklists, with two more added every day — see [`checklists.md`](checklists.md)
 - 102 themed challenges (365 daily to-dos each), with two more themes added every day — see [`challenges.md`](challenges.md)
-- 307 articles, free to everyone, with five more published every day — see [`articles.md`](articles.md)
+- 312 articles, free to everyone, with five more published every day — see [`articles.md`](articles.md)
 - 282 mandalas to print or color online (drawn in the browser from a seed): 200 round, 82 shaped like animals, plants and symbols
 - 150 mental health trivia quizzes (1,500 questions), written for the site rather than imported
 - 140 daily items — affirmations, tips, fun facts, quotes
