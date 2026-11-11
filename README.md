@@ -38,7 +38,7 @@ supabase/
                        connect, session payments) — see docs/stripe.md
   migrations/          Schema changes that go with them
 documents/
-  index.html           Browsable library of all 1,041 documents
+  index.html           Browsable library of all 1,043 documents
   CONTENT-HEALTH.md    Source-data defects found while building
   challenges/ articles/ checklists/ journal-prompts/ quizzes/ worksheets/
 ```
@@ -109,15 +109,15 @@ chromium --headless --no-pdf-header-footer \
 |---|---|---|
 | `articles.json` | `articles` | 322 (five more every day — see `docs/articles.md`) |
 | `checklists.json` | `checklists` | 106 (two more every day — see `docs/checklists.md`) |
-| `challenges.json` | `challenge_templates` + `challenge_days` | 104 themes (365 daily to-dos each, 37,960 in all; two more themes every day — see `docs/challenges.md`) |
+| `challenges.json` | `challenge_templates` + `challenge_days` | 106 themes (365 daily to-dos each, 38,690 in all; two more themes every day — see `docs/challenges.md`) |
 | `worksheets.json` | `worksheets` | 186 |
 | `quizzes.txt` | `quizzes` + `quiz_questions` + `quiz_bands` | 312 (1,503 q, 1,247 bands) |
 | `journal-prompts.txt` | `daily_content` where `kind = 'journal_prompt'` | 372 |
 | `therapist-resources.json` | `therapist_resources` (the clinician library on the therapist dashboard; not rendered into `documents/`) | 7175 (five more of every kind and five on each of eighteen topics every day — see `docs/therapist-resources.md`) |
 
 The 372 journal prompts are grouped into 11 themed collections at build time
-(keyword rules live in `THEMES` in the generator), which is why 1,041 documents come
-out of 1,402 source rows (the journal prompt rows collapse into 11 collections).
+(keyword rules live in `THEMES` in the generator), which is why 1,043 documents come
+out of 1,404 source rows (the journal prompt rows collapse into 11 collections).
 
 `quizzes.txt` is a compact pipe-delimited format rather than JSON — `Q|` a quiz,
 `P|` a question, `O|value|label` an option, `B|min|max|label|interpretation` a
