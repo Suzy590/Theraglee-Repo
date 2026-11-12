@@ -130,9 +130,9 @@ export async function mountAnalytics(host, sb, { esc, toast, busy, callFn }) {
           <span class="muted">Off, the site sends Google nothing and the reports stay empty. On, every page a visitor opens is counted,
             except by administrators and by browsers that send an opt-out signal (Global Privacy Control or Do Not Track).</span></span>
       </label>
-      <div class="notice warn" style="margin-top:14px"><strong>Before the switch goes on:</strong> the Privacy Policy says the site runs
-        no third-party analytics. Change sections 2, 5 and 6 of <code>site/privacy.html</code> to say Google Analytics is used
-        and how to opt out (<code>docs/legal-pages.md</code> lists what has to change), then come back here.</div>
+      <div class="notice warn" style="margin-top:14px"><strong>Before the switch goes on:</strong> the Privacy Policy (sections 2, 5, 6 and 10
+        of <code>site/privacy.html</code>) must describe Google Analytics and how to opt out, and its effective date must have arrived:
+        a material change takes effect 30 days after members are emailed about it. <code>docs/legal-pages.md</code> keeps the dates.</div>
       <div class="row" style="margin-top:18px">
         <button class="btn" id="ga-save">Save settings</button>
         <button class="btn ghost" id="ga-test">Test the connection</button>

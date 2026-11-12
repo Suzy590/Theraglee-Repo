@@ -88,7 +88,7 @@
     <article class="doc">
       <span class="eyebrow">Legal</span>
       <h1>Privacy Policy</h1>
-      <p class="dates">Effective September 29, 2026 · Last reviewed September 29, 2026 ·
+      <p class="dates">Effective December 12, 2026 · Last reviewed November 12, 2026 ·
         See also the <a href="terms.html">Terms of Service</a></p>
 
       <div class="summary" id="short-version">
@@ -98,7 +98,9 @@
             mood logs, goals and quest maps are private to your account. No therapist and no other member can read
             them, and we do not read them except to keep the service running or when you ask us to.</li>
           <li><strong>We do not sell your information</strong>, and we do not share it for targeted
-            advertising. There are no advertising trackers or third-party analytics on this site.</li>
+            advertising. There are no advertising trackers on this site. We use Google Analytics only to
+            count which pages are opened, with its advertising features switched off, and we do not load
+            it at all if your browser sends an opt-out signal.</li>
           <li><strong>Your mental health information is consumer health data.</strong> We collect it
             only to provide the tools you use, and we never share it with anyone outside the companies
             that host and run Theraglee for us.</li>
@@ -148,6 +150,14 @@
           IP address, browser type, device type, the page you asked for, the time, and the page that
           referred you. Our hosting provider keeps this in short-lived server logs so the site can be
           served and defended against abuse.</li>
+        <li><strong>Usage statistics</strong> from Google Analytics, whether or not you are signed in:
+          the address of each page you open (which can name a topic or tool), when you opened it, the
+          page or search engine that sent you, your browser and device type, the general area your IP
+          address points to (a city or region, never a precise location), and a random identifier in a
+          cookie that tells one browser's visits apart from another's. We have switched off its
+          advertising features and its sharing of data with Google's other products. Your name, email,
+          account and anything you write in the tools are never sent to it. It does not load at all if
+          your browser sends a Global Privacy Control or Do Not Track signal (see section 6).</li>
         <li><strong>Answers to the self-discovery tools</strong>, which are saved only in your own
           browser's local storage so you can pick up where you left off. They never leave your device
           unless you create an account and choose to save a tool to your dashboard.</li>
@@ -191,8 +201,8 @@
 
       <h3>Information we deliberately do not collect</h3>
       <ul>
-        <li>We do not run advertising trackers, social media pixels, session-replay tools or
-          third-party analytics scripts.</li>
+        <li>We do not run advertising trackers, social media pixels or session-replay tools. The only
+          analytics is Google Analytics, described above, set up to count pages and nothing more.</li>
         <li>We do not collect precise location. If you press <em>Use my location</em> on the resource
           map, your browser shares your position with the map for that one view and we do not store it.
           To find treatment facilities near you, our server sends that position, rounded to about half a
@@ -265,6 +275,13 @@
             <td>The caller's phone number and the time of the call</td></tr>
           <tr><td>License verification service and state licensing boards</td><td>Confirms therapist licenses</td>
             <td>A therapist's name, license number and state</td></tr>
+          <tr><td>Google Analytics</td><td>Counts visits to the site's pages so we can see which parts of
+            Theraglee are used and which are not</td>
+            <td>The address and time of each page you open, the page that referred you, your browser and
+            device type, your IP address (which Google uses to work out a general area and does not store),
+            and a random cookie identifier. Never your name, email, account or anything you write. Google
+            processes this for us under its data processing terms; we have switched off its advertising
+            features and its sharing of this data with Google's other products</td></tr>
           <tr><td>Google Fonts</td><td>Serves the typefaces used on every page</td>
             <td>Your IP address, when your browser fetches the font files</td></tr>
           <tr><td>OpenStreetMap</td><td>Shows the map on the resource finder for Premium members, and
@@ -316,8 +333,8 @@
         or the most-used tools.</p>
 
       <h2 id="cookies">6. Cookies and local storage</h2>
-      <p>Theraglee uses your browser's storage only to make the site work. There are no advertising
-        cookies and no third-party tracking cookies.</p>
+      <p>Theraglee uses your browser's storage to make the site work, plus one analytics cookie from
+        Google Analytics. There are no advertising cookies.</p>
       <div class="scroll-x"><table class="data">
         <thead><tr><th>Item</th><th>Purpose</th><th>Lifetime</th></tr></thead>
         <tbody>
@@ -329,12 +346,20 @@
             <td>Until you close the browser tab</td></tr>
           <tr><td>Stripe</td><td>Fraud prevention during checkout, on Stripe's own pages</td>
             <td>Set by Stripe under Stripe's privacy policy</td></tr>
+          <tr><td>Google Analytics (<code>_ga</code> and <code>_ga_…</code>)</td>
+            <td>A random identifier that tells one browser's visits apart from another's, so pages and
+            returning visits can be counted. Not set if your browser sends a Global Privacy Control or Do
+            Not Track signal</td>
+            <td>Up to two years; delete it any time by clearing your browser's cookies</td></tr>
         </tbody>
       </table></div>
-      <p>Because we do not sell or share personal information and do not use it for targeted
-        advertising, there is nothing for a browser opt-out signal such as Global Privacy Control to
-        switch off. We treat every visitor as opted out of sale and sharing already, whether or not
-        the browser sends that signal.</p>
+      <p>We do not sell or share personal information for targeted advertising, so we treat every
+        visitor as opted out of sale and sharing already, whether or not the browser sends an opt-out
+        signal. We honor the signal in the one place it can apply: if your browser sends
+        <strong>Global Privacy Control</strong> or <strong>Do Not Track</strong>, Google Analytics is
+        not loaded on any page, and no analytics cookie is set. Most browsers and privacy extensions
+        can send these signals; you can also block Google Analytics with a content blocker or with
+        Google's own opt-out browser add-on.</p>
 
       <h2 id="retention">7. How long we keep it</h2>
       <div class="scroll-x"><table class="data">
@@ -463,8 +488,11 @@
             age range, gender (if you choose to share it), broad topics, session preference, insurance plan and the first three digits of your zip code, plus your
             real name only if you reply to them, and never your name before that, your exact
             location, your journal, results or logs.</li>
-        <li>No one else. We never sell consumer health data, and we never share it with advertisers,
-          data brokers or analytics companies.</li>
+        <li>No one else. We never sell consumer health data, and we never share it with advertisers
+          or data brokers. Google Analytics, which counts page visits for us (sections 2, 5 and 6),
+          receives the address of each page you open, which can name a topic or tool, together with a
+          random cookie identifier, and never your account, your name, or anything you write or
+          answer.</li>
       </ul>
       <h3>Your rights over consumer health data</h3>
       <p>You can confirm whether we hold it, see it, get a list of everyone we shared it with, withdraw
