@@ -32,19 +32,20 @@ export const TAGS = new Set([
 // The theme a checklist belongs to. It is the word after "Checklist" on the
 // library tile, so it is short and plain. Add one here before using it.
 export const CATEGORIES = new Set([
-  'Affairs', 'Aging Parents', 'Anger', 'Anniversaries', 'Anxiety', 'Bedtime', 'Body',
-  'Boundaries', 'Bullying', 'Burnout', 'Caregiving', 'College', 'Communication', 'Commuting',
-  'Comparison', 'Confidence', 'Connection', 'Cooking', 'Court', 'Dating', 'Debt', 'Decisions',
-  'Drinking', 'Driving', 'Estrangement', 'Faith', 'Family', 'Focus', 'Food', 'Forgiveness',
-  'Friendship', 'Gardening', 'Gratitude', 'Grief', 'Grounding', 'Habits', 'Health', 'Holidays',
-  'Home', 'Immigration', 'Jealousy', 'Job Search', 'Loneliness', 'Medication', 'Milestones',
-  'Mindfulness', 'Money', 'Mornings', 'Motivation', 'Moving', 'Music', 'Neighbors', 'Newborn',
-  'Outdoors', 'Overstimulation', 'Pacing', 'Parenting', 'Perfectionism', 'Pets', 'Play',
-  'Pregnancy', 'Reading', 'Recovery', 'Relationships', 'Rest', 'Retirement', 'Saving',
-  'Screens', 'Seasons', 'Self-Care', 'Self-Compassion', 'Self-Employment', 'Separation',
-  'Setbacks', 'Shift Work', 'Siblings', 'Sleep', 'Smoking', 'Social Anxiety', 'Speaking',
-  'Stress', 'Study', 'Teenagers', 'Therapy', 'Transitions', 'Travel', 'Visiting',
-  'Volunteering', 'Weddings', 'Wellbeing', 'Work', 'Worry',
+  'Affairs', 'Aging Parents', 'Anger', 'Anniversaries', 'Anxiety', 'Bedtime', 'Beginners',
+  'Body', 'Boundaries', 'Bullying', 'Burnout', 'Caregiving', 'College', 'Communication',
+  'Commuting', 'Comparison', 'Confidence', 'Connection', 'Cooking', 'Court', 'Dating', 'Debt',
+  'Decisions', 'Drinking', 'Driving', 'Estrangement', 'Faith', 'Family', 'Focus', 'Food',
+  'Forgiveness', 'Friendship', 'Gardening', 'Gratitude', 'Grief', 'Grounding', 'Habits',
+  'Health', 'Holidays', 'Home', 'Immigration', 'Jealousy', 'Job Search', 'Loneliness',
+  'Medication', 'Milestones', 'Mindfulness', 'Money', 'Mornings', 'Motivation', 'Moving',
+  'Music', 'Neighbors', 'Newborn', 'Nightmares', 'Outdoors', 'Overstimulation', 'Pacing',
+  'Parenting', 'Perfectionism', 'Pets', 'Play', 'Pregnancy', 'Reading', 'Recovery',
+  'Relationships', 'Rest', 'Retirement', 'Saving', 'Screens', 'Seasons', 'Self-Care',
+  'Self-Compassion', 'Self-Employment', 'Separation', 'Setbacks', 'Shift Work', 'Siblings',
+  'Sleep', 'Smoking', 'Social Anxiety', 'Speaking', 'Stress', 'Study', 'Teenagers', 'Therapy',
+  'Transitions', 'Travel', 'Visiting', 'Volunteering', 'Weddings', 'Wellbeing', 'Work',
+  'Worry',
 ]);
 
 const CADENCE = new Set(['daily', 'weekly', 'as needed']);
