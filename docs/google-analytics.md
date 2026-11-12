@@ -74,18 +74,27 @@ Press **Test the connection** on the tab. It answers with the service
 account's email and the property id, or says what is missing in words that
 name the step above to go back to.
 
-### 3. Turn the tag on, once the privacy policy allows it
+### 3. Turn the tag on, once the privacy policy's effective date arrives
 
 Nothing is counted until the switch **Load the tag on every page** is on.
-Before it goes on, the Privacy Policy has to change: `site/privacy.html`
-says the site runs no third-party analytics (sections 2, 5 and 6), and a
-policy that says that while the tag loads is a deceptive practice under the
-FTC Act. `docs/legal-pages.md` lists the statements that have to change
-and the review that goes with them: name Google Analytics as a service
-provider, say what it collects, and say how a visitor opts out. Bump the
-policy's **Effective** date in the same pull request.
+The Privacy Policy (`site/privacy.html`) describes Google Analytics in its
+short version and in sections 2, 5, 6 and 10: what it receives, that its
+advertising features are off, the cookie it sets, and that it is not loaded
+for a browser that sends Global Privacy Control or Do Not Track. That wording
+was posted on November 12, 2026 and is **effective December 12, 2026**,
+because the policy promises members 30 days' email notice of a material
+change. Email members when the wording is posted, and keep the switch off
+until the effective date. A policy that says there are no third-party
+analytics while the tag loads is a deceptive practice under the FTC Act, so
+if the policy's wording ever changes back, the switch goes off first.
+`docs/legal-pages.md` keeps the facts table and the dates.
 
-With the policy updated, turn the switch on and save. From the next page
+Also keep Google's side honest with the policy: in Google Analytics, under
+**Admin → Account settings**, leave every data-sharing box unchecked, and
+under **Admin → Data collection**, leave Google signals off. The policy says
+both.
+
+From the effective date, turn the switch on and save. From the next page
 anyone opens, `analytics-tag.js` reads the settings and adds Google's
 `gtag.js` to the page. The first reports arrive a day or so later; Google's
 reports can run a day behind.

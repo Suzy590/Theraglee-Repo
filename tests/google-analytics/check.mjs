@@ -195,7 +195,12 @@ test('the pieces agree on the config keys, the tab and the function', () => {
 
 test('the privacy wording is on the tab and in the guide', () => {
   const tab = read('site/assets/admin-analytics.js');
-  assert.ok(/Privacy Policy/.test(tab) && /sections 2, 5 and 6/.test(tab), 'the tab does not say the policy has to change first');
+  assert.ok(/Privacy Policy/.test(tab) && /sections 2, 5, 6 and 10/.test(tab), 'the tab does not say the policy has to describe the tag first');
+  // The policy itself describes the tag, in every place the tab and the guide point at.
+  const policy = read('site/privacy.html');
+  assert.ok(/Google Analytics/.test(policy) && /Global Privacy Control/.test(policy), 'privacy.html does not describe Google Analytics');
+  assert.ok(!/third-party analytics on this site/.test(policy) && !/third-party analytics scripts/.test(policy),
+    'privacy.html still says there are no third-party analytics');
   const guide = read('docs/google-analytics.md');
   assert.ok(/privacy\.html/.test(guide) && /legal-pages\.md/.test(guide), 'the guide does not point at the policy');
   assert.ok(/Global Privacy Control/.test(guide), 'the guide does not mention the opt-out signal');
