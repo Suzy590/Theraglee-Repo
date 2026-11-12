@@ -38,14 +38,14 @@ export const CATEGORIES = new Set([
   'Decisions', 'Drinking', 'Driving', 'Estrangement', 'Faith', 'Family', 'Focus', 'Food',
   'Forgiveness', 'Friendship', 'Gardening', 'Gratitude', 'Grief', 'Grounding', 'Habits',
   'Health', 'Holidays', 'Home', 'Immigration', 'Jealousy', 'Job Search', 'Loneliness',
-  'Medication', 'Milestones', 'Mindfulness', 'Money', 'Mornings', 'Motivation', 'Moving',
-  'Music', 'Neighbors', 'Newborn', 'Nightmares', 'Outdoors', 'Overstimulation', 'Pacing',
-  'Parenting', 'Perfectionism', 'Pets', 'Play', 'Pregnancy', 'Reading', 'Recovery',
-  'Relationships', 'Rest', 'Retirement', 'Saving', 'Screens', 'Seasons', 'Self-Care',
-  'Self-Compassion', 'Self-Employment', 'Separation', 'Setbacks', 'Shift Work', 'Siblings',
-  'Sleep', 'Smoking', 'Social Anxiety', 'Speaking', 'Stress', 'Study', 'Teenagers', 'Therapy',
-  'Transitions', 'Travel', 'Visiting', 'Volunteering', 'Weddings', 'Wellbeing', 'Work',
-  'Worry',
+  'Medication', 'Menopause', 'Milestones', 'Mindfulness', 'Money', 'Mornings', 'Motivation',
+  'Moving', 'Music', 'Neighbors', 'Newborn', 'Nightmares', 'Outdoors', 'Overstimulation',
+  'Pacing', 'Parenting', 'Perfectionism', 'Pets', 'Phone Calls', 'Play', 'Pregnancy',
+  'Reading', 'Recovery', 'Relationships', 'Rest', 'Retirement', 'Saving', 'Screens', 'Seasons',
+  'Self-Care', 'Self-Compassion', 'Self-Employment', 'Separation', 'Setbacks', 'Shift Work',
+  'Siblings', 'Sleep', 'Smoking', 'Social Anxiety', 'Speaking', 'Stress', 'Study', 'Teenagers',
+  'Therapy', 'Transitions', 'Travel', 'Visiting', 'Volunteering', 'Weddings', 'Wellbeing',
+  'Work', 'Worry',
 ]);
 
 const CADENCE = new Set(['daily', 'weekly', 'as needed']);
