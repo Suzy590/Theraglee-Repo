@@ -28,6 +28,7 @@ two are kept in step the same way as worksheets and quizzes: edit the JSON,
 run the check, generate the SQL, apply it, regenerate `documents/`.
 
 ```bash
+python3 tools/article_photos.py <slug> "<search words>" "<alt text>"   # the article's photo (see below)
 node tests/articles-fixture/check.mjs                 # data checks
 python3 tools/articles_sql.py --since 2026-09-10      # SQL for a day's articles (an upsert on slug)
 python3 tools/articles_sql.py slug-a slug-b           # or by slug
@@ -57,7 +58,10 @@ Each day's session:
    (for voice, and to avoid repeating a topic).
 2. Writes five new articles and appends them to `data/articles.json` with
    today's date at 14:00:00+00:00 as `published_at`.
-3. Runs `node tests/articles-fixture/check.mjs` and fixes anything it flags.
+3. Gives each one a photo with `python3 tools/article_photos.py <slug>
+   "<search words>" "<alt text>"` (the section **Every article has a photo**
+   below says how to choose the words), then runs
+   `node tests/articles-fixture/check.mjs` and fixes anything it flags.
 4. Generates the day's migration with `tools/articles_sql.py --since <today>`
    and applies it to the database.
 5. Confirms with a query that the five rows are in `articles` at `min_level 0`.
@@ -102,6 +106,52 @@ committed and pushed; only the database step waits. The daily session says in
 its pull request comment whether the rows reached the database, and
 `python3 tools/articles_sql.py --since <date>` regenerates the SQL for any
 span of days to paste into the Supabase SQL editor.
+
+## Every article has a photo
+
+Every article carries a free public domain photo: the picture at the top of
+the article, the thumbnail on its tile, and the image a shared link shows on
+social media. It lives in the article's `photo`:
+
+| Key | What it is |
+|---|---|
+| `file` | `assets/articles/<slug>.jpg`, a 1200x630 JPEG under `site/` |
+| `alt` | One short sentence saying what is in the picture |
+| `credit` | `Photo by <name> via <StockSnap, rawpixel or Flickr>, <CC0 or Public domain>` |
+| `source` | The page the photo came from, which the credit links to |
+| `license` | `cc0` or `pdm` (the Public Domain Mark); nothing else qualifies |
+
+The database carries the same four strings as `photo_url` (with a leading
+slash), `photo_alt`, `photo_credit` and `photo_source`
+(`supabase/migrations/20261117150000_articles_photos.sql`), and
+`tools/articles_sql.py` writes them with the rest of the row.
+
+`tools/article_photos.py` finds the photo through
+[Openverse](https://openverse.org), which indexes openly licensed images; the
+tool asks only for CC0 and Public Domain Mark photographs from StockSnap,
+rawpixel and Flickr, skips anything that is not landscape or is too small,
+never uses a photo twice, crops and saves the JPEG, and writes `photo`:
+
+```bash
+python3 tools/article_photos.py --missing                                 # which articles still need one
+python3 tools/article_photos.py --list "two mugs of tea table"             # see the candidates first
+python3 tools/article_photos.py how-to-repair-after-an-argument "two mugs of tea table" "Two mugs of tea side by side"
+python3 tools/article_photos.py <slug> "<words>" "<alt>" --pick 3          # take the third candidate instead
+python3 tools/article_photos.py <slug> "<words>" "<alt>" --replace         # swap a photo the article already has
+```
+
+Choosing the words: describe a calm picture, not the article's subject. A
+place, an object, hands, weather, light: "forest path morning light", "two
+mugs of tea", "an alarm clock on a bedside table". Never a face, never anything
+that illustrates distress, never a stock photo of someone looking sad; the
+photo sets a mood, it does not act the article out. Write the alt text as
+what a reader would see if the picture loaded, in one sentence, US English.
+Look at the saved JPEG before committing; if it misses, run the tool again
+with `--replace` and different words or `--pick`.
+
+Openverse allows an anonymous client 20 searches a minute and 200 a day; the
+tool paces itself and caches every response, so five articles a day are well
+within it.
 
 ## Writing an article
 

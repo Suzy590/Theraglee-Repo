@@ -1,7 +1,8 @@
 // Data checks for the articles in data/articles.json. Run from the repo root:
 //   node tests/articles-fixture/check.mjs
 // Fails (exit 1) if any article is malformed, any slug or title repeats, an
-// article is not free, or the copy uses language the articles avoid.
+// article is not free, an article has no photo, or the copy uses language the
+// articles avoid.
 import { readFileSync, existsSync } from 'node:fs';
 
 const ARTICLES = JSON.parse(readFileSync(new URL('../../data/articles.json', import.meta.url), 'utf8'));
@@ -66,7 +67,13 @@ const UK = [/\bcolour/i, /\bbehaviour/i, /\bfavourite/i, /\bcounselling/i, /\bpe
 const words = (s) => String(s || '').trim().split(/\s+/).filter(Boolean).length;
 
 const slugs = new Set(), titles = new Set();
-const KEYS = ['slug', 'title', 'tags', 'min_level', 'published_at', 'excerpt', 'body_md'];
+const KEYS = ['slug', 'title', 'tags', 'min_level', 'published_at', 'excerpt', 'body_md', 'photo'];
+// Every article carries a free public domain photo (see docs/articles.md):
+// a 1200x630 JPEG under site/assets/articles/, alt text, a credit line, the
+// page it came from, and its license, CC0 or the Public Domain Mark.
+const PHOTO_KEYS = ['file', 'alt', 'credit', 'source', 'license'];
+const PHOTO_LICENSES = new Set(['cc0', 'pdm']);
+const sources = new Set();
 for (const a of ARTICLES) {
   const legacy = LEGACY.has(a.slug);
   const got = Object.keys(a);
@@ -82,6 +89,21 @@ for (const a of ARTICLES) {
     err(a, 'published_at must be an ISO timestamp in UTC (…+00:00)');
   if (!Array.isArray(a.tags)) err(a, 'tags must be an array');
   else for (const tag of a.tags) if (!TAGS.has(tag)) err(a, `unknown tag "${tag}"`);
+
+  const ph = a.photo;
+  if (!ph || typeof ph !== 'object') err(a, 'no photo; run python3 tools/article_photos.py');
+  else {
+    const pk = Object.keys(ph);
+    if (pk.length !== PHOTO_KEYS.length || PHOTO_KEYS.some(k => !(k in ph))) err(a, `photo keys must be exactly ${PHOTO_KEYS.join(', ')}`);
+    if (ph.file !== `assets/articles/${a.slug}.jpg`) err(a, `photo.file must be assets/articles/${a.slug}.jpg`);
+    else if (!existsSync(new URL(`../../site/${ph.file}`, import.meta.url))) err(a, `photo file ${ph.file} is missing`);
+    if (words(ph.alt) < 3 || String(ph.alt).length > 160) err(a, 'photo.alt should be a short sentence saying what is in the picture');
+    if (!/^Photo (by .+ )?via (StockSnap|rawpixel|Flickr), (CC0|Public domain)$/.test(ph.credit || '')) err(a, `photo.credit is not in the house form: "${ph.credit}"`);
+    if (!/^https:\/\//.test(ph.source || '')) err(a, 'photo.source must be the https page the photo came from');
+    if (!PHOTO_LICENSES.has(ph.license)) err(a, `photo.license must be cc0 or pdm, got "${ph.license}"`);
+    if (sources.has(ph.source)) err(a, `photo ${ph.source} is already used by another article`); sources.add(ph.source);
+    for (const re of UK) { const m = String(ph.alt).match(re); if (m) err(a, `US spelling in photo.alt: "${m[0]}"`); }
+  }
 
   const body = String(a.body_md || '');
   if (!legacy) {
@@ -124,4 +146,4 @@ if (errors.length) {
 }
 const nw = ARTICLES.reduce((n, a) => n + words(a.body_md), 0);
 const tags = new Set(ARTICLES.flatMap(a => a.tags));
-console.log(`ok: ${ARTICLES.length} articles, ${nw} words, ${tags.size} tags`);
+console.log(`ok: ${ARTICLES.length} articles, ${nw} words, ${tags.size} tags, ${sources.size} photos`);
