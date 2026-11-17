@@ -457,8 +457,8 @@ export async function chrome({ active = '', showcase = true } = {}) {
   // are the other front door, so they go without. A page that places the
   // strip itself (the landing page puts it in the explore section), wants
   // the whole width for itself (a therapist's profile, the three For
-  // Therapists pages), or is a legal page (the Terms of Service and the
-  // Privacy Policy) passes `showcase: false`.
+  // Therapists pages, the account page), or is a legal page (the Terms of
+  // Service and the Privacy Policy) passes `showcase: false`.
   const therapistPages = [DOORS.therapist.home, DOORS.therapist.signin, DOORS.therapist.signup];
   if (showcase && !therapistPages.includes(here)) placeShowcase(a);
 

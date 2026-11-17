@@ -41,7 +41,7 @@ import { loadPrices, tierCards, PLANS_INTRO, PLANS_NOTE } from './assets/plans.j
 import { mountInbox, unreadCount } from './assets/inbox.js';
 import { downloadMyData } from './assets/my-data.js';
 import { resetLandingUrl } from './assets/auth.js';
-await chrome({ active:'account.html' });
+await chrome({ active:'account.html', showcase: false });
 let a = await requireAuth();
 const prices = await loadPrices(sb);   // display prices for the tier cards
 if (a) {
