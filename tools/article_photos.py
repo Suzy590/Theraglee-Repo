@@ -54,6 +54,14 @@ LICENSES = {"cc0": "CC0", "pdm": "Public domain"}
 WIDTH, HEIGHT = 1200, 630
 UA = "TheragleePhotoFetch/1.0 (+https://theraglee.com)"
 PAUSE = 3.2  # seconds between searches: under 20 a minute
+# Words in a title or tag that mean the picture is not a calm photograph of a
+# place or a thing: renders and game avatars, signs and posters, scans of old
+# art, archive photographs of soldiers and officials.
+SKIP = ("second life", "secondlife", "render", "3d", "avatar", "sign", "poster", "painting", "drawing",
+        "engraving", "illustration", "stereo", "print", "museum", "archive", "collage", "soldier",
+        "military", "army", "navy", "war", "president", "minister", "sexy", "lingerie", "bikini", "model",
+        "advert", "ad ", "logo", "brand", "selfie", "portrait", "face", "smiling", "man ", "woman ", "girl",
+        "boy ", "people", "doctor", "nurse", "patient", "forklift", "campus", "college", "university")
 
 _last_search = 0.0
 
@@ -102,6 +110,10 @@ def candidates(results: list[dict]) -> list[dict]:
             continue
         if r["source"] == "rawpixel" and "photo" not in (r.get("foreign_landing_url") or ""):
             continue  # rawpixel also indexes scans of old artwork
+        words = " ".join([r.get("title") or "", r.get("creator") or ""] +
+                         [t.get("name", "") for t in (r.get("tags") or [])]).lower() + " "
+        if any(k in words for k in SKIP):
+            continue
         good.append(r)
     good.sort(key=lambda r: (PREFER[r["source"]], -(r.get("width") or 0)))
     return good
@@ -149,7 +161,7 @@ def assign(article: dict, r: dict, alt: str) -> None:
         "source": r["foreign_landing_url"],
         "license": r["license"],
     }
-    print(f"{article['slug']}: {r['source']} {r['width']}x{r['height']} — {r['title'][:50]!r} -> {out.relative_to(ROOT)}")
+    print(f"{article['slug']}: {r['source']} {r['width']}x{r['height']} — {(r.get('title') or '')[:50]!r} -> {out.relative_to(ROOT)}")
 
 
 def main(argv: list[str]) -> int:
