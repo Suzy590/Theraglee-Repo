@@ -80,15 +80,15 @@ def fetch(url: str, timeout: int = 60) -> bytes:
         return r.read()
 
 
-def search(query: str, cache: Path) -> list[dict]:
+def search(query: str, cache: Path, sources: str = SOURCES) -> list[dict]:
     """Up to twenty public domain photographs matching the words, cached."""
     global _last_search
-    key = hashlib.sha1(query.lower().strip().encode()).hexdigest()[:16]
+    key = hashlib.sha1(f"{query.lower().strip()}|{sources}".encode()).hexdigest()[:16]
     hit = cache / f"{key}.json"
     if hit.exists():
         return json.loads(hit.read_text(encoding="utf-8"))["results"]
     params = {"q": query, "license": "cc0,pdm", "category": "photograph",
-              "source": SOURCES, "page_size": "20", "mature": "false"}
+              "source": sources, "page_size": "20", "mature": "false"}
     wait = PAUSE - (time.monotonic() - _last_search)
     if wait > 0:
         time.sleep(wait)
@@ -138,11 +138,12 @@ def used_sources(rows: list[dict]) -> set[str]:
     return {a["photo"]["source"] for a in rows if a.get("photo")}
 
 
-def choose(query: str | list[str], cache: Path, taken: set[str], pick: int | None = None) -> dict | None:
+def choose(query: str | list[str], cache: Path, taken: set[str], pick: int | None = None,
+           sources: str = SOURCES) -> dict | None:
     """The first unused candidate for the words; a list of queries is tried in
     order, so a plan can name a fallback for a narrow search."""
     for words in [query] if isinstance(query, str) else query:
-        pool = [c for c in candidates(search(words, cache)) if c["foreign_landing_url"] not in taken]
+        pool = [c for c in candidates(search(words, cache, sources)) if c["foreign_landing_url"] not in taken]
         if pick is not None:
             return pool[pick - 1] if 0 < pick <= len(pool) else None
         if pool:
@@ -175,6 +176,8 @@ def main(argv: list[str]) -> int:
     p.add_argument("--pick", type=int, help="take the Nth candidate (1-based)")
     p.add_argument("--replace", action="store_true", help="give an article that has a photo a new one")
     p.add_argument("--cache", type=Path, default=Path(tempfile.gettempdir()) / "theraglee-article-photos")
+    p.add_argument("--sources", default=SOURCES,
+                   help=f"which of {SOURCES} to search; StockSnap and rawpixel are curated, Flickr is not")
     a = p.parse_args(argv)
 
     rows = load()
@@ -190,7 +193,7 @@ def main(argv: list[str]) -> int:
         if not words:
             p.error("--list needs the search words")
         taken = used_sources(rows)
-        for i, c in enumerate(candidates(search(words, a.cache)), 1):
+        for i, c in enumerate(candidates(search(words, a.cache, a.sources)), 1):
             flag = " (used)" if c["foreign_landing_url"] in taken else ""
             print(f"{i:2}. {c['source']:9} {c['license']:3} {c['width']}x{c['height']} {c['title'][:60]!r} {c['foreign_landing_url']}{flag}")
         return 0
@@ -213,7 +216,7 @@ def main(argv: list[str]) -> int:
         if art.get("photo"):
             taken.discard(art["photo"]["source"])
         try:
-            r = choose(item["query"], a.cache, taken, a.pick if len(plan) == 1 else None)
+            r = choose(item["query"], a.cache, taken, a.pick if len(plan) == 1 else None, a.sources)
             if not r:
                 failed.append(f"{item['slug']}: nothing left for {item['query']!r}")
                 continue
