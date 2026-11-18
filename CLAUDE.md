@@ -147,7 +147,10 @@ pieces and check the database against the repo with
 Every article is `min_level = 0` (the database enforces it). The repo copy is
 `data/articles.json`; check it with `node tests/articles-fixture/check.mjs`,
 generate the SQL with `python3 tools/articles_sql.py`, and follow
-`docs/articles.md` for the daily routine and the writing rules.
+`docs/articles.md` for the daily routine and the writing rules. Every article
+carries a free public domain photo (`photo` in the JSON, a 1200x630 JPEG under
+`site/assets/articles/`), found with `python3 tools/article_photos.py`, CC0 or
+Public Domain Mark only, never used twice, and credited under the picture.
 
 ## Mandalas grow by two a day, and a shipped figure never changes
 

@@ -606,7 +606,11 @@ def article_page(article: dict, articles: list[dict], hand_pages: dict[str, dict
     date = article["published_at"][:10]
     tags = article["tags"]
 
-    ld = json_ld({
+    # Every article carries a free public domain photo (see docs/articles.md);
+    # it is the page's hero and the image a shared link shows.
+    ph = article.get("photo") or {}
+    image = f"/{ph['file']}" if ph.get("file") else SOCIAL_IMAGE
+    ld_article = {
         "@context": "https://schema.org",
         "@type": "Article",
         "headline": article["title"],
@@ -617,7 +621,19 @@ def article_page(article: dict, articles: list[dict], hand_pages: dict[str, dict
         "isAccessibleForFree": True,
         "author": {"@type": "Organization", "name": "Theraglee", "url": site},
         "publisher": publisher(site),
-    })
+    }
+    if ph.get("file"):
+        ld_article["image"] = {"@type": "ImageObject", "url": site + image, "width": 1200, "height": 630}
+    ld = json_ld(ld_article)
+    hero = ""
+    if ph.get("file"):
+        cap = esc(ph.get("credit", ""))
+        if ph.get("source"):
+            cap = f'<a href="{esc(ph["source"])}" rel="noopener nofollow" target="_blank">{cap}</a>'
+        hero = (f'      <figure class="article-hero">\n'
+                f'        <img src="{esc(image.lstrip("/"))}" alt="{esc(ph.get("alt", ""))}" width="1200" height="630">\n'
+                f'        <figcaption>{cap}</figcaption>\n'
+                f'      </figure>')
 
     related = [
         {"label": r["title"], "href": f"/articles/{r['slug']}",
@@ -635,6 +651,7 @@ def article_page(article: dict, articles: list[dict], hand_pages: dict[str, dict
         '      <p class="faint no-print" id="signup-nudge" style="margin-top:10px;max-width:60ch">'
         'Free to read, no account needed. <a href="/signup.html?why=save">Create a free account</a> '
         'to favorite this article, save it for later, and keep track of what you have read.</p>',
+        hero,
         f'      <div class="prose">\n{article_body(article["body_md"])}\n      </div>',
         tiles_section("Keep reading", related),
         tiles_section("Tools that go with this", tools),
@@ -647,7 +664,7 @@ def article_page(article: dict, articles: list[dict], hand_pages: dict[str, dict
         crumbs.append((first_tag, f"/articles/topics/{tag_slug(first_tag)}"))
     crumbs.append((article["title"], url))
     return shell(title=title, description=description, url=url, body=body, ld=[ld],
-                 script=script, crumbs=crumbs)
+                 script=script, crumbs=crumbs, image=image)
 
 
 MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August",

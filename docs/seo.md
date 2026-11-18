@@ -22,7 +22,7 @@ The script writes:
 | Output | Built from | What it is |
 |---|---|---|
 | `site/tools/<slug>/index.html`, `site/articles/how-to-find-a-therapist/index.html` | `pages` in `data/seo-pages.json` | The hand-written landing pages, one per row |
-| `site/articles/<slug>/index.html` | `data/articles.json` | One page per article, with the whole article in the markup (every article is free) |
+| `site/articles/<slug>/index.html` | `data/articles.json` | One page per article, with the whole article in the markup (every article is free), its public domain photo as the hero and as the page's own `og:image` (`docs/articles.md`) |
 | `site/articles/topics/<tag>/index.html`, `site/articles/topics/index.html` | The tags in `data/articles.json` | One hub per tag listing every article that carries it, newest first, plus the index of hubs. Every article links to its hubs, so nothing is more than two clicks from the homepage |
 | `site/tools/quizzes/index.html`, `site/tools/worksheets/index.html` | `data/quizzes.txt`, `data/worksheets.json` | Catalogs naming every quiz and worksheet by topic, so the library is crawlable even though the tools are for members |
 | `site/tools/journal-prompts/index.html` | `data/journal-prompts.txt` | Every journal prompt on one long page, with a how-to and an FAQ |

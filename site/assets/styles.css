@@ -455,6 +455,17 @@ table.data td{padding:12px;border-bottom:1px solid var(--hair);vertical-align:to
 
 .badge.done{background:var(--mist);color:var(--green-deep);border-color:var(--lime-2)}
 
+/* An article's photo: the public domain picture at the top of every article
+   (1200x630, in site/assets/articles/), and its small credit line. */
+.article-hero{margin:22px 0 0;}
+.article-hero img{display:block;width:100%;aspect-ratio:1200/630;object-fit:cover;border-radius:var(--r);
+  background:var(--sand);box-shadow:var(--shadow-1)}
+.article-hero figcaption{margin:8px 2px 0;font-size:.78rem;color:var(--faint)}
+.article-hero figcaption a{color:inherit}
+/* The same photo as a thumbnail across the top of an article tile. */
+.tile .thumb{display:block;width:calc(100% + 40px);margin:-20px -20px 6px;aspect-ratio:1200/630;object-fit:cover;
+  border-radius:var(--r) var(--r) 0 0;background:var(--sand)}
+
 /* Thin progress rail under a tile. */
 .tile .prog{height:3px;border-radius:2px;background:var(--sand);margin-top:10px;overflow:hidden}
 .tile .prog>i{display:block;height:100%;background:var(--lime);border-radius:2px}

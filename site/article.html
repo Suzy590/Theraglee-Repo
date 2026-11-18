@@ -59,6 +59,12 @@ if (!art) {
     ${lib.authenticated ? '' : `<p class="faint no-print" style="margin-top:10px;max-width:60ch">Free to read, no account
       needed. <a href="${signupHref('save')}">Create a free account</a> to favorite this article, save it for
       later, and keep track of what you have read.</p>`}
+    ${art.photo_url ? `<figure class="article-hero">
+      <img src="${esc(art.photo_url.replace(/^\//, ''))}" alt="${esc(art.photo_alt || '')}" width="1200" height="630">
+      ${art.photo_credit ? `<figcaption>${art.photo_source
+        ? `<a href="${esc(art.photo_source)}" rel="noopener nofollow" target="_blank">${esc(art.photo_credit)}</a>`
+        : esc(art.photo_credit)}</figcaption>` : ''}
+    </figure>` : ''}
     <div class="prose" style="margin-top:26px">${paras}</div>
     <div class="row no-print" style="margin-top:26px">
       <button class="btn ghost${read ? ' on' : ''}" id="markread">${

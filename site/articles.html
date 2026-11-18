@@ -70,7 +70,7 @@ await chrome({ active:'articles.html' });
 // Every article is free to everyone, so the page reads the table itself rather
 // than the level-gated catalog view, newest first.
 const [{ data, error }, lib] = await Promise.all([
-  sb.from('articles').select('id,slug,title,excerpt,tags,published_at')
+  sb.from('articles').select('id,slug,title,excerpt,tags,published_at,photo_url,photo_alt')
     .order('published_at', { ascending: false }),
   library(),
 ]);
@@ -147,6 +147,7 @@ function render() {
 
   document.getElementById('list').innerHTML = list.length
     ? list.map(a => `<a class="tile" href="articles/${encodeURIComponent(a.slug)}">
+        ${a.photo_url ? `<img class="thumb" src="${esc(a.photo_url.replace(/^\//, ''))}" alt="${esc(a.photo_alt || '')}" loading="lazy" width="1200" height="630">` : ''}
         ${favButton('article', a.id, isFavorite(lib, 'article', a.id), { size:20, label:false })}
         <h3>${esc(a.title)}</h3>
         ${a.excerpt ? `<p class="meta" style="color:var(--muted)">${esc(String(a.excerpt).slice(0,150))}${String(a.excerpt).length > 150 ? '…' : ''}</p>` : ''}
