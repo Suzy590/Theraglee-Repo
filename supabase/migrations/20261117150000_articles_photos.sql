@@ -22,6 +22,8 @@ comment on column public.articles.photo_source is 'The page the photo came from'
 
 update public.articles as a set
   photo_url    = v.photo_url,
+update public.articles as a set
+  photo_url    = v.photo_url,
   photo_alt    = v.photo_alt,
   photo_credit = v.photo_credit,
   photo_source = v.photo_source
@@ -58,7 +60,7 @@ from (values
   ('how-to-fact-check-a-worried-thought', '/assets/articles/how-to-fact-check-a-worried-thought.jpg', 'A laptop open on a desk', 'Photo by Caio Resende via StockSnap, CC0', 'https://stocksnap.io/photo/macbook-laptop-9YQBFH7PYQ'),
   ('how-to-repair-after-an-argument', '/assets/articles/how-to-repair-after-an-argument.jpg', 'A teapot and cup on a dark table', 'Photo via rawpixel, CC0', 'https://www.rawpixel.com/image/3286863/free-photo-image-cc0-creative-commons'),
   ('how-to-wait-out-an-urge', '/assets/articles/how-to-wait-out-an-urge.jpg', 'An hourglass among keepsakes', 'Photo by Daria Nepriakhina via StockSnap, CC0', 'https://stocksnap.io/photo/hourglass-arts-E1C68E9513'),
-  ('what-to-do-at-3-am-when-you-cannot-sleep', '/assets/articles/what-to-do-at-3-am-when-you-cannot-sleep.jpg', 'The moon behind thin clouds at night', 'Photo by Krzysztof%20Puszczy%u0144ski via StockSnap, CC0', 'https://stocksnap.io/photo/moon-sunset-F8HFKX3RIW'),
+  ('what-to-do-at-3-am-when-you-cannot-sleep', '/assets/articles/what-to-do-at-3-am-when-you-cannot-sleep.jpg', 'The moon behind thin clouds at night', 'Photo by Krzysztof Puszczyński via StockSnap, CC0', 'https://stocksnap.io/photo/moon-sunset-F8HFKX3RIW'),
   ('rest-is-not-the-same-as-doing-nothing', '/assets/articles/rest-is-not-the-same-as-doing-nothing.jpg', 'A hammock strung between pines', 'Photo by blmcalifornia via Flickr, Public domain', 'https://www.flickr.com/photos/50976304@N07/52304864510'),
   ('how-to-take-a-compliment', '/assets/articles/how-to-take-a-compliment.jpg', 'A field of yellow flowers', 'Photo via rawpixel, CC0', 'https://www.rawpixel.com/image/3301449/free-photo-image-cc0-countryside-creative-commons'),
   ('when-a-friendship-fades', '/assets/articles/when-a-friendship-fades.jpg', 'Autumn leaves on the ground', 'Photo by Negative Space via StockSnap, CC0', 'https://stocksnap.io/photo/leaves-ground-QHSME1V37M'),
@@ -174,7 +176,7 @@ from (values
   ('starting-something-you-will-be-bad-at', '/assets/articles/starting-something-you-will-be-bad-at.jpg', 'Paintbrushes and a messy palette', 'Photo by Nick Collins via StockSnap, CC0', 'https://stocksnap.io/photo/paintbrushes-color-4X4TM8QZ9F'),
   ('when-someone-takes-their-anger-out-on-you', '/assets/articles/when-someone-takes-their-anger-out-on-you.jpg', 'Umbrellas in the rain outside a temple', 'Photo by Redd Angelo via StockSnap, CC0', 'https://stocksnap.io/photo/asian-people-VWSTFMADAL'),
   ('telling-a-partner-about-something-that-happened-to-you', '/assets/articles/telling-a-partner-about-something-that-happened-to-you.jpg', 'A gray sofa with cushions by a window', 'Photo via rawpixel, CC0', 'https://www.rawpixel.com/image/3283189/free-photo-image-living-room-home-decorations'),
-  ('parenting-while-depressed', '/assets/articles/parenting-while-depressed.jpg', 'Colored pencils lined up on a table', 'Photo by Miguel%20%C1.%20Padri%F1%E1n via StockSnap, CC0', 'https://stocksnap.io/photo/pencils-crayons-3KVFJ6WC8X'),
+  ('parenting-while-depressed', '/assets/articles/parenting-while-depressed.jpg', 'Colored pencils lined up on a table', 'Photo by Miguel Á. Padriñán via StockSnap, CC0', 'https://stocksnap.io/photo/pencils-crayons-3KVFJ6WC8X'),
   ('living-on-less-than-you-used-to', '/assets/articles/living-on-less-than-you-used-to.jpg', 'Hands washing a fork at a kitchen sink', 'Photo by Catt Liu via StockSnap, CC0', 'https://stocksnap.io/photo/dishes-sink-06FF138848'),
   ('actually-listening-to-someone', '/assets/articles/actually-listening-to-someone.jpg', 'A wooden table with a magazine and two chairs', 'Photo by m0851 via StockSnap, CC0', 'https://stocksnap.io/photo/table-chairs-T3S2OXGVHE'),
   ('the-morning-after-you-said-too-much', '/assets/articles/the-morning-after-you-said-too-much.jpg', 'An empty street in bright sunshine', 'Photo by Lucas Allmann via StockSnap, CC0', 'https://stocksnap.io/photo/summer-road-WLIQXMYVIE'),
@@ -251,7 +253,7 @@ from (values
   ('checking-out-in-the-middle-of-a-workday', '/assets/articles/checking-out-in-the-middle-of-a-workday.jpg', 'A small notebook on a gray chair', 'Photo by Design by Matt via StockSnap, CC0', 'https://stocksnap.io/photo/notebook-paper-AMKVNOWSGM'),
   ('the-hours-that-disappear-into-your-phone', '/assets/articles/the-hours-that-disappear-into-your-phone.jpg', 'A phone and a closed laptop on a desk by a window', 'Photo by Markus Spiske via StockSnap, CC0', 'https://stocksnap.io/photo/office-work-8C8OQBT89V'),
   ('when-being-close-makes-you-go-somewhere-else', '/assets/articles/when-being-close-makes-you-go-somewhere-else.jpg', 'Folded fabrics in a rainbow of colors', 'Photo via rawpixel, CC0', 'https://www.rawpixel.com/image/5904063/photo-image-public-domain-fabrics-rainbow'),
-  ('the-foggy-hour-after-you-come-back', '/assets/articles/the-foggy-hour-after-you-come-back.jpg', 'A gray field disappearing into fog', 'Photo by Tomasz%20Gaw%u0142owski via StockSnap, CC0', 'https://stocksnap.io/photo/green-grass-8LFJAEUY80'),
+  ('the-foggy-hour-after-you-come-back', '/assets/articles/the-foggy-hour-after-you-come-back.jpg', 'A gray field disappearing into fog', 'Photo by Tomasz Gawłowski via StockSnap, CC0', 'https://stocksnap.io/photo/green-grass-8LFJAEUY80'),
   ('telling-a-therapist-that-you-go-blank', '/assets/articles/telling-a-therapist-that-you-go-blank.jpg', 'A quiet reading corner in a library', 'Photo by SeAMK Kirjasto via Flickr, CC0', 'https://www.flickr.com/photos/68667305@N08/52811068677'),
   ('sleeping-badly-because-someone-needs-you-at-night', '/assets/articles/sleeping-badly-because-someone-needs-you-at-night.jpg', 'An alarm clock on a bedside table', 'Photo by ericisinschool via Flickr, Public domain', 'https://www.flickr.com/photos/203048287@N03/54648926208'),
   ('keeping-moving-without-paying-for-it', '/assets/articles/keeping-moving-without-paying-for-it.jpg', 'A tree-lined walking path in autumn', 'Photo by Tricia Gray via StockSnap, CC0', 'https://stocksnap.io/photo/autumn-path-SBPB82MIOJ'),
@@ -298,7 +300,7 @@ from (values
   ('giving-someone-news-they-do-not-want', '/assets/articles/giving-someone-news-they-do-not-want.jpg', 'A red London telephone box on a busy street at night', 'Photo by NegativeSpace via StockSnap, CC0', 'https://stocksnap.io/photo/london-telephone-YCKTOMUYZW'),
   ('being-the-sober-one-at-the-party', '/assets/articles/being-the-sober-one-at-the-party.jpg', 'A bottle of lemon water with raspberries', 'Photo by Healthy Living via StockSnap, CC0', 'https://stocksnap.io/photo/healthy-fruit-SE6LA5BXBG'),
   ('working-nights-and-sleeping-days', '/assets/articles/working-nights-and-sleeping-days.jpg', 'Light trails on a night road', 'Photo by Negative Space via StockSnap, CC0', 'https://stocksnap.io/photo/road-street-WYR8HIVM8J'),
-  ('fighting-the-system-for-someone-you-love', '/assets/articles/fighting-the-system-for-someone-you-love.jpg', 'Papers and a pen on a desk', 'Photo by Ch%E2u%20Th%F4ng%20Phan via StockSnap, CC0', 'https://stocksnap.io/photo/office-work-UP9J4EZYNJ'),
+  ('fighting-the-system-for-someone-you-love', '/assets/articles/fighting-the-system-for-someone-you-love.jpg', 'Papers and a pen on a desk', 'Photo by Châu Thông Phan via StockSnap, CC0', 'https://stocksnap.io/photo/office-work-UP9J4EZYNJ'),
   ('when-your-adult-child-moves-back-home', '/assets/articles/when-your-adult-child-moves-back-home.jpg', 'A stone doorway numbered 18', 'Photo by Bob Richards via StockSnap, CC0', 'https://stocksnap.io/photo/old-building-NDAZ6RVJNS'),
   ('when-nothing-structures-your-day', '/assets/articles/when-nothing-structures-your-day.jpg', 'A planner open on a desk', 'Photo via rawpixel, CC0', 'https://www.rawpixel.com/image/3299160/free-photo-image-calendar-time-plan'),
   ('when-you-keep-buying-things-to-feel-better', '/assets/articles/when-you-keep-buying-things-to-feel-better.jpg', 'Grocery bags full of food', 'Photo by Alabama Extension via Flickr, CC0', 'https://www.flickr.com/photos/184594136@N08/52327379059'),
@@ -354,7 +356,7 @@ from (values
   ('doing-work-you-do-not-believe-in', '/assets/articles/doing-work-you-do-not-believe-in.jpg', 'An empty office corridor', 'Photo by Matt Moloney via StockSnap, CC0', 'https://stocksnap.io/photo/office-interior-NSQTXCLWQ5'),
   ('when-someone-will-never-admit-they-were-wrong', '/assets/articles/when-someone-will-never-admit-they-were-wrong.jpg', 'A plain brick wall', 'Photo by Jonas Nilsson Lee via StockSnap, CC0', 'https://stocksnap.io/photo/bricks-wall-4YCB0VAY1L'),
   ('going-to-the-doctor-when-you-have-been-putting-it-off', '/assets/articles/going-to-the-doctor-when-you-have-been-putting-it-off.jpg', 'A hospital reception desk', 'Photo via rawpixel, CC0', 'https://www.rawpixel.com/image/6077450/photo-image-public-domain-table-building'),
-  ('staying-at-your-parents-house-as-an-adult', '/assets/articles/staying-at-your-parents-house-as-an-adult.jpg', 'A chair beside an old wooden cabin door', 'Photo by J%F8rgen%20H%E5land via StockSnap, CC0', 'https://stocksnap.io/photo/house-home-835SHFAF42'),
+  ('staying-at-your-parents-house-as-an-adult', '/assets/articles/staying-at-your-parents-house-as-an-adult.jpg', 'A chair beside an old wooden cabin door', 'Photo by Jørgen Håland via StockSnap, CC0', 'https://stocksnap.io/photo/house-home-835SHFAF42'),
   ('when-you-and-your-partner-earn-very-different-amounts', '/assets/articles/when-you-and-your-partner-earn-very-different-amounts.jpg', 'Stacks of coins', 'Photo via rawpixel, CC0', 'https://www.rawpixel.com/image/5901121/free-coin-image-public-domain-money-cc0-photo'),
   ('when-people-stop-asking-how-you-are', '/assets/articles/when-people-stop-asking-how-you-are.jpg', 'An old mail wagon in the snow', 'Photo via rawpixel, CC0', 'https://www.rawpixel.com/image/8847723/photo-image-paper-art-vintage'),
   ('checking-the-clock-all-night', '/assets/articles/checking-the-clock-all-night.jpg', 'An old pocket-style alarm clock', 'Photo via rawpixel, CC0', 'https://www.rawpixel.com/image/3304780/free-photo-image-vintage-photos-antique-clock-alarm-time'),

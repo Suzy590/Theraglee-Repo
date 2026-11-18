@@ -34,6 +34,7 @@ import argparse
 import hashlib
 import io
 import json
+import re
 import sys
 import tempfile
 import time
@@ -119,8 +120,19 @@ def candidates(results: list[dict]) -> list[dict]:
     return good
 
 
+def clean_name(name: str) -> str:
+    """StockSnap names reach Openverse URL-escaped ("Krzysztof%20Puszczy%u0144ski");
+    give the photographer their real name back."""
+    name = re.sub(r"%u([0-9a-fA-F]{4})", lambda m: chr(int(m.group(1), 16)), name)
+    try:
+        name = urllib.parse.unquote(name, encoding="utf-8", errors="strict")
+    except UnicodeDecodeError:
+        name = urllib.parse.unquote(name, encoding="latin-1")
+    return " ".join(name.split())
+
+
 def credit(r: dict) -> str:
-    who = (r.get("creator") or "").strip()
+    who = clean_name(r.get("creator") or "")
     by = f"Photo by {who} " if who else "Photo "
     return f"{by}via {SOURCE_NAMES[r['source']]}, {LICENSES[r['license']]}"
 
