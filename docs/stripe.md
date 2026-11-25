@@ -67,7 +67,11 @@ Run the logic tests with:
 
 ```bash
 node tests/billing-logic/check.mjs
+node tests/founding-billing/check.mjs
 ```
+
+The second runs the whole `founding-billing` function against fakes of
+Stripe, Supabase and the email service.
 
 ## How a membership flows
 
@@ -230,6 +234,20 @@ memberships go live, or anyone who joins before December 31, 2026, whichever
 comes first. Founding members also get a Founding Member badge on their
 profile and a direct line to the team.
 
+**What a match is.** A match is a regular (non-therapist) member whose
+pseudonymous Match Mode profile fits a therapist's listing and so appears on
+that therapist's dashboard. It is not a guarantee that the member will
+schedule a session. The site says so in the fine print and the first question
+on `founding-members.html`, the email before the first charge says so
+(`MATCH_MEANS` in `_shared/billing.ts`), and `founding_first_matches()` is
+the rule itself: the member's account has the role `member` (never a
+therapist's or an administrator's own account) and has the pseudonymous
+profile the Match Mode window asks for, a pseudonym and every answer
+(`match_profile_complete()`). A row with Match Mode on and nothing filled in
+still shows on a dashboard, because `match_fits()` only rules members out,
+but it has not matched anybody and never starts a therapist's billing.
+Complimentary members are regular members and count.
+
 How it works in Stripe:
 
 - **Checkout** (`stripe-checkout`, interval `founding`) saves the card and
@@ -245,13 +263,27 @@ How it works in Stripe:
 - **`founding-billing`**, called by pg_cron every hour (at ten past), reads
   `founding_first_matches()`: founding therapists still in their free period
   whose live listing now has a matching member (a `match_sightings` row, or
-  a Match Mode member who fits by the `member_discovery` rules). For each it
-  moves the trial's end to `FOUNDING_NOTICE_DAYS` (a week) from now, records
-  `profiles.first_match_at`, and emails the therapist the date of their
-  first charge. Stripe then bills the founding rate monthly from that day;
-  the subscription stays on the price it started with, which is what locks
-  the rate in. An administrator can run the check now by calling the
-  function with their session.
+  a Match Mode member who fits by the `member_discovery` rules; either way a
+  regular member with a pseudonymous profile, as above). For each, in this
+  order, it emails the therapist the date of their first charge,
+  `FOUNDING_NOTICE_DAYS` (a week) from now, and records
+  `profiles.first_match_notice_at`; only then moves the trial's end to that
+  date; then records `profiles.first_match_at`. Stripe then bills the
+  founding rate monthly from that day; the subscription stays on the price it
+  started with, which is what locks the rate in. An administrator can run
+  the check now by calling the function with their session.
+- **No notice, no charge.** If the email cannot be sent (no address, the
+  email service refuses it), nothing changes in Stripe and the next hourly
+  run tries again. If the email went out but Stripe or the database failed
+  afterwards, the next run finishes with the date the email gave
+  (`foundingPromisedStart`) and sends no second email, unless that date is
+  by then less than `FOUNDING_NOTICE_MIN_DAYS` (two days) away, in which case
+  a fresh email and a fresh week come first. The first failure for an
+  account writes a `billing_alerts` row of kind `founding_notice` and emails
+  `app_config.admin_email`; the hourly retries then stay quiet, and the row
+  is closed (`resolved_at`) when the job goes through.
+  `node tests/founding-billing/check.mjs` runs the function against fakes
+  and guards this order.
 - **The Membership tab** shows "Free until your first match", then "Billing
   starts <date>" once the first match arrives, then "Active · founding
   rate"; the Home tab says so the day the match appears. The public profile
@@ -267,7 +299,11 @@ Setting it up:
    deadline). Tick **Offer the founding rate** and Save.
 3. Deploy `founding-billing` (it is in the deploy line in step 4) and apply
    `20261023180000_founding_free_until_first_match.sql`, which adds the
-   columns, the finder, the shared key and the hourly job.
+   columns, the finder, the shared key and the hourly job, then
+   `20261125090000_founding_match_definition_and_notice.sql`, which adds
+   `first_match_notice_at` and `match_profile_complete()` and rewrites the
+   finder to the definition of a match above. Apply that one before
+   deploying the function, which reads the new column.
 4. Optional: in Stripe → **Settings → Subscriptions and emails**, turn on
    the email about an ending trial, so Stripe sends its own reminder too.
 
@@ -495,11 +531,12 @@ All in `app_config`, all editable from `/admin.html`:
 |---|---|---|
 | `profiles.tier`, `subscription_status`, `current_period_end`, `cancel_at_period_end`, `stripe_customer_id`, `stripe_subscription_id` | webhook | The membership, as Stripe last reported it |
 | `profiles.founding_member` | webhook | True while the live subscription is on the founding price: the badge, the locked-in rate, the free-until-first-match rule |
-| `profiles.first_match_at` | `founding-billing` | When the first matching member appeared; billing begins a week later |
+| `profiles.first_match_notice_at` | `founding-billing` | When the email announcing the first charge went out; billing begins a week after it |
+| `profiles.first_match_at` | `founding-billing` | When the first match started the therapist's billing, set after the email and the Stripe change |
 | `therapist_profiles.stripe_account_id`, `stripe_account_status`, `charges_enabled`, `payouts_enabled` | webhook, `stripe-connect` | Payout account: `none`, `onboarding`, `enabled`, `restricted` |
 | `therapist_profiles.accepts_payments`, `session_fee_cents` | the therapist | Their choice to take payments, and the price ($5–$1,000) |
 | `session_payments` | `stripe-session-checkout`, webhook | One row per session payment: `pending`, `paid`, `refunded`, `partially_refunded`, `disputed` |
-| `billing_alerts` | webhook | Disputes and Radar early-fraud warnings, for admins |
+| `billing_alerts` | webhook, `founding-billing` | Disputes and Radar early-fraud warnings, and (kind `founding_notice`) a founding therapist's first-charge notice that could not be sent or finished, for admins |
 | `profiles.subscription_status = 'comped'` | `admin-membership` | A complimentary membership an admin granted; the webhook leaves it alone unless a live subscription arrives |
 | `discount_codes` | `admin-membership` | The codes made on the admin screen, with their Stripe coupon and promotion code IDs |
 | `stripe_events` | webhook | Every event received; `processed_at` set once handled, `error` if not |
@@ -514,8 +551,14 @@ verified or paid-out from the browser.
   match"** — the `founding-billing` cron job has not run yet (every hour, at
   ten past), the function is not deployed, or the listing is not live
   (`founding_first_matches()` only counts a published, verified listing).
-  Call the function with an admin session to run the check now; the
-  response lists what it did for each account.
+  It may also be that the member on the dashboard is not a match as billing
+  counts one: their Match Mode profile is missing its pseudonym or an answer
+  (`match_profile_complete()`), or the account is not a regular member's.
+  Or the email announcing the first charge could not be sent, in which case
+  billing waits for it: look for an open `founding_notice` row in
+  `billing_alerts` (its `summary` says what stopped it) and the email sent
+  to `admin_email`. Call the function with an admin session to run the check
+  now; the response lists what it did for each account.
 - **"The founding offer is not open right now"** or **"has ended"** —
   the `founding_enabled` switch is off, no founding price is pasted, or the
   deadline has passed. **"All founding-member spots are taken"** — Stripe

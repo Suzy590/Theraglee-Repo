@@ -9,7 +9,8 @@ import {
   codeFitsRole, connectStatus, deletionAfterSync, deletionPlan, hasLiveStripeSub, isDeleteWhen, keepsComp,
   parseDiscountInput, planChangeError,
   priceKeysForAudience, deadlineEnd, foundingOffer, isActive, isInterval,
-  FOUNDING_NOTICE_DAYS, FOUNDING_TRIAL_DAYS, foundingBillingStart, foundingTrialAction, foundingTrialEnd,
+  FOUNDING_NOTICE_DAYS, FOUNDING_NOTICE_MIN_DAYS, FOUNDING_TRIAL_DAYS, foundingBillingStart,
+  foundingPromisedStart, foundingTrialAction, foundingTrialEnd, MATCH_MEANS,
   isFoundingPrice, leavesFreePeriod,
   isStaleSubscription, isValidSessionFee, planForPrice, platformFee, priceKeyFor,
   safeReturnOrigin, subscriptionPatch,
@@ -219,6 +220,34 @@ test("a founding trial is extended only while the first match has not arrived", 
   // A trial that already ended is not revived.
   assert.equal(foundingTrialAction(waiting, { status: "active" }, true), "none");
   assert.equal(foundingTrialAction(waiting, { status: "canceled" }, true), "none");
+});
+
+test("a first-match email already sent keeps its date; none, or a stale one, means a fresh email first", () => {
+  const sec = (iso) => Math.floor(new Date(iso).getTime() / 1000);
+  const sentAt = "2026-11-25T09:10:00Z";
+  const promised = sec(sentAt) + FOUNDING_NOTICE_DAYS * 86400;
+  // No notice has gone out: the email comes before anything else.
+  assert.equal(foundingPromisedStart(null, new Date(sentAt)), null);
+  assert.equal(foundingPromisedStart(undefined, new Date(sentAt)), null);
+  assert.equal(foundingPromisedStart("not a date", new Date(sentAt)), null);
+  // The run an hour later, and one four days later, start billing on the date the email gave.
+  assert.equal(foundingPromisedStart(sentAt, new Date("2026-11-25T10:10:00Z")), promised);
+  assert.equal(foundingPromisedStart(sentAt, new Date("2026-11-29T09:10:00Z")), promised);
+  // Exactly the least warning left still stands; anything less, or a date gone by, does not.
+  const edge = new Date((promised - FOUNDING_NOTICE_MIN_DAYS * 86400) * 1000);
+  assert.equal(foundingPromisedStart(sentAt, edge), promised);
+  assert.equal(foundingPromisedStart(sentAt, new Date(edge.getTime() + 1000)), null);
+  assert.equal(foundingPromisedStart(sentAt, new Date("2026-12-05T00:00:00Z")), null);
+  // The least warning is shorter than the notice itself, or no promise could ever stand.
+  assert.ok(FOUNDING_NOTICE_MIN_DAYS < FOUNDING_NOTICE_DAYS);
+});
+
+test("a match is a member with a pseudonymous profile on the dashboard, and never a promised session", () => {
+  assert.match(MATCH_MEANS, /not a therapist/);
+  assert.match(MATCH_MEANS, /pseudonymous profile/);
+  assert.match(MATCH_MEANS, /appears on your dashboard/);
+  assert.match(MATCH_MEANS, /does not guarantee/);
+  assert.match(MATCH_MEANS, /schedule a session/);
 });
 
 test("a founding membership switched to a regular plan while still free starts paying now", () => {

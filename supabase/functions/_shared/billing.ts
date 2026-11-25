@@ -102,14 +102,28 @@ export interface FoundingOffer {
  * as Stripe allows (FOUNDING_TRIAL_DAYS, two years); while the therapist still
  * has no match, the webhook pushes it out again each time Stripe warns that
  * it is about to end (`customer.subscription.trial_will_end`). When the first
- * matching member appears, the `founding-billing` function moves the trial's
- * end to FOUNDING_NOTICE_DAYS from now and emails the therapist, so the
- * first charge is announced before it happens. Stripe then bills the
- * founding rate every month from that day, on the price the subscription
- * started with, which is what keeps the rate locked in.
+ * match arrives, the `founding-billing` function emails the therapist the
+ * date billing begins, FOUNDING_NOTICE_DAYS from now, and only then moves
+ * the trial's end to that date, so the first charge is always announced
+ * before it is scheduled. Stripe then bills the founding rate every month
+ * from that day, on the price the subscription started with, which is what
+ * keeps the rate locked in.
+ *
+ * What a match is: a regular (non-therapist) member whose pseudonymous Match
+ * Mode profile fits the therapist's listing and so appears on the
+ * therapist's dashboard. It is not a guarantee that the member will schedule
+ * a session. `founding_first_matches()` in SQL is the rule; MATCH_MEANS is
+ * the sentence a therapist reads.
  */
 export const FOUNDING_TRIAL_DAYS = 730;
 export const FOUNDING_NOTICE_DAYS = 7;
+/** The least warning a first charge may come with, in days (see `foundingPromisedStart`). */
+export const FOUNDING_NOTICE_MIN_DAYS = 2;
+
+/** What a match is, as a therapist reads it in the email before their first charge. */
+export const MATCH_MEANS =
+  "A match is a Theraglee member (not a therapist) whose pseudonymous profile fits your practice and so " +
+  "appears on your dashboard. It does not guarantee that the member will schedule a session.";
 
 const DAY = 24 * 60 * 60;
 
@@ -124,6 +138,29 @@ export const foundingBillingStart = (now: Date = new Date()): number =>
 /** Unix seconds for a fresh stretch of free time starting `now`. */
 export const foundingTrialEnd = (now: Date = new Date()): number =>
   Math.floor(now.getTime() / 1000) + FOUNDING_TRIAL_DAYS * DAY;
+
+/**
+ * The date an earlier first-match email promised, if that promise still
+ * stands.
+ *
+ * `founding-billing` sends the email, records when
+ * (`profiles.first_match_notice_at`), and only then moves the trial's end in
+ * Stripe. If that last step fails, the next hourly run must start billing on
+ * the date the therapist was already given, not send a second email with a
+ * second date.
+ *
+ * Returns the unix seconds billing begins when a notice went out at
+ * `noticeAt` and its date is still at least FOUNDING_NOTICE_MIN_DAYS away.
+ * Returns null when no notice has gone out, or the promised date is too
+ * close (or past) to be fair warning any more: a fresh email goes first.
+ */
+export function foundingPromisedStart(noticeAt: string | null | undefined, now: Date = new Date()): number | null {
+  if (!noticeAt) return null;
+  const sent = new Date(noticeAt);
+  if (Number.isNaN(sent.getTime())) return null;
+  const starts = foundingBillingStart(sent);
+  return starts - Math.floor(now.getTime() / 1000) >= FOUNDING_NOTICE_MIN_DAYS * DAY ? starts : null;
+}
 
 /**
  * Whether a subscription that just left the founding price is still carrying
