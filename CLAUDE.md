@@ -96,8 +96,9 @@ publicly readable. Documentation belongs in `docs/`, never in `site/`.
 
 The Stripe Edge Functions live in `supabase/functions/` and their schema changes
 in `supabase/migrations/`. Change them here, run
-`node tests/billing-logic/check.mjs`, and deploy with the Supabase CLI — never
-edit a function in the Supabase Dashboard, or the next deploy will overwrite it.
+`node tests/billing-logic/check.mjs` and `node tests/founding-billing/check.mjs`,
+and deploy with the Supabase CLI — never edit a function in the Supabase
+Dashboard, or the next deploy will overwrite it.
 `docs/stripe.md` is the guide.
 
 ## The sign-in emails are Supabase templates, kept in `supabase/templates/`
